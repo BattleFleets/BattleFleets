@@ -13,7 +13,7 @@ public class HelloWorldController {
 	public ModelAndView helloWorld() {
 
 		ModelAndView model = new ModelAndView("HelloWorldPage");
-		model.addObject("msg", "hello world");
+		model.addObject("msg", "Experiment");
 
 		return model;
 	}
