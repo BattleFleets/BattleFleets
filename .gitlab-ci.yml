@@ -33,3 +33,28 @@ verify:
   artifacts:
     paths:
     - target/*.jar
+
+#NMQC-build:
+ # script:
+  #  - mvn install -B
+  #artifacts:
+  #  name: "ship.war"
+  #  paths:
+  #    - ./target/*.war
+
+#besteam:
+#  stage: deploy
+#  script:
+#   java -jar target/dependency/webapp-runner.jar target/*.war
+#   only:
+#  - dev
+
+#production:
+ # stage: deploy
+  #script:
+   #- apt-get update -qy
+   #- apt-get install -y ruby-dev
+   #- gem install dpl
+   #- dpl --provider=heroku --app=besteam --api-key=$HEROKU_STAGING_API_KEY
+   #only:
+  #- dev
