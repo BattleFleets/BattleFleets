@@ -36,12 +36,19 @@ verify:
 
 besteam:
   stage: deploy
+<<<<<<< HEAD
   image: ruby:2.3
   script:
   - apt-get update -qy
   - apt-get install -y ruby-dev
   - gem install dpl
   - dpl --provider=heroku --app=besteam --api-key=$HEROKU_STAGING_API_KEY
+=======
+  image: alpine:3.5
+  script:
+  - git remote add heroku https://heroku:$HEROKU_STAGING_API_KEY@git.heroku.com/besteam.git
+  - git push -f heroku dev:master
+>>>>>>> f856785bbbc03063f3f104135d165d711434fd76
   only:
   - dev
 
