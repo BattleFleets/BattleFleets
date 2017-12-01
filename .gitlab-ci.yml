@@ -43,4 +43,4 @@ besteam:
   - gem install dpl
   - dpl --provider=heroku --app=besteam --api-key=$HEROKU_STAGING_API_KEY
   only:
-  - dev
+  - Nikita
