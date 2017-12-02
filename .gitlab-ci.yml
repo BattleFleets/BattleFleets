@@ -16,6 +16,11 @@ cache:
   paths:
     - .m2/repository
 
+stages:
+  - test
+  - build
+  - deploy
+
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
 # we use `test-compile` here instead of `validate`, so the correct classpath is picked up.
@@ -34,7 +39,7 @@ verify:
     paths:
     - target/*.jar
 
-besteam:
+besteam-dev:
   stage: deploy
   image: ruby:2.3
   script:
@@ -42,5 +47,22 @@ besteam:
   - apt-get install -y ruby-dev
   - gem install dpl
   - dpl --provider=heroku --app=besteam --api-key=$HEROKU_STAGING_API_KEY
+  environment:
+    name: staging
+    url: https://besteam-dev.herokuapp.com/welcome.htm
   only:
-  - Nikita
+  - dev
+
+besteam:
+  stage: deploy
+  image: ruby:2.3
+  script:
+  - apt-get update -qy
+  - apt-get install -y ruby-dev
+  - gem install dpl
+  - dpl --provider=heroku --app=besteam-dev --api-key=$HEROKU_STAGING_API_KEY
+  environment:
+    name: production
+    url: https://besteam.herokuapp.com/welcome.htm
+  only:
+  - master
