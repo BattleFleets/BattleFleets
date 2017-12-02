@@ -49,7 +49,7 @@ besteam-dev:
   - dpl --provider=heroku --app=besteam-dev --api-key=$HEROKU_STAGING_API_KEY
   environment:
     name: staging
-    url: https://besteam-dev.herokuapp.com/welcome.htm
+    url: https://besteam-dev.herokuapp.com
   only:
   - dev
 
@@ -63,6 +63,6 @@ besteam:
   - dpl --provider=heroku --app=besteam --api-key=$HEROKU_STAGING_API_KEY
   environment:
     name: production
-    url: https://besteam.herokuapp.com/welcome.htm
+    url: https://besteam.herokuapp.com
   only:
   - master

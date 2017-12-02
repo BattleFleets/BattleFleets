@@ -14,7 +14,7 @@ import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.services.CannonService;
 
 @Controller
-@RequestMapping("/welcome")
+@RequestMapping("/")
 public class HelloWorldController {
 
 	@RequestMapping(method = RequestMethod.GET)
