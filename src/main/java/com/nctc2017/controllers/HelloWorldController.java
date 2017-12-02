@@ -6,14 +6,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("/welcome")
+@RequestMapping("/")
 public class HelloWorldController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView helloWorld() {
 
 		ModelAndView model = new ModelAndView("HelloWorldPage");
-		model.addObject("msg", "hello world");
+		model.addObject("msg", "hello world from master branch");
 
 		return model;
 	}
