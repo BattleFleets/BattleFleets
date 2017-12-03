@@ -4,6 +4,6 @@
 	<h1>Spring MVC Hello World Annotation Example</h1>
 
 	<h2>${msg}</h2>
-
+	<p>${Cannon}</p>
 </body>
 </html>
