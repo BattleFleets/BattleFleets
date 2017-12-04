@@ -1,21 +1,22 @@
 package com.nctc2017.dao;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import com.nctc2017.bean.Cannon;
 
-/**
- * 
- */
-public class CannonDaoImpl implements CannonDao {
-
-    /**
-     * Default constructor
-     */
-    public CannonDaoImpl() {
-    }
-
-
+@Repository
+@Qualifier("cannonDao")
+public class CannonDaoImpl implements CannonDao{
+	@Autowired
+    JdbcTemplate jdbcTemplate;
 
     /**
      * @param int cannonId 

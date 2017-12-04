@@ -7,21 +7,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
+import com.nctc2017.services.AuthRegService;
 
 @Controller
-@RequestMapping("/welcome")
+@RequestMapping("/")
 public class HelloWorldController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView helloWorld() {
 		AbstractApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
-        //CannonService cannonService = (CannonService) context.getBean("cannonService");
-        //cannonService.addCannon(new Cannon(5000, "qwertyuiop", 123, 100, 5000));
-        //Cannon cannon = cannonService.find(37);
+		AuthRegService authRegService = (AuthRegService) context.getBean("authRegService");
+        
 		ModelAndView model = new ModelAndView("HelloWorldPage");
 		model.addObject("msg", "hello world");
-		//model.addObject(cannon.getClass().getSimpleName(), cannon.toString());
+		model.addObject(Player.class.getSimpleName(), authRegService.autorization("", ""));
 		
 		return model;
 	}

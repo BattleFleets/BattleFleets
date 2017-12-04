@@ -2,17 +2,26 @@ package com.nctc2017.dao;
 
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
 import com.nctc2017.bean.Player;
 
 /**
  * 
  */
-public class PlayerDAO {
+@Repository
+@Qualifier("playerDao")
+public class PlayerDao {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     /**
      * Default constructor
      */
-    public PlayerDAO() {
+    public PlayerDao() {
     }
 
     /**
@@ -24,7 +33,11 @@ public class PlayerDAO {
     public void addNewPlayer(String login, String password, String email) {
         // TODO implement here
     }
-
+    
+	public void findPlayerByLogin(String login) {
+		// TODO Auto-generated method stub
+		
+	}
     /**
      * @param int playerId 
      * @return
@@ -70,8 +83,12 @@ public class PlayerDAO {
      * @return
      */
     public Player findPlayer(int playerId) {
-        // TODO implement here
-        return null;
+    	Map<String, Object> row = (Map<String, Object>) jdbcTemplate.queryForMap("SELECT * FROM OBJECTS where OBJECT_ID = ? ",
+    			new Object[] { playerId });
+        	System.out.println(row);//TODO
+            Player player = new Player();
+            player.setLogin((String)row.get("NAME"));
+            return player;
     }
 
     /**
@@ -178,5 +195,7 @@ public class PlayerDAO {
         // TODO implement here
         return null;
     }
+
+
 
 }

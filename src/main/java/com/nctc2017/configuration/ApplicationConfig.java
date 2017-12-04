@@ -13,8 +13,8 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
  
 @Configuration
 @ComponentScan(basePackages = "com.nctc2017")
-//@PropertySource(value = { "classpath:application.properties" })
-@PropertySource(value = { "classpath:application_external_db.properties" })
+@PropertySource(value = { "classpath:application.properties" })
+//@PropertySource(value = { "classpath:application_external_db.properties" })
 public class ApplicationConfig {
  
     @Autowired
