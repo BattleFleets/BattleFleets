@@ -9,6 +9,8 @@ public class Player {
      */
     protected String login;
 
+
+    protected String email;
     /**
      * 
      */
@@ -32,11 +34,13 @@ public class Player {
     /**
      * Default constructor
      */
+
     public Player() {
     }
 
-	public Player(String login, int money, int points, int level, int curCity) {
+	public Player(String login,String email, int money, int points, int level, int curCity) {
 		this.login = login;
+		this.email=email;
 		this.money = money;
 		this.points = points;
 		this.level = level;
@@ -49,6 +53,14 @@ public class Player {
 
 	public void setLogin(String login) {
 		this.login = login;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public int getMoney() {
