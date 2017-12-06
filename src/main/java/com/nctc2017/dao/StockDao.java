@@ -1,51 +1,13 @@
 package com.nctc2017.dao;
 
-import java.util.*;
+public interface StockDao {
 
-/**
- * 
- */
-public class StockDao {
+	int findStockId(int player_id);
 
-    /**
-     * Default constructor
-     */
-    public StockDao() {
-    }
+	int createStock(int playerId);
 
+	void deleteStock(int playerId);
 
-    /**
-     * @param int player_id 
-     * @return
-     */
-    public int findStockId(int player_id) {
-        // TODO implement here
-        return 0;
-    }
-
-    /**
-     * @param int playerId 
-     * @return
-     */
-    public int createStock(int playerId) {
-        // TODO implement here
-        return 0;
-    }
-
-    /**
-     * @param int playerId 
-     * @return
-     */
-    public void deleteStock(int playerId) {
-        // TODO implement here
-    }
-
-    /**
-     * @param int cargoId 
-     * @return   
-     */
-    public void addCargo(int cargoId) {
-        // TODO implement here
-    }
+	void addCargo(int cargoId);
 
 }

@@ -1,6 +1,8 @@
-package com.nctc2017.dao;
+package com.nctc2017.dao.impl;
 
 import com.nctc2017.bean.City;
+import com.nctc2017.dao.CityDao;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;

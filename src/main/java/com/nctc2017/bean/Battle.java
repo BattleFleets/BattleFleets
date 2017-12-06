@@ -1,59 +1,23 @@
 package com.nctc2017.bean;
-
-/**
- * 
- */
 public class Battle {
-    /**
-     * 
-     */
     protected int distance;
 
-    /**
-     * 
-     */
     protected int idShip1;
 
-    /**
-     * 
-     */
     protected int idShip2;
 
-    /**
-     * 
-     */
     protected int idPlayer1;
 
-    /**
-     * 
-     */
     protected int idPlayer2;
 
-    /**
-     * 
-     */
     protected boolean readyPlayer1;
 
-    /**
-     * 
-     */
     protected boolean readyPlayer2;
 
-    /**
-     * 
-     */
     protected boolean convergencePlayer1;
 
-    /**
-     * 
-     */
     protected boolean convergencePlayer2;
 
-    /**
-     * Default constructor
-     */
-    public Battle() {
-    }
 
 	public Battle(int distance, int idShip1, int idShip2, int idPlayer1, int idPlayer2) {
 		this.distance = distance;

@@ -1,59 +1,15 @@
 package com.nctc2017.dao;
 
-/**
- * 
- */
-public class HoldDao {
+public interface HoldDao {
 
-    /**
-     * Default constructor
-     */
-    public HoldDao() {
-    }
+	int findHold(int shipId);
 
+	int getOccupiedVolume(int shipId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public int findHold(int shipId) {
-        // TODO implement here
-        return 0;
-    }
+	int createHold();
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public int getOccupiedVolume(int shipId) {
-        // TODO implement here
-        return 0;
-    }
+	void deleteHold(int holdId);
 
-    /**
-     * @return
-     */
-    public int createHold() {
-        // TODO implement here
-        return 0;
-    }
-
-    /**
-     * @param int holdId 
-     * @return
-     */
-    public void deleteHold(int holdId) {
-        // TODO implement here
-    }
-
-    /**
-     * @param int cargoId 
-     * @param int holdId 
-     * @return
-     */
-    public boolean addCargo(int cargoId, int holdId) {
-        // TODO implement here
-        return false;
-    }
+	boolean addCargo(int cargoId, int holdId);
 
 }

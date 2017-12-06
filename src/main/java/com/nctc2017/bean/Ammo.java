@@ -1,24 +1,9 @@
 package com.nctc2017.bean;
-
-/**
- * 
- */
 public class Ammo extends AbstractThing {
-    /**
-     * 
-     */
     protected String name;
 
-    /**
-     * 
-     */
     protected int cost;
 
-    /**
-     * Default constructor
-     */
-    public Ammo() {
-    }
 
 	public Ammo(int quantity, int thingId, String name, int cost) {
 		super(quantity, thingId);

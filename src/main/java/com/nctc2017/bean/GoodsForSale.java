@@ -1,44 +1,17 @@
 package com.nctc2017.bean;
-
-/**
- * 
- */
 public class GoodsForSale {
-    /**
-     * 
-     */
     protected String name;
 
-    /**
-     * 
-     */
     protected int buyingPrice;
 
-    /**
-     * 
-     */
     protected int raraty;
 
-    /**
-     * 
-     */
     protected int quantity;
 
-    /**
-     * 
-     */
     protected int salePrice;
 
-    /**
-     * 
-     */
     protected int templateId;
     
-    /**
-     * Default constructor
-     */
-    public GoodsForSale() {
-    }
 
 	public GoodsForSale(String name, int buyingPrice, int raraty, int quantity, int salePrice, int templateId) {
 		this.name = name;

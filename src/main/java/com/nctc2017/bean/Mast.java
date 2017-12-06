@@ -1,28 +1,9 @@
 package com.nctc2017.bean;
-
-/**
- * 
- */
 public class Mast extends AbstractThing {
-    /**
-     * 
-     */
     protected int speed;
-
-    /**
-     * 
-     */
     protected int curSpeed;
-
-    /**
-     * 
-     */
     protected int cost;
-    /**
-     * Default constructor
-     */
-    public Mast() {
-    }
+    
 	public Mast(int quantity, int thingId, int speed, int curSpeed, int cost) {
 		super(quantity, thingId);
 		this.speed = speed;

@@ -1,49 +1,19 @@
 package com.nctc2017.bean;
-
-/**
- * 
- */
 public class Ship extends ShipTemplate {
-    /**
-     * 
-     */
     protected int shipId;
 
-    /**
-     * 
-     */
     protected String name;
 
-    /**
-     * 
-     */
     protected int curHealth;
 
-    /**
-     * 
-     */
     protected int curSailorsQuantity;
 
-    /**
-     * 
-     */
     protected int curMastsQuantity;
 
-    /**
-     * 
-     */
     protected int curCannonQuantity;
 
-    /**
-     * 
-     */
     protected int curCarryingLimit;
 
-    /**
-     * Default constructor
-     */
-    public Ship() {
-    }
 
 	public Ship(String t_name, int maxHealth, int maxSailorsQuantity, int cost, int maxMastsQuantity,
 			int maxCannonQuantity, int maxCarryingLimit, int shipId, String cur_name, int curHealth,

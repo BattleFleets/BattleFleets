@@ -1,23 +1,9 @@
 package com.nctc2017.bean;
-
-/**
- * 
- */
 public class Goods extends AbstractThing {
-    /**
-     * 
-     */
     protected String name;
 
-    /**
-     * 
-     */
     protected int purchasePrice;
-    /**
-     * Default constructor
-     */
-    public Goods() {
-    }
+    
 	public Goods(int quantity, int thingId, String name, int purchasePrice) {
 		super(quantity, thingId);
 		this.name = name;

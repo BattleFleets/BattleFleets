@@ -1,63 +1,17 @@
 package com.nctc2017.dao;
 
-import java.util.*;
+import java.util.List;
 
-/**
- * 
- */
-public class ExecutorDao {
+public interface ExecutorDao {
 
-    /**
-     * Default constructor
-     */
-    public ExecutorDao() {
-    }
+	boolean ifThingBelongToPlayer(int id, int idPerson);
 
-    /**
-     * @param int id 
-     * @param int idPerson 
-     * @return
-     */
-    public boolean ifThingBelongToPlayer(int id, int idPerson) {
-        // TODO implement here
-        return false;
-    }
+	boolean calculateDamage(List<List<Integer>> ammoCannon, int idMyShip, int idEnemyShip);
 
-    /**
-     * 
-     */
-    public boolean calculateDamage(List<List<Integer>> ammoCannon, int idMyShip, int idEnemyShip){
-        // TODO implement here	
-    	return false;
-    }
+	int boarding(int idMyShip, int idEnemyShip);
 
-    /**
-     * @param int idMyShip 
-     * @param int idEnemyShip 
-     * @return
-     */
-    public int boarding(int idMyShip, int idEnemyShip) {
-        // TODO implement here
-        return 0;
-    }
+	void moveCargoTo(int cargoId, int destinationId, int quantity);
 
-    /**
-     * @param int cargoId 
-     * @param int destinationId 
-     * @param int quantity
-     */
-    public void moveCargoTo(int cargoId, int destinationId, int quantity) {
-        // TODO implement here
-    }
-
-    /**
-     * @param int shipWinnerId 
-     * @param int shipLosserId 
-     * @return
-     */
-    public String moveCargoToWinner(int shipWinnerId, int shipLosserId) {
-        // TODO implement here
-        return "";
-    }
+	String moveCargoToWinner(int shipWinnerId, int shipLosserId);
 
 }

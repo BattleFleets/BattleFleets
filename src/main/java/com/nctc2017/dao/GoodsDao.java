@@ -1,76 +1,21 @@
 package com.nctc2017.dao;
 
-import java.util.*;
+import java.util.List;
 
 import com.nctc2017.bean.Goods;
 
-/**
- * 
- */
-public class GoodsDao {
+public interface GoodsDao {
 
-    /**
-     * Default constructor
-     */
-    public GoodsDao() {
-    }
+	int createNewGoods(int goodsTemplateId, int quantity, int price);
 
+	void increaseGoodsQuantity(int goodsId, int quantity);
 
+	boolean decreaseGoods(int goodsId, int quantity);
 
-    /**
-     * @param int goodsTemplateId 
-     * @param int quantity 
-     * @param int price 
-     * @return
-     */
-    public int createNewGoods(int goodsTemplateId, int quantity, int price) {
-        // TODO implement here
-        return 0;
-    }
+	int getGoodsRaraty(int goodsTemlateId);
 
-    /**
-     * @param int goodsId 
-     * @param int quantity 
-     */
-    public void increaseGoodsQuantity(int goodsId, int quantity) {
-        // TODO implement here
-    }
+	List<Goods> getAllGoodsFromStock(int stockId);
 
-    /**
-     * @param int goodsId 
-     * @param int quantity 
-     * @return
-     */
-    public boolean decreaseGoods(int goodsId, int quantity) {
-        // TODO implement here
-        return false;
-    }
-
-    /**
-     * @param int goodsTemlateId 
-     * @return
-     */
-    public int getGoodsRaraty(int goodsTemlateId) {
-        // TODO implement here
-        return 0;
-    }
-
-    /**
-     * @param int stockId 
-     * @return
-     */
-    public List<Goods> getAllGoodsFromStock(int stockId) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param int holdId 
-     * @return
-     */
-    public List<Goods> getAllGoodsFromHold(int holdId) {
-        // TODO implement here
-        return null;
-    }
+	List<Goods> getAllGoodsFromHold(int holdId);
 
 }

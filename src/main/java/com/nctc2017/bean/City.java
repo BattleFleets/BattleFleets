@@ -1,22 +1,7 @@
 package com.nctc2017.bean;
-
-/**
- * 
- */
 public class City {
-    /**
-     * 
-     */
     protected String cityName;
-    /**
-     * 
-     */
     protected Market market;
-    /**
-     * Default constructor
-     */
-    public City() {
-    }
 	public City(String cityName, Market market) {
 		this.cityName = cityName;
 		this.market = market;

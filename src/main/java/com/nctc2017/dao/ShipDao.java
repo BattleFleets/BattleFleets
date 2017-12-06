@@ -1,193 +1,48 @@
 package com.nctc2017.dao;
 
-import java.util.*;
+import java.util.List;
 
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
 
-/**
- * 
- */
-public class ShipDao {
+public interface ShipDao {
 
-    /**
-     * Default constructor
-     */
-    public ShipDao() {
-    }
+	Ship findShip(int shipId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public Ship findShip(int shipId) {
-        // TODO implement here
-        return null;
-    }
+	int createNewShip(int shipTemplateId);
 
-    /**
-     * @param int shipTemplateId 
-     * @return
-     */
-    public int createNewShip(int shipTemplateId) {
-        // TODO implement here
-        return 0;
-    }
+	boolean deleteShip(int shipId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public boolean deleteShip(int shipId) {
-        // TODO implement here
-        return false;
-    }
+	boolean updateShipName(int shipId, int newShipName);
 
-    /**
-     * @param int shipId 
-     * @param int newShipName 
-     * @return
-     */
-    public boolean updateShipName(int shipId, int newShipName) {
-        // TODO implement here
-        return false;
-    }
+	boolean updateShipHealth(int shipId, int newhealthNumb);
 
-    /**
-     * @param int shipId 
-     * @param int newhealthNumb 
-     * @return
-     */
-    public boolean updateShipHealth(int shipId, int newhealthNumb) {
-        // TODO implement here
-        return false;
-    }
+	boolean updateShipSailorsNumber(int shipId, int newsailorsNumb);
 
-    /**
-     * @param int shipId 
-     * @param int newsailorsNumb 
-     * @return
-     */
-    public boolean updateShipSailorsNumber(int shipId, int newsailorsNumb) {
-        // TODO implement here
-        return false;
-    }
+	String getCurrentShipName(int shipId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public String getCurrentShipName(int shipId) {
-        // TODO implement here
-        return "";
-    }
+	int getCurrentShipHealth(int shipId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public int getCurrentShipHealth(int shipId) {
-        // TODO implement here
-        return 0;
-    }
+	int getCurrentShipSailors(int shipId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public int getCurrentShipSailors(int shipId) {
-        // TODO implement here
-        return 0;
-    }
+	int getHealthLimit(int shipId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public int getHealthLimit(int shipId) {
-        // TODO implement here
-        return 0;
-    }
+	int getCarryingLimit(int shipId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public int getCarryingLimit(int shipId) {
-        // TODO implement here
-        return 0;
-    }
+	int getCannonLimit(int shipId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public int getCannonLimit(int shipId) {
-        // TODO implement here
-        return 0;
-    }
+	int getMastLimit(int shipId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public int getMastLimit(int shipId) {
-        // TODO implement here
-        return 0;
-    }
+	int getSailorLimit(int shipId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public int getSailorLimit(int shipId) {
-        // TODO implement here
-        return 0;
-    }
+	int getShipCost(int shipId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public int getShipCost(int shipId) {
-        // TODO implement here
-        return 0;
-    }
+	List<ShipTemplate> findAllShipTemplates();
 
-    /**
-     * @return
-     */
-    public List<ShipTemplate> findAllShipTemplates() {
-        // TODO implement here
-        return null;
-    }
+	List<Ship> findAllShips(List<Integer> shipsId);
 
-    /**
-     * 
-     */
-    public List<Ship> findAllShips(List<Integer> shipsId) {
-        // TODO implement here
-		return null;
-    }
+	boolean setMastOnShip(int mastId, int shipId);
 
-    /**
-     * @param int mastId 
-     * @param int shipId 
-     * @return
-     */
-    public boolean setMastOnShip(int mastId, int shipId) {
-        // TODO implement here
-        return false;
-    }
-
-    /**
-     * @param int cannonId 
-     * @param int shipId 
-     * @return
-     */
-    public boolean setCannonOnShip(int cannonId, int shipId) {
-        // TODO implement here
-        return false;
-    }
+	boolean setCannonOnShip(int cannonId, int shipId);
 
 }

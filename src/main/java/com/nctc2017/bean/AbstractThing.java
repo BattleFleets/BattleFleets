@@ -1,24 +1,8 @@
 package com.nctc2017.bean;
-
-
-/**
- * 
- */
 public abstract class AbstractThing implements Thing {
-    /**
-     * 
-     */
-    protected int quantity;
-
-    /**
-     * 
-     */
+    
+	protected int quantity;
     protected int thingId;
-    /**
-     * Default constructor
-     */
-    public AbstractThing() {
-    }
     
 	public AbstractThing(int quantity, int thingId) {
 		super();

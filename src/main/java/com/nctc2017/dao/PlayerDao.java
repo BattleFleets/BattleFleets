@@ -9,12 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.nctc2017.bean.Player;
 
-/**
- * 
- */
 public interface PlayerDao {
-
-
 
     void addNewPlayer(String login, String password, String email);
     

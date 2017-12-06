@@ -1,112 +1,29 @@
 package com.nctc2017.dao;
 
-import java.util.*;
+import java.util.List;
 
 import com.nctc2017.bean.Ammo;
 
-/**
- * 
- */
-public class AmmoDao {
+public interface AmmoDao {
 
-    /**
-     * Default constructor
-     */
-    public AmmoDao() {
-    }
+	Ammo findById(int idAmmo);
 
+	String getAmmoName(int id);
 
+	String getAmmoDamageType(int id);
 
-    /**
-     * @param int idAmmo 
-     * @return
-     */
-    public Ammo findById(int idAmmo) {
-        // TODO implement here
-        return null;
-    }
+	int getAmmoCost(int id);
 
-    /**
-     * @param int id 
-     * @return
-     */
-    public String getAmmoName(int id) {
-        // TODO implement here
-        return "";
-    }
+	int getAmmoQuantity(int id);
 
-    /**
-     * @param int id 
-     * @return
-     */
-    public String getAmmoDamageType(int id) {
-        // TODO implement here
-        return "";
-    }
+	boolean increaseAmmoQuantity(int id, int increaseNumber);
 
-    /**
-     * @param int id 
-     * @return
-     */
-    public int getAmmoCost(int id) {
-        // TODO implement here
-        return 0;
-    }
+	boolean decreaseAmmoQuantity(int id, int decreaseNumber);
 
-    /**
-     * @param int id 
-     * @return
-     */
-    public int getAmmoQuantity(int id) {
-        // TODO implement here
-        return 0;
-    }
+	int createAmmoAndGetId(int ammoTemplateId);
 
-    /**
-     * @param int id 
-     * @param int increaseNumber 
-     * @return
-     */
-    public boolean increaseAmmoQuantity(int id, int increaseNumber) {
-        // TODO implement here
-        return false;
-    }
+	List<Ammo> getAllAmmoFromStock(int idStock);
 
-    /**
-     * @param int id 
-     * @param int decreaseNumber 
-     * @return
-     */
-    public boolean decreaseAmmoQuantity(int id, int decreaseNumber) {
-        // TODO implement here
-        return false;
-    }
-
-    /**
-     * @param int ammoTemplateId 
-     * @return
-     */
-    public int createAmmoAndGetId(int ammoTemplateId) {
-        // TODO implement here
-        return 0;
-    }
-
-    /**
-     * @param int idStock 
-     * @return
-     */
-    public List<Ammo> getAllAmmoFromStock(int idStock) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param int idHold 
-     * @return
-     */
-    public List<Ammo> getAllAmmoFromHold(int idHold) {
-        // TODO implement here
-        return null;
-    }
+	List<Ammo> getAllAmmoFromHold(int idHold);
 
 }

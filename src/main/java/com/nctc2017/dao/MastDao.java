@@ -1,128 +1,33 @@
 package com.nctc2017.dao;
 
-import java.util.*;
+import java.util.List;
 
 import com.nctc2017.bean.Mast;
 
-/**
- * 
- */
-public class MastDao {
+public interface MastDao {
 
-    /**
-     * Default constructor
-     */
-    public MastDao() {
-    }
+	Mast findMast(int mastId);
 
+	int createNewMast(int mastTemplateId);
 
+	void deleteMast(int mastId);
 
-    /**
-     * @param int mastId 
-     * @return
-     */
-    public Mast findMast(int mastId) {
-        // TODO implement here
-        return null;
-    }
+	boolean updateCurMastSpeed(int mastId, int newMastSpeed);
 
-    /**
-     * @param int mastTemplateId 
-     * @return
-     */
-    public int createNewMast(int mastTemplateId) {
-        // TODO implement here
-        return 0;
-    }
+	List<Mast> getShipMastsFromShip(int shipId);
 
-    /**
-     * @param int mastId 
-     * @return
-     */
-    public void deleteMast(int mastId) {
-        // TODO implement here
-    }
+	List<Mast> getShipMastsFromStock(int stockId);
 
-    /**
-     * @param int mastId 
-     * @param int newMastSpeed 
-     * @return
-     */
-    public boolean updateCurMastSpeed(int mastId, int newMastSpeed) {
-        // TODO implement here
-        return false;
-    }
+	List<Mast> getShipMastsFromHold(int holdId);
 
-    /**
-     * @param int shipId 
-     * @return
-     */
-    public List <Mast> getShipMastsFromShip(int shipId) {
-        // TODO implement here
-        return null;
-    }
+	int getCurMastSpeed(int mastId);
 
-    /**
-     * @param int stockId 
-     * @return
-     */
-    public List <Mast> getShipMastsFromStock(int stockId) {
-        // TODO implement here
-        return null;
-    }
+	String getMastName(int mastId);
 
-    /**
-     * @param int holdId 
-     * @return
-     */
-    public List <Mast> getShipMastsFromHold(int holdId) {
-        // TODO implement here
-        return null;
-    }
+	int getSailyards(int mastId);
 
-    /**
-     * @param int mastId 
-     * @return
-     */
-    public int getCurMastSpeed(int mastId) {
-        // TODO implement here
-        return 0;
-    }
+	int getMaxSpeed(int mastId);
 
-    /**
-     * @param int mastId 
-     * @return
-     */
-    public String getMastName(int mastId) {
-        // TODO implement here
-        return "";
-    }
-
-    /**
-     * @param int mastId 
-     * @return
-     */
-    public int getSailyards(int mastId) {
-        // TODO implement here
-        return 0;
-    }
-
-    /**
-     * @param int mastId 
-     * @return
-     */
-    public int getMaxSpeed(int mastId) {
-        // TODO implement here
-        return 0;
-    }
-
-    /**
-     * @param int mastId 
-     * @return
-     */
-    public int getMastCost(int mastId) {
-        // TODO implement here
-        return 0;
-    }
+	int getMastCost(int mastId);
 
 }

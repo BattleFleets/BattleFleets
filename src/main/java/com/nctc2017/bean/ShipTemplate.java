@@ -1,47 +1,18 @@
 package com.nctc2017.bean;
-/**
- * 
- */
 public class ShipTemplate {
-    /**
-     * 
-     */
     protected String t_name;
 
-    /**
-     * 
-     */
     protected int maxHealth;
 
-    /**
-     * 
-     */
     protected int maxSailorsQuantity;
 
-    /**
-     * 
-     */
     protected int cost;
 
-    /**
-     * 
-     */
     protected int maxMastsQuantity;
 
-    /**
-     * 
-     */
     protected int maxCannonQuantity;
 
-    /**
-     * 
-     */
     protected int maxCarryingLimit;
-    /**
-     * Default constructor
-     */
-    public ShipTemplate() {
-    }
 	public ShipTemplate(String name, int maxHealth, int maxSailorsQuantity, int cost, int maxMastsQuantity,
 			int maxCannonQuantity, int maxCarryingLimit) {
 		this.t_name = name;

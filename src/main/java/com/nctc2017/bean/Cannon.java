@@ -60,6 +60,4 @@ public class Cannon {
         builder.append("]");
 		return builder.toString();
 	}
-	
-	
 }

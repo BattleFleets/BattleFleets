@@ -1,42 +1,17 @@
 package com.nctc2017.bean;
-
-/**
- * 
- */
 public class Player {
-    /**
-     * 
-     */
     protected String login;
 
 
     protected String email;
-    /**
-     * 
-     */
     protected int money;
 
-    /**
-     * 
-     */
     protected int points;
 
-    /**
-     * 
-     */
     protected int level;
 
-    /**
-     * 
-     */
     protected int curCity;
     
-    /**
-     * Default constructor
-     */
-
-    public Player() {
-    }
 
 	public Player(String login,String email, int money, int points, int level, int curCity) {
 		this.login = login;
