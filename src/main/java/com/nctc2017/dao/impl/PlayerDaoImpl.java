@@ -1,6 +1,8 @@
 package com.nctc2017.dao.impl;
 
+import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
+import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +23,7 @@ public class PlayerDaoImpl implements PlayerDao{
 
     @Override
     public void addNewPlayer(String login, String password, String email) {
-        jdbcTemplate.update("insert into OBJECTS(object_id, PARENT_ID,OBJECT_TYPE_ID,SOURCE_ID,NAME) values(obj_sq.nextval, null, 10, null, login)");
+        jdbcTemplate.update("insert into OBJECTS(object_id, PARENT_ID,OBJECT_TYPE_ID,SOURCE_ID,NAME) values(obj_sq.nextval, null, 10, null, ?)",login);
         jdbcTemplate.update("insert into ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) values(27, obj_sq.curval, ?, null)",login);
         jdbcTemplate.update("insert into ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) values(28, obj_sq.curval, ?, null)",password);
         jdbcTemplate.update("insert into ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) values(29, obj_sq.curval, ?, null)",100);
@@ -63,73 +66,87 @@ public class PlayerDaoImpl implements PlayerDao{
 
     @Override
     public Player findPlayer(int playerId) {
-        String login= jdbcTemplate.queryForObject("select value from ATTRIBUTES_VALUE where attr_id=27 and object_id=?;", new Object[]{playerId},String.class);
-        String email= jdbcTemplate.queryForObject("select value from ATTRIBUTES_VALUE where attr_id=28 and object_id=?;", new Object[]{playerId},String.class);
-        int money= jdbcTemplate.queryForObject("select value from ATTRIBUTES_VALUE where attr_id=29 and object_id=?;", new Object[]{playerId},int.class);
-        int points= jdbcTemplate.queryForObject("select value from ATTRIBUTES_VALUE where attr_id=31 and object_id=?;", new Object[]{playerId},int.class);
-        int level= jdbcTemplate.queryForObject("select value from ATTRIBUTES_VALUE where attr_id=30 and object_id=?;", new Object[]{playerId},int.class);
-        int cityID=jdbcTemplate.queryForObject("select parent_id from objects where object_id=?;", new Object[]{playerId},int.class);
+        String login= jdbcTemplate.queryForObject("select value from ATTRIBUTES_VALUE where attr_id=27 and object_id=?", new Object[]{playerId},String.class);
+        String email= jdbcTemplate.queryForObject("select value from ATTRIBUTES_VALUE where attr_id=41 and object_id=?", new Object[]{playerId},String.class);
+        int money= jdbcTemplate.queryForObject("select value from ATTRIBUTES_VALUE where attr_id=29 and object_id=?", new Object[]{playerId},int.class);
+        int points= jdbcTemplate.queryForObject("select value from ATTRIBUTES_VALUE where attr_id=31 and object_id=?", new Object[]{playerId},int.class);
+        int level= jdbcTemplate.queryForObject("select value from ATTRIBUTES_VALUE where attr_id=30 and object_id=?", new Object[]{playerId},int.class);
+        int cityID=jdbcTemplate.queryForObject("select parent_id from objects where object_id=?", new Object[]{playerId},int.class);
         Player player=new Player(login, email, money, points, level, cityID);
         return player;
     }
 
     @Override
     public List<Player> findAllPlayers() {
-        return null;
+        List<String> logins=jdbcTemplate.query("select value from ATTRIBUTES_VALUE where attr_id=27", new BeanPropertyRowMapper(String.class));
+        List<String> emails=jdbcTemplate.query("select value from ATTRIBUTES_VALUE where attr_id=41", new BeanPropertyRowMapper(String.class));
+        List<Integer> allMoney=jdbcTemplate.query("select value from ATTRIBUTES_VALUE where attr_id=29", new BeanPropertyRowMapper(int.class));
+        List<Integer> allPoints=jdbcTemplate.query("select value from ATTRIBUTES_VALUE where attr_id=31", new BeanPropertyRowMapper(int.class));
+        List<Integer> levels=jdbcTemplate.query("select value from ATTRIBUTES_VALUE where attr_id=30", new BeanPropertyRowMapper(int.class));
+        List<Integer> citiesID=jdbcTemplate.query("select parent_id from objects where object_type_id=10", new BeanPropertyRowMapper(int.class));
+        List<Player> players=new ArrayList<>();
+        for(int i=0; i<logins.size();i++)
+        {
+            players.add(new Player(logins.get(i),emails.get(i),allMoney.get(i),allPoints.get(i),levels.get(i),citiesID.get(i)));
+        }
+        return players;
     }
 
     @Override
     public int getCountPlayers() {
-        return 0;
+        return findAllPlayers().size();
     }
 
     @Override
     public String getPlayerLogin(int playerId) {
-        return null;
+        return findPlayer(playerId).getLogin();
     }
 
     @Override
     public String getPlayerPassword(int playerId) {
-        return null;
+        String password= jdbcTemplate.queryForObject("select value from ATTRIBUTES_VALUE where attr_id=28 and object_id=?", new Object[]{playerId},String.class);
+        return password;
     }
 
     @Override
     public String getPlayerEmail(int playerId) {
-        return null;
+        return findPlayer(playerId).getEmail();
     }
 
     @Override
     public int getPlayerMoney(int playerId) {
-        return 0;
+        return findPlayer(playerId).getMoney();
     }
 
     @Override
     public int getPlayerLevel(int playerId) {
-        return 0;
+        return findPlayer(playerId).getLevel();
     }
 
     @Override
     public int getPlayerPoints(int playerId) {
-        return 0;
+        return findPlayer(playerId).getPoints();
     }
 
     @Override
-    public void getPlayerCity(int playerId) {
-
+    public City getPlayerCity(int playerId) {
+        new CityDaoImpl().find(findPlayer(playerId).getCurCity());
+             return new City(new CityDaoImpl().getCityName(findPlayer(playerId).getCurCity()),null,findPlayer(playerId).getCurCity());
     }
 
     @Override
     public void addShip(int playerId, int shipId) {
+        jdbcTemplate.update("update objects set parent_id=? where ship_id=?",playerId,shipId);
 
     }
-
     @Override
     public void deleteShip(int playerId, int shipId) {
+        jdbcTemplate.update("delete from OBJECTS objects where player_id=? and ship_id=?",playerId,shipId);
 
     }
-
     @Override
     public List<Integer> findAllShip(int playerId) {
-        return null;
+        List<Integer> shipsID=jdbcTemplate.queryForList("select object_id from objects where parent_id=41 and OBJECT_TYPE_ID=6",int.class,playerId);
+        return shipsID;
     }
 }
