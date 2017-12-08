@@ -2,6 +2,7 @@ package com.nctc2017.dao;
 
 import java.util.*;
 
+import com.nctc2017.bean.City;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,7 +44,7 @@ public interface PlayerDao {
 
     int getPlayerPoints(int playerId);
 
-    void getPlayerCity(int playerId);
+    City getPlayerCity(int playerId);
 
     void addShip(int playerId, int shipId);
 
