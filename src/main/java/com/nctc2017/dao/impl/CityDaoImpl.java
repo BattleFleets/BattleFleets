@@ -19,7 +19,7 @@ public class CityDaoImpl implements CityDao {
     JdbcTemplate jdbcTemplate;
     @Override
     public City find(int cityId) {
-        City city=new City(getCityName(cityId),null,cityId);
+        City city=new City(getCityName(cityId),null);
         return city;
     }
 
