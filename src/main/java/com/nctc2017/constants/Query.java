@@ -25,7 +25,7 @@ public class Query {
 
 			+ " AND atr_obj.OBJECT_TYPE_ID = entity_obj.OBJECT_TYPE_ID"
 			+ " AND atr_val.ATTR_ID = atr_obj.ATTR_ID"
-			+ " AND atr_val.OBJECT_ID = entity_obj.OBJECT_ID;";
+			+ " AND atr_val.OBJECT_ID = entity_obj.OBJECT_ID";
 	/**
 	 * This query allows to get any Entity by OBJECT_TYPE_ID which locate in any container 
 	 * like hold, stock, ship by OBJECT_ID of this container.
@@ -52,6 +52,6 @@ public class Query {
 			
 			+ " AND atr_obj.OBJECT_TYPE_ID = entity_obj.OBJECT_TYPE_ID"
 			+ " AND atr_val.ATTR_ID = atr_obj.ATTR_ID"
-			+ " AND atr_val.OBJECT_ID = entity_obj.OBJECT_ID;";
+			+ " AND atr_val.OBJECT_ID = entity_obj.OBJECT_ID";
 
 }

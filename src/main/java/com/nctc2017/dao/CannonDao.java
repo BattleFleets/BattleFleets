@@ -1,5 +1,7 @@
 package com.nctc2017.dao;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 import com.nctc2017.bean.Cannon;
@@ -22,7 +24,7 @@ public interface CannonDao {
 
 	List<Cannon> getAllCannonFromShip(int shipId);
 
-	int createCannon(int cannonTemplateId);
+	BigDecimal createCannon(int cannonTemplateId);
 
 	void deleteCannon(int cannonId);
 

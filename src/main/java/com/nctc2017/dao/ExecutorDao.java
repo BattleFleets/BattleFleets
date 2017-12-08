@@ -1,5 +1,7 @@
 package com.nctc2017.dao;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 public interface ExecutorDao {
@@ -14,6 +16,6 @@ public interface ExecutorDao {
 
 	String moveCargoToWinner(int shipWinnerId, int shipLosserId);
 	
-	int createCannon(int templateId);
+	BigDecimal createCannon(int templateId);
 
 }

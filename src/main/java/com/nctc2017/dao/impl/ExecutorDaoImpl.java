@@ -1,5 +1,6 @@
 package com.nctc2017.dao.impl;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +51,10 @@ public class ExecutorDaoImpl implements ExecutorDao {
     }
 
 	@Override
-	public int createCannon(int templateId) {
+	public BigDecimal createCannon(int templateId) {
 		SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(createCannonFunctionName);
 		SqlParameterSource in = new MapSqlParameterSource().addValue(createCannonParameterName, templateId); 
-    	Integer newCannonId = call.executeFunction(Integer.class, in);
+    	BigDecimal newCannonId = call.executeFunction(BigDecimal.class, in);
 		return newCannonId;
 	}
 
