@@ -27,7 +27,7 @@ public class CannonDaoImplIntegrationTest {
 	@Rollback(true)
 	public void testKulevrinCreated() {
 		// Given
-		int kulevrinTemplateId = DatabaseObject.kulevrinTemplateId;
+		int kulevrinTemplateId = DatabaseObject.KULEVRIN_TEMPLATE_ID;
 		//when
 		BigDecimal id = cannonDao.createCannon(kulevrinTemplateId);
 		//then
@@ -39,7 +39,7 @@ public class CannonDaoImplIntegrationTest {
 	@Rollback(true)
 	public void testMortarCreated() {
 		// Given
-		int mortarTemplateId = DatabaseObject.mortarTemplateId;
+		int mortarTemplateId = DatabaseObject.MORTAR_TEMPLATE_ID;
 		//when
 		BigDecimal id = cannonDao.createCannon(mortarTemplateId);
 		//then
@@ -62,7 +62,7 @@ public class CannonDaoImplIntegrationTest {
 	@Rollback(true)
 	public void testBombardCreated() {
 		// Given
-		int mortarTemplateId = DatabaseObject.bombardTemplateId;
+		int mortarTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
 		//when
 		BigDecimal id = cannonDao.createCannon(mortarTemplateId);
 		//then
@@ -74,7 +74,7 @@ public class CannonDaoImplIntegrationTest {
 	@Rollback(true)
 	public void testKulevrinFind() {
 		// Given
-		int kulevrinTemplateId = DatabaseObject.kulevrinTemplateId;
+		int kulevrinTemplateId = DatabaseObject.KULEVRIN_TEMPLATE_ID;
 		//when
 		BigDecimal id = cannonDao.createCannon(kulevrinTemplateId);
 		Cannon cannon = cannonDao.findById(id.intValue());
@@ -90,7 +90,7 @@ public class CannonDaoImplIntegrationTest {
 	@Rollback(true)
 	public void testMortarFind() {
 		// Given
-		int mortarTemplateId = DatabaseObject.mortarTemplateId;
+		int mortarTemplateId = DatabaseObject.MORTAR_TEMPLATE_ID;
 		//when
 		BigDecimal id = cannonDao.createCannon(mortarTemplateId);
 		Cannon cannon = cannonDao.findById(id.intValue());
@@ -106,7 +106,7 @@ public class CannonDaoImplIntegrationTest {
 	@Rollback(true)
 	public void testBombardFind() {
 		// Given
-		int mortarTemplateId = DatabaseObject.bombardTemplateId;
+		int mortarTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
 		//when
 		BigDecimal id = cannonDao.createCannon(mortarTemplateId);
 		Cannon cannon = cannonDao.findById(id.intValue());

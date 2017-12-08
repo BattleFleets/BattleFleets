@@ -5,7 +5,7 @@ public class Query {
 	 * This query allows to get any Entity by OBJECT_TYPE_ID and OBJECT_ID.
 	 * Call execute() or query() must have 4 parameters for PreparedStatement: ObjectTypeId, ObjectId, ObjectTypeId, ObjectId 
 	 * */
-	public static final String findAnyEntity = 
+	public static final String FIND_ANY_ENTITY = 
 			"SELECT atr_temp.NAME, atr_val.VALUE"
 			+ " FROM OBJECTS entity_obj, ATTRIBUTES atr_temp, OBJECTS entity_templ, ATTRIBUTES_VALUE atr_val"
 			+ " WHERE"
@@ -31,7 +31,7 @@ public class Query {
 	 * like hold, stock, ship by OBJECT_ID of this container.
 	 * Call execute() or query() must have 4 parameters for PreparedStatement: ObjectTypeId, ObjectIdContainer, ObjectTypeId, ObjectIdContainer 
 	 * */
-	public static final String getEntitiesFromContainer = 
+	public static final String GET_ENTITIES_FROM_CONTAINER = 
 			"SELECT entity_obj.OBJECT_ID, atr_temp.NAME, atr_val.VALUE" 
 			+ "FROM OBJECTS entity_obj, ATTRIBUTES atr_temp, OBJECTS entity_templ, ATTRIBUTES_VALUE atr_val"
 			+ " WHERE"

@@ -27,14 +27,14 @@ import com.nctc2017.dao.ExecutorDao;
 public class CannonDaoImpl implements CannonDao{
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-	private final int objectType = DatabaseObject.cannonObjTypeId;
+	private final int objectType = DatabaseObject.CANNON_OBJTYPE_ID;
 	@Autowired
 	@Qualifier("executorDao")
 	private ExecutorDao executor;
 	
 	@Override
 	public Cannon findById(int cannonId) {
-		Cannon pickedUpCannon = jdbcTemplate.query(Query.findAnyEntity,
+		Cannon pickedUpCannon = jdbcTemplate.query(Query.FIND_ANY_ENTITY,
 				new Object[] { objectType, cannonId, objectType, cannonId }, new CannonExtractor(cannonId));
 		return pickedUpCannon;
 	}
@@ -63,7 +63,7 @@ public class CannonDaoImpl implements CannonDao{
         return 0;
     }
 	private List<Cannon> getAllCannonsFromAnywhere(int containerId){
-		List<Cannon> pickedUpCannons = jdbcTemplate.query(Query.getEntitiesFromContainer,
+		List<Cannon> pickedUpCannons = jdbcTemplate.query(Query.GET_ENTITIES_FROM_CONTAINER,
 				new Object[] { objectType, containerId, objectType, containerId }, new CannonListExtractor());
 		return pickedUpCannons;
 	}
