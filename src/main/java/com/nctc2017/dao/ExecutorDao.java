@@ -13,5 +13,7 @@ public interface ExecutorDao {
 	void moveCargoTo(int cargoId, int destinationId, int quantity);
 
 	String moveCargoToWinner(int shipWinnerId, int shipLosserId);
+	
+	int createCannon(int templateId);
 
 }

@@ -2,9 +2,24 @@ package com.nctc2017.dao.impl;
 
 import java.util.*;
 
-import com.nctc2017.dao.ExecutorDao;
-public class ExecutorDaoImpl implements ExecutorDao {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.stereotype.Repository;
 
+import com.nctc2017.dao.ExecutorDao;
+@Repository
+@Qualifier("executorDao")
+public class ExecutorDaoImpl implements ExecutorDao {
+	public static final String createCannonFunctionName = "CREATE_CANNON";
+	public static final String createCannonParameterName = "ObjectIdTemplate";
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	
     @Override
 	public boolean ifThingBelongToPlayer(int id, int idPerson) {
         // TODO implement here
@@ -33,5 +48,13 @@ public class ExecutorDaoImpl implements ExecutorDao {
         // TODO implement here
         return "";
     }
+
+	@Override
+	public int createCannon(int templateId) {
+		SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(createCannonFunctionName);
+		SqlParameterSource in = new MapSqlParameterSource().addValue(createCannonParameterName, templateId); 
+    	Integer newCannonId = call.executeFunction(Integer.class, in);
+		return newCannonId;
+	}
 
 }
