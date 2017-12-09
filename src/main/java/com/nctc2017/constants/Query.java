@@ -53,5 +53,13 @@ public class Query {
 			+ " AND atr_obj.OBJECT_TYPE_ID = entity_obj.OBJECT_TYPE_ID"
 			+ " AND atr_val.ATTR_ID = atr_obj.ATTR_ID"
 			+ " AND atr_val.OBJECT_ID = entity_obj.OBJECT_ID";
+	/**
+	 * This query allows to delete any Entity by OBJECT_ID.
+	 * Call update() must have 1 parameters for PreparedStatement: OBJECT_ID
+	 * */
+	public static final String DELETE_ANY_OBJECT =
+			"DELETE FROM objects entity_obj"
+					+ "WHERE entity_obj.object_id = ?";
 
 }
+
