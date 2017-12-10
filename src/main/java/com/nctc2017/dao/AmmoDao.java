@@ -6,24 +6,24 @@ import com.nctc2017.bean.Ammo;
 
 public interface AmmoDao {
 
-	Ammo findById(int idAmmo);
+    Ammo findById(int idAmmo);
 
-	String getAmmoName(int id);
+    String getAmmoName(int id);
 
-	String getAmmoDamageType(int id);
+    String getAmmoDamageType(int id);
 
-	int getAmmoCost(int id);
+    int getAmmoCost(int id);
 
-	int getAmmoQuantity(int id);
+    int getAmmoQuantity(int id);
 
-	boolean increaseAmmoQuantity(int id, int increaseNumber);
+    boolean increaseAmmoQuantity(int id, int increaseNumber);
 
-	boolean decreaseAmmoQuantity(int id, int decreaseNumber);
+    boolean decreaseAmmoQuantity(int id, int decreaseNumber);
 
-	int createAmmoAndGetId(int ammoTemplateId);
+    int createAmmoAndGetId(int ammoTemplateId);
 
-	List<Ammo> getAllAmmoFromStock(int idStock);
+    List<Ammo> getAllAmmoFromStock(int idStock);
 
-	List<Ammo> getAllAmmoFromHold(int idHold);
+    List<Ammo> getAllAmmoFromHold(int idHold);
 
 }

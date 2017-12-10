@@ -14,21 +14,23 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.impl.CannonDaoImpl;
- 
+
 @Configuration
 @ComponentScan(basePackages = "com.nctc2017")
 @PropertySource(value = { "classpath:application_external_db.properties" })
+@EnableTransactionManagement
 public class ApplicationConfig {
- 
+
     @Autowired
     private Environment env;
- 
+
     @Bean
     public DataSource dataSource() {
-    	Locale.setDefault(Locale.ENGLISH);
+        Locale.setDefault(Locale.ENGLISH);
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(env.getRequiredProperty("jdbc.driverClassName"));
         dataSource.setUrl(env.getRequiredProperty("jdbc.url"));
@@ -36,20 +38,18 @@ public class ApplicationConfig {
         dataSource.setPassword(env.getRequiredProperty("jdbc.password"));
         return dataSource;
     }
- 
+
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.setResultsMapCaseInsensitive(true);
         return jdbcTemplate;
     }
-	@Bean
-	public PlatformTransactionManager transactionManager(DataSource dataSource) {
-		final PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
-		return transactionManager;
-	}
+
     @Bean
-    public CannonDao cannonDao(){
-    	return new CannonDaoImpl();
+    public PlatformTransactionManager transactionManager(DataSource dataSource) {
+        final PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
+        return transactionManager;
     }
+
 }

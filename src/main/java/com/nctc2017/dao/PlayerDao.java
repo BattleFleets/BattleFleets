@@ -12,7 +12,7 @@ import com.nctc2017.bean.Player;
 public interface PlayerDao {
 
     void addNewPlayer(String login, String password, String email);
-    
+
     void findPlayerByLogin(String login);
 
     void updateLogin(int playerId, String login);
@@ -50,7 +50,5 @@ public interface PlayerDao {
     void deleteShip(int playerId, int shipId);
 
     List<Integer> findAllShip(int playerId);
-
-
 
 }
