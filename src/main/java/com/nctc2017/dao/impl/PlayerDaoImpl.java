@@ -4,7 +4,6 @@ import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
 import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
-import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
 
 import org.springframework.beans.factory.annotation.Autowired;
