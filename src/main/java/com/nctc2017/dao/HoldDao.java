@@ -1,15 +1,19 @@
 package com.nctc2017.dao;
 
+import java.math.BigInteger;
+
 public interface HoldDao {
 
-    int findHold(int shipId);
+    BigInteger findHold(BigInteger shipId);
 
-    int getOccupiedVolume(int shipId);
+    BigInteger getOccupiedVolume(BigInteger shipId);
 
-    int createHold();
+    BigInteger createHold();
 
-    void deleteHold(int holdId);
+    void deleteHold(BigInteger holdId);
 
-    boolean addCargo(int cargoId, int holdId);
+    boolean addCargo(BigInteger cargoId, BigInteger holdId);
+
+    BigInteger createHold(BigInteger shipId);
 
 }
