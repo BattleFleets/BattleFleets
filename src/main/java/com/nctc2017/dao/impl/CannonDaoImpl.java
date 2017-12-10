@@ -99,11 +99,13 @@ public class CannonDaoImpl implements CannonDao {
     }
     @Override
     public BigInteger createCannon(int cannonTemplateId, BigInteger containerOwnerId) {
-        BigDecimal id = jdbcTemplate.queryForObject(Query.CHECK_OBJECT, 
+        try{
+        jdbcTemplate.queryForObject(Query.CHECK_OBJECT, 
                 new Object[] {cannonTemplateId, DatabaseObject.CANNON_TEMPLATE_TYPE_ID},  
                 BigDecimal.class);
-        if (id == null) throwRuntimeException(new IllegalArgumentException("Wrong cannon template id = " + cannonTemplateId));
-            
+        } catch (DataAccessException e) {
+            throwRuntimeException(new IllegalArgumentException("Wrong cannon template id = " + cannonTemplateId));
+        }
         int rowsAffected = jdbcTemplate.update(Query.CREATE_NEW_ENTITY, 
                 new Object[] {containerOwnerId ==null ? null : containerOwnerId.longValueExact(),
                         DatabaseObject.CANNON_OBJTYPE_ID, 
