@@ -17,7 +17,7 @@ public class AuthRegService {
 
     public String autorization(String login, String password) {
     	//playerDao.findPlayerByLogin(login);
-        return playerDao.findPlayer(43).getLogin();
+        return playerDao.findPlayerById(43).getLogin();
     }
 
     public void exit(String login) {

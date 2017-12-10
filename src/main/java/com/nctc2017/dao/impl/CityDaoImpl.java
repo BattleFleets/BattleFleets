@@ -10,29 +10,25 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
 @Repository
 @Qualifier("cityDao")
 public class CityDaoImpl implements CityDao {
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
     @Override
     public City find(int cityId) {
-        City city=new City(getCityName(cityId),null);
-        return city;
+        List<String> cityName = jdbcTemplate.queryForList("SELECT city.NAME FROM OBJECTS city, OBJTYPE city_type WHERE city_type.NAME=? and city_type.OBJECT_TYPE_ID=city.OBJECT_TYPE_ID and city.OBJECT_ID=?", new Object[]{"CITY",cityId}, String.class);
+        if(cityName.size()!=0) {
+            City city = new City(cityName.get(0), null);
+            return city;
+        }
+        else return new City(null, null);
     }
 
     @Override
     public List<City> findAll() {
-        List<City> cities=jdbcTemplate.query("select city.name from objects city, objtype city_type where city_type.name='CITY' and city_type.object_type_id=city.object_type_id", new BeanPropertyRowMapper(City.class));
+        List<City> cities=jdbcTemplate.query("SELECT city.NAME FROM OBJECTS city, OBJTYPE city_type WHERE city_type.NAME='CITY' AND city_type.OBJECT_TYPE_ID=city.OBJECT_TYPE_ID", new BeanPropertyRowMapper(City.class));
       return cities;
-    }
-
-    @Override
-    public String getCityName(int cityId) {
-        Map<String, Object> map =jdbcTemplate.queryForMap("select city.name city_name from objects city, objtype city_type where city_type.name='CITY' and city_type.object_type_id=city.object_type_id and city.object_id=?",new Object[]{cityId}, new BeanPropertyRowMapper(City.class));
-        String city_name = (String) map.get("city_name");
-         return city_name;
     }
 }

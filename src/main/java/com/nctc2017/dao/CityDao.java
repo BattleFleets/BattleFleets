@@ -10,6 +10,4 @@ public interface CityDao {
 
     List<City> findAll();
 
-    String getCityName(int cityId);
-
 }
