@@ -49,30 +49,38 @@ public class PlayerDaoImpl implements PlayerDao{
 
     @Override
     public void updateLogin(int playerId,String login) {
-        jdbcTemplate.update("UPDATE OBJECTS SET NAME =? WHERE OBJECT_ID=?",login,playerId);
-        jdbcTemplate.update("UPDATE ATTRIBUTES_VALUE SET VALUE =? WHERE OBJECT_ID=? AND ATTR_ID=?",login,playerId,DatabaseAttribute.LOGIN_ATR_ID);
-
+        if(findPlayerById(playerId)!=null) {
+            jdbcTemplate.update("UPDATE OBJECTS SET NAME =? WHERE OBJECT_ID=?", login, playerId);
+            jdbcTemplate.update("UPDATE ATTRIBUTES_VALUE SET VALUE =? WHERE OBJECT_ID=? AND ATTR_ID=?", login, playerId, DatabaseAttribute.LOGIN_ATR_ID);
+        }
     }
 
     @Override
     public void updateLevel(int playerId,int level) {
-        jdbcTemplate.update("UPDATE ATTRIBUTES_VALUE SET VALUE =? WHERE OBJECT_ID=? AND ATTR_ID=?",level,playerId,DatabaseAttribute.LEVEL_ATR_ID);
+        if(findPlayerById(playerId)!=null) {
+            jdbcTemplate.update("UPDATE ATTRIBUTES_VALUE SET VALUE =? WHERE OBJECT_ID=? AND ATTR_ID=?", level, playerId, DatabaseAttribute.LEVEL_ATR_ID);
+        }
     }
 
     @Override
     public void updatePassword(int playerId, String password) {
-        jdbcTemplate.update("UPDATE ATTRIBUTES_VALUE SET VALUE =? WHERE OBJECT_ID=? AND ATTR_ID=?",password,playerId,DatabaseAttribute.PASSWORD_ATR_ID);
+        if(findPlayerById(playerId)!=null) {
+            jdbcTemplate.update("UPDATE ATTRIBUTES_VALUE SET VALUE =? WHERE OBJECT_ID=? AND ATTR_ID=?", password, playerId, DatabaseAttribute.PASSWORD_ATR_ID);
+        }
     }
 
     @Override
     public void updateEmail(int playerId,String email) {
-        jdbcTemplate.update("UPDATE ATTRIBUTES_VALUE SET VALUE =? WHERE OBJECT_ID=? AND ATTR_ID=?",email,playerId,DatabaseAttribute.EMAIL_ATR_ID);
-
+        if(findPlayerById(playerId)!=null) {
+            jdbcTemplate.update("UPDATE ATTRIBUTES_VALUE SET VALUE =? WHERE OBJECT_ID=? AND ATTR_ID=?", email, playerId, DatabaseAttribute.EMAIL_ATR_ID);
+        }
     }
 
     @Override
     public void updatePoints(int playerId, int points) {
-        jdbcTemplate.update("UPDATE ATTRIBUTES_VALUE SET VALUE =? WHERE OBJECT_ID=? AND ATTR_ID=?",points,playerId,DatabaseAttribute.POINTS_ATR_ID);
+        if(findPlayerById(playerId)!=null) {
+            jdbcTemplate.update("UPDATE ATTRIBUTES_VALUE SET VALUE =? WHERE OBJECT_ID=? AND ATTR_ID=?", points, playerId, DatabaseAttribute.POINTS_ATR_ID);
+        }
     }
 
     @Override

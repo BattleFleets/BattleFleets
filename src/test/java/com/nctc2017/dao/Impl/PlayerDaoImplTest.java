@@ -55,6 +55,7 @@ public class PlayerDaoImplTest {
     @Test
     @Rollback(true)
     public void testUpdateLogin() throws Exception{
+        playerDao.updateLogin(71,"Sasha322");
         playerDao.updateLogin(41,"Sasha322");
         String login=playerDao.findPlayerByLogin("Sasha322").getLogin();
         assertEquals("Sasha322",login);
@@ -62,6 +63,7 @@ public class PlayerDaoImplTest {
     @Test
     @Rollback(true)
     public void testUpdateLevel() throws Exception{
+        playerDao.updateLevel(71,80);
         playerDao.updateLevel(41,80);
         int level=playerDao.findPlayerByLogin("Sasha228").getLevel();
         assertEquals(80,level);
@@ -70,12 +72,14 @@ public class PlayerDaoImplTest {
     @Rollback(true)
     public void testUpdateEmail() throws Exception{
         playerDao.updateEmail(41,"Sasha322@gmail.com");
+        playerDao.updateEmail(41,"Sasha322@gmail.com");
         String email=playerDao.findPlayerByLogin("Sasha228").getEmail();
         assertEquals("Sasha322@gmail.com",email);
     }
     @Test
     @Rollback(true)
     public void testUpdatePoints() throws Exception{
+        playerDao.updatePoints(71,100);
         playerDao.updatePoints(41,100);
         int points=playerDao.findPlayerByLogin("Sasha228").getPoints();
         assertEquals(100,points);
