@@ -16,8 +16,6 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.nctc2017.dao.CannonDao;
-import com.nctc2017.dao.impl.CannonDaoImpl;
 
 @Configuration
 @ComponentScan(basePackages = "com.nctc2017")
