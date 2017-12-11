@@ -1,10 +1,13 @@
 package com.nctc2017.bean;
+
+import java.math.BigInteger;
+
 public class Mast extends AbstractThing {
     protected int speed;
     protected int curSpeed;
     protected int cost;
     
-	public Mast(int quantity, int thingId, int speed, int curSpeed, int cost) {
+	public Mast(int quantity, BigInteger thingId, int speed, int curSpeed, int cost) {
 		super(quantity, thingId);
 		this.speed = speed;
 		this.curSpeed = curSpeed;
