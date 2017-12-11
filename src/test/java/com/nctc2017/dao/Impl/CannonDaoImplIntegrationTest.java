@@ -2,7 +2,7 @@ package com.nctc2017.dao.Impl;
 
 import static org.junit.Assert.*;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,104 +17,133 @@ import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.CannonDao;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ApplicationConfig.class})
+@ContextConfiguration(classes = { ApplicationConfig.class })
+@Transactional
 public class CannonDaoImplIntegrationTest {
-	@Autowired
-	CannonDao cannonDao;
+    @Autowired
+    CannonDao cannonDao;
 
-	@Test
-	@Transactional
-	@Rollback(true)
-	public void testKulevrinCreated() {
-		// Given
-		int kulevrinTemplateId = DatabaseObject.KULEVRIN_TEMPLATE_ID;
-		//when
-		BigDecimal id = cannonDao.createCannon(kulevrinTemplateId);
-		//then
-		assertNotNull(id);
-		assertTrue(id.intValue()>0);
-	}
-	@Test
-	@Transactional
-	@Rollback(true)
-	public void testMortarCreated() {
-		// Given
-		int mortarTemplateId = DatabaseObject.MORTAR_TEMPLATE_ID;
-		//when
-		BigDecimal id = cannonDao.createCannon(mortarTemplateId);
-		//then
-		assertNotNull(id);
-		assertTrue(id.intValue()>0);
-	}
-	@Test
-	@Transactional
-	@Rollback(true)
-	public void testCannonCreatedFail() {
-		// Given
-		int mortarTemplateId = 1;
-		//when
-		BigDecimal id = cannonDao.createCannon(mortarTemplateId);
-		//then
-		assertNull(id);
-	}
-	@Test
-	@Transactional
-	@Rollback(true)
-	public void testBombardCreated() {
-		// Given
-		int mortarTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
-		//when
-		BigDecimal id = cannonDao.createCannon(mortarTemplateId);
-		//then
-		assertNotNull(id);
-		assertTrue(id.intValue()>0);
-	}
-	@Test
-	@Transactional
-	@Rollback(true)
-	public void testKulevrinFind() {
-		// Given
-		int kulevrinTemplateId = DatabaseObject.KULEVRIN_TEMPLATE_ID;
-		//when
-		BigDecimal id = cannonDao.createCannon(kulevrinTemplateId);
-		Cannon cannon = cannonDao.findById(id.intValue());
-		//then
-		assertEquals(id.intValue(), cannon.getId());
-		assertTrue(cannon.getCost()>0);
-		assertTrue(cannon.getDamage()>0);
-		assertTrue(cannon.getDistance()>0);
-		assertEquals("Kulevrin", cannon.getName());
-	}
-	@Test
-	@Transactional
-	@Rollback(true)
-	public void testMortarFind() {
-		// Given
-		int mortarTemplateId = DatabaseObject.MORTAR_TEMPLATE_ID;
-		//when
-		BigDecimal id = cannonDao.createCannon(mortarTemplateId);
-		Cannon cannon = cannonDao.findById(id.intValue());
-		//then
-		assertEquals(id.intValue(), cannon.getId());
-		assertTrue(cannon.getCost()>0);
-		assertTrue(cannon.getDamage()>0);
-		assertTrue(cannon.getDistance()>0);
-		assertEquals("Mortar", cannon.getName());
-	}
-	@Test
-	@Transactional
-	@Rollback(true)
-	public void testBombardFind() {
-		// Given
-		int mortarTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
-		//when
-		BigDecimal id = cannonDao.createCannon(mortarTemplateId);
-		Cannon cannon = cannonDao.findById(id.intValue());
-		//then
-		assertEquals(id.intValue(), cannon.getId());
-		assertTrue(cannon.getCost()>0);
-		assertTrue(cannon.getDamage()>0);
-		assertTrue(cannon.getDistance()>0);
-		assertEquals("Bombard", cannon.getName());
-	}
+    @Test
+    @Rollback(true)
+    public void testKulevrinCreated() {
+        // Given
+        int kulevrinTemplateId = DatabaseObject.KULEVRIN_TEMPLATE_ID;
+        // when
+        BigInteger id = cannonDao.createCannon(kulevrinTemplateId);
+        // then
+        assertNotNull(id);
+        assertTrue(id.intValue() > 0);
+    }
+
+    @Test
+    @Rollback(true)
+    public void testMortarCreated() {
+        // Given
+        int mortarTemplateId = DatabaseObject.MORTAR_TEMPLATE_ID;
+        // when
+        BigInteger id = cannonDao.createCannon(mortarTemplateId);
+        // then
+        assertNotNull(id);
+        assertTrue(id.intValue() > 0);
+    }
+
+    @Rollback(true)
+    @Test(expected = IllegalArgumentException.class)
+    public void testCannonCreatedFail() {
+        // Given
+        int wrongTemplateId = 1;
+        // when
+        cannonDao.createCannon(wrongTemplateId);
+    }
+
+    @Test
+    @Rollback(true)
+    public void testBombardCreated() {
+        // Given
+        int bombardTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
+        // when
+        BigInteger id = cannonDao.createCannon(bombardTemplateId);
+        // then
+        assertNotNull(id);
+        assertTrue(id.intValue() > 0);
+    }
+
+    @Test
+    @Rollback(true)
+    public void testKulevrinFind() {
+        // Given
+        int kulevrinTemplateId = DatabaseObject.KULEVRIN_TEMPLATE_ID;
+        // when
+        BigInteger id = cannonDao.createCannon(kulevrinTemplateId);
+        Cannon cannon = cannonDao.findById(id);
+        // then
+        assertEquals(id, cannon.getId());
+        assertTrue(cannon.getCost() > 0);
+        assertTrue(cannon.getDamage() > 0);
+        assertTrue(cannon.getDistance() > 0);
+        assertEquals("Kulevrin", cannon.getName());
+    }
+
+    @Test
+    @Rollback(true)
+    public void testMortarFind() {
+        // Given
+        int mortarTemplateId = DatabaseObject.MORTAR_TEMPLATE_ID;
+        // when
+        BigInteger id = cannonDao.createCannon(mortarTemplateId);
+        Cannon cannon = cannonDao.findById(id);
+        // then
+        assertEquals(id, cannon.getId());
+        assertTrue(cannon.getCost() > 0);
+        assertTrue(cannon.getDamage() > 0);
+        assertTrue(cannon.getDistance() > 0);
+        assertEquals("Mortar", cannon.getName());
+    }
+
+    @Test
+    @Rollback(true)
+    public void testBombardFind() {
+        // Given
+        int bombardTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
+        // when
+        BigInteger id = cannonDao.createCannon(bombardTemplateId);
+        Cannon cannon = cannonDao.findById(id);
+        // then
+        assertEquals(id, cannon.getId());
+        assertTrue(cannon.getCost() > 0);
+        assertTrue(cannon.getDamage() > 0);
+        assertTrue(cannon.getDistance() > 0);
+        assertEquals("Bombard", cannon.getName());
+    }
+
+    @Test
+    @Rollback(true)
+    public void testCannonDelete() {
+        // Given
+        int bombardTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
+        // when
+        BigInteger id = cannonDao.createCannon(bombardTemplateId);
+        cannonDao.deleteCannon(id);
+        // then ok
+    }
+
+    @Test
+    @Rollback(true)
+    public void testCannonDeleteFail() {
+        // Given
+        BigInteger id = new BigInteger("1");
+        // when
+        cannonDao.deleteCannon(id);
+        // then ok
+    }
+
+    @Rollback(true)
+    @Test(expected = IllegalArgumentException.class)
+    public void testCannonFindFail() {
+        // Given
+        BigInteger wrongCannonId = new BigInteger("1");
+        // when
+        cannonDao.findById(wrongCannonId);
+        // then
+    }
 }

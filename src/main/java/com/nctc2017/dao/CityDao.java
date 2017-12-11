@@ -6,10 +6,10 @@ import com.nctc2017.bean.City;
 
 public interface CityDao {
 
-     City find(int cityId);
+    City find(int cityId);
 
-     List<City> findAll();
+    List<City> findAll();
 
-     String getCityName(int cityId);
+    String getCityName(int cityId);
 
 }

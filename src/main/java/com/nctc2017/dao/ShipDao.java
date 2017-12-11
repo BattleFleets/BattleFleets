@@ -7,42 +7,42 @@ import com.nctc2017.bean.ShipTemplate;
 
 public interface ShipDao {
 
-	Ship findShip(int shipId);
+    Ship findShip(int shipId);
 
-	int createNewShip(int shipTemplateId);
+    int createNewShip(int shipTemplateId);
 
-	boolean deleteShip(int shipId);
+    boolean deleteShip(int shipId);
 
-	boolean updateShipName(int shipId, int newShipName);
+    boolean updateShipName(int shipId, int newShipName);
 
-	boolean updateShipHealth(int shipId, int newhealthNumb);
+    boolean updateShipHealth(int shipId, int newhealthNumb);
 
-	boolean updateShipSailorsNumber(int shipId, int newsailorsNumb);
+    boolean updateShipSailorsNumber(int shipId, int newsailorsNumb);
 
-	String getCurrentShipName(int shipId);
+    String getCurrentShipName(int shipId);
 
-	int getCurrentShipHealth(int shipId);
+    int getCurrentShipHealth(int shipId);
 
-	int getCurrentShipSailors(int shipId);
+    int getCurrentShipSailors(int shipId);
 
-	int getHealthLimit(int shipId);
+    int getHealthLimit(int shipId);
 
-	int getCarryingLimit(int shipId);
+    int getCarryingLimit(int shipId);
 
-	int getCannonLimit(int shipId);
+    int getCannonLimit(int shipId);
 
-	int getMastLimit(int shipId);
+    int getMastLimit(int shipId);
 
-	int getSailorLimit(int shipId);
+    int getSailorLimit(int shipId);
 
-	int getShipCost(int shipId);
+    int getShipCost(int shipId);
 
-	List<ShipTemplate> findAllShipTemplates();
+    List<ShipTemplate> findAllShipTemplates();
 
-	List<Ship> findAllShips(List<Integer> shipsId);
+    List<Ship> findAllShips(List<Integer> shipsId);
 
-	boolean setMastOnShip(int mastId, int shipId);
+    boolean setMastOnShip(int mastId, int shipId);
 
-	boolean setCannonOnShip(int cannonId, int shipId);
+    boolean setCannonOnShip(int cannonId, int shipId);
 
 }
