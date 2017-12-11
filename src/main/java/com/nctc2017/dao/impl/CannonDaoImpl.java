@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
@@ -30,7 +29,7 @@ import com.nctc2017.dao.ExecutorDao;
 @Qualifier("cannonDao")
 public class CannonDaoImpl implements CannonDao {
     
-    private static Logger log = Logger.getLogger(CannonDaoImpl.class.getName());
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
@@ -120,11 +119,10 @@ public class CannonDaoImpl implements CannonDao {
     public void deleteCannon(BigInteger cannonId) {
         int rowsAffected = jdbcTemplate.update(Query.DELETE_ENTITY, 
                 new Object[] {cannonId.longValueExact(), DatabaseObject.CANNON_OBJTYPE_ID});
-        if (rowsAffected == 0) log.log(Level.WARN,"Nothing to delete from database");
+
     }
     
     private void throwRuntimeException(RuntimeException ex) {
-        log.log(Level.ERROR, "DAOException: ", ex);
         throw ex;
     }
 

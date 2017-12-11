@@ -1,14 +1,21 @@
 package com.nctc2017.bean;
 public class Mast extends AbstractThing {
-	protected int speed;
+
+	public static final String MAST_NAME = "MastName";
+	public static final String MAX_SPEED = "Speed";
+	public static final String Cur_MAST_SPEED = "CurMastSpeed";
+	public static final String MAST_COST = "MastCost";
+	public static final int QUANTITY = 1;
+
+	protected int maxSpeed;
 	protected int curSpeed;
 	protected int cost;
 	protected String templateName;
 
-	public Mast(int quantity, int thingId,String templateName, int speed, int curSpeed, int cost) {
+	public Mast(int quantity, int thingId, String templateName, int maxSpeed, int curSpeed, int cost) {
 		super(quantity, thingId);
 		this.templateName = templateName;
-		this.speed = speed;
+		this.maxSpeed = maxSpeed;
 		this.curSpeed = curSpeed;
 		this.cost = cost;
 	}
@@ -17,12 +24,12 @@ public class Mast extends AbstractThing {
 		return templateName;
 	}
 
-	public int getSpeed() {
-		return speed;
+	public int getMaxSpeed() {
+		return maxSpeed;
 	}
 
-	public void setSpeed(int speed) {
-		this.speed = speed;
+	public void setMaxSpeed(int maxSpeed) {
+		this.maxSpeed = maxSpeed;
 	}
 
 	public int getCurSpeed() {

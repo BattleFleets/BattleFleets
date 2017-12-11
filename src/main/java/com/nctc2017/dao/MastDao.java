@@ -1,5 +1,6 @@
 package com.nctc2017.dao;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import com.nctc2017.bean.Mast;
@@ -8,7 +9,7 @@ public interface MastDao {
 
     Mast findMast(int mastId);
 
-    int createNewMast(int mastTemplateId);
+    int createNewMast(int mastTemplateId, int containerOwnerID);
 
     void deleteMast(int mastId);
 
