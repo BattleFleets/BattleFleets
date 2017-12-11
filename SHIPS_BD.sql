@@ -537,7 +537,7 @@ CREATE OR REPLACE  FUNCTION CREATE_CANNON(objectIdTemplate NUMBER) RETURN NUMBER
     WHEN NO_DATA_FOUND THEN
     RETURN null;
   END;
-
+/
 CREATE OR REPLACE FUNCTION CREATE_PLAYER(login VARCHAR, password VARCHAR, email VARCHAR) RETURN VARCHAR
 is
   CURSOR players_logins IS SELECT VALUE FROM ATTRIBUTES_VALUE WHERE ATTR_ID=27;
@@ -550,34 +550,26 @@ is
   lvl_attr_id NUMBER:=30;
   points_attr_id NUMBER:=31;
   email_attr_id NUMBER:=41;
-  test NUMBER:=0;
   BEGIN
     FOR players_login IN players_logins LOOP
       IF players_login.value=login THEN
-        test:=1;
         RETURN 'Login exists, enter another login';
       END IF;
     end LOOP;
-    IF test=0 THEN
-      FOR players_email IN players_emails LOOP
-        IF players_email.value=email THEN
-          test:=1;
-          RETURN 'Email exists, enter another email';
-        END IF;
-      END LOOP;
-    END IF;
-    IF test=0 THEN
-      INSERT INTO OBJECTS(OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME) VALUES(obj_sq.nextval,(SELECT OBJECT_ID FROM(SELECT OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=16 ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM=1),player_object_type_id,null,login);
-      INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (login_attr_id,obj_sq.currval,login,null);
-      INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (password_attr_id,obj_sq.currval,password,null);
-      INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (money_attr_id,obj_sq.currval,start_money,null);
-      INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (lvl_attr_id,obj_sq.currval,1,null);
-      INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (points_attr_id,obj_sq.currval,1,null);
-      INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (email_attr_id,obj_sq.currval,email,null);
-      RETURN 'Registration is successfull';
-    END IF;
+    FOR players_email IN players_emails LOOP
+      IF players_email.value=email THEN
+        RETURN 'Email exists, enter another email';
+      END IF;
+    END LOOP;
+    INSERT INTO OBJECTS(OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME) VALUES(obj_sq.nextval,(SELECT OBJECT_ID FROM(SELECT OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=16 ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM=1),player_object_type_id,null,login);
+    INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (login_attr_id,obj_sq.currval,login,null);
+    INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (password_attr_id,obj_sq.currval,password,null);
+    INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (money_attr_id,obj_sq.currval,start_money,null);
+    INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (lvl_attr_id,obj_sq.currval,1,null);
+    INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (points_attr_id,obj_sq.currval,1,null);
+    INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (email_attr_id,obj_sq.currval,email,null);
+    RETURN 'Registration is successfull';
   END;
-
 
 
 
