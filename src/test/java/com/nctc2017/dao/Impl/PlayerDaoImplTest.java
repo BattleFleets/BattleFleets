@@ -90,7 +90,7 @@ public class PlayerDaoImplTest {
         Player player=playerDao.findPlayerById(71);
         assertNull(player);
         Player topPlayer1=playerDao.findPlayerById(41);
-        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,101,69);
+        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,100,69);
         assertEquals(topPlayer1.getLogin(),topPlayer2.getLogin());
         assertEquals(topPlayer1.getEmail(),topPlayer2.getEmail());
         assertEquals(topPlayer1.getLevel(),topPlayer2.getLevel());
@@ -103,7 +103,7 @@ public class PlayerDaoImplTest {
     public void testFindAllPlayer() throws Exception{
         List<Player> players=playerDao.findAllPlayers();
         Player topPlayer1=players.get(0);
-        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,101,69);
+        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,100,69);
         assertEquals(topPlayer1.getLogin(),topPlayer2.getLogin());
         assertEquals(topPlayer1.getEmail(),topPlayer2.getEmail());
         assertEquals(topPlayer1.getLevel(),topPlayer2.getLevel());
@@ -117,7 +117,7 @@ public class PlayerDaoImplTest {
         String login=playerDao.getPlayerLogin(71);
         assertNull(login);
         String login1=playerDao.getPlayerLogin(41);
-        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,101,69);
+        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,100,69);
         assertEquals(login1,topPlayer2.getLogin());
     }
     @Test
@@ -134,7 +134,7 @@ public class PlayerDaoImplTest {
         String email=playerDao.getPlayerEmail(71);
         assertNull(email);
         String email1=playerDao.getPlayerEmail(41);
-        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,101,69);
+        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,100,69);
         assertEquals(email1,topPlayer2.getEmail());
     }
     @Test
@@ -143,7 +143,7 @@ public class PlayerDaoImplTest {
         int money=playerDao.getPlayerMoney(71);
         assertEquals(money,0);
         int money1=playerDao.getPlayerMoney(41);
-        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,101,69);
+        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,100,69);
         assertEquals(money1,topPlayer2.getMoney());
     }
     @Test
@@ -152,7 +152,7 @@ public class PlayerDaoImplTest {
         int lvl=playerDao.getPlayerLevel(71);
         assertEquals(lvl,0);
         int lvl1=playerDao.getPlayerLevel(41);
-        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,101,69);
+        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,100,69);
         assertEquals(lvl1,topPlayer2.getLevel());
     }
     @Test
@@ -161,7 +161,7 @@ public class PlayerDaoImplTest {
         int points=playerDao.getPlayerPoints(71);
         assertEquals(points,0);
         int points1=playerDao.getPlayerPoints(41);
-        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,101,69);
+        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,100,69);
         assertEquals(points1,topPlayer2.getPoints());
     }
     @Test
@@ -171,7 +171,7 @@ public class PlayerDaoImplTest {
         assertNull(city.getCityName());
         assertNull(city.getMarket());
         City city1=playerDao.getPlayerCity(41);
-        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,101,69);
+        Player topPlayer2=new Player("Sasha228","Sasha@gmail.com",1000000,1000,100,69);
         assertEquals(city1.getCityName(),cityDao.find(topPlayer2.getCurCity()).getCityName());
 
     }
