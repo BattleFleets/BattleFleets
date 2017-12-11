@@ -574,7 +574,7 @@ is
       INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (lvl_attr_id,obj_sq.currval,1,null);
       INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (points_attr_id,obj_sq.currval,1,null);
       INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (email_attr_id,obj_sq.currval,email,null);
-      RETURN 'registration is successfull';
+      RETURN 'Registration is successfull';
     END IF;
   END;
 

@@ -1,7 +1,5 @@
 package com.nctc2017.constants;
 
-import oracle.net.aso.f;
-
 public class Query {
     /**
      * This query allows to get any Entity by OBJECT_TYPE_ID and OBJECT_ID.
@@ -31,6 +29,26 @@ public class Query {
                     + " AND atr_val.OBJECT_ID = entity_obj.OBJECT_ID";
     
     /**
+     * You must have 2 parameters for PreparedStatement: <br>
+     * OBJECT_TYPE_ID of container owner<br>
+     * OBJECT_ID of owner
+     * */
+    public static final String FIND_CONTAINER_BY_OWNER_ID = 
+            "SELECT container_obj.OBJECT_ID" 
+                    + " FROM OBJECTS container_obj" 
+                    + " WHERE"
+                    + "     container_obj.OBJECT_TYPE_ID = ?"// owner type id
+                    + " AND container_obj.PARENT_ID = ?";// id owner obj
+    
+    /** See this {@link #FIND_CONTAINER_BY_OWNER_ID} */
+    public static final String FIND_ALL_IN_CONTAINER_BY_OWNER_ID = 
+            "SELECT entities_obj.OBJECT_ID"
+                    + " FROM OBJECTS entities_obj" 
+                    + " WHERE" 
+                    + " entities_obj.PARENT_ID =" 
+                    + "    (" + FIND_CONTAINER_BY_OWNER_ID + ")";
+   
+    /**
      * This query allows to get any Entity by OBJECT_TYPE_ID which locate in any container 
      * like hold, stock, ship by OBJECT_ID of this container.
      * Call execute() or query() must have 4 parameters for PreparedStatement: OBJECT_TYPE_ID, OBJECT_ID of Container, OBJECT_TYPE_ID, OBJECT_ID of Container 
@@ -56,6 +74,8 @@ public class Query {
                     + " AND atr_obj.OBJECT_TYPE_ID = entity_obj.OBJECT_TYPE_ID"
                     + " AND atr_val.ATTR_ID = atr_obj.ATTR_ID"
                     + " AND atr_val.OBJECT_ID = entity_obj.OBJECT_ID";
+
+    public static final String GET_CURRVAL = "SELECT obj_sq.currval FROM DUAL";
     
     /**
      * To get value from field "OBJECT_ID" of "OBJECTS" table
@@ -82,7 +102,17 @@ public class Query {
                     + "(SELECT VALUE FROM ATTRIBUTES_VALUE"
                     + " WHERE OBJECT_ID = ? AND ATTR_ID = ?))";
     
-    public static final String GET_CURRVAL = "SELECT obj_sq.currval FROM DUAL";
+    /**
+     * INSERT data to the OBJECTS table.
+     * You must have 3 parameters for PreparedStatement:<br> 
+     * PARENT_ID(can be null),<br> 
+     * OBJECT_TYPE_ID, <br>
+     * OBJECT_TYPE_ID.
+     * */
+    public static final String CRATE_NEW_CONTAINER = 
+            "INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME)"
+                    + " VALUES (OBJ_SQ.NEXTVAL, ?, ?, null,"
+                    + " (SELECT NAME FROM OBJTYPE WHERE OBJECT_TYPE_ID = ?))";
     
     /**DELETE any entity. PreparedStatement args order: object_id, object_type_id*/
     public static final String DELETE_ENTITY = "DELETE objects WHERE object_id = ? AND object_type_id = ?";
@@ -102,5 +132,19 @@ public class Query {
             "FROM objects o" +
             "WHERE o.object_type_id = ?" +
             "AND o.object_id = ?)";
+    public static final String DELETE_OBJECT = "DELETE objects WHERE object_id = ? AND object_type_id = ?";
+    
+    /** Put entity to container with checking if the correct parameter id of container you have.<br>
+     * PreparedStatement args order:<br>
+     * OBJECT_ID of container<br>
+     * OBJECT_ID of entity<br>
+     * OBJECT_ID of container<br>
+     * OBJECT_ID of container<br>
+     * OBJECT_TYPE_ID of container<br>
+     * */
+    public static final String PUT_ENTITY_TO_CONTAINER = 
+            "UPDATE OBJECTS SET PARENT_ID = ?"
+                    + " WHERE OBJECT_ID = ? AND ? ="
+                    + "     (" + CHECK_OBJECT + ")";
 }
 

@@ -17,16 +17,16 @@ public interface CannonDao {
 
     int getDamage(int cannonId);
 
-    List<Cannon> getAllCannonFromStock(int stockId);
+    List<Cannon> getAllCannonFromStock(BigInteger stockId);
 
-    List<Cannon> getAllCannonFromHold(int holdId);
+    List<Cannon> getAllCannonFromHold(BigInteger holdId);
 
-    List<Cannon> getAllCannonFromShip(int shipId);
+    List<Cannon> getAllCannonFromShip(BigInteger shipId);
 
-    BigInteger createCannon(int cannonTemplateId);
+    BigInteger createCannon(BigInteger cannonTemplateId);
 
     void deleteCannon(BigInteger id);
 
-    BigInteger createCannon(int cannonTemplateId, BigInteger containerOwnerId);
+    BigInteger createCannon(BigInteger cannonTemplateId, BigInteger containerOwnerId);
 
 }
