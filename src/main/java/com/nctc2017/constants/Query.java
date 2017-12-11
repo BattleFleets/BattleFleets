@@ -146,5 +146,13 @@ public class Query {
             "UPDATE OBJECTS SET PARENT_ID = ?"
                     + " WHERE OBJECT_ID = ? AND ? ="
                     + "     (" + CHECK_OBJECT + ")";
+    /**
+     * This query allows to get value of specified attribute of given entity.
+     * PreparedStatement args:
+     * OBJECT_ID of entity
+     * ATTR_ID of attribute
+     */
+    public static final String GET_ATTR_VALUE =
+            "SELECT value FROM attributes_value WHERE object_id = ? and attr_id = ? ";
 }
 

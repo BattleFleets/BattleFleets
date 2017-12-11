@@ -1,11 +1,14 @@
 package com.nctc2017.bean;
+
+import java.math.BigInteger;
+
 public class Ammo extends AbstractThing {
     protected String name;
 
     protected int cost;
 
 
-	public Ammo(int quantity, int thingId, String name, int cost) {
+	public Ammo(int quantity, BigInteger thingId, String name, int cost) {
 		super(quantity, thingId);
 		this.name = name;
 		this.cost = cost;

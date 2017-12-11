@@ -1,21 +1,23 @@
 package com.nctc2017.dao;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 import com.nctc2017.bean.Goods;
 
 public interface GoodsDao {
 
-    int createNewGoods(int goodsTemplateId, int quantity, int price);
+	BigInteger createNewGoods(BigInteger goodsTemplateId, int quantity, int price);
 
-    void increaseGoodsQuantity(int goodsId, int quantity);
+	void increaseGoodsQuantity(BigInteger goodsId, int quantity);
 
-    boolean decreaseGoods(int goodsId, int quantity);
+	boolean decreaseGoodsQuantity(BigInteger goodsId, int quantity);
 
-    int getGoodsRaraty(int goodsTemlateId);
+	int getGoodsRaraty(BigInteger goodsTemplateId);
 
-    List<Goods> getAllGoodsFromStock(int stockId);
+	List<Goods> getAllGoodsFromStock(BigInteger stockId);
 
-    List<Goods> getAllGoodsFromHold(int holdId);
+	List<Goods> getAllGoodsFromHold(BigInteger holdId);
 
 }

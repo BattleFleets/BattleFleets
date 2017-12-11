@@ -1,10 +1,13 @@
 package com.nctc2017.bean;
+
+import java.math.BigInteger;
+
 public abstract class AbstractThing implements Thing {
     
 	protected int quantity;
-    protected int thingId;
+    protected BigInteger thingId;
     
-	public AbstractThing(int quantity, int thingId) {
+	public AbstractThing(int quantity, BigInteger thingId) {
 		super();
 		this.quantity = quantity;
 		this.thingId = thingId;
@@ -16,10 +19,10 @@ public abstract class AbstractThing implements Thing {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-	public int getThingId() {
+	public BigInteger getThingId() {
 		return thingId;
 	}
-	public void setThingId(int thingId) {
+	public void setThingId(BigInteger thingId) {
 		this.thingId = thingId;
 	}
     
