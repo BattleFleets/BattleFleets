@@ -5,6 +5,8 @@ import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
 import com.nctc2017.dao.GoodsDao;
+import com.nctc2017.dao.utils.JdbcConverter;
+import com.nctc2017.dao.utils.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,21 +29,26 @@ public class GoodsDaoImpl implements GoodsDao {
 
     @Override
     public BigInteger createNewGoods(BigInteger goodsTemplateId, int quantity, int price) {
-        PreparedStatementCreator psc = UpdateQueryForObjectsBuilder.newInsertBuilder(DatabaseObject.GOODS_OBJTYPE_ID)
+        String nextIdQuery = "SELECT obj_sq.NEXTVAL FROM dual";
+        BigInteger newObjId = jdbcTemplate.queryForObject(nextIdQuery, BigDecimal.class).toBigInteger();
+
+        PreparedStatementCreator psc = QueryBuilder.insert(DatabaseObject.GOODS_OBJTYPE_ID)
                 .setSourceObjId(goodsTemplateId)
                 .setAttribute(DatabaseAttribute.GOODS_QUANTITY, quantity + "")
                 .setAttribute(DatabaseAttribute.GOODS_PURCHASE_PRICE, price + "")
                 .build();
         jdbcTemplate.update(psc);
-        return jdbcTemplate.queryForObject(Query.GET_CURRVAL, BigInteger.class);
+        return newObjId;
     }
 
     @Override
     public void increaseGoodsQuantity(BigInteger goodsId, int quantity) {
-        Integer curQuantity = jdbcTemplate.queryForObject(Query.GET_ATTR_VALUE, new Object[]{goodsId, DatabaseAttribute.GOODS_QUANTITY}, Integer.class);
+        Integer curQuantity = jdbcTemplate.queryForObject(Query.GET_ATTR_VALUE,
+                new Object[]{JdbcConverter.toNumber(goodsId), JdbcConverter.toNumber(DatabaseAttribute.GOODS_QUANTITY)},
+                Integer.class);
         if (curQuantity == null) return;
         curQuantity = curQuantity + quantity;
-        PreparedStatementCreator psc = UpdateQueryForObjectsBuilder.newUpdateAttributeValueBuilder(goodsId)
+        PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(goodsId)
                 .setAttribute(DatabaseAttribute.GOODS_QUANTITY, curQuantity + "")
                 .build();
         jdbcTemplate.update(psc);
@@ -49,7 +56,9 @@ public class GoodsDaoImpl implements GoodsDao {
 
     @Override
     public boolean decreaseGoodsQuantity(BigInteger goodsId, int quantity) {
-        Integer curQuantity = jdbcTemplate.queryForObject(Query.GET_ATTR_VALUE, new Object[]{goodsId, DatabaseAttribute.GOODS_QUANTITY}, Integer.class);
+        Integer curQuantity = jdbcTemplate.queryForObject(Query.GET_ATTR_VALUE,
+                new Object[]{JdbcConverter.toNumber(goodsId), JdbcConverter.toNumber(DatabaseAttribute.GOODS_QUANTITY)},
+                Integer.class);
         if (curQuantity == null)
             return false;
 
@@ -60,10 +69,10 @@ public class GoodsDaoImpl implements GoodsDao {
 
         PreparedStatementCreator psc;
         if (curQuantity == 0) {
-            psc = UpdateQueryForObjectsBuilder.newDeleteBuilder(goodsId)
+            psc = QueryBuilder.delete(goodsId)
                     .build();
         } else {
-            psc = UpdateQueryForObjectsBuilder.newUpdateAttributeValueBuilder(goodsId)
+            psc = QueryBuilder.updateAttributeValue(goodsId)
                     .setAttribute(DatabaseAttribute.GOODS_QUANTITY, curQuantity + "")
                     .build();
         }
@@ -80,7 +89,10 @@ public class GoodsDaoImpl implements GoodsDao {
      */
     @Override
     public int getGoodsRaraty(BigInteger goodsTemplateObjectId) {
-        Integer coef = jdbcTemplate.queryForObject(Query.GET_ATTR_VALUE, new Object[]{goodsTemplateObjectId, DatabaseAttribute.TEMPLATE_GOODS_RARITY_COEF}, Integer.class);
+        Integer coef = jdbcTemplate.queryForObject(Query.GET_ATTR_VALUE,
+                new Object[]{JdbcConverter.toNumber(goodsTemplateObjectId),
+                        JdbcConverter.toNumber(DatabaseAttribute.TEMPLATE_GOODS_RARITY_COEF)},
+                Integer.class);
         if (coef == null)
             return -1;
         else
@@ -98,10 +110,13 @@ public class GoodsDaoImpl implements GoodsDao {
     }
 
     private List<Goods> getAllGoods(BigInteger containerId) {
-        List<Goods> goodsList = jdbcTemplate.query(Query.GET_ENTITIES_FROM_CONTAINER,
-                new Object[] {DatabaseObject.GOODS_OBJTYPE_ID, containerId,
-                        DatabaseObject.CANNON_OBJTYPE_ID, containerId},
-                new GoodsListExtractor());
+        Object [] queryParams = new Object[] {JdbcConverter.toNumber(DatabaseObject.GOODS_OBJTYPE_ID),
+                JdbcConverter.toNumber(containerId),
+                JdbcConverter.toNumber(DatabaseObject.GOODS_OBJTYPE_ID),
+                JdbcConverter.toNumber(containerId)};
+
+        List<Goods> goodsList = jdbcTemplate.query(
+                Query.GET_ENTITIES_FROM_CONTAINER, queryParams, new GoodsListExtractor());
         return goodsList;
     }
 
@@ -111,10 +126,10 @@ public class GoodsDaoImpl implements GoodsDao {
         public List<Goods> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 
             Map<String, String> goodsFieldValueMap;
-            Map<BigDecimal, Map<String, String>> goodsMap = new HashMap<>();
-            BigDecimal goodsId;
+            Map<BigInteger, Map<String, String>> goodsMap = new HashMap<>();
+            BigInteger goodsId;
             if (resultSet.next()) {
-                goodsId = resultSet.getBigDecimal(1);
+                goodsId = resultSet.getBigDecimal(1).toBigInteger();
                 goodsFieldValueMap = goodsMap.get(goodsId);
                 if (goodsFieldValueMap == null) {
                     goodsFieldValueMap = new HashMap<>(4);
@@ -126,9 +141,9 @@ public class GoodsDaoImpl implements GoodsDao {
             List<Goods> goods = new ArrayList<>(goodsMap.size());
             Goods newGoods;
             Map<String, String> fieldValueMap;
-            for (Map.Entry<BigDecimal, Map<String, String>> entry : goodsMap.entrySet()) {
+            for (Map.Entry<BigInteger, Map<String, String>> entry : goodsMap.entrySet()) {
                 fieldValueMap = entry.getValue();
-                newGoods = new Goods(entry.getKey().toBigInteger(),
+                newGoods = new Goods(entry.getKey(),
                         fieldValueMap.remove(Goods.NAME),
                         Integer.valueOf(fieldValueMap.remove(Goods.QUANTITY)),
                         Integer.valueOf(fieldValueMap.remove(Goods.PRICE)),
