@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 public class DatabaseAttribute {
     public static final int CANNON_NAME_ID = 14;
-    public static final int ATTR_CURR_MAST_SPEED_ID = 26;
+    public static final BigInteger ATTR_CURR_MAST_SPEED_ID = new BigInteger("26");
     public static final int PASSWORD_ATR_ID=28;
     public static final int LOGIN_ATR_ID=27;
     public static final int LEVEL_ATR_ID=30;

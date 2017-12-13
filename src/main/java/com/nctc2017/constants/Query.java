@@ -113,9 +113,6 @@ public class Query {
             "INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME)"
                     + " VALUES (OBJ_SQ.NEXTVAL, ?, ?, null,"
                     + " (SELECT NAME FROM OBJTYPE WHERE OBJECT_TYPE_ID = ?))";
-    
-    /**DELETE any entity. PreparedStatement args order: object_id, object_type_id*/
-    public static final String DELETE_ENTITY = "DELETE objects WHERE object_id = ? AND object_type_id = ?";
 
     /**
      * This query allows to update any Attributes_Value by OBJECT_ID

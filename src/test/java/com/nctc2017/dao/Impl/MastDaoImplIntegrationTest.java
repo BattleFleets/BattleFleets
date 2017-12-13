@@ -13,7 +13,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
@@ -27,9 +26,25 @@ public class MastDaoImplIntegrationTest {
     @Autowired
     MastDao mastDao;
 
+    private static BigInteger TEST_MASt_OBJECT_ID = BigInteger.valueOf(32);
+    private static BigInteger TEST_MASt_OBJECT_ID_INCORRECT = BigInteger.valueOf(12);
+    private static BigInteger Exc = new BigInteger("9223372036854775809");
+
     @Test
     @Rollback(true)
     public void testDaoFinding() {
+        //when
+        //BigInteger m = mastDao.createNewMast(DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID,new BigInteger("27"));
+        Mast mast = mastDao.findMast(TEST_MASt_OBJECT_ID);
+        //then
+        assertTrue(mast.getCost() > 0);
+        assertTrue(mast.getCurSpeed() > 0);
+        assertTrue(mast.getMaxSpeed() > 0);
+        assertEquals("T_Mast1", mast.getTemplateName());
+    }
+   /* @Test
+    @Rollback(true)
+    public void testDaoCreating() {
         // Given
         int createdId = mastDao.createNewMast(6, 27);
         //when
@@ -39,86 +54,24 @@ public class MastDaoImplIntegrationTest {
         assertTrue(mast.getCurSpeed() > 0);
         assertTrue(mast.getMaxSpeed() > 0);
         assertEquals("T_Mast1", mast.getTemplateName());
+    }*/
+   @Test
+   @Rollback(true)
+    public void testDaoDeleting() {
+        mastDao.deleteMast(TEST_MASt_OBJECT_ID);
     }
-    /*@Test
-    @Rollback(true)
-    public void deleteDaoMast() {
-        // Given
-        int mastId = 32;
-        mastDao.deleteMast(mastId);
-        //then
 
-    }*/
-    /*
-    @Test
-    @Transactional
+
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
-    public void testCannonCreatedFail() {
-        // Given
-        int mortarTemplateId = 1;
-        //when
-        BigDecimal id = cannonDao.createCannon(mortarTemplateId);
-        //then
-        assertNull(id);
+    public void testDaoDeletingIllegalArgument() {
+        mastDao.deleteMast(TEST_MASt_OBJECT_ID_INCORRECT);
     }
-    @Test
-    @Transactional
+
+    @Test(expected = ArithmeticException.class)
     @Rollback(true)
-    public void testBombardCreated() {
-        // Given
-        int mortarTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
-        //when
-        BigDecimal id = cannonDao.createCannon(mortarTemplateId);
-        //then
-        assertNotNull(id);
-        assertTrue(id.intValue()>0);
+    public void testDaoDeletingArithmeticalException() {
+        mastDao.deleteMast(Exc);
     }
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testKulevrinFind() {
-        // Given
-        int kulevrinTemplateId = DatabaseObject.KULEVRIN_TEMPLATE_ID;
-        //when
-        BigDecimal id = cannonDao.createCannon(kulevrinTemplateId);
-        Cannon cannon = cannonDao.findById(id.intValue());
-        //then
-        assertEquals(id.intValue(), cannon.getId());
-        assertTrue(cannon.getCost()>0);
-        assertTrue(cannon.getDamage()>0);
-        assertTrue(cannon.getDistance()>0);
-        assertEquals("Kulevrin", cannon.getName());
-    }
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testMortarFind() {
-        // Given
-        int mortarTemplateId = DatabaseObject.MORTAR_TEMPLATE_ID;
-        //when
-        BigDecimal id = cannonDao.createCannon(mortarTemplateId);
-        Cannon cannon = cannonDao.findById(id.intValue());
-        //then
-        assertEquals(id.intValue(), cannon.getId());
-        assertTrue(cannon.getCost()>0);
-        assertTrue(cannon.getDamage()>0);
-        assertTrue(cannon.getDistance()>0);
-        assertEquals("Mortar", cannon.getName());
-    }
-    @Test
-    @Transactional
-    @Rollback(true)
-    public void testBombardFind() {
-        // Given
-        int mortarTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
-        //when
-        BigDecimal id = cannonDao.createCannon(mortarTemplateId);
-        Cannon cannon = cannonDao.findById(id.intValue());
-        //then
-        assertEquals(id.intValue(), cannon.getId());
-        assertTrue(cannon.getCost() > 0);
-        assertTrue(cannon.getDamage() > 0);
-        assertTrue(cannon.getDistance() > 0);
-        assertEquals("Bombard", cannon.getName());
-    }*/
+
 }

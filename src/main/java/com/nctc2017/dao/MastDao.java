@@ -7,13 +7,13 @@ import com.nctc2017.bean.Mast;
 
 public interface MastDao {
 
-    Mast findMast(int mastId);
+    Mast findMast(BigInteger mastId);
 
-    int createNewMast(int mastTemplateId, int containerOwnerID);
+    BigInteger createNewMast(BigInteger mastTemplateId, BigInteger containerOwnerID);
 
-    void deleteMast(int mastId);
+    void deleteMast(BigInteger mastId);
 
-    boolean updateCurMastSpeed(int mastId, int newMastSpeed);
+    boolean updateCurMastSpeed(BigInteger mastId, int newMastSpeed);
 
     List<Mast> getShipMastsFromShip(int shipId);
 
@@ -21,14 +21,14 @@ public interface MastDao {
 
     List<Mast> getShipMastsFromHold(int holdId);
 
-    int getCurMastSpeed(int mastId);
+    int getCurMastSpeed(BigInteger mastId);
 
-    String getMastName(int mastId);
+    String getMastName(BigInteger mastId);
 
     int getSailyards(int mastId);
 
-    int getMaxSpeed(int mastId);
+    int getMaxSpeed(BigInteger mastId);
 
-    int getMastCost(int mastId);
+    int getMastCost(BigInteger mastId);
 
 }

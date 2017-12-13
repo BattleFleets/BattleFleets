@@ -4,8 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
@@ -21,7 +20,6 @@ import com.nctc2017.dao.HoldDao;
 @Qualifier("holdDao")
 public class HoldDaoImpl implements HoldDao {
 
-    private static Logger log = Logger.getLogger(HoldDaoImpl.class.getName());
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -69,7 +67,6 @@ public class HoldDaoImpl implements HoldDao {
     public void deleteHold(BigInteger holdId) {
         int rowsAffected = jdbcTemplate.update(Query.DELETE_OBJECT, 
                 new Object[] {holdId.longValueExact(), DatabaseObject.HOLD_OBJTYPE_ID});
-        if (rowsAffected == 0) log.log(Level.WARN,"Nothing to delete from database");
     }
 
     @Override
@@ -89,7 +86,6 @@ public class HoldDaoImpl implements HoldDao {
     }
 
     private void throwRuntimeException(RuntimeException ex) {
-        log.log(Level.ERROR, "DAOException: ", ex);
         throw ex;
     }
 }

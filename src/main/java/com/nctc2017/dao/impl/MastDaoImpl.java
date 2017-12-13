@@ -15,10 +15,12 @@ import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
 import com.nctc2017.dao.MastDao;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
@@ -32,48 +34,59 @@ public class MastDaoImpl implements MastDao {
     JdbcTemplate jdbcTemplate;
 
     @Override
-    public Mast findMast(int mastId) {
+    public Mast findMast( BigInteger mastId) {
         Mast pickedUpMast = jdbcTemplate.query(Query.FIND_ANY_ENTITY,
                 new Object[] { DatabaseObject.MAST_OBJTYPE_ID, mastId, DatabaseObject.MAST_OBJTYPE_ID, mastId },
                 new MastExtractor(mastId));
         if (pickedUpMast == null) {
-            IllegalArgumentException e = new IllegalArgumentException("Cannot find Mast,wrong mast object id = " + mastId);
+            IllegalArgumentException e =
+                    new IllegalArgumentException("Cannot find Mast,wrong mast object id = " + mastId);
             log.log(Level.SEVERE,"Exception: ",e);
             throw e;
         }
         return pickedUpMast;
     }
 
-    @Override
-    public int createNewMast(int mastTemplateId,int containerOwnerId) {
-        try{
-            jdbcTemplate.queryForObject(Query.CHECK_OBJECT,
-                    new Object[] {mastTemplateId, DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID},
-                    BigInteger.class);
-        } catch (DataAccessException e) {
-            IllegalArgumentException ex = new IllegalArgumentException("Cannot createNewMast, wrong mastTemplateId = " + mastTemplateId);
-            log.log(Level.SEVERE,"Exception: ",ex);
-            throw ex;
+    private Mast findMastTemplate( BigInteger mastTemplateId) {
+        Mast pickedUpMast = jdbcTemplate.query(Query.FIND_ANY_ENTITY,
+                new Object[] { DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID, mastTemplateId,
+                        DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID, mastTemplateId },
+                new MastExtractor(mastTemplateId));
+        if (pickedUpMast == null) {
+            IllegalArgumentException e =
+                    new IllegalArgumentException("Cannot find MastTemplate,wrong mastTempl object id = " + mastTemplateId);
+            log.log(Level.SEVERE,"Exception: ",e);
+            throw e;
         }
-        int rowsAffected = jdbcTemplate.update(Query.CREATE_NEW_ENTITY,
-                new Object[] {containerOwnerId,
-                        DatabaseObject.MAST_OBJTYPE_ID,
-                        mastTemplateId, mastTemplateId,
-                        DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID});
-        if (rowsAffected == 0) {
-            IllegalArgumentException ex = new IllegalArgumentException("Cannot createNewMast, wrong containerOwnerId " + mastTemplateId);
-            log.log(Level.SEVERE,"Exception: ",ex);
-            throw ex;
-        }
-
-        return jdbcTemplate.queryForObject(Query.GET_CURRVAL,int.class);
+        return pickedUpMast;
     }
 
 
     @Override
-    public void deleteMast(int mastId) {
-        int numberOfDelRow = jdbcTemplate.update(Query.DELETE_ENTITY,
-                    new Object[] {mastId, DatabaseObject.MAST_OBJTYPE_ID});
+    public BigInteger createNewMast(BigInteger mastTemplateId, BigInteger containerOwnerId) {
+        PreparedStatementCreator psc = UpdateQueryForObjectsBuilder
+                .newInsertBuilder(DatabaseObject.MAST_OBJTYPE_ID)
+                .setParentId(containerOwnerId)
+                .setSourceObjId(mastTemplateId)
+                .setAttribute(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID,
+                        String.valueOf(findMastTemplate(mastTemplateId).getMaxSpeed()) )
+                .build();
+        jdbcTemplate.update(psc);
+        return jdbcTemplate.queryForObject(Query.GET_CURRVAL, BigInteger.class);
+    }
+
+
+    @Override
+    public void deleteMast(BigInteger mastId) {
+        int numberOfDelRow = 0;
+        try {
+             numberOfDelRow = jdbcTemplate.update(Query.DELETE_OBJECT,
+                    new Object[] {mastId.longValueExact(), DatabaseObject.MAST_OBJTYPE_ID.longValueExact()});
+        }catch (ArithmeticException e) {
+            log.log(Level.SEVERE,"Arithmetical exception.Can not delete, id is to big: ",e);
+            throw e;
+        }
+
         if (numberOfDelRow == 0) {
             IllegalArgumentException ex = new IllegalArgumentException("Cant delete mast,wrong mastID = " + mastId);
             log.log(Level.SEVERE,"Exception:",ex);
@@ -84,7 +97,7 @@ public class MastDaoImpl implements MastDao {
 
 
     @Override
-    public boolean updateCurMastSpeed(int mastId, int newMastSpeed) {
+    public boolean updateCurMastSpeed(BigInteger mastId, int newMastSpeed) {
         if (newMastSpeed > findMast(mastId).getMaxSpeed()) {
             log.log(Level.INFO,"Speed cannot be more than max maxSpeed of that mast");
             return false;
@@ -130,14 +143,14 @@ public class MastDaoImpl implements MastDao {
 
 
     @Override
-    public int getCurMastSpeed(int mastId) {
+    public int getCurMastSpeed(BigInteger mastId) {
         int result = findMast(mastId).getCurSpeed();
         return result;
     }
 
 
     @Override
-    public String getMastName(int mastId) {
+    public String getMastName(BigInteger mastId) {
         String result = findMast(mastId).getTemplateName();
         return result;
     }
@@ -150,14 +163,14 @@ public class MastDaoImpl implements MastDao {
 
 
     @Override
-    public int getMaxSpeed(int mastId) {
+    public int getMaxSpeed(BigInteger mastId) {
         int result = findMast(mastId).getMaxSpeed();
         return result;
     }
 
 
     @Override
-    public int getMastCost(int mastId) {
+    public int getMastCost(BigInteger mastId) {
         int result = findMast(mastId).getCost();
         return result;
     }
@@ -165,10 +178,10 @@ public class MastDaoImpl implements MastDao {
 
 
     private final class MastExtractor implements ResultSetExtractor<Mast> {
-        private int mastId;
+        private BigInteger mastId;
 
 
-        public MastExtractor(int mastId){
+        public MastExtractor(BigInteger mastId){
             this.mastId = mastId;
         }
 
@@ -193,10 +206,10 @@ public class MastDaoImpl implements MastDao {
         @Override
         public List<Mast> extractData(ResultSet rs) throws SQLException, DataAccessException {
             Map<String, String> papamMap;
-            Map<Integer, Map<String, String>> mastMap = new HashMap<>();
-            Integer idMast;
+            Map<BigInteger, Map<String, String>> mastMap = new HashMap<>();
+            BigInteger idMast;
             while(rs.next()) {
-                idMast = Integer.valueOf(rs.getString(1));
+                idMast = rs.getBigDecimal(1).toBigInteger();
                 papamMap = mastMap.get(idMast);
                 if (papamMap == null){
                     papamMap = new HashMap<>();
@@ -210,7 +223,7 @@ public class MastDaoImpl implements MastDao {
             List<Mast> mastList = new ArrayList<>(mastMap.size());
             Mast nextMast;
             Map<String, String> nextParamMap;
-            for (Entry<Integer, Map<String, String>> entry : mastMap.entrySet()) {
+            for (Entry<BigInteger, Map<String, String>> entry : mastMap.entrySet()) {
                 nextParamMap = entry.getValue();
                 nextMast = new Mast(Mast.QUANTITY,
                         entry.getKey(),

@@ -15,9 +15,7 @@ public class Mast extends AbstractThing {
 	protected int cost;
 	protected String templateName;
 
-
-    
-	public Mast(int quantity, BigInteger thingId, int speed, int curSpeed, int cost) {
+	public Mast(int quantity, BigInteger thingId, String templateName, int maxSpeed, int curSpeed, int cost) {
 		super(quantity, thingId);
 		this.templateName = templateName;
 		this.maxSpeed = maxSpeed;

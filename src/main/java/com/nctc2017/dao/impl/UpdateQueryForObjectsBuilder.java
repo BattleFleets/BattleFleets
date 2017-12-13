@@ -1,7 +1,9 @@
 package com.nctc2017.dao.impl;
 
-import com.sun.istack.internal.NotNull;
+
+
 import oracle.jdbc.OracleTypes;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.core.SqlParameter;
