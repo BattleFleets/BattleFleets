@@ -13,7 +13,7 @@ public class DatabaseObject {
     public static final int MORTAR_TEMPLATE_ID = 11;
     public static final int BOMBARD_TEMPLATE_ID = 12;
     public static final int KULEVRIN_TEMPLATE_ID = 13;
-    public static final int PLAYER_TEMPLATE_ID = 10;
+    public static final BigInteger PLAYER_OBJTYPE_ID = new BigInteger("10");
 
     public static final BigInteger MAST_TEMPLATE_OBJTYPE_ID = new BigInteger("2");
     public static final BigInteger GOODS_TEMPLATE_TYPE_ID = new BigInteger("5");

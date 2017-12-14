@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.nctc2017.dao.PlayerDao;
 
+import java.math.BigInteger;
+
 @Service("authRegService")
 public class AuthRegService {
 	@Autowired
@@ -17,7 +19,7 @@ public class AuthRegService {
 
     public String autorization(String login, String password) {
     	//playerDao.findPlayerByLogin(login);
-        return playerDao.findPlayerById(43).getLogin();
+        return playerDao.findPlayerById(new BigInteger("43")).getLogin();
     }
 
     public void exit(String login) {
