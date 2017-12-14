@@ -147,8 +147,15 @@ public class PlayerDaoImplTest {
     @Rollback(true)
     public void findAllPlayer() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        int j=0;
         List<Player> players=playerDao.findAllPlayers();
-        Player topPlayer=players.get(players.size()-1);
+        for(int i=0; i<players.size();i++)
+        {
+            if(players.get(i).getLogin()=="Steve"){
+                j=i;
+            }
+        }
+        Player topPlayer=players.get(j);
         assertEquals(topPlayer.getLogin(),"Steve");
         assertEquals(topPlayer.getEmail(),"Rogers@gmail.com");
         assertEquals(topPlayer.getLevel(),new BigInteger("1"));

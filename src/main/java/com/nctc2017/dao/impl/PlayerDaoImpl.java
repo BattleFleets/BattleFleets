@@ -194,7 +194,7 @@ public class PlayerDaoImpl implements PlayerDao{
     @Override
     public void deleteShip(BigInteger playerId, BigInteger shipId) {
         findPlayerById(playerId);
-        jdbcTemplate.update("UPDATE OBJECTS SET PARENT_ID=? WHERE OBJECT_ID=? AND PARENT_ID=?",shipId,playerId);
+        jdbcTemplate.update("UPDATE OBJECTS SET PARENT_ID=? WHERE OBJECT_ID=? AND PARENT_ID=?",null,shipId,playerId);
     }
 
     @Override
