@@ -52,8 +52,4 @@ public class ApplicationConfig {
         return transactionManager;
     }
 
-
-    @Bean
-    public MastDao mastDao() {return new MastDaoImpl(); }
-
 }
