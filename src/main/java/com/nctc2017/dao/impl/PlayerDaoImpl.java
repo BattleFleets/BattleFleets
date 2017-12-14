@@ -124,8 +124,9 @@ public class PlayerDaoImpl implements PlayerDao{
         List<Player> players=new ArrayList<>();
         List<String> attributes = jdbcTemplate.queryForList(queryForPlayersAttributes, new Object[]{ DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(), DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
         List<BigInteger> citiesId = jdbcTemplate.queryForList("SELECT PARENT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=?", BigInteger.class, DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact());
+        List<BigInteger> playersId = jdbcTemplate.queryForList("SELECT OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=?", BigInteger.class, DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact());
         for(int i=0; i<attributes.size();i=i+5) {
-            players.add(new Player(new BigInteger("1"),attributes.get(i), attributes.get(i+4), new BigInteger(attributes.get(i+1)), new BigInteger(attributes.get(i+3)), new BigInteger(attributes.get(i+2)), citiesId.get(i/5)));
+            players.add(new Player(playersId.get(i/5),attributes.get(i), attributes.get(i+4), new BigInteger(attributes.get(i+1)), new BigInteger(attributes.get(i+3)), new BigInteger(attributes.get(i+2)), citiesId.get(i/5)));
         }
         return players;   
     }
