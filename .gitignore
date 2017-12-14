@@ -22,3 +22,5 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+/src/test/resources/application_external_db.properties
+/src/main/resources/application_external_db.properties
