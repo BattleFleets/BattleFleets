@@ -1,13 +1,12 @@
 package com.nctc2017.dao.impl;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 
 import com.nctc2017.bean.Mast;
@@ -15,7 +14,7 @@ import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
 import com.nctc2017.dao.MastDao;
-import org.jetbrains.annotations.NotNull;
+import com.nctc2017.dao.utils.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
@@ -36,12 +35,13 @@ public class MastDaoImpl implements MastDao {
     @Override
     public Mast findMast( BigInteger mastId) {
         Mast pickedUpMast = jdbcTemplate.query(Query.FIND_ANY_ENTITY,
-                new Object[] { DatabaseObject.MAST_OBJTYPE_ID, mastId, DatabaseObject.MAST_OBJTYPE_ID, mastId },
+                new Object[] {DatabaseObject.MAST_OBJTYPE_ID.longValueExact(), mastId.longValueExact(),
+                        DatabaseObject.MAST_OBJTYPE_ID.longValueExact(), mastId.longValueExact() },
                 new MastExtractor(mastId));
         if (pickedUpMast == null) {
             IllegalArgumentException e =
                     new IllegalArgumentException("Cannot find Mast,wrong mast object id = " + mastId);
-            log.log(Level.SEVERE,"Exception: ",e);
+            log.log(Level.ERROR,"Exception: ",e);
             throw e;
         }
         return pickedUpMast;
@@ -49,13 +49,13 @@ public class MastDaoImpl implements MastDao {
 
     private Mast findMastTemplate( BigInteger mastTemplateId) {
         Mast pickedUpMast = jdbcTemplate.query(Query.FIND_ANY_ENTITY,
-                new Object[] { DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID, mastTemplateId,
-                        DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID, mastTemplateId },
+                new Object[] { DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID.longValueExact(), mastTemplateId.longValueExact(),
+                        DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID.longValueExact(), mastTemplateId.longValueExact() },
                 new MastExtractor(mastTemplateId));
         if (pickedUpMast == null) {
             IllegalArgumentException e =
                     new IllegalArgumentException("Cannot find MastTemplate,wrong mastTempl object id = " + mastTemplateId);
-            log.log(Level.SEVERE,"Exception: ",e);
+            log.log(Level.ERROR,"Exception: ",e);
             throw e;
         }
         return pickedUpMast;
@@ -64,8 +64,8 @@ public class MastDaoImpl implements MastDao {
 
     @Override
     public BigInteger createNewMast(BigInteger mastTemplateId, BigInteger containerOwnerId) {
-        PreparedStatementCreator psc = UpdateQueryForObjectsBuilder
-                .newInsertBuilder(DatabaseObject.MAST_OBJTYPE_ID)
+        PreparedStatementCreator psc = QueryBuilder
+                .insert(DatabaseObject.MAST_OBJTYPE_ID)
                 .setParentId(containerOwnerId)
                 .setSourceObjId(mastTemplateId)
                 .setAttribute(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID,
@@ -83,13 +83,13 @@ public class MastDaoImpl implements MastDao {
              numberOfDelRow = jdbcTemplate.update(Query.DELETE_OBJECT,
                     new Object[] {mastId.longValueExact(), DatabaseObject.MAST_OBJTYPE_ID.longValueExact()});
         }catch (ArithmeticException e) {
-            log.log(Level.SEVERE,"Arithmetical exception.Can not delete, id is to big: ",e);
+            log.log(Level.ERROR,"Arithmetical exception.Can not delete, id is to big: ",e);
             throw e;
         }
 
         if (numberOfDelRow == 0) {
             IllegalArgumentException ex = new IllegalArgumentException("Cant delete mast,wrong mastID = " + mastId);
-            log.log(Level.SEVERE,"Exception:",ex);
+            log.log(Level.ERROR,"Exception:",ex);
             throw ex;
         }
 
@@ -110,7 +110,7 @@ public class MastDaoImpl implements MastDao {
         }
         catch (DataAccessException e) {
             IllegalArgumentException ex = new IllegalArgumentException("Can not update mast, wrong mastID = " + mastId);
-            log.log(Level.SEVERE,"Exception: ",ex);
+            log.log(Level.ERROR,"Exception: ",ex);
             throw ex;
         }
     }
@@ -187,7 +187,7 @@ public class MastDaoImpl implements MastDao {
 
         @Override
         public Mast extractData(ResultSet rs) throws SQLException, DataAccessException {
-            Map<String, String> papamMap = new HashMap<>(5);
+            Map<String, String> papamMap = new HashMap<>();
             while(rs.next()){
                 papamMap.put(rs.getString(1), rs.getString(2));
             }

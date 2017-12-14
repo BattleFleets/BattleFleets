@@ -1,5 +1,6 @@
 package com.nctc2017.dao.impl;
 
+import java.math.BigInteger;
 import java.util.*;
 
 import com.nctc2017.bean.Ship;
@@ -15,9 +16,9 @@ public class ShipDaoImpl implements ShipDao {
     }
 
     @Override
-	public int createNewShip(int shipTemplateId) {
+	public BigInteger createNewShip(BigInteger shipTemplateId) {
         // TODO implement here
-        return 0;
+        return null;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.nctc2017.dao;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import com.nctc2017.bean.Ship;
@@ -9,7 +10,7 @@ public interface ShipDao {
 
     Ship findShip(int shipId);
 
-    int createNewShip(int shipTemplateId);
+    BigInteger createNewShip(BigInteger shipTemplateId);
 
     boolean deleteShip(int shipId);
 

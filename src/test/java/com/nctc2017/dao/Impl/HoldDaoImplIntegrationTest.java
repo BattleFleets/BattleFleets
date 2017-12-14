@@ -22,18 +22,18 @@ import com.nctc2017.dao.HoldDao;
 public class HoldDaoImplIntegrationTest {
     @Autowired
     HoldDao holdDao;
-    
+
     @Test
     @Rollback(true)
     public void testCreateHold() {
         // When
         BigInteger id = holdDao.createHold();
-        
+
         // Then
         assertNotNull(id);
         assertTrue(id.longValueExact() > 0L);
     }
-    
+
     @Test
     @Ignore
     @Rollback(true)
@@ -41,34 +41,34 @@ public class HoldDaoImplIntegrationTest {
         //TODO create ship
         // When
         BigInteger id = holdDao.createHold();
-        
+
         // Then
         assertNotNull(id);
         assertTrue(id.longValueExact() > 0L);
     }
-    
+
     @Test
     @Rollback(true)
     public void testDeleteHold() {
         // Given
         BigInteger id = holdDao.createHold();
-        
+
         // When
         holdDao.deleteHold(id);
         // Then okay
     }
-    
+
     @Test
     @Rollback(true)
     public void testDeleteHoldFail() {
         // Given
         BigInteger id = BigInteger.ONE;
-        
+
         // When
         holdDao.deleteHold(id);
         // Then okay
     }
-    
+
     @Test
     @Ignore
     @Rollback(true)
@@ -76,12 +76,12 @@ public class HoldDaoImplIntegrationTest {
         // Given
         //TODO create cargo
         BigInteger id = holdDao.createHold();
-        
+
         // When
         //holdDao.addCargo(cargoId, holdId);
         // Then okay
     }
-    
+
     @Test
     @Ignore
     @Rollback(true)
@@ -89,12 +89,12 @@ public class HoldDaoImplIntegrationTest {
         // Given
         //TODO create cargo
         BigInteger holdId = BigInteger.ONE;
-        
+
         // When
         //holdDao.addCargo(cargoId, holdId);
         // Then ?
     }
-    
+
     @Test
     @Ignore
     @Rollback(true)
@@ -103,14 +103,14 @@ public class HoldDaoImplIntegrationTest {
         //TODO create cargo
         //TODO create ship
         BigInteger id = holdDao.createHold();
-        
+
         // When
         //holdDao.addCargo(cargoId, holdId);
         //holdDao.addCargo(cargoId, holdId);
         //holdDao.getOccupiedVolume(shipId);
         // Then ?
     }
-    
+
     @Test
     @Rollback(true)
     public void testGetOccupiedVolumeInvalidShipId() {
@@ -120,7 +120,7 @@ public class HoldDaoImplIntegrationTest {
         holdDao.getOccupiedVolume(invalidShipId);
         // Then ?
     }
-    
+
     @Test
     @Ignore
     @Rollback(true)
