@@ -1,10 +1,11 @@
 package com.nctc2017.dao.Impl;
 
-import com.nctc2017.bean.Cannon;
+
 import com.nctc2017.bean.Mast;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.MastDao;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +27,15 @@ public class MastDaoImplIntegrationTest {
     @Autowired
     MastDao mastDao;
 
-    private static BigInteger TEST_MASt_OBJECT_ID = BigInteger.valueOf(32);
-    private static BigInteger TEST_MASt_OBJECT_ID_INCORRECT = BigInteger.valueOf(12);
-    private static BigInteger Exc = new BigInteger("9223372036854775809");
+    /*These constants is used until problem with BigInteger is solved*/
+    private static final BigInteger TEST_MASt_OBJECT_ID = BigInteger.valueOf(32);
+    private static final BigInteger TEST_MASt_OBJECT_ID_INCORRECT = BigInteger.valueOf(12);
+    private static final BigInteger EXC_VALUE = new BigInteger("9223372036854775809");
 
     @Test
     @Rollback(true)
     public void testDaoFinding() {
         //when
-        //BigInteger m = mastDao.createNewMast(DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID,new BigInteger("27"));
         Mast mast = mastDao.findMast(TEST_MASt_OBJECT_ID);
         //then
         assertTrue(mast.getCost() > 0);
@@ -42,25 +43,12 @@ public class MastDaoImplIntegrationTest {
         assertTrue(mast.getMaxSpeed() > 0);
         assertEquals("T_Mast1", mast.getTemplateName());
     }
-   /* @Test
+
+    @Test
     @Rollback(true)
-    public void testDaoCreating() {
-        // Given
-        int createdId = mastDao.createNewMast(6, 27);
-        //when
-        Mast mast = mastDao.findMast(createdId);
-        //then
-        assertTrue(mast.getCost() > 0);
-        assertTrue(mast.getCurSpeed() > 0);
-        assertTrue(mast.getMaxSpeed() > 0);
-        assertEquals("T_Mast1", mast.getTemplateName());
-    }*/
-   @Test
-   @Rollback(true)
     public void testDaoDeleting() {
         mastDao.deleteMast(TEST_MASt_OBJECT_ID);
     }
-
 
     @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
@@ -71,7 +59,29 @@ public class MastDaoImplIntegrationTest {
     @Test(expected = ArithmeticException.class)
     @Rollback(true)
     public void testDaoDeletingArithmeticalException() {
-        mastDao.deleteMast(Exc);
+        mastDao.deleteMast(EXC_VALUE);
     }
+
+    /*@Test
+    @Rollback(true)
+    public void testDaoCreating() {
+        // Given
+        BigInteger createdId = mastDao.createNewMast(DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID,
+                shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID));
+        //when
+        Mast mast = mastDao.findMast(createdId);
+        //then
+        assertTrue(mast.getCost() > 0);
+        assertTrue(mast.getCurSpeed() > 0);
+        assertTrue(mast.getMaxSpeed() > 0);
+        assertEquals("T_Mast1", mast.getTemplateName());
+    }
+
+    @Test
+    @Rollback(true)
+    public void updateMastSpeed() {
+        mastDao.updateCurMastSpeed(TEST_MASt_OBJECT_ID,4);
+        assertEquals(mastDao.findMast(TEST_MASt_OBJECT_ID).getCurSpeed(),4);
+    }*/
 
 }

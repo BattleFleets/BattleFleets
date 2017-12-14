@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
@@ -29,16 +30,16 @@ import com.nctc2017.dao.ExecutorDao;
 @Repository
 @Qualifier("cannonDao")
 public class CannonDaoImpl implements CannonDao {
-    
 
+    private static Logger log = Logger.getLogger(CannonDaoImpl.class.getName());
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Override
     public Cannon findById(BigInteger cannonId) {
         Cannon pickedUpCannon = jdbcTemplate.query(Query.FIND_ANY_ENTITY,
-                new Object[] { DatabaseObject.CANNON_OBJTYPE_ID, cannonId.longValueExact(), 
-                               DatabaseObject.CANNON_OBJTYPE_ID, cannonId.longValueExact() },
+                new Object[] { DatabaseObject.CANNON_OBJTYPE_ID, cannonId.longValueExact(),
+                        DatabaseObject.CANNON_OBJTYPE_ID, cannonId.longValueExact() },
                 new CannonExtractor(cannonId));
         if (pickedUpCannon == null) throwRuntimeException(new IllegalArgumentException("Wrong cannon object id = " + cannonId));
         return pickedUpCannon;
@@ -70,7 +71,7 @@ public class CannonDaoImpl implements CannonDao {
 
     @Override
     public List<Cannon> getAllCannonFromStock(BigInteger stockId) {
-        // TODO checkValidObjectIdWithType("stock", stockId, DatabaseObject.);      
+        // TODO checkValidObjectIdWithType("stock", stockId, DatabaseObject.);
         return getAllCannonsFromAnywhere(stockId);
     }
 
@@ -87,53 +88,54 @@ public class CannonDaoImpl implements CannonDao {
     }
     @Override
     public BigInteger createCannon(BigInteger cannonTemplateId) {
-        return createCannon(cannonTemplateId, null); 
+        return createCannon(cannonTemplateId, null);
     }
     @Override
     public BigInteger createCannon(BigInteger cannonTemplateId, BigInteger containerOwnerId) {
-        checkValidObjectIdWithType("cannon template", cannonTemplateId, DatabaseObject.CANNON_TEMPLATE_TYPE_ID);      
-        
-        int rowsAffected = jdbcTemplate.update(Query.CREATE_NEW_ENTITY, 
+        checkValidObjectIdWithType("cannon template", cannonTemplateId, DatabaseObject.CANNON_TEMPLATE_TYPE_ID);
+
+        int rowsAffected = jdbcTemplate.update(Query.CREATE_NEW_ENTITY,
                 new Object[] {containerOwnerId == null ? null : containerOwnerId.longValueExact(),
-                        DatabaseObject.CANNON_OBJTYPE_ID, 
+                        DatabaseObject.CANNON_OBJTYPE_ID,
                         cannonTemplateId.longValueExact(), cannonTemplateId.longValueExact(),
                         DatabaseAttribute.CANNON_NAME_ID});
         if (rowsAffected == 0) throwRuntimeException(new IllegalStateException("No effect on database"));
-        
+
         return jdbcTemplate.queryForObject(Query.GET_CURRVAL,BigDecimal.class).toBigInteger();
     }
 
     @Override
     public void deleteCannon(BigInteger cannonId) {
-        int rowsAffected = jdbcTemplate.update(Query.DELETE_OBJECT, 
+        int rowsAffected = jdbcTemplate.update(Query.DELETE_OBJECT,
                 new Object[] {cannonId.longValueExact(), DatabaseObject.CANNON_OBJTYPE_ID});
-
+        if (rowsAffected == 0) log.log(Level.WARN,"Nothing to delete from database");
     }
-    
+
     private void throwRuntimeException(RuntimeException ex) {
+        log.log(Level.ERROR, "DAOException: ", ex);
         throw ex;
     }
 
     private List<Cannon> getAllCannonsFromAnywhere(BigInteger containerId) {
-        List<Cannon> pickedUpCannons = jdbcTemplate.query(Query.GET_ENTITIES_FROM_CONTAINER, 
-                new Object[] {DatabaseObject.CANNON_OBJTYPE_ID, containerId.longValueExact(), 
-                              DatabaseObject.CANNON_OBJTYPE_ID, containerId.longValueExact() },
+        List<Cannon> pickedUpCannons = jdbcTemplate.query(Query.GET_ENTITIES_FROM_CONTAINER,
+                new Object[] {DatabaseObject.CANNON_OBJTYPE_ID, containerId.longValueExact(),
+                        DatabaseObject.CANNON_OBJTYPE_ID, containerId.longValueExact() },
                 new CannonListExtractor());
         return pickedUpCannons;
     }
-    
+
     private void checkValidObjectIdWithType(String aboutId, BigInteger objId, int objTypeId){
         try{
-            jdbcTemplate.queryForObject(Query.CHECK_OBJECT, 
-                    new Object[] {objId.longValueExact(), objTypeId},  
+            jdbcTemplate.queryForObject(Query.CHECK_OBJECT,
+                    new Object[] {objId.longValueExact(), objTypeId},
                     BigDecimal.class);
         } catch (EmptyResultDataAccessException e) {
             throwRuntimeException(new IllegalArgumentException("Wrong " + aboutId + " id = " + objId));
         }
     }
-    
+
     private final class CannonExtractor implements ResultSetExtractor<Cannon> {
-        
+
         private BigInteger cannonId;
 
         public CannonExtractor(BigInteger cannonId) {
@@ -143,22 +145,22 @@ public class CannonDaoImpl implements CannonDao {
         @Override
         public Cannon extractData(ResultSet rs) throws SQLException, DataAccessException {
             if (!rs.isBeforeFirst()) return null;
-            
+
             Map<String, String> papamMap = new HashMap<>(4);
             while (rs.next()) {
                 papamMap.put(rs.getString(1), rs.getString(2));
             }
-            
-            return new Cannon(cannonId, 
-                    papamMap.remove(Cannon.NAME), 
+
+            return new Cannon(cannonId,
+                    papamMap.remove(Cannon.NAME),
                     Integer.valueOf(papamMap.remove(Cannon.DAMAGE)),
-                    Integer.valueOf(papamMap.remove(Cannon.DISTANCE)), 
+                    Integer.valueOf(papamMap.remove(Cannon.DISTANCE)),
                     Integer.valueOf(papamMap.remove(Cannon.COST)));
         }
     }
 
     private final class CannonListExtractor implements ResultSetExtractor<List<Cannon>> {
-        
+
         @Override
         public List<Cannon> extractData(ResultSet rs) throws SQLException, DataAccessException {
             Map<String, String> papamMap;
@@ -175,13 +177,13 @@ public class CannonDaoImpl implements CannonDao {
                     papamMap.put(rs.getString(2), rs.getString(3));
                 }
             }
-            
+
             List<Cannon> cannonList = new ArrayList<>(cannonMap.size());
             Cannon nextCannon;
             Map<String, String> nextParamMap;
             for (Entry<BigDecimal, Map<String, String>> entry : cannonMap.entrySet()) {
                 nextParamMap = entry.getValue();
-                nextCannon = new Cannon(entry.getKey().toBigInteger(), 
+                nextCannon = new Cannon(entry.getKey().toBigInteger(),
                         nextParamMap.remove(Cannon.NAME),
                         Integer.valueOf(nextParamMap.remove(Cannon.DAMAGE)),
                         Integer.valueOf(nextParamMap.remove(Cannon.DISTANCE)),

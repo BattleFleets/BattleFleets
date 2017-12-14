@@ -5,7 +5,7 @@ import java.math.BigInteger;
 public class DatabaseObject {
 
 
-
+    public static final BigInteger MAST_TEMPLATE_OBJTYPE_ID = new BigInteger("2");
     public static final int CANNON_TEMPLATE_TYPE_ID = 3;
     public static final int SHIP_OBJTYPE_ID = 6;
     public static final int HOLD_OBJTYPE_ID = 9;
@@ -15,8 +15,9 @@ public class DatabaseObject {
     public static final int KULEVRIN_TEMPLATE_ID = 13;
     public static final BigInteger PLAYER_OBJTYPE_ID = new BigInteger("10");
 
-    public static final BigInteger MAST_TEMPLATE_OBJTYPE_ID = new BigInteger("2");
+    public static final BigInteger T_CARAVELLA_OBJECT_ID = new BigInteger("1");
     public static final BigInteger GOODS_TEMPLATE_TYPE_ID = new BigInteger("5");
+    public static final BigInteger MAST1_TEMPLATE_OBJECT_ID = new BigInteger("6");
     public static final BigInteger MAST_OBJTYPE_ID = new BigInteger("7");
     public static final BigInteger GOODS_OBJTYPE_ID = new BigInteger("14");
     public static final BigInteger WOOD_TEMPLATE_ID = new BigInteger("17");

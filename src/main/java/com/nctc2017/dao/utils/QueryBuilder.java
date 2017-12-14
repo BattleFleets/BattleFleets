@@ -204,14 +204,14 @@ public class QueryBuilder {
         ArrayList<SqlParameter> declaredParams = new ArrayList<>();
         NUMBER newObjectId = JdbcConverter.toNumber(objectColumnsValues.get(OBJECT_ID));
 
-                StringBuilder attributesQuery = new StringBuilder();
-                String oneAttributeQuery = " INTO attributes_value(attr_id, object_id, value, date_value) VALUES ( ? , obj_sq.currval, ?, ? ) ";
-                for (int i = 0; i < attributes.size() + dateAttributes.size(); i++) {
-                    attributesQuery.append(oneAttributeQuery);
-                }
+        StringBuilder attributesQuery = new StringBuilder();
+        String oneAttributeQuery = " INTO attributes_value(attr_id, object_id, value, date_value) VALUES ( ? , obj_sq.currval, ?, ? ) ";
+        for (int i = 0; i < attributes.size() + dateAttributes.size(); i++) {
+            attributesQuery.append(oneAttributeQuery);
+        }
 
-                String insertObjectQuery = "INSERT ALL INTO objects (object_id, parent_id, object_type_id, source_id, name)" +
-                        " values (obj_sq.nextval, ?, ?, ?, ";
+        String insertObjectQuery = "INSERT ALL INTO objects (object_id, parent_id, object_type_id, source_id, name)" +
+                " values (obj_sq.nextval, ?, ?, ?, ";
 
         String objectNameQuery;
         if (objectColumnsValues.containsKey(SOURCE_OBJECT_ID)) {
