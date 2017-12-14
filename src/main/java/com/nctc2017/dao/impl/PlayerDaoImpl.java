@@ -41,6 +41,7 @@ public class PlayerDaoImpl implements PlayerDao{
     private static Logger log = Logger.getLogger(PlayerDaoImpl.class.getName());
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
     @Override
     public String addNewPlayer(String login, String password, String email) {
         SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(createPlayerFunctionName);
