@@ -78,7 +78,7 @@ public class CannonDaoImplIntegrationTest {
         BigInteger id = cannonDao.createCannon(kulevrinTemplateId);
         Cannon cannon = cannonDao.findById(id);
         // then
-        assertEquals(id, cannon.getId());
+        assertEquals(id, cannon.getThingId());
         assertTrue(cannon.getCost() > 0);
         assertTrue(cannon.getDamage() > 0);
         assertTrue(cannon.getDistance() > 0);
@@ -94,7 +94,7 @@ public class CannonDaoImplIntegrationTest {
         BigInteger id = cannonDao.createCannon(mortarTemplateId);
         Cannon cannon = cannonDao.findById(id);
         // then
-        assertEquals(id, cannon.getId());
+        assertEquals(id, cannon.getThingId());
         assertTrue(cannon.getCost() > 0);
         assertTrue(cannon.getDamage() > 0);
         assertTrue(cannon.getDistance() > 0);
@@ -110,7 +110,7 @@ public class CannonDaoImplIntegrationTest {
         BigInteger id = cannonDao.createCannon(bombardTemplateId);
         Cannon cannon = cannonDao.findById(id);
         // then
-        assertEquals(id, cannon.getId());
+        assertEquals(id, cannon.getThingId());
         assertTrue(cannon.getCost() > 0);
         assertTrue(cannon.getDamage() > 0);
         assertTrue(cannon.getDistance() > 0);

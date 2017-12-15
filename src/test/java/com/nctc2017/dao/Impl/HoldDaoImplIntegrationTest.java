@@ -14,6 +14,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nctc2017.configuration.ApplicationConfig;
+import com.nctc2017.constants.DatabaseObject;
+import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.HoldDao;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -22,6 +24,8 @@ import com.nctc2017.dao.HoldDao;
 public class HoldDaoImplIntegrationTest {
     @Autowired
     HoldDao holdDao;
+    @Autowired
+    CannonDao cannonDao;
     
     @Test
     @Rollback(true)
@@ -70,29 +74,29 @@ public class HoldDaoImplIntegrationTest {
     }
     
     @Test
-    @Ignore
     @Rollback(true)
     public void testAddCargo() {
         // Given
-        //TODO create cargo
-        BigInteger id = holdDao.createHold();
+        BigInteger cargoId = cannonDao.createCannon(BigInteger.valueOf(DatabaseObject.MORTAR_TEMPLATE_ID));
+        BigInteger holdId = holdDao.createHold();
         
         // When
-        //holdDao.addCargo(cargoId, holdId);
-        // Then okay
+        boolean addResult = holdDao.addCargo(cargoId, holdId);
+        // Then
+        assertTrue(addResult);
     }
     
     @Test
-    @Ignore
     @Rollback(true)
     public void testAddCargoToInvalidHold() {
         // Given
-        //TODO create cargo
+        BigInteger cargoId = cannonDao.createCannon(BigInteger.valueOf(DatabaseObject.MORTAR_TEMPLATE_ID));
         BigInteger holdId = BigInteger.ONE;
         
         // When
-        //holdDao.addCargo(cargoId, holdId);
-        // Then ?
+        boolean addResult = holdDao.addCargo(cargoId, holdId);
+        // Then 
+        assertFalse(addResult);
     }
     
     @Test

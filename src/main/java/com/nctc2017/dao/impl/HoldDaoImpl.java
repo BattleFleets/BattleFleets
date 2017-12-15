@@ -21,7 +21,7 @@ import com.nctc2017.dao.HoldDao;
 @Qualifier("holdDao")
 public class HoldDaoImpl implements HoldDao {
 
-    private static Logger log = Logger.getLogger(HoldDaoImpl.class.getName());
+    private static Logger log = Logger.getLogger(HoldDaoImpl.class);
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -34,9 +34,10 @@ public class HoldDaoImpl implements HoldDao {
                     BigDecimal.class);
             return holdId.toBigInteger();
         } catch (EmptyResultDataAccessException e) {
-            throwRuntimeException(new IllegalArgumentException("Wrong ship object id to find Hold. Id = " + shipId));
+            RuntimeException ex = new IllegalArgumentException("Wrong ship object id to find Hold. Id = " + shipId);
+            log.log(Level.ERROR, "HoldDAO Exception while finding hold by ship id.", ex);
+            throw ex;
         }
-        return null; // never happens
     }
 
     @Override
@@ -55,14 +56,22 @@ public class HoldDaoImpl implements HoldDao {
     }
     
     @Override
-    public BigInteger createHold(BigInteger shipId) {        
+    public BigInteger createHold(BigInteger shipId) {   
+        BigDecimal newId = jdbcTemplate.queryForObject(Query.GET_NEXTVAL,BigDecimal.class);
+        
         int rowsAffected = jdbcTemplate.update(Query.CRATE_NEW_CONTAINER, 
-                new Object[] {shipId == null ? null : shipId.longValueExact(),
+                new Object[] {newId, 
+                        shipId == null ? null : shipId.longValueExact(),
                         DatabaseObject.HOLD_OBJTYPE_ID, 
                         DatabaseObject.HOLD_OBJTYPE_ID});
-        if (rowsAffected == 0) throwRuntimeException(new IllegalStateException("No effect on database"));
         
-        return jdbcTemplate.queryForObject(Query.GET_CURRVAL,BigDecimal.class).toBigInteger();
+        if (rowsAffected == 0) {
+            RuntimeException ex = new IllegalStateException("No hold was created, one expected.");
+            log.log(Level.ERROR, "HoldDAO Exception while creating new hold.", ex);
+            throw ex;
+        }
+        
+        return newId.toBigIntegerExact();
     }
 
     @Override
@@ -83,13 +92,11 @@ public class HoldDaoImpl implements HoldDao {
             return true;
         if (rowsAffected == 0)
             return false;
-        else 
-            throwRuntimeException(new IllegalStateException("Cargo was put into several holds"));
-        return false;
+        else {
+            RuntimeException ex = new IllegalStateException("Cargo (id = " + cargoId + ") was put into several holds");
+            log.log(Level.FATAL, "HoldDAO Exception while adding cargo in hold with id = " + holdId, ex);
+            throw ex;
+        }
     }
 
-    private void throwRuntimeException(RuntimeException ex) {
-        log.log(Level.ERROR, "DAOException: ", ex);
-        throw ex;
-    }
 }
