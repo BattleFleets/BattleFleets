@@ -53,4 +53,6 @@ public interface PlayerDao {
 
     List<BigInteger> findAllShip(BigInteger playerId);
 
+    void movePlayerToCity(BigInteger playerId, BigInteger cityId);
+
 }

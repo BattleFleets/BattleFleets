@@ -7,6 +7,10 @@ import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.PlayerDao;
 
 import com.nctc2017.dao.ShipDao;
+import com.nctc2017.dao.utils.QueryExecutor;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -21,9 +25,8 @@ import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import javax.validation.constraints.NotNull;
 
 import static java.lang.Integer.parseInt;
 
@@ -38,9 +41,11 @@ public class PlayerDaoImpl implements PlayerDao{
     public static final String queryForPlayerCityIDById="SELECT PARENT_ID FROM OBJECTS WHERE OBJECT_ID=? AND OBJECT_TYPE_ID=?";
     public static final String queryForPlayersAttributes="SELECT VALUE FROM ATTRIBUTES_VALUE,OBJECTS WHERE OBJECTS.OBJECT_ID=ATTRIBUTES_VALUE.OBJECT_ID AND OBJECTS.OBJECT_TYPE_ID=? AND ATTRIBUTES_VALUE.ATTR_ID<>?";
     public static final String queryForCityName="SELECT city.NAME FROM OBJECTS city, OBJTYPE city_type WHERE city_type.NAME=? and city_type.OBJECT_TYPE_ID=city.OBJECT_TYPE_ID and city.OBJECT_ID=?";
-    private static Logger log = Logger.getLogger(PlayerDaoImpl.class.getName());
+    private static Logger log = Logger.getLogger(PlayerDaoImpl.class);
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private QueryExecutor queryExecutor;
 
     @Override
     public String addNewPlayer(String login, String password, String email) {
@@ -56,7 +61,7 @@ public class PlayerDaoImpl implements PlayerDao{
             jdbcTemplate.queryForList(queryForPlayerAttributesByLogin, new Object[]{DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(), login, DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
         }
         catch (EmptyResultDataAccessException e) {
-            log.log(Level.SEVERE, "Player is not exist or login is incorrect", e);
+            log.log(Level.ERROR, "Player is not exist or login is incorrect", e);
             throw e;
         }
         List<String>  attributes=jdbcTemplate.queryForList(queryForPlayerAttributesByLogin, new Object[]{DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(),login, DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
@@ -108,7 +113,7 @@ public class PlayerDaoImpl implements PlayerDao{
             jdbcTemplate.queryForList(queryForPlayerAttributesById, new Object[]{playerId.longValueExact(), DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(), DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
         }
         catch (EmptyResultDataAccessException e) {
-            log.log(Level.SEVERE, "Player is not exist or playerId is incorrect", e);
+            log.log(Level.ERROR, "Player is not exist or playerId is incorrect", e);
             throw e;
         }
             List<String> attributes = jdbcTemplate.queryForList(queryForPlayerAttributesById, new Object[]{playerId.longValueExact(), DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(), DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
@@ -202,5 +207,15 @@ public class PlayerDaoImpl implements PlayerDao{
         findPlayerById(playerId);
         List<BigInteger> ships=jdbcTemplate.queryForList("SELECT OBJECT_ID FROM OBJECTS WHERE PARENT_ID=? AND OBJECT_TYPE_ID=?",BigInteger.class,playerId.longValueExact(),DatabaseObject.SHIP_OBJTYPE_ID.longValueExact());
         return ships;
+    }
+    
+    @Override
+    public void movePlayerToCity(@NotNull BigInteger playerId, @NotNull BigInteger cityId) {
+        int res = queryExecutor.putEntityToContainer(cityId, playerId, DatabaseObject.CITY_OBJTYPE_ID);
+        if (res != 1) {
+            RuntimeException ex = new IllegalArgumentException("Wrong city object id = " + cityId);
+            log.log(Level.ERROR, "PlayerDAO Exception while moving player with id = " + playerId, ex);
+            throw ex;
+        }
     }
 }

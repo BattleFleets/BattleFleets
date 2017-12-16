@@ -19,8 +19,8 @@ public class DatabaseObject {
     public static final BigInteger GEMS_TEMPLATE_ID = BigInteger.valueOf(26);
     public static final BigInteger T_CARAVELLA_OBJECT_ID = BigInteger.valueOf(1);
     public static final BigInteger MAST1_TEMPLATE_OBJECT_ID = BigInteger.valueOf(6);
-    public static final BigInteger MAST_TEMPLATE_OBJTYPE_ID = BigInteger.valueOf(2);
     
+    public static final BigInteger MAST_TEMPLATE_OBJTYPE_ID = BigInteger.valueOf(2);
     public static final BigInteger CANNON_TEMPLATE_TYPE_ID = BigInteger.valueOf(3);
     public static final BigInteger GOODS_TEMPLATE_TYPE_ID = BigInteger.valueOf(5);
     
@@ -30,6 +30,6 @@ public class DatabaseObject {
     public static final BigInteger PLAYER_OBJTYPE_ID = BigInteger.valueOf(10);
     public static final BigInteger MAST_OBJTYPE_ID = BigInteger.valueOf(7);
     public static final BigInteger GOODS_OBJTYPE_ID = BigInteger.valueOf(14);
-
+    public static final BigInteger CITY_OBJTYPE_ID = BigInteger.valueOf(16);
 
 }

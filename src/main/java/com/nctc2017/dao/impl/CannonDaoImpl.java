@@ -47,7 +47,7 @@ public class CannonDaoImpl implements CannonDao {
                 new CannonExtractor(cannonId));
         if (pickedUpCannon == null){
             RuntimeException ex = new IllegalArgumentException("Wrong cannon object id = " + cannonId);
-            log.log(Level.ERROR, "CannonDAO Exception while find by id ", ex);
+            log.log(Level.ERROR, "CannonDAO Exception while find by id.", ex);
             throw ex;
         }
         return pickedUpCannon;
@@ -78,28 +78,28 @@ public class CannonDaoImpl implements CannonDao {
     }
 
     @Override
-    public List<Cannon> getAllCannonFromStock(BigInteger stockId) {
+    public List<Cannon> getAllCannonFromStock(@NotNull BigInteger stockId) {
         // TODO Validator.dbInstanceOf("stock", stockId, DatabaseObject.STOCK_OBJTYPE_ID);      
         return getAllCannonsFromAnywhere(stockId);
     }
 
     @Override
-    public List<Cannon> getAllCannonFromHold(BigInteger holdId) {
+    public List<Cannon> getAllCannonFromHold(@NotNull BigInteger holdId) {
         Validator.dbInstanceOf(jdbcTemplate, "hold", holdId, DatabaseObject.HOLD_OBJTYPE_ID);
         return getAllCannonsFromAnywhere(holdId);
     }
 
     @Override
-    public List<Cannon> getAllCannonFromShip(BigInteger shipId) {
+    public List<Cannon> getAllCannonFromShip(@NotNull BigInteger shipId) {
         Validator.dbInstanceOf(jdbcTemplate, "ship", shipId, DatabaseObject.SHIP_OBJTYPE_ID);
         return getAllCannonsFromAnywhere(shipId);
     }
     @Override
-    public BigInteger createCannon(BigInteger cannonTemplateId) {
+    public BigInteger createCannon(@NotNull BigInteger cannonTemplateId) {
         return createCannon(cannonTemplateId, null); 
     }
     @Override
-    public BigInteger createCannon(BigInteger cannonTemplateId, BigInteger containerOwnerId) {
+    public BigInteger createCannon(@NotNull BigInteger cannonTemplateId, BigInteger containerOwnerId) {
         Validator.dbInstanceOf(jdbcTemplate,
                 "cannon template", 
                 cannonTemplateId, 
@@ -124,13 +124,13 @@ public class CannonDaoImpl implements CannonDao {
     }
 
     @Override
-    public void deleteCannon(BigInteger cannonId) {
+    public void deleteCannon(@NotNull BigInteger cannonId) {
         int rowsAffected = queryExecutor.delete(cannonId, DatabaseObject.CANNON_OBJTYPE_ID);
         if (rowsAffected == 0) 
             log.log(Level.WARN,"No cannon deleted with id = " + cannonId + ", expected one.");
     }
 
-    private List<Cannon> getAllCannonsFromAnywhere(BigInteger containerId) {
+    private List<Cannon> getAllCannonsFromAnywhere(@NotNull BigInteger containerId) {
         List<Cannon> pickedUpCannons = queryExecutor
                 .getEntitiesFromContainer(containerId, 
                         DatabaseObject.CANNON_OBJTYPE_ID, 
@@ -142,7 +142,7 @@ public class CannonDaoImpl implements CannonDao {
         
         private BigInteger cannonId;
 
-        public CannonExtractor(BigInteger cannonId) {
+        public CannonExtractor(@NotNull BigInteger cannonId) {
             this.cannonId = cannonId;
         }
 

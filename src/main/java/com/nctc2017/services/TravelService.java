@@ -1,31 +1,48 @@
 package com.nctc2017.services;
 
+import java.math.BigInteger;
 import java.util.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.nctc2017.bean.City;
+import com.nctc2017.bean.Player;
+import com.nctc2017.dao.CityDao;
+import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.services.utils.TravelManager;
+
+@Service
 public class TravelService {
+    
+    @Autowired
+    TravelManager travelManager;
+    @Autowired
+    private PlayerDao playerDao;
+    @Autowired
+    private CityDao cityDao;
 
-
-    public void relocate(int idUser, int cityId) {
-        // TODO implement here
+    public void relocate(BigInteger playerId, BigInteger cityId) {
+        Player player = playerDao.findPlayerById(playerId);
+        travelManager.startJourney(playerId, player.getLevel().intValueExact(), cityId);
     }
 
-    public String getCurrentCity(int playerId) {
-        // TODO implement here
-        return "";
+    public City getCurrentCity(BigInteger playerId) {
+        City city = playerDao.getPlayerCity(playerId);
+        return city;
     }
 
-    public String getCities() {
-        // TODO implement here
-        return "";
+    public List<City> getCities() {
+        List<City> allCity = cityDao.findAll();
+        return allCity;
     }
 
-    public int getRelocateTime(int playerId) {
-        // TODO implement here
-        return 0;
+    public int getRelocateTime(BigInteger playerId) {
+        return travelManager.getRelocateTime(playerId);
     }
 
-    public boolean isEnemyOnHorizon(int playerId) {
-        // TODO implement here
-        return false;
+    public boolean isEnemyOnHorizon(BigInteger playerId) {
+        return travelManager.prepareEnemyFor(playerId);
     }
 
     public int pauseRelocateTime(int playerId) {
