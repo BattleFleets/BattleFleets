@@ -28,7 +28,7 @@ public class CannonDaoImplIntegrationTest {
     @Rollback(true)
     public void testKulevrinCreate() {
         // Given
-        BigInteger kulevrinTemplateId = BigInteger.valueOf(DatabaseObject.KULEVRIN_TEMPLATE_ID);
+        BigInteger kulevrinTemplateId = DatabaseObject.KULEVRIN_TEMPLATE_ID;
         // when
         BigInteger id = cannonDao.createCannon(kulevrinTemplateId);
         // then
@@ -40,7 +40,7 @@ public class CannonDaoImplIntegrationTest {
     @Rollback(true)
     public void testMortarCreate() {
         // Given
-        BigInteger mortarTemplateId = BigInteger.valueOf(DatabaseObject.MORTAR_TEMPLATE_ID);
+        BigInteger mortarTemplateId = DatabaseObject.MORTAR_TEMPLATE_ID;
         // when
         BigInteger id = cannonDao.createCannon(mortarTemplateId);
         // then
@@ -61,7 +61,7 @@ public class CannonDaoImplIntegrationTest {
     @Rollback(true)
     public void testBombardCreate() {
         // Given
-        BigInteger bombardTemplateId = BigInteger.valueOf(DatabaseObject.BOMBARD_TEMPLATE_ID);
+        BigInteger bombardTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
         // when
         BigInteger id = cannonDao.createCannon(bombardTemplateId);
         // then
@@ -73,7 +73,7 @@ public class CannonDaoImplIntegrationTest {
     @Rollback(true)
     public void testKulevrinFind() {
         // Given
-        BigInteger kulevrinTemplateId = BigInteger.valueOf(DatabaseObject.KULEVRIN_TEMPLATE_ID);
+        BigInteger kulevrinTemplateId = DatabaseObject.KULEVRIN_TEMPLATE_ID;
         // when
         BigInteger id = cannonDao.createCannon(kulevrinTemplateId);
         Cannon cannon = cannonDao.findById(id);
@@ -89,7 +89,7 @@ public class CannonDaoImplIntegrationTest {
     @Rollback(true)
     public void testMortarFind() {
         // Given
-        BigInteger mortarTemplateId = BigInteger.valueOf(DatabaseObject.MORTAR_TEMPLATE_ID);
+        BigInteger mortarTemplateId = DatabaseObject.MORTAR_TEMPLATE_ID;
         // when
         BigInteger id = cannonDao.createCannon(mortarTemplateId);
         Cannon cannon = cannonDao.findById(id);
@@ -105,7 +105,7 @@ public class CannonDaoImplIntegrationTest {
     @Rollback(true)
     public void testBombardFind() {
         // Given
-        BigInteger bombardTemplateId = BigInteger.valueOf(DatabaseObject.BOMBARD_TEMPLATE_ID);
+        BigInteger bombardTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
         // when
         BigInteger id = cannonDao.createCannon(bombardTemplateId);
         Cannon cannon = cannonDao.findById(id);
@@ -121,7 +121,7 @@ public class CannonDaoImplIntegrationTest {
     @Rollback(true)
     public void testCannonDelete() {
         // Given
-        BigInteger bombardTemplateId = BigInteger.valueOf(DatabaseObject.BOMBARD_TEMPLATE_ID);
+        BigInteger bombardTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
         // when
         BigInteger id = cannonDao.createCannon(bombardTemplateId);
         cannonDao.deleteCannon(id);

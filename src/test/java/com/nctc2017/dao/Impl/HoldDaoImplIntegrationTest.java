@@ -77,26 +77,26 @@ public class HoldDaoImplIntegrationTest {
     @Rollback(true)
     public void testAddCargo() {
         // Given
-        BigInteger cargoId = cannonDao.createCannon(BigInteger.valueOf(DatabaseObject.MORTAR_TEMPLATE_ID));
+        BigInteger cargoId = cannonDao.createCannon(DatabaseObject.MORTAR_TEMPLATE_ID);
         BigInteger holdId = holdDao.createHold();
         
         // When
-        boolean addResult = holdDao.addCargo(cargoId, holdId);
+        holdDao.addCargo(cargoId, holdId);
         // Then
-        assertTrue(addResult);
+        // no exceptions;
     }
     
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void testAddCargoToInvalidHold() {
         // Given
-        BigInteger cargoId = cannonDao.createCannon(BigInteger.valueOf(DatabaseObject.MORTAR_TEMPLATE_ID));
+        BigInteger cargoId = cannonDao.createCannon(DatabaseObject.MORTAR_TEMPLATE_ID);
         BigInteger holdId = BigInteger.ONE;
         
         // When
-        boolean addResult = holdDao.addCargo(cargoId, holdId);
+        holdDao.addCargo(cargoId, holdId);
         // Then 
-        assertFalse(addResult);
+        // exception;
     }
     
     @Test

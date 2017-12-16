@@ -1,7 +1,6 @@
 package com.nctc2017.constants;
 
 public class Query {
-    
     /**
      * This query allows to get any Entity by OBJECT_TYPE_ID and OBJECT_ID.
      * Call execute() or query() must have 4 parameters for PreparedStatement: OBJECT_TYPE_ID, OBJECT_ID, OBJECT_TYPE_ID, OBJECT_ID 
@@ -73,7 +72,6 @@ public class Query {
                     + "    entity_obj.OBJECT_TYPE_ID = ?"// obj type id
                     + " AND entity_obj.PARENT_ID = ?"// id obj container
                     + " AND atr_obj.OBJECT_TYPE_ID = entity_obj.OBJECT_TYPE_ID"
-
                     + " AND atr_val.ATTR_ID = atr_obj.ATTR_ID"
                     + " AND atr_val.OBJECT_ID = entity_obj.OBJECT_ID";
 
@@ -117,8 +115,22 @@ public class Query {
             "INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME)"
                     + " VALUES (?, ?, ?, null,"
                     + " (SELECT NAME FROM OBJTYPE WHERE OBJECT_TYPE_ID = ?))";
-    
-    /**DELETE any entity. PreparedStatement args order: object_id, object_type_id*/
+
+    /**
+     * This query allows to update any Attributes_Value by OBJECT_ID
+     * Call update() must have 5 parameters for PreparedStatement:
+     * Your new value, ATTRIBUTE_ID, OBJECT_ID, OBJECT_TYPE_ID,OBJECT_ID
+     * */
+    public static final String UPDATE_ONE_ATTRIBUTE_VALUE =
+            "UPDATE  attributes_value" +
+            "SET VALUE = ?" +
+            "WHERE attributes_value.attr_id = ?" +
+            "AND attributes_value.object_id = ?" +
+            "AND EXISTS (" +
+            "SELECT *" +
+            "FROM objects o" +
+            "WHERE o.object_type_id = ?" +
+            "AND o.object_id = ?)";
     public static final String DELETE_OBJECT = "DELETE objects WHERE object_id = ? AND object_type_id = ?";
     
     /** Put entity to container with checking if the correct parameter id of container you have.<br>
@@ -142,3 +154,4 @@ public class Query {
     public static final String GET_ATTR_VALUE =
             "SELECT value FROM attributes_value WHERE object_id = ? and attr_id = ? ";
 }
+

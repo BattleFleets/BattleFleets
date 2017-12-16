@@ -8,7 +8,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -16,23 +15,25 @@ import org.springframework.stereotype.Repository;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
 import com.nctc2017.dao.HoldDao;
+import com.nctc2017.dao.utils.JdbcConverter;
+import com.nctc2017.dao.utils.QueryExecutor;
 
 @Repository
 @Qualifier("holdDao")
 public class HoldDaoImpl implements HoldDao {
 
     private static Logger log = Logger.getLogger(HoldDaoImpl.class);
+    private static String exceptionMessage = "HoldDAO Exception while adding cargo in hold";
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private QueryExecutor queryExecutor; 
 
     @Override
     public BigInteger findHold(BigInteger shipId) {
-        BigDecimal holdId;
         try {
-            holdId = jdbcTemplate.queryForObject(Query.FIND_CONTAINER_BY_OWNER_ID,
-                    new Object[] { DatabaseObject.SHIP_OBJTYPE_ID, shipId.longValueExact() }, 
-                    BigDecimal.class);
-            return holdId.toBigInteger();
+            BigInteger holdId = queryExecutor.findContainerByOwnerId(shipId, DatabaseObject.SHIP_OBJTYPE_ID);
+            return holdId;
         } catch (EmptyResultDataAccessException e) {
             RuntimeException ex = new IllegalArgumentException("Wrong ship object id to find Hold. Id = " + shipId);
             log.log(Level.ERROR, "HoldDAO Exception while finding hold by ship id.", ex);
@@ -41,13 +42,12 @@ public class HoldDaoImpl implements HoldDao {
     }
 
     @Override
-    public BigInteger getOccupiedVolume(BigInteger shipId) {
-        List<BigDecimal> entitiesId = jdbcTemplate.queryForList(Query.FIND_ALL_IN_CONTAINER_BY_OWNER_ID,
-                new Object[] { DatabaseObject.SHIP_OBJTYPE_ID, shipId.longValueExact() }, 
-                BigDecimal.class);
+    public int getOccupiedVolume(BigInteger shipId) {
+        List<BigInteger> entitiesId = 
+                queryExecutor.findAllEntitiesInConteinerByOwnerId(shipId, DatabaseObject.SHIP_OBJTYPE_ID);
         //if (entitiesId == null) throwRuntimeException(new IllegalArgumentException("Wrong ship object id to find Hold. Id = " + shipId));
 
-        return BigInteger.valueOf(entitiesId.size());
+        return entitiesId.size();
     }
 
     @Override
@@ -56,14 +56,15 @@ public class HoldDaoImpl implements HoldDao {
     }
     
     @Override
+    
     public BigInteger createHold(BigInteger shipId) {   
         BigDecimal newId = jdbcTemplate.queryForObject(Query.GET_NEXTVAL,BigDecimal.class);
         
         int rowsAffected = jdbcTemplate.update(Query.CRATE_NEW_CONTAINER, 
                 new Object[] {newId, 
-                        shipId == null ? null : shipId.longValueExact(),
-                        DatabaseObject.HOLD_OBJTYPE_ID, 
-                        DatabaseObject.HOLD_OBJTYPE_ID});
+                        JdbcConverter.toNumber(shipId),
+                        JdbcConverter.toNumber(DatabaseObject.HOLD_OBJTYPE_ID), 
+                        JdbcConverter.toNumber(DatabaseObject.HOLD_OBJTYPE_ID)});
         
         if (rowsAffected == 0) {
             RuntimeException ex = new IllegalStateException("No hold was created, one expected.");
@@ -76,25 +77,21 @@ public class HoldDaoImpl implements HoldDao {
 
     @Override
     public void deleteHold(BigInteger holdId) {
-        int rowsAffected = jdbcTemplate.update(Query.DELETE_OBJECT, 
-                new Object[] {holdId.longValueExact(), DatabaseObject.HOLD_OBJTYPE_ID});
-        if (rowsAffected == 0) log.log(Level.WARN,"Nothing to delete from database");
+        int rowsAffected = queryExecutor.delete(holdId,  DatabaseObject.HOLD_OBJTYPE_ID);
+        if (rowsAffected == 0) 
+            log.log(Level.WARN,"No hold deleted with id = " + holdId + ", expected one.");
     }
 
     @Override
-    public boolean addCargo(BigInteger cargoId, BigInteger holdId) {
-        Long holdIdLong = holdId.longValueExact();
-        Long cargoIdLong = cargoId.longValueExact();
-        int rowsAffected = jdbcTemplate.update(Query.PUT_ENTITY_TO_CONTAINER, 
-                new Object[] {holdIdLong, cargoIdLong,
-                        holdIdLong, holdIdLong, DatabaseObject.HOLD_OBJTYPE_ID});
-        if (rowsAffected == 1)
-            return true;
-        if (rowsAffected == 0)
-            return false;
-        else {
+    public void addCargo(BigInteger cargoId, BigInteger holdId) {
+        int rowsAffected = queryExecutor.putEntityToContainer(holdId, cargoId, DatabaseObject.HOLD_OBJTYPE_ID);
+        if (rowsAffected == 0) {
+            RuntimeException ex = new IllegalArgumentException("Some id might be wrong, cargoId = " + cargoId + ", or holdId = " + holdId);
+            log.log(Level.ERROR, exceptionMessage + " and nothing was added.", ex);
+            throw ex;
+        } else if (rowsAffected > 1) {
             RuntimeException ex = new IllegalStateException("Cargo (id = " + cargoId + ") was put into several holds");
-            log.log(Level.FATAL, "HoldDAO Exception while adding cargo in hold with id = " + holdId, ex);
+            log.log(Level.FATAL, exceptionMessage + " with id = " + holdId, ex);
             throw ex;
         }
     }

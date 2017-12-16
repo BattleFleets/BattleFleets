@@ -4,6 +4,8 @@ import java.util.Locale;
 
 import javax.sql.DataSource;
 
+import com.nctc2017.dao.MastDao;
+import com.nctc2017.dao.impl.MastDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

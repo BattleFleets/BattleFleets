@@ -10,12 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
@@ -25,7 +26,9 @@ import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
 import com.nctc2017.dao.CannonDao;
-import com.nctc2017.dao.ExecutorDao;
+import com.nctc2017.dao.utils.JdbcConverter;
+import com.nctc2017.dao.utils.QueryExecutor;
+import com.nctc2017.dao.utils.Validator;
 
 @Repository
 @Qualifier("cannonDao")
@@ -34,20 +37,20 @@ public class CannonDaoImpl implements CannonDao {
     private static Logger log = Logger.getLogger(CannonDaoImpl.class);
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private QueryExecutor queryExecutor; 
 
     @Override
-    public Cannon findById(BigInteger cannonId) {
-        try {
-            Cannon pickedUpCannon = jdbcTemplate.query(Query.FIND_ANY_ENTITY,
-                    new Object[] { DatabaseObject.CANNON_OBJTYPE_ID, cannonId.longValueExact(), 
-                                   DatabaseObject.CANNON_OBJTYPE_ID, cannonId.longValueExact() },
-                    new CannonExtractor(cannonId));
-            return pickedUpCannon;
-        } catch (DataAccessException e) {
-            RuntimeException ex = new IllegalArgumentException("Wrong cannon object id = " + cannonId, e);
+    public Cannon findById(@NotNull BigInteger cannonId) {
+        Cannon pickedUpCannon = queryExecutor.findEntity(cannonId, 
+                DatabaseObject.CANNON_OBJTYPE_ID,
+                new CannonExtractor(cannonId));
+        if (pickedUpCannon == null){
+            RuntimeException ex = new IllegalArgumentException("Wrong cannon object id = " + cannonId);
             log.log(Level.ERROR, "CannonDAO Exception while find by id ", ex);
             throw ex;
         }
+        return pickedUpCannon;
     }
 
     @Override
@@ -76,19 +79,19 @@ public class CannonDaoImpl implements CannonDao {
 
     @Override
     public List<Cannon> getAllCannonFromStock(BigInteger stockId) {
-        // TODO checkValidObjectIdWithType("stock", stockId, DatabaseObject.);      
+        // TODO Validator.dbInstanceOf("stock", stockId, DatabaseObject.STOCK_OBJTYPE_ID);      
         return getAllCannonsFromAnywhere(stockId);
     }
 
     @Override
     public List<Cannon> getAllCannonFromHold(BigInteger holdId) {
-        checkValidObjectIdWithType("hold", holdId, DatabaseObject.HOLD_OBJTYPE_ID);
+        Validator.dbInstanceOf(jdbcTemplate, "hold", holdId, DatabaseObject.HOLD_OBJTYPE_ID);
         return getAllCannonsFromAnywhere(holdId);
     }
 
     @Override
     public List<Cannon> getAllCannonFromShip(BigInteger shipId) {
-        // TODO checkValidObjectIdWithType("ship", holdId, DatabaseObject.);
+        Validator.dbInstanceOf(jdbcTemplate, "ship", shipId, DatabaseObject.SHIP_OBJTYPE_ID);
         return getAllCannonsFromAnywhere(shipId);
     }
     @Override
@@ -97,16 +100,20 @@ public class CannonDaoImpl implements CannonDao {
     }
     @Override
     public BigInteger createCannon(BigInteger cannonTemplateId, BigInteger containerOwnerId) {
-        checkValidObjectIdWithType("cannon template", cannonTemplateId, DatabaseObject.CANNON_TEMPLATE_TYPE_ID);      
+        Validator.dbInstanceOf(jdbcTemplate,
+                "cannon template", 
+                cannonTemplateId, 
+                DatabaseObject.CANNON_TEMPLATE_TYPE_ID);      
         
         BigDecimal newId = jdbcTemplate.queryForObject(Query.GET_NEXTVAL,BigDecimal.class);
         
         int rowsAffected = jdbcTemplate.update(Query.CREATE_NEW_ENTITY, 
                 new Object[] {newId, 
-                        containerOwnerId == null ? null : containerOwnerId.longValueExact(),
-                        DatabaseObject.CANNON_OBJTYPE_ID, 
-                        cannonTemplateId.longValueExact(), cannonTemplateId.longValueExact(),
-                        DatabaseAttribute.CANNON_NAME_ID});
+                        JdbcConverter.toNumber(containerOwnerId),// == null ? null : containerOwnerId.longValueExact(),
+                        JdbcConverter.toNumber(DatabaseObject.CANNON_OBJTYPE_ID), 
+                        JdbcConverter.toNumber(cannonTemplateId), 
+                        JdbcConverter.toNumber(cannonTemplateId),
+                        JdbcConverter.toNumber(DatabaseAttribute.CANNON_NAME_ID)});
         if (rowsAffected == 0){
             RuntimeException ex = new IllegalStateException("No cannon created, expected one new cannon");
             log.log(Level.ERROR, "CannonDAO Exception while creating new entity of cannon.", ex);
@@ -118,29 +125,17 @@ public class CannonDaoImpl implements CannonDao {
 
     @Override
     public void deleteCannon(BigInteger cannonId) {
-        int rowsAffected = jdbcTemplate.update(Query.DELETE_OBJECT, 
-                new Object[] {cannonId.longValueExact(), DatabaseObject.CANNON_OBJTYPE_ID});
-        if (rowsAffected == 0) log.log(Level.WARN,"No cannon deleted, expected one.");
+        int rowsAffected = queryExecutor.delete(cannonId, DatabaseObject.CANNON_OBJTYPE_ID);
+        if (rowsAffected == 0) 
+            log.log(Level.WARN,"No cannon deleted with id = " + cannonId + ", expected one.");
     }
 
     private List<Cannon> getAllCannonsFromAnywhere(BigInteger containerId) {
-        List<Cannon> pickedUpCannons = jdbcTemplate.query(Query.GET_ENTITIES_FROM_CONTAINER, 
-                new Object[] {DatabaseObject.CANNON_OBJTYPE_ID, containerId.longValueExact(), 
-                              DatabaseObject.CANNON_OBJTYPE_ID, containerId.longValueExact() },
-                new CannonListExtractor());
+        List<Cannon> pickedUpCannons = queryExecutor
+                .getEntitiesFromContainer(containerId, 
+                        DatabaseObject.CANNON_OBJTYPE_ID, 
+                        new CannonListExtractor());
         return pickedUpCannons;
-    }
-    
-    private void checkValidObjectIdWithType(String idDescription, BigInteger objId, int objTypeId){
-        try{
-            jdbcTemplate.queryForObject(Query.CHECK_OBJECT, 
-                    new Object[] {objId.longValueExact(), objTypeId},  
-                    BigDecimal.class);
-        } catch (EmptyResultDataAccessException e) {
-            RuntimeException ex= new IllegalArgumentException("Wrong " + idDescription + " id = " + objId, e);
-            log.log(Level.ERROR, "CannonDAO Exception while check valid object id with type id= " + objTypeId, ex);
-            throw ex;
-        }
     }
     
     private final class CannonExtractor implements ResultSetExtractor<Cannon> {

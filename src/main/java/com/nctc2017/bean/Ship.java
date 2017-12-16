@@ -1,31 +1,36 @@
 package com.nctc2017.bean;
 public class Ship extends ShipTemplate {
-    protected int shipId;
+	protected int shipId;
 
-    protected String name;
+	protected String name;
 
-    protected int curHealth;
+	protected int curHealth;
 
-    protected int curSailorsQuantity;
+	protected int curSailorsQuantity;
 
-    protected int curMastsQuantity;
+	protected int curMastsQuantity;
 
-    protected int curCannonQuantity;
+	protected int curCannonQuantity;
 
-    protected int curCarryingLimit;
+	protected int curCarryingLimit;
 
 
-	public Ship(String t_name, int maxHealth, int maxSailorsQuantity, int cost, int maxMastsQuantity,
-			int maxCannonQuantity, int maxCarryingLimit, int shipId, String cur_name, int curHealth,
-			int curSailorsQuantity, int cost2, int curMastsQuantity, int curCannonQuantity, int curCarryingLimit) {
-		super(t_name, maxHealth, maxSailorsQuantity, cost, maxMastsQuantity, maxCannonQuantity, maxCarryingLimit);
+	public Ship(ShipTemplate shipT,int shipId, String cur_name, int curHealth, int curSailorsQuantity, int curMastsQuantity,
+				int curCannonQuantity, int curCarryingLimit) {
+		super(shipT.t_name, shipT.maxHealth, shipT.maxSailorsQuantity, shipT.cost, shipT.maxMastsQuantity, shipT.maxCannonQuantity, shipT.maxCarryingLimit);
 		this.shipId = shipId;
-		Ship.this.name = cur_name;
+		this.name = cur_name;
 		this.curHealth = curHealth;
 		this.curSailorsQuantity = curSailorsQuantity;
 		this.curMastsQuantity = curMastsQuantity;
 		this.curCannonQuantity = curCannonQuantity;
 		this.curCarryingLimit = curCarryingLimit;
+	}
+
+
+	public Ship(ShipTemplate shipT, int shipId, String cur_name) {
+		this(shipT,shipId, cur_name, shipT.maxHealth, shipT.maxSailorsQuantity, shipT.maxMastsQuantity,
+				shipT.maxCannonQuantity, shipT.maxCarryingLimit);
 	}
 
 
@@ -85,5 +90,5 @@ public class Ship extends ShipTemplate {
 	public void setCurCarryingLimit(int curCarryingLimit) {
 		this.curCarryingLimit = curCarryingLimit;
 	}
-    
+
 }
