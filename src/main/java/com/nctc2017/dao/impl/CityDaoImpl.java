@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 @Repository
 @Qualifier("cityDao")
 public class CityDaoImpl implements CityDao {
-    public static final String queryForCityNameByid="SELECT city.NAME FROM OBJECTS city, OBJTYPE city_type WHERE city_type.NAME=? and city_type.OBJECT_TYPE_ID=city.OBJECT_TYPE_ID and city.OBJECT_ID=?";
+    public static final String queryForCityNameById="SELECT city.NAME FROM OBJECTS city, OBJTYPE city_type WHERE city_type.NAME=? and city_type.OBJECT_TYPE_ID=city.OBJECT_TYPE_ID and city.OBJECT_ID=?";
     public static final String queryForCity="SELECT city.NAME FROM OBJECTS city, OBJTYPE city_type WHERE city_type.NAME='CITY' AND city_type.OBJECT_TYPE_ID=city.OBJECT_TYPE_ID";
     private static Logger log = Logger.getLogger(CityDaoImpl.class.getName());
     @Autowired
@@ -27,13 +27,13 @@ public class CityDaoImpl implements CityDao {
     @Override
     public City find(BigInteger cityId) {
         try{
-            jdbcTemplate.queryForObject(queryForCityNameByid, new Object[]{"CITY",cityId.longValueExact()}, String.class);
+            jdbcTemplate.queryForObject(queryForCityNameById, new Object[]{"CITY",cityId.longValueExact()}, String.class);
         }
         catch (EmptyResultDataAccessException e) {
             log.log(Level.SEVERE, "City is not exist or cityId is incorrect", e);
             throw e;
         }
-       String cityName = jdbcTemplate.queryForObject(queryForCityNameByid, new Object[]{"CITY",cityId.longValueExact()}, String.class);
+       String cityName = jdbcTemplate.queryForObject(queryForCityNameById, new Object[]{"CITY",cityId.longValueExact()}, String.class);
        return new City(cityName, null,cityId);
     }
 
