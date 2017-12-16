@@ -1,18 +1,27 @@
 package com.nctc2017.bean;
 public class ShipTemplate {
+
     protected String t_name;
-
     protected int maxHealth;
-
     protected int maxSailorsQuantity;
-
     protected int cost;
-
     protected int maxMastsQuantity;
-
     protected int maxCannonQuantity;
-
     protected int maxCarryingLimit;
+
+
+	public static final String T_SHIPNAME = "ShipName";
+	public static final String T_MAX_HEALTH = "HealthLimit";
+	public static final String T_MAX_SAILORS_QUANTITY = "SailorLimit";
+	public static final String T_MAX_COST = "ShipCost";
+	public static final String MAX_MASTS_QUANTITY = "MastLimit";
+	public static final String MAX_CANNON_QUANTITY = "CannonLimit";
+	public static final String MAX_CARRYING_LIMIT = "CarryingLimit";
+
+
+
+
+
 	public ShipTemplate(String name, int maxHealth, int maxSailorsQuantity, int cost, int maxMastsQuantity,
 			int maxCannonQuantity, int maxCarryingLimit) {
 		this.t_name = name;
@@ -22,7 +31,9 @@ public class ShipTemplate {
 		this.maxMastsQuantity = maxMastsQuantity;
 		this.maxCannonQuantity = maxCannonQuantity;
 		this.maxCarryingLimit = maxCarryingLimit;
+
 	}
+
 	public String getName() {
 		return t_name;
 	}
