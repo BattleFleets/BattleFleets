@@ -68,12 +68,13 @@ public class QueryExecutor {
      * that belongs to some owner, like Hold belongs to Ship.
      * @param ownerId - id of owner
      * @param ownerTypeId - id of type of owner
-     * @param extractor - object that will extract results
+     * @param containerTypeId- id of type of container
      * */
-    public BigInteger findContainerByOwnerId(@NotNull BigInteger ownerId, @NotNull BigInteger ownerTypeId) {
+    public BigInteger findContainerByOwnerId(@NotNull BigInteger containerTypeId, @NotNull BigInteger ownerId, @NotNull BigInteger ownerTypeId) {
         return jdbcTemplate.queryForObject(Query.FIND_CONTAINER_BY_OWNER_ID,
-                new Object[] { JdbcConverter.toNumber(ownerTypeId), 
-                        JdbcConverter.toNumber(ownerId) }, 
+                new Object[] { JdbcConverter.toNumber(containerTypeId),
+                        JdbcConverter.toNumber(ownerId),
+                        JdbcConverter.toNumber(ownerTypeId) },
                 BigDecimal.class).toBigIntegerExact();
     }
     
@@ -96,10 +97,11 @@ public class QueryExecutor {
                         JdbcConverter.toNumber(containerTypeId)});
     }
     
-    public List<BigInteger> findAllEntitiesInConteinerByOwnerId(@NotNull BigInteger ownerId, @NotNull BigInteger ownerTypeId){
+    public List<BigInteger> findAllEntitiesInContainerByOwnerId(@NotNull BigInteger containerTypeId, @NotNull BigInteger ownerId, @NotNull BigInteger ownerTypeId){
         List<BigDecimal> entitiesId = jdbcTemplate.queryForList(Query.FIND_ALL_IN_CONTAINER_BY_OWNER_ID,
-                new Object[] { JdbcConverter.toNumber(ownerTypeId), 
-                        JdbcConverter.toNumber(ownerId) }, 
+                new Object[] { JdbcConverter.toNumber(containerTypeId),
+                        JdbcConverter.toNumber(ownerId),
+                        JdbcConverter.toNumber(ownerTypeId) },
                 BigDecimal.class);
         
         List<BigInteger> entitiesIdInt = new ArrayList<>(entitiesId.size());

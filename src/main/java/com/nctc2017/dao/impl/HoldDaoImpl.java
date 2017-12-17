@@ -32,7 +32,7 @@ public class HoldDaoImpl implements HoldDao {
     @Override
     public BigInteger findHold(BigInteger shipId) {
         try {
-            BigInteger holdId = queryExecutor.findContainerByOwnerId(shipId, DatabaseObject.SHIP_OBJTYPE_ID);
+            BigInteger holdId = queryExecutor.findContainerByOwnerId(DatabaseObject.HOLD_OBJTYPE_ID, shipId, DatabaseObject.SHIP_OBJTYPE_ID);
             return holdId;
         } catch (EmptyResultDataAccessException e) {
             RuntimeException ex = new IllegalArgumentException("Wrong ship object id to find Hold. Id = " + shipId);
@@ -44,7 +44,7 @@ public class HoldDaoImpl implements HoldDao {
     @Override
     public int getOccupiedVolume(BigInteger shipId) {
         List<BigInteger> entitiesId = 
-                queryExecutor.findAllEntitiesInConteinerByOwnerId(shipId, DatabaseObject.SHIP_OBJTYPE_ID);
+                queryExecutor.findAllEntitiesInContainerByOwnerId(DatabaseObject.HOLD_OBJTYPE_ID, shipId, DatabaseObject.SHIP_OBJTYPE_ID);
         //if (entitiesId == null) throwRuntimeException(new IllegalArgumentException("Wrong ship object id to find Hold. Id = " + shipId));
 
         return entitiesId.size();

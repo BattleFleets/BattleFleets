@@ -31,5 +31,7 @@ public class DatabaseObject {
     public static final BigInteger MAST_OBJTYPE_ID = BigInteger.valueOf(7);
     public static final BigInteger GOODS_OBJTYPE_ID = BigInteger.valueOf(14);
     public static final BigInteger CITY_OBJTYPE_ID = BigInteger.valueOf(16);
+    public static final BigInteger STOCK_OBJTYPE_ID = BigInteger.valueOf(12);
+
 
 }
