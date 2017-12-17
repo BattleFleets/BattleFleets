@@ -5,8 +5,8 @@ import java.math.BigInteger;
 public class City {
     protected String cityName;
     protected Market market;
-    protected BigInteger cityId;
-	public City(String cityName, Market market, BigInteger cityId) {
+    protected int cityId;
+	public City(String cityName, Market market, int cityId) {
 		this.cityName = cityName;
 		this.market = market;
 		this.cityId=cityId;
@@ -24,11 +24,11 @@ public class City {
 		this.market = market;
 	}
 
-	public BigInteger getCityId() {
+	public int getCityId() {
 		return cityId;
 	}
 
-	public void setCityId(BigInteger cityId) {
+	public void setCityId(int cityId) {
 		this.cityId = cityId;
 	}
 }

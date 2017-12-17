@@ -27,7 +27,7 @@ public class TravelService {
 
     public void relocate(BigInteger playerId, BigInteger cityId) {
         Player player = playerDao.findPlayerById(playerId);
-        travelManager.startJourney(playerId, player.getLevel().intValueExact(), cityId);
+        travelManager.startJourney(playerId, player.getLevel(), cityId);
     }
 
     public City getCurrentCity(BigInteger playerId) {
