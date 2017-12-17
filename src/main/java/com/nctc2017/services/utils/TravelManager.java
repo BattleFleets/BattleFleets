@@ -23,7 +23,7 @@ public class TravelManager {
     private final int minTime = 60000;
     private final long managerWakeUp = 10000;
     
-    private Map<BigInteger, TravelBook> relocation = Collections.synchronizedMap(new HashMap<BigInteger, TravelBook>());
+    private Map<BigInteger, TravelBook> journals = Collections.synchronizedMap(new HashMap<BigInteger, TravelBook>());
     private GregorianCalendar clock = new GregorianCalendar();
     private Random rand = new Random(clock.getTimeInMillis());
     
@@ -38,12 +38,13 @@ public class TravelManager {
     
     public boolean prepareEnemyFor(BigInteger playerId) {
         boolean isEnemyOnHorisont = false;
-        synchronized (relocation) {
-            TravelBook playerJornal = relocation.get(playerId);
+        synchronized (journals) {
+            TravelBook playerJornal = journals.get(playerId);
             int lvl = playerJornal.getPlayerLevel();
             
-            for (Map.Entry<BigInteger, TravelBook> enemy: relocation.entrySet()) {
+            for (Map.Entry<BigInteger, TravelBook> enemy: journals.entrySet()) {
                 TravelBook enemyJornal = enemy.getValue();
+                if (enemyJornal.getEnemyId() != null) continue;
                 int enemyLvl = enemyJornal.getPlayerLevel();
                 
                 if (Math.abs(lvl - enemyLvl) <= lvlDiff) {
@@ -62,7 +63,7 @@ public class TravelManager {
     }
     
     public void startJourney(BigInteger playerId, int lvl, BigInteger city) {
-        TravelBook cityTime = relocation.get(playerId);
+        TravelBook cityTime = journals.get(playerId);
         long timeNow = clock.getTimeInMillis();
         long timeToArrival;
         if (cityTime != null) {
@@ -74,16 +75,36 @@ public class TravelManager {
         
         timeToArrival = timeNow + minTime + rand.nextInt(maxTime - minTime);
         cityTime = new TravelBook(city, timeToArrival, lvl);
-        relocation.put(playerId, cityTime);
+        journals.put(playerId, cityTime);
     }
 
     public int getRelocateTime(BigInteger playerId) {
-        TravelBook cityTime = relocation.get(playerId);
+        TravelBook cityTime = journals.get(playerId);
         if (cityTime == null) return 0;
         
         long timeToArrival = cityTime.getTime();
         long timeNow = clock.getTimeInMillis();
         return (int) (timeToArrival - timeNow) / 1000;
+    }
+    
+    public BigInteger getEnemy(BigInteger playerId) {
+        return journals.get(playerId).getEnemyId();
+    }
+
+    public void friendly(BigInteger playerId) {
+        TravelBook playerBook = journals.get(playerId);
+        BigInteger enemyId = journals.get(playerId).getEnemyId();
+        TravelBook enemyBook = journals.get(enemyId);
+        
+        if (enemyBook.isFriendly()) {
+            playerBook.setEnemyId(null);
+            playerBook.setFriendly(false);
+            
+            enemyBook.setEnemyId(null);
+            enemyBook.setFriendly(false);
+        } else {
+            playerBook.setFriendly(true);
+        }
     }
     
     private class TravelBook {
@@ -94,6 +115,7 @@ public class TravelManager {
         private BigInteger enemyId;
         private boolean pause;
         private long pauseTime;
+        private boolean friendly = false;
         
         public TravelBook(BigInteger cityId, Long time, int lvl) {
             this.cityId = cityId;
@@ -139,6 +161,16 @@ public class TravelManager {
         public void setEnemyId(BigInteger enemyId) {
             this.enemyId = enemyId;
         }
+
+        public boolean isFriendly() {
+            return friendly;
+        }
+
+        public void setFriendly(boolean friendly) {
+            this.friendly = friendly;
+        }
+        
+        
     }
     
     private class ManagerTask implements Runnable{
@@ -149,15 +181,15 @@ public class TravelManager {
         @Override
         public void run() {
             while (true) {
-                synchronized (relocation) {
+                synchronized (journals) {
                     long now = clock.getTimeInMillis();
                     
-                    for (Map.Entry<BigInteger, TravelBook> player: relocation.entrySet()) {
+                    for (Map.Entry<BigInteger, TravelBook> player: journals.entrySet()) {
                         TravelBook cityTime = player.getValue();
                         long timeToLeft = cityTime.getTime();
                         if (now >= timeToLeft) {
                             playerDao.movePlayerToCity(player.getKey(), cityTime.getCityId());
-                            relocation.remove(player.getKey());
+                            journals.remove(player.getKey());
                         }
                     }
                 }

@@ -10,13 +10,16 @@ import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.services.utils.BattleManager;
 import com.nctc2017.services.utils.TravelManager;
 
 @Service
 public class TravelService {
-    
+
     @Autowired
-    TravelManager travelManager;
+    private BattleManager battleManager;
+    @Autowired
+    private TravelManager travelManager;
     @Autowired
     private PlayerDao playerDao;
     @Autowired
@@ -45,26 +48,31 @@ public class TravelService {
         return travelManager.prepareEnemyFor(playerId);
     }
 
-    public int pauseRelocateTime(int playerId) {
+    public int pauseRelocateTime(BigInteger playerId) {
         // TODO implement here
         return 0;
     }
 
-    public int resumeRelocateTime(int playerId) {
+    public int resumeRelocateTime(BigInteger playerId) {
         // TODO implement here
         return 0;
     }
 
-    public void confirmAttack(int playerId, boolean decision) {
-        // TODO implement here
+    public void confirmAttack(BigInteger playerId, boolean decision) {
+        if (decision) {
+            BigInteger enemyId = travelManager.getEnemy(playerId);
+            battleManager.newBattleBetween(playerId, enemyId);
+        } else {
+            travelManager.friendly(playerId);
+        }
     }
 
-    public int isBattleStart(int playerId) {
+    public int isBattleStart(BigInteger playerId) {
         // TODO implement here
         return 0;
     }
 
-    public int autoDecisionTimer(int playerId) {
+    public int autoDecisionTimer(BigInteger playerId) {
         // TODO implement here
         return 0;
     }
