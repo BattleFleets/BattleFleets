@@ -31,10 +31,10 @@ public class CityDaoImplTest {
         assertEquals(city.getCityName(),"Nassau");
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void findFailed() throws Exception {
-        City city=cityDao.find(new BigInteger("77"));
+        City city=cityDao.find(new BigInteger("83"));
     }
 
     @Test
