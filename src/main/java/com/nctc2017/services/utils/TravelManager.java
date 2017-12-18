@@ -45,6 +45,7 @@ public class TravelManager {
             for (Map.Entry<BigInteger, TravelBook> enemy: journals.entrySet()) {
                 TravelBook enemyJornal = enemy.getValue();
                 if (enemyJornal.getEnemyId() != null) continue;
+                if (enemyJornal == playerJornal) continue;
                 int enemyLvl = enemyJornal.getPlayerLevel();
                 
                 if (Math.abs(lvl - enemyLvl) <= lvlDiff) {
@@ -87,7 +88,7 @@ public class TravelManager {
         return (int) (timeToArrival - timeNow) / 1000;
     }
     
-    public BigInteger getEnemy(BigInteger playerId) {
+    public BigInteger getEnemyId(BigInteger playerId) {
         return journals.get(playerId).getEnemyId();
     }
 
@@ -99,12 +100,21 @@ public class TravelManager {
         if (enemyBook.isFriendly()) {
             playerBook.setEnemyId(null);
             playerBook.setFriendly(false);
+            playerBook.resume();
             
             enemyBook.setEnemyId(null);
             enemyBook.setFriendly(false);
+            enemyBook.resume();
         } else {
             playerBook.setFriendly(true);
         }
+    }
+    
+    public int continueTravel(BigInteger playerId) {
+        TravelBook playerBook = journals.get(playerId);
+        playerBook.resume();
+        long now = clock.getTimeInMillis();
+        return (int) (now - playerBook.getTime());
     }
     
     private class TravelBook {
@@ -127,11 +137,13 @@ public class TravelManager {
         }
         
         public void pause() {
+            if (this.pause) return;
             this.pause = true;
             pauseTime = clock.getTimeInMillis();
         }
         
         public void resume() {
+            if (!this.pause) return;
             long now = clock.getTimeInMillis();
             arrivalTime = now + (arrivalTime - pauseTime);
             pauseTime = 0L;
@@ -195,6 +207,7 @@ public class TravelManager {
                 }
                 
                 try {
+                    log.log(Level.DEBUG, "TravelManager sleep");
                     this.wait(managerWakeUp);
                 } catch (InterruptedException e) {
                     log.log(Level.ERROR, "TravelManager was Interrupted", e);
@@ -204,6 +217,7 @@ public class TravelManager {
                     manager.start();
                     log.log(Level.DEBUG, "TravelManager running");
                 }
+                log.log(Level.DEBUG, "TravelManager awoke");
             }
         }
     }

@@ -24,6 +24,8 @@ public class TravelService {
     private PlayerDao playerDao;
     @Autowired
     private CityDao cityDao;
+    
+    private Map<BigInteger, Thread> playerAutoDecision = new HashMap<>();
 
     public void relocate(BigInteger playerId, BigInteger cityId) {
         Player player = playerDao.findPlayerById(playerId);
@@ -48,33 +50,57 @@ public class TravelService {
         return travelManager.prepareEnemyFor(playerId);
     }
 
-    public int pauseRelocateTime(BigInteger playerId) {
-        // TODO implement here
-        return 0;
-    }
-
     public int resumeRelocateTime(BigInteger playerId) {
-        // TODO implement here
-        return 0;
+        return travelManager.continueTravel(playerId);
     }
 
     public void confirmAttack(BigInteger playerId, boolean decision) {
+        playerAutoDecision.get(playerId).interrupt();
         if (decision) {
-            BigInteger enemyId = travelManager.getEnemy(playerId);
+            BigInteger enemyId = travelManager.getEnemyId(playerId);
             battleManager.newBattleBetween(playerId, enemyId);
         } else {
             travelManager.friendly(playerId);
         }
     }
 
-    public int isBattleStart(BigInteger playerId) {
-        // TODO implement here
-        return 0;
+    public boolean isBattleStart(BigInteger playerId) {
+        BigInteger enemyId = battleManager.getEnemyId(playerId);
+        if (enemyId == null)
+            return false;
+        else
+            return true;
     }
 
+    public int getAutoDecisionTime() {
+        return AutoDecisionTask.DELAY;
+    }
+    
     public int autoDecisionTimer(BigInteger playerId) {
-        // TODO implement here
+        Runnable decisionTask = new AutoDecisionTask(playerId);
+        Thread decisionThread = new Thread(decisionTask);
+        decisionThread.start();
+        playerAutoDecision.put(playerId, decisionThread);
         return 0;
     }
 
+    private class AutoDecisionTask implements Runnable{
+        private static final int DELAY = 50000;
+        private BigInteger playerId;
+
+        public AutoDecisionTask(BigInteger playerId) {
+            this.playerId = playerId;
+        }
+
+        @Override
+        public void run() {
+            try {
+                this.wait(DELAY);
+            } catch (InterruptedException e) {
+                return;
+            }
+            confirmAttack(playerId, true);
+        }
+        
+    }
 }
