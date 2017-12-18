@@ -1,29 +1,30 @@
 package com.nctc2017.dao;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import com.nctc2017.bean.Ammo;
 
 public interface AmmoDao {
 
-    Ammo findById(int idAmmo);
+    Ammo findById(BigInteger AmmoId);
 
-    String getAmmoName(int id);
+    String getAmmoName(BigInteger AmmoId);
 
-    String getAmmoDamageType(int id);
+    String getAmmoDamageType(BigInteger AmmoId);
 
-    int getAmmoCost(int id);
+    int getAmmoCost(BigInteger AmmoId);
 
-    int getAmmoQuantity(int id);
+    int getAmmoQuantity(BigInteger AmmoId);
 
-    boolean increaseAmmoQuantity(int id, int increaseNumber);
+    boolean increaseAmmoQuantity(BigInteger AmmoId, int increaseNumber);
 
-    boolean decreaseAmmoQuantity(int id, int decreaseNumber);
+    boolean decreaseAmmoQuantity(BigInteger AmmoId, int decreaseNumber);
 
-    int createAmmoAndGetId(int ammoTemplateId);
+    List<Ammo> getAllAmmoFromStock(BigInteger stockId);
 
-    List<Ammo> getAllAmmoFromStock(int idStock);
+    List<Ammo> getAllAmmoFromHold(BigInteger holdId);
 
-    List<Ammo> getAllAmmoFromHold(int idHold);
+    BigInteger createAmmo(BigInteger ammoTemplateId, int quantity);
 
 }

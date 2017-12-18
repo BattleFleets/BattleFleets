@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
 
@@ -111,5 +112,36 @@ public class QueryExecutor {
         return entitiesIdInt;
     }
     
+    public <T> T getAttrValue(BigInteger entityId, BigInteger attrId,  Class<T> requiredType) {
+        T value = jdbcTemplate.queryForObject(Query.GET_ATTR_VALUE,
+                new Object[]{JdbcConverter.toNumber(entityId), 
+                        JdbcConverter.toNumber(attrId)},
+                requiredType);
+        return value;
+    }
     
+    public BigInteger getNextval() {
+        return jdbcTemplate.queryForObject(Query.GET_NEXTVAL, BigDecimal.class).toBigIntegerExact();
+    }
+    
+    public BigInteger createNewEntity(QueryBuilder builder) {
+        if (!builder.isInsertOperation()) {
+            throw new IllegalArgumentException("Wrong builder operation type. Insert operation expected.");
+        }
+        
+        BigInteger newObjId = getNextval();
+        PreparedStatementCreator psc = builder.setObjectId(newObjId)
+                .build();
+        jdbcTemplate.update(psc);
+        
+        return newObjId;
+    }
+    
+    public int updateAttribute(QueryBuilder builder) {
+        if (!builder.isUpdateAttrValueOperation()) {
+            throw new IllegalArgumentException("Wrong builder operation type. Updete operation expected.");
+        }
+        PreparedStatementCreator psc = builder.build();
+        return jdbcTemplate.update(psc);
+    }
 }

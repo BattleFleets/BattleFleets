@@ -32,7 +32,6 @@ public class QueryBuilder {
     private Map<BigInteger, String> attributes;
     private Map<BigInteger, String> dateAttributes;
 
-
     private enum Operation {
         INSERT, UPDATE_OBJECT_PARENT_ID, UPDATE_OBJECT_ATTRIBUTE_VALUE, DELETE
     }
@@ -46,7 +45,7 @@ public class QueryBuilder {
 
     private QueryBuilder(Operation operation, BigInteger objectId) {
         this(operation);
-        this.setObjectId(objectId);
+        this.setObjectIdPrivate(objectId);
     }
 
     /**
@@ -56,6 +55,13 @@ public class QueryBuilder {
      */
     public static QueryBuilder insert(@NotNull BigInteger objectTypeId, @NotNull BigInteger objectId) {
         QueryBuilder builder = new QueryBuilder(Operation.INSERT, objectId);
+        builder.setObjectTypeId(objectTypeId);
+
+        return builder;
+    }
+    
+    public static QueryBuilder insert(@NotNull BigInteger objectTypeId) {
+        QueryBuilder builder = new QueryBuilder(Operation.INSERT);
         builder.setObjectTypeId(objectTypeId);
 
         return builder;
@@ -96,8 +102,13 @@ public class QueryBuilder {
     }
 
 
-    private void setObjectId(BigInteger id) {
+    private void setObjectIdPrivate(BigInteger id) {
         objectColumnsValues.put(OBJECT_ID, id);
+    }
+    
+    public QueryBuilder setObjectId(BigInteger id) {
+        objectColumnsValues.put(OBJECT_ID, id);
+        return this;
     }
 
     /**
@@ -158,6 +169,18 @@ public class QueryBuilder {
         } else {
             attributes.put(attributeId, attributeValue);
         }
+        return this;
+    }
+    
+    /**
+     * Set new value for attribute with id = attributeId
+     *
+     * @param attributeId    - id of attribute that will be updated in query
+     * @param attributeValue - attribute value that will be set in query
+     * @return builder
+     */
+    public QueryBuilder setAttribute(BigInteger attributeId, int attributeValue) {
+        setAttribute(attributeId, String.valueOf(attributeValue));
         return this;
     }
 
@@ -341,6 +364,22 @@ public class QueryBuilder {
         PreparedStatementCreatorFactory stmtDeleteObject =
                 new PreparedStatementCreatorFactory(deleteObjectQuery, declaredParams);
         return stmtDeleteObject.newPreparedStatementCreator(paramsDeleteObject);
+    }
+    
+    public boolean isInsertOperation() {
+        return queryOperation.equals(Operation.INSERT);
+    }
+    
+    public boolean isUpdateAttrValueOperation() {
+        return queryOperation.equals(Operation.UPDATE_OBJECT_ATTRIBUTE_VALUE);
+    }
+    
+    public boolean isDeleteOperation() {
+        return queryOperation.equals(Operation.DELETE);
+    }
+    
+    public boolean isUpdateParentIdOperation() {
+        return queryOperation.equals(Operation.UPDATE_OBJECT_PARENT_ID);
     }
 
 }

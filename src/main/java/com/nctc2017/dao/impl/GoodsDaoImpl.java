@@ -5,6 +5,9 @@ import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
 import com.nctc2017.dao.GoodsDao;
+import com.nctc2017.dao.extractors.EntityExtractor;
+import com.nctc2017.dao.extractors.EntityListExtractor;
+import com.nctc2017.dao.extractors.ExtractingVisitor;
 import com.nctc2017.dao.utils.JdbcConverter;
 import com.nctc2017.dao.utils.QueryBuilder;
 import com.nctc2017.dao.utils.QueryExecutor;
@@ -12,19 +15,13 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,12 +40,12 @@ public class GoodsDaoImpl implements GoodsDao {
 
     @Override
     public BigInteger createNewGoods(BigInteger goodsTemplateId, int quantity, int price) {
-        BigInteger newObjId = jdbcTemplate.queryForObject(Query.GET_NEXTVAL, BigDecimal.class).toBigInteger();
+        BigInteger newObjId = queryExecutor.getNextval();
 
         PreparedStatementCreator psc = QueryBuilder.insert(DatabaseObject.GOODS_OBJTYPE_ID, newObjId)
                 .setSourceObjId(goodsTemplateId)
-                .setAttribute(DatabaseAttribute.GOODS_QUANTITY, String.valueOf(quantity))
-                .setAttribute(DatabaseAttribute.GOODS_PURCHASE_PRICE, String.valueOf(price))
+                .setAttribute(DatabaseAttribute.GOODS_QUANTITY, quantity)
+                .setAttribute(DatabaseAttribute.GOODS_PURCHASE_PRICE, price)
                 .build();
         jdbcTemplate.update(psc);
         return newObjId;
@@ -58,7 +55,7 @@ public class GoodsDaoImpl implements GoodsDao {
     public Goods findById(@NotNull BigInteger goodsId) {
         Goods goods = queryExecutor.findEntity(goodsId,
                 DatabaseObject.GOODS_OBJTYPE_ID,
-                new GoodsExtractor(goodsId));
+                new EntityExtractor<>(goodsId, new GoodsVisitor()));
         if (goods == null) {
             RuntimeException e = new IllegalArgumentException("Wrong goods object id = " + goodsId);
             logger.log(Level.ERROR, "GoodsDao Exception while find by id ", e);
@@ -69,8 +66,8 @@ public class GoodsDaoImpl implements GoodsDao {
 
     @Override
     public void increaseGoodsQuantity(@NotNull BigInteger goodsId, int quantity) {
-        Integer curQuantity = jdbcTemplate.queryForObject(Query.GET_ATTR_VALUE,
-                new Object[]{JdbcConverter.toNumber(goodsId), JdbcConverter.toNumber(DatabaseAttribute.GOODS_QUANTITY)},
+        Integer curQuantity = queryExecutor.getAttrValue(goodsId, 
+                DatabaseAttribute.GOODS_QUANTITY, 
                 Integer.class);
         if (curQuantity == null) {
             logger.log(Level.ERROR, "There is no quantity value for object with id = " + goodsId);
@@ -82,8 +79,8 @@ public class GoodsDaoImpl implements GoodsDao {
 
     @Override
     public void decreaseGoodsQuantity(@NotNull BigInteger goodsId, int quantity) {
-        Integer curQuantity = jdbcTemplate.queryForObject(Query.GET_ATTR_VALUE,
-                new Object[]{JdbcConverter.toNumber(goodsId), JdbcConverter.toNumber(DatabaseAttribute.GOODS_QUANTITY)},
+        Integer curQuantity = queryExecutor.getAttrValue(goodsId, 
+                DatabaseAttribute.GOODS_QUANTITY, 
                 Integer.class);
         if (curQuantity == null) {
             logger.log(Level.ERROR, "There is no quantity value for object with id = " + goodsId);
@@ -103,7 +100,7 @@ public class GoodsDaoImpl implements GoodsDao {
     @Override
     public void updateGoodsQuantity(@NotNull BigInteger goodsId, int quantity) {
         PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(goodsId)
-                .setAttribute(DatabaseAttribute.GOODS_QUANTITY, String.valueOf(quantity))
+                .setAttribute(DatabaseAttribute.GOODS_QUANTITY, quantity)
                 .build();
         jdbcTemplate.update(psc);
     }
@@ -124,10 +121,9 @@ public class GoodsDaoImpl implements GoodsDao {
      */
     @Override
     public int getGoodsRarity(@NotNull BigInteger goodsTemplateObjectId) {
-        Integer coef = jdbcTemplate.queryForObject(Query.GET_ATTR_VALUE,
-                new Object[]{JdbcConverter.toNumber(goodsTemplateObjectId),
-                        JdbcConverter.toNumber(DatabaseAttribute.TEMPLATE_GOODS_RARITY_COEF)},
-                Integer.class);
+        Integer coef = queryExecutor.getAttrValue(goodsTemplateObjectId,
+                        DatabaseAttribute.TEMPLATE_GOODS_RARITY_COEF, 
+                        Integer.class);
         if (coef == null) {
             logger.log(Level.ERROR, "There is no rarity value for object with id = " + goodsTemplateObjectId);
             return -1;
@@ -137,9 +133,8 @@ public class GoodsDaoImpl implements GoodsDao {
 
     @Override
     public int getGoodsQuantity(@NotNull BigInteger goodsId) {
-        Integer quantity = jdbcTemplate.queryForObject(Query.GET_ATTR_VALUE,
-                new Object[]{JdbcConverter.toNumber(goodsId),
-                        JdbcConverter.toNumber(DatabaseAttribute.GOODS_QUANTITY)},
+        Integer quantity = queryExecutor.getAttrValue(goodsId,
+                DatabaseAttribute.GOODS_QUANTITY,
                 Integer.class);
         if (quantity == null) {
             logger.log(Level.ERROR, "There is no quantity value for object with id = " + quantity);
@@ -166,68 +161,21 @@ public class GoodsDaoImpl implements GoodsDao {
                 JdbcConverter.toNumber(containerId)};
 
         List<Goods> goodsList = jdbcTemplate.query(
-                Query.GET_ENTITIES_FROM_CONTAINER, queryParams, new GoodsListExtractor());
+                Query.GET_ENTITIES_FROM_CONTAINER, queryParams, new EntityListExtractor<>(new GoodsVisitor()));
         return goodsList;
     }
-
-    private final class GoodsExtractor implements ResultSetExtractor<Goods> {
-
-        private BigInteger goodsId;
-
-        GoodsExtractor(BigInteger goodsId) {
-            this.goodsId = goodsId;
-        }
+    
+    private final class GoodsVisitor implements ExtractingVisitor<Goods> {
 
         @Override
-        public Goods extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-            if (!resultSet.isBeforeFirst()) return null;
-
-            Map<String, String> goodsFieldValueMap = new HashMap<>(4);
-            while (resultSet.next()) {
-                goodsFieldValueMap.put(resultSet.getString(1), resultSet.getString(2));
-            }
-
-            return new Goods(goodsId,
-                    goodsFieldValueMap.remove(Goods.NAME),
-                    Integer.valueOf(goodsFieldValueMap.remove(Goods.QUANTITY)),
-                    Integer.valueOf(goodsFieldValueMap.remove(Goods.PRICE)),
-                    Integer.valueOf(goodsFieldValueMap.remove(Goods.RARITY)));
+        public Goods visit(BigInteger entityId, Map<String, String> papamMap) {
+            return new Goods(entityId,
+                    papamMap.remove(Goods.NAME),
+                    Integer.valueOf(papamMap.remove(Goods.QUANTITY)),
+                    Integer.valueOf(papamMap.remove(Goods.PRICE)),
+                    Integer.valueOf(papamMap.remove(Goods.RARITY)));
         }
+        
     }
-
-    private class GoodsListExtractor implements ResultSetExtractor<List<Goods>> {
-
-        @Override
-        public List<Goods> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-
-            Map<String, String> goodsFieldValueMap;
-            Map<BigInteger, Map<String, String>> goodsMap = new HashMap<>();
-            BigInteger goodsId;
-            while (resultSet.next()) {
-                goodsId = resultSet.getBigDecimal(1).toBigInteger();
-                goodsFieldValueMap = goodsMap.get(goodsId);
-                if (goodsFieldValueMap == null) {
-                    goodsFieldValueMap = new HashMap<>(4);
-                    goodsMap.put(goodsId, goodsFieldValueMap);
-                }
-                goodsFieldValueMap.put(resultSet.getString(2), resultSet.getString(3));
-            }
-
-            List<Goods> goods = new ArrayList<>(goodsMap.size());
-            Goods newGoods;
-            Map<String, String> fieldValueMap;
-            for (Map.Entry<BigInteger, Map<String, String>> entry : goodsMap.entrySet()) {
-                fieldValueMap = entry.getValue();
-                newGoods = new Goods(entry.getKey(),
-                        fieldValueMap.remove(Goods.NAME),
-                        Integer.valueOf(fieldValueMap.remove(Goods.QUANTITY)),
-                        Integer.valueOf(fieldValueMap.remove(Goods.PRICE)),
-                        Integer.valueOf(fieldValueMap.remove(Goods.RARITY)));
-                goods.add(newGoods);
-            }
-            return goods;
-        }
-    }
-
 
 }

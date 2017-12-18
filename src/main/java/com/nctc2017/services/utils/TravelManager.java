@@ -18,10 +18,13 @@ import com.nctc2017.dao.PlayerDao;
 public class TravelManager {
     private static Logger log = Logger.getLogger(TravelManager.class);
     
+    @Autowired
+    private PlayerDao playerDao;
+    
     private final int lvlDiff = 5;
     private final int maxTime = 300000;
     private final int minTime = 60000;
-    private final long managerWakeUp = 10000;
+    private final long managerWakeUp = 1000;
     
     private Map<BigInteger, TravelBook> journals = Collections.synchronizedMap(new HashMap<BigInteger, TravelBook>());
     private GregorianCalendar clock = new GregorianCalendar();
@@ -137,13 +140,19 @@ public class TravelManager {
         }
         
         public void pause() {
-            if (this.pause) return;
+            if (this.pause) {
+                log.debug("Pause already on");
+                return;
+            }
             this.pause = true;
             pauseTime = clock.getTimeInMillis();
         }
         
         public void resume() {
-            if (!this.pause) return;
+            if (!this.pause) {
+                log.debug("Pause already off");
+                return;
+            }
             long now = clock.getTimeInMillis();
             arrivalTime = now + (arrivalTime - pauseTime);
             pauseTime = 0L;
@@ -186,9 +195,6 @@ public class TravelManager {
     }
     
     private class ManagerTask implements Runnable{
-        
-        @Autowired
-        PlayerDao playerDao;
         
         @Override
         public void run() {

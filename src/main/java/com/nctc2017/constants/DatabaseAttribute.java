@@ -14,5 +14,9 @@ public class DatabaseAttribute {
     public static final BigInteger GOODS_PURCHASE_PRICE = BigInteger.valueOf(36);
     public static final BigInteger GOODS_QUANTITY = BigInteger.valueOf(37);
     public static final BigInteger TEMPLATE_GOODS_RARITY_COEF = BigInteger.valueOf(22);
+    public static final BigInteger AMMO_NAME = BigInteger.valueOf(18);
+    public static final BigInteger AMMO_DAMAGE_TYPE = BigInteger.valueOf(19);
+    public static final BigInteger AMMO_COST = BigInteger.valueOf(20);
+    public static final BigInteger AMMO_NUM = BigInteger.valueOf(34);
 
 }
