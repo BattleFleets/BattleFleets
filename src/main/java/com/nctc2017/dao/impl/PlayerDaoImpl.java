@@ -79,7 +79,7 @@ public class PlayerDaoImpl implements PlayerDao{
         List<String>  attributes=jdbcTemplate.queryForList(queryForPlayerAttributesByLogin, new Object[]{DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(),login, DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
         BigInteger playerId=jdbcTemplate.queryForObject(queryForPlayerIdByLogin,BigInteger.class,DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(),login);
         BigInteger cityId = jdbcTemplate.queryForObject(queryForPlayerCityIdByLogin, BigInteger.class, login, DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact());
-        Player player = new Player(playerId.intValue(),attributes.get(0), attributes.get(4),  parseInt(attributes.get(1)), parseInt(attributes.get(3)), parseInt(attributes.get(2)), cityId.intValue());
+        Player player = new Player(playerId,attributes.get(0), attributes.get(4),  parseInt(attributes.get(1)), parseInt(attributes.get(3)), parseInt(attributes.get(2)), cityId.intValue());
         return player;
     }
 
@@ -128,7 +128,7 @@ public class PlayerDaoImpl implements PlayerDao{
         }
             List<String> attributes = jdbcTemplate.queryForList(queryForPlayerAttributesById, new Object[]{playerId.longValueExact(), DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(), DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
             BigInteger cityId = jdbcTemplate.queryForObject(queryForPlayerCityIDById, BigInteger.class, playerId.longValueExact(), DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact());
-            Player player = new Player(playerId.intValue(),attributes.get(0), attributes.get(4), parseInt(attributes.get(1)), parseInt(attributes.get(3)), parseInt(attributes.get(2)), cityId.intValue());
+            Player player = new Player(playerId,attributes.get(0), attributes.get(4), parseInt(attributes.get(1)), parseInt(attributes.get(3)), parseInt(attributes.get(2)), cityId.intValue());
             return player;
     }
 
@@ -141,7 +141,7 @@ public class PlayerDaoImpl implements PlayerDao{
         List<BigInteger> citiesId = jdbcTemplate.queryForList("SELECT PARENT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=?", BigInteger.class, DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact());
         List<BigInteger> playersId = jdbcTemplate.queryForList("SELECT OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=?", BigInteger.class, DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact());
         for(int i=0; i<attributes.size();i=i+5) {
-            players.add(new Player(playersId.get(i/5).intValue(),attributes.get(i), attributes.get(i+4), parseInt(attributes.get(i+1)),parseInt(attributes.get(i+3)), parseInt(attributes.get(i+2)), citiesId.get(i/5).intValue()));
+            players.add(new Player(playersId.get(i/5),attributes.get(i), attributes.get(i+4), parseInt(attributes.get(i+1)),parseInt(attributes.get(i+3)), parseInt(attributes.get(i+2)), citiesId.get(i/5).intValue()));
         }
         return players;   
     }
@@ -196,7 +196,7 @@ public class PlayerDaoImpl implements PlayerDao{
     public City getPlayerCity(@NotNull BigInteger playerId) {
         findPlayerById(playerId);
         String cityName=jdbcTemplate.queryForObject(queryForCityName,new Object[]{"CITY",findPlayerById(playerId).getCurCity()},String.class);
-        return new City(cityName,null,findPlayerById(playerId).getCurCity());
+        return new City(cityName,null,new BigInteger(Integer.toString(findPlayerById(playerId).getCurCity())));
 
     }
 

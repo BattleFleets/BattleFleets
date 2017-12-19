@@ -1,8 +1,13 @@
 package com.nctc2017.dao.impl;
 
 import com.nctc2017.bean.City;
+import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.CityDao;
 
+import com.nctc2017.dao.extractors.EntityExtractor;
+import com.nctc2017.dao.extractors.EntityListExtractor;
+import com.nctc2017.dao.extractors.ExtractingVisitor;
+import com.nctc2017.dao.utils.QueryExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -14,8 +19,8 @@ import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
+import org.apache.log4j.Logger;
 
 @Repository
 @Qualifier("cityDao")
@@ -24,31 +29,37 @@ public class CityDaoImpl implements CityDao {
             "WHERE city_type.NAME=? " +
             "AND city_type.OBJECT_TYPE_ID=city.OBJECT_TYPE_ID " +
             "AND city.OBJECT_ID=?";
-    public static final String queryForCity="SELECT city.NAME FROM OBJECTS city, OBJTYPE city_type WHERE city_type.NAME='CITY' AND city_type.OBJECT_TYPE_ID=city.OBJECT_TYPE_ID";
-    private static Logger log = Logger.getLogger(CityDaoImpl.class.getName());
+    public static final String queryForCity="SELECT city.NAME FROM OBJECTS city, OBJTYPE city_type " +
+            "WHERE city_type.NAME='CITY' " +
+            "AND city_type.OBJECT_TYPE_ID=city.OBJECT_TYPE_ID";
+    private static Logger log = Logger.getLogger(CityDaoImpl.class);
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private QueryExecutor queryExecutor;
     @Override
     public City find(@NotNull BigInteger cityId) {
-        try{
-            jdbcTemplate.queryForObject(queryForCityNameById, new Object[]{"CITY",cityId.longValueExact()}, String.class);
+        City city = queryExecutor.findEntity(cityId,DatabaseObject.CITY_OBJTYPE_ID,new EntityExtractor<>(cityId, new CityVisitor()));
+        if (city == null){
+            RuntimeException ex = new IllegalArgumentException("Wrong city object id = " + cityId);
+            log.error("CityDAO Exception while find by id.", ex);
+            throw ex;
         }
-        catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("City is not exist or cityId is incorrect", e);
-        }
-       String cityName = jdbcTemplate.queryForObject(queryForCityNameById, new Object[]{"CITY",cityId.longValueExact()}, String.class);
-       return new City(cityName, null,cityId.intValue());
+        return city;
     }
+
 
     @Override
     public List<City> findAll() {
-        List<City> cities=new ArrayList<>();
-        List<String> citiesNames=jdbcTemplate.queryForList(queryForCity, String.class);
-        for(int i=0; i<citiesNames.size();i++)
-        {
-            BigInteger cityId=jdbcTemplate.queryForObject("SELECT OBJECT_ID FROM OBJECTS WHERE NAME=?",new Object[]{citiesNames.get(i)},BigInteger.class);
-            cities.add(new City(citiesNames.get(i),null,cityId.intValue()));
-        }
+        List<City> cities=queryExecutor.getAllEntitiesByType(DatabaseObject.CITY_OBJTYPE_ID, new EntityListExtractor<>(new CityVisitor()));
         return cities;
+    }
+   private final class CityVisitor implements ExtractingVisitor<City> {
+
+        @Override
+        public City visit(BigInteger entityId, Map<String, String> papamMap) {
+            return new City( papamMap.get(City.NAME),null,entityId );
+        }
+
     }
 }

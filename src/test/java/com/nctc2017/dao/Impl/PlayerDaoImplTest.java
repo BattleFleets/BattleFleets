@@ -46,7 +46,7 @@ public class PlayerDaoImplTest {
     public void findPlayerByLogin() throws Exception{
          playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
          Player topPlayer1=playerDao.findPlayerByLogin("Steve");
-         Player topPlayer2=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
+         Player topPlayer2=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1,69);
          assertEquals(topPlayer1.getLogin(),topPlayer2.getLogin());
          assertEquals(topPlayer1.getEmail(),topPlayer2.getEmail());
          assertEquals(topPlayer1.getLevel(),topPlayer2.getLevel());
@@ -66,7 +66,7 @@ public class PlayerDaoImplTest {
     public void updateLogin() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player player=playerDao.findPlayerByLogin("Steve");
-        playerDao.updateLogin(new BigInteger(Integer.toString(player.getPlayerId())),"Captain_America");
+        playerDao.updateLogin(player.getPlayerId(),"Captain_America");
         String login=playerDao.findPlayerByLogin("Captain_America").getLogin();
         assertEquals("Captain_America",login);
     }
@@ -82,7 +82,7 @@ public class PlayerDaoImplTest {
     public void updateLevel() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player player=playerDao.findPlayerByLogin("Steve");
-        playerDao.updateLevel(new BigInteger(Integer.toString(player.getPlayerId())),new BigInteger("80"));
+        playerDao.updateLevel(player.getPlayerId(),new BigInteger("80"));
         int level=playerDao.findPlayerByLogin("Steve").getLevel();
         assertEquals(80,level);
     }
@@ -96,7 +96,7 @@ public class PlayerDaoImplTest {
     public void updateEmail() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player player=playerDao.findPlayerByLogin("Steve");
-        playerDao.updateEmail(new BigInteger(Integer.toString(player.getPlayerId())),"80");
+        playerDao.updateEmail(player.getPlayerId(),"80");
         String email=playerDao.findPlayerByLogin("Steve").getEmail();
         assertEquals("80",email);
     }
@@ -112,7 +112,7 @@ public class PlayerDaoImplTest {
     public void updatePoints() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player player=playerDao.findPlayerByLogin("Steve");
-        playerDao.updatePoints(new BigInteger(Integer.toString(player.getPlayerId())),new BigInteger("100"));
+        playerDao.updatePoints(player.getPlayerId(),new BigInteger("100"));
         int points=playerDao.findPlayerByLogin("Steve").getPoints();
         assertEquals(100,points);
     }
@@ -127,8 +127,8 @@ public class PlayerDaoImplTest {
     public void findPlayerById() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        Player topPlayer1=playerDao.findPlayerById(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        Player topPlayer2=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
+        Player topPlayer1=playerDao.findPlayerById(topPlayer.getPlayerId());
+        Player topPlayer2=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1,69);
         assertEquals(topPlayer1.getLogin(),topPlayer2.getLogin());
         assertEquals(topPlayer1.getEmail(),topPlayer2.getEmail());
         assertEquals(topPlayer1.getLevel(),topPlayer2.getLevel());
@@ -175,8 +175,8 @@ public class PlayerDaoImplTest {
     public void getPlayerLogin() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        String login=playerDao.getPlayerLogin(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        Player topPlayer1=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
+        String login=playerDao.getPlayerLogin(topPlayer.getPlayerId());
+        Player topPlayer1=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1,69);
         assertEquals(login,topPlayer1.getLogin());
     }
 
@@ -191,7 +191,7 @@ public class PlayerDaoImplTest {
     public void getPlayerPassword() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        String password=playerDao.getPlayerPassword(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
+        String password=playerDao.getPlayerPassword(topPlayer.getPlayerId());
         assertEquals(password,"1111");
     }
 
@@ -206,8 +206,8 @@ public class PlayerDaoImplTest {
     public void getPlayerEmail() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        String email=playerDao.getPlayerEmail(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        Player topPlayer2=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
+        String email=playerDao.getPlayerEmail(topPlayer.getPlayerId());
+        Player topPlayer2=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1,69);
         assertEquals(email,topPlayer2.getEmail());
     }
 
@@ -222,8 +222,8 @@ public class PlayerDaoImplTest {
     public void getPlayerMoney() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        BigInteger money=playerDao.getPlayerMoney(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        Player topPlayer2=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
+        BigInteger money=playerDao.getPlayerMoney(topPlayer.getPlayerId());
+        Player topPlayer2=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1,69);
         assertEquals(money.intValue(),topPlayer2.getMoney());
     }
     @Test(expected = EmptyResultDataAccessException.class)
@@ -237,8 +237,8 @@ public class PlayerDaoImplTest {
     public void getPlayerLevel() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        BigInteger lvl=playerDao.getPlayerLevel(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        Player topPlayer2=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
+        BigInteger lvl=playerDao.getPlayerLevel(topPlayer.getPlayerId());
+        Player topPlayer2=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1,69);
         assertEquals(lvl.intValue(),topPlayer2.getLevel());
     }
     @Test(expected = EmptyResultDataAccessException.class)
@@ -252,8 +252,8 @@ public class PlayerDaoImplTest {
     public void getPlayerPoints() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        BigInteger points=playerDao.getPlayerPoints(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        Player topPlayer2=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
+        BigInteger points=playerDao.getPlayerPoints(topPlayer.getPlayerId());
+        Player topPlayer2=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1,69);
         assertEquals(points.intValue(),topPlayer2.getPoints());
     }
     @Test(expected = EmptyResultDataAccessException.class)
@@ -263,11 +263,12 @@ public class PlayerDaoImplTest {
     }
 
     @Test
+    @Ignore
     @Rollback(true)
     public void getPlayerCity() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        City city=playerDao.getPlayerCity(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
+        City city=playerDao.getPlayerCity(topPlayer.getPlayerId());
         assertEquals(topPlayer.getCurCity(),city.getCityId());
     }
 
@@ -301,7 +302,7 @@ public class PlayerDaoImplTest {
         else{
             cityId=playerDao.findPlayerByLogin("Steve").getCurCity()+1;
         }
-        playerDao.movePlayerToCity(new BigInteger(Integer.toString(playerDao.findPlayerByLogin("Steve").getPlayerId())), new BigInteger(Integer.toString(cityId)));
+        playerDao.movePlayerToCity(playerDao.findPlayerByLogin("Steve").getPlayerId(), new BigInteger(Integer.toString(cityId)));
 
     }
     @Test(expected=RuntimeException.class)
@@ -309,7 +310,7 @@ public class PlayerDaoImplTest {
     public void movePlayerToCityFailed() throws Exception{
         int cityId;
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
-        playerDao.movePlayerToCity(new BigInteger(Integer.toString(playerDao.findPlayerByLogin("Steve").getPlayerId())), new BigInteger(Integer.toString(52)));
+        playerDao.movePlayerToCity(playerDao.findPlayerByLogin("Steve").getPlayerId(), new BigInteger(Integer.toString(52)));
 
     }
 }

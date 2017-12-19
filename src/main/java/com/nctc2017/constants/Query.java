@@ -35,6 +35,16 @@ public class Query {
      * OBJECT_TYPE_ID of container
      *
      * */
+
+    public static  final String FIND_ALL_ENTITIES_BY_TYPE=
+            "SELECT atr_obj.NAME, atr_val.VALUE " +
+                    "FROM OBJECTS entity_obj, ATTRIBUTES atr_obj, ATTRIBUTES_VALUE atr_val " +
+                    "WHERE " +
+                    "entity_obj.OBJECT_TYPE_ID =? " +
+                    "AND atr_obj.OBJECT_TYPE_ID = entity_obj.OBJECT_TYPE_ID " +
+                    "AND atr_val.ATTR_ID = atr_obj.ATTR_ID " +
+                    "AND atr_val.OBJECT_ID = entity_obj.OBJECT_ID";
+
     public static final String FIND_CONTAINER_BY_OWNER_ID = 
             "SELECT child_obj.OBJECT_ID " +
                     "    FROM OBJECTS child_obj, OBJECTS parent_obj " +
