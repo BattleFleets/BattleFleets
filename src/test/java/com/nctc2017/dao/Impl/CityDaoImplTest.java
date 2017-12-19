@@ -39,7 +39,6 @@ public class CityDaoImplTest {
     }
 
     @Test
-    @Ignore
     @Rollback(true)
     public void findAll() throws Exception {
         //TODO

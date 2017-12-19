@@ -33,7 +33,8 @@ public class TravelService {
     }
 
     public City getCurrentCity(BigInteger playerId) {
-        City city = playerDao.getPlayerCity(playerId);
+        BigInteger cityId = playerDao.getPlayerCity(playerId);
+        City city=cityDao.find(cityId);
         return city;
     }
 

@@ -25,10 +25,6 @@ import org.apache.log4j.Logger;
 @Repository
 @Qualifier("cityDao")
 public class CityDaoImpl implements CityDao {
-    public static final String queryForCityNameById="SELECT city.NAME FROM OBJECTS city, OBJTYPE city_type " +
-            "WHERE city_type.NAME=? " +
-            "AND city_type.OBJECT_TYPE_ID=city.OBJECT_TYPE_ID " +
-            "AND city.OBJECT_ID=?";
     public static final String queryForCity="SELECT city.NAME FROM OBJECTS city, OBJTYPE city_type " +
             "WHERE city_type.NAME='CITY' " +
             "AND city_type.OBJECT_TYPE_ID=city.OBJECT_TYPE_ID";
@@ -51,14 +47,20 @@ public class CityDaoImpl implements CityDao {
 
     @Override
     public List<City> findAll() {
-        List<City> cities=queryExecutor.getAllEntitiesByType(DatabaseObject.CITY_OBJTYPE_ID, new EntityListExtractor<>(new CityVisitor()));
+        List<City> cities=new ArrayList<>();
+        List<String> citiesNames=jdbcTemplate.queryForList(queryForCity, String.class);
+        for(int i=0; i<citiesNames.size();i++)
+        {
+            BigInteger cityId=jdbcTemplate.queryForObject("SELECT OBJECT_ID FROM OBJECTS WHERE NAME=?",new Object[]{citiesNames.get(i)},BigInteger.class);
+            cities.add(new City(citiesNames.get(i),null,cityId));
+        }
         return cities;
     }
    private final class CityVisitor implements ExtractingVisitor<City> {
 
         @Override
-        public City visit(BigInteger entityId, Map<String, String> papamMap) {
-            return new City( papamMap.get(City.NAME),null,entityId );
+        public City visit(BigInteger entityId, Map<String, String> cityMap) {
+            return new City( cityMap.get(City.NAME),null,entityId );
         }
 
     }
