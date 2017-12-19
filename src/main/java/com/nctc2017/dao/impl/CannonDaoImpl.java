@@ -44,7 +44,7 @@ public class CannonDaoImpl implements CannonDao {
         
         if (pickedUpCannon == null){
             RuntimeException ex = new IllegalArgumentException("Wrong cannon object id = " + cannonId);
-            log.log(Level.ERROR, "CannonDAO Exception while find by id.", ex);
+            log.error("CannonDAO Exception while find by id.", ex);
             throw ex;
         }
         return pickedUpCannon;
@@ -115,7 +115,7 @@ public class CannonDaoImpl implements CannonDao {
                         JdbcConverter.toNumber(DatabaseAttribute.CANNON_NAME_ID)});
         if (rowsAffected == 0){
             RuntimeException ex = new IllegalStateException("No cannon created, expected one new cannon");
-            log.log(Level.ERROR, "CannonDAO Exception while creating new entity of cannon.", ex);
+            log.error("CannonDAO Exception while creating new entity of cannon.", ex);
             throw ex;
         }
         
@@ -126,7 +126,7 @@ public class CannonDaoImpl implements CannonDao {
     public void deleteCannon(@NotNull BigInteger cannonId) {
         int rowsAffected = queryExecutor.delete(cannonId, DatabaseObject.CANNON_OBJTYPE_ID);
         if (rowsAffected == 0) 
-            log.log(Level.WARN,"No cannon deleted with id = " + cannonId + ", expected one.");
+            log.warn("No cannon deleted with id = " + cannonId + ", expected one.");
     }
 
     private List<Cannon> getAllCannonsFromAnywhere(@NotNull BigInteger containerId) {

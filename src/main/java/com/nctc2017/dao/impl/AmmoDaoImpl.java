@@ -3,7 +3,11 @@ package com.nctc2017.dao.impl;
 import java.math.BigInteger;
 import java.util.*;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Repository;
 
 import com.nctc2017.bean.Ammo;
 import com.nctc2017.constants.DatabaseAttribute;
@@ -15,7 +19,11 @@ import com.nctc2017.dao.extractors.ExtractingVisitor;
 import com.nctc2017.dao.utils.QueryBuilder;
 import com.nctc2017.dao.utils.QueryExecutor;
 
+@Repository
+@Qualifier("ammoDao")
 public class AmmoDaoImpl implements AmmoDao {
+    
+    private static Logger log = Logger.getLogger(AmmoDaoImpl.class);
 
     @Autowired
     private QueryExecutor queryExecutor;
@@ -25,6 +33,11 @@ public class AmmoDaoImpl implements AmmoDao {
         Ammo ammo = queryExecutor.findEntity(ammoId, 
                 DatabaseObject.AMMO_OBJTYPE_ID, 
                 new EntityExtractor<>(ammoId, new AmmoVisitor()));
+        if (ammo == null){
+            RuntimeException ex = new IllegalArgumentException("Wrong ammo object id = " + ammoId);
+            log.error("AmmoDAO Exception while find by id.", ex);
+            throw ex;
+        }
         return ammo;
     }
 
@@ -45,14 +58,28 @@ public class AmmoDaoImpl implements AmmoDao {
 
     @Override
     public int getAmmoQuantity(BigInteger ammoId) {
-        return queryExecutor.getAttrValue(ammoId, DatabaseAttribute.AMMO_NUM, Integer.class);
+        try {
+            return queryExecutor.getAttrValue(ammoId, DatabaseAttribute.AMMO_NUM, Integer.class);
+        } catch (EmptyResultDataAccessException e) {
+            RuntimeException ex = new IllegalArgumentException("Invalid ammo id = " + ammoId, e);
+            log.error("AmmoDAO Exception while getting ammo quantity.", ex);
+            throw ex;
+        }
     }
 
     @Override
     public boolean increaseAmmoQuantity(BigInteger ammoId, int increaseNumber) {
-        Integer curQuantity = queryExecutor.getAttrValue(ammoId, 
-                DatabaseAttribute.AMMO_NUM, 
-                Integer.class);
+        Integer curQuantity;
+        try {
+            curQuantity = queryExecutor.getAttrValue(ammoId, 
+                    DatabaseAttribute.AMMO_NUM, 
+                    Integer.class);
+        } catch (EmptyResultDataAccessException e) {
+            RuntimeException ex = new IllegalArgumentException("Invalid ammo id = " + ammoId, e);
+            log.error("AmmoDAO Exception while increasing ammo quantity.", ex);
+            throw ex;
+        }
+        
         QueryBuilder builder = QueryBuilder.updateAttributeValue(ammoId)
                 .setAttribute(DatabaseAttribute.AMMO_NUM, curQuantity + increaseNumber);
         int res = queryExecutor.updateAttribute(builder);

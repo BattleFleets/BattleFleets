@@ -7,19 +7,19 @@ import com.nctc2017.bean.Ammo;
 
 public interface AmmoDao {
 
-    Ammo findById(BigInteger AmmoId);
+    Ammo findById(BigInteger ammoId);
 
-    String getAmmoName(BigInteger AmmoId);
+    String getAmmoName(BigInteger ammoId);
 
-    String getAmmoDamageType(BigInteger AmmoId);
+    String getAmmoDamageType(BigInteger ammoId);
 
-    int getAmmoCost(BigInteger AmmoId);
+    int getAmmoCost(BigInteger ammoId);
 
-    int getAmmoQuantity(BigInteger AmmoId);
+    int getAmmoQuantity(BigInteger ammoId);
 
-    boolean increaseAmmoQuantity(BigInteger AmmoId, int increaseNumber);
+    boolean increaseAmmoQuantity(BigInteger ammoId, int increaseNumber);
 
-    boolean decreaseAmmoQuantity(BigInteger AmmoId, int decreaseNumber);
+    boolean decreaseAmmoQuantity(BigInteger ammoId, int decreaseNumber);
 
     List<Ammo> getAllAmmoFromStock(BigInteger stockId);
 
