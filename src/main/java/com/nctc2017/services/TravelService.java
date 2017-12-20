@@ -48,7 +48,12 @@ public class TravelService {
     }
 
     public boolean isEnemyOnHorizon(BigInteger playerId) {
-        return travelManager.prepareEnemyFor(playerId);
+        if(travelManager.prepareEnemyFor(playerId)) { 
+            autoDecisionTimer(playerId);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public int resumeRelocateTime(BigInteger playerId) {
@@ -72,17 +77,17 @@ public class TravelService {
         else
             return true;
     }
-
-    public int getAutoDecisionTime() {
-        return AutoDecisionTask.DELAY;
-    }
     
     public int autoDecisionTimer(BigInteger playerId) {
         Runnable decisionTask = new AutoDecisionTask(playerId);
         Thread decisionThread = new Thread(decisionTask);
         decisionThread.start();
         playerAutoDecision.put(playerId, decisionThread);
-        return 0;
+        return getAutoDecisionTime() / 1000;
+    }
+    
+    private int getAutoDecisionTime() {
+        return AutoDecisionTask.DELAY;
     }
 
     private class AutoDecisionTask implements Runnable{
@@ -96,7 +101,7 @@ public class TravelService {
         @Override
         public void run() {
             try {
-                this.wait(DELAY);
+                Thread.sleep(DELAY);
             } catch (InterruptedException e) {
                 return;
             }

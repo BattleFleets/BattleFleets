@@ -10,11 +10,13 @@ import java.util.Random;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.nctc2017.dao.PlayerDao;
 
 @Component
+@Scope("prototype")
 public class TravelManager {
     private static Logger log = Logger.getLogger(TravelManager.class);
     
@@ -34,9 +36,9 @@ public class TravelManager {
         Runnable managerTask = new ManagerTask();
         Thread manager = new Thread(managerTask);
         
-        log.log(Level.DEBUG, "TravelManager starting");
+        log.debug("TravelManager starting");
         manager.start();
-        log.log(Level.DEBUG, "TravelManager running");
+        log.debug("TravelManager running");
     }
     
     public boolean prepareEnemyFor(BigInteger playerId) {
@@ -44,6 +46,7 @@ public class TravelManager {
         synchronized (journals) {
             TravelBook playerJornal = journals.get(playerId);
             int lvl = playerJornal.getPlayerLevel();
+            if (playerJornal.getEnemyId() != null) return true;
             
             for (Map.Entry<BigInteger, TravelBook> enemy: journals.entrySet()) {
                 TravelBook enemyJornal = enemy.getValue();
@@ -191,7 +194,6 @@ public class TravelManager {
             this.friendly = friendly;
         }
         
-        
     }
     
     private class ManagerTask implements Runnable{
@@ -211,19 +213,18 @@ public class TravelManager {
                         }
                     }
                 }
-                
                 try {
-                    log.log(Level.DEBUG, "TravelManager sleep");
-                    this.wait(managerWakeUp);
+                    log.debug("TravelManager sleep");
+                    Thread.sleep(managerWakeUp);
                 } catch (InterruptedException e) {
-                    log.log(Level.ERROR, "TravelManager was Interrupted", e);
-                    log.log(Level.DEBUG, "TravelManager will start again");
+                    log.error("TravelManager was Interrupted", e);
+                    log.debug("TravelManager will start again");
                     Thread manager = new Thread(this);
-                    log.log(Level.DEBUG, "TravelManager starting");
+                    log.debug("TravelManager starting");
                     manager.start();
-                    log.log(Level.DEBUG, "TravelManager running");
+                    log.debug("TravelManager running");
                 }
-                log.log(Level.DEBUG, "TravelManager awoke");
+                log.debug("TravelManager awoke");
             }
         }
     }

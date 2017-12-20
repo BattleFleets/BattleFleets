@@ -1,4 +1,4 @@
-package com.nctc2017.dao.Impl;
+package com.nctc2017.dao.utils;
 
 import com.nctc2017.bean.Cannon;
 import com.nctc2017.bean.Goods;
