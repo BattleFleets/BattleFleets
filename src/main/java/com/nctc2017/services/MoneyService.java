@@ -11,7 +11,9 @@ PlayerDao playerDao;
 
     public int addMoney(BigInteger playerId, int moneyAdd) {
 
-        return getPlayersMoney(playerId)+moneyAdd;
+        int newMoney=getPlayersMoney(playerId)+moneyAdd;
+        playerDao.updateMoney(playerId,newMoney);
+        return newMoney;
     }
 
     public int deductMoney(BigInteger playerId, int moneyDeduct) {

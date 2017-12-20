@@ -24,7 +24,7 @@ public interface PlayerDao {
 
     void updatePoints(BigInteger playerId, int points);
 
-    void updateMoney(BigInteger playerId, int points);
+    void updateMoney(BigInteger playerId, int money);
 
     Player findPlayerById(BigInteger playerId);
 
