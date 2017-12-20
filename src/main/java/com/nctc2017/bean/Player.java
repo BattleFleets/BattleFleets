@@ -3,7 +3,13 @@ package com.nctc2017.bean;
 import java.math.BigInteger;
 
 public class Player {
-	protected int playerId;
+	public static final String LOGIN = "Login";
+	public static final String EMAIL = "Email";
+	public static final String MONEY = "Money";
+	public static final String POINTS = "Points";
+	public static final String LEVEL = "Level";
+
+	protected BigInteger playerId;
 
     protected String login;
 
@@ -15,24 +21,21 @@ public class Player {
 
     protected int level;
 
-    protected int curCity;
-    
 
-	public Player(int playerId, String login,String email, int money, int points, int level, int curCity) {
+	public Player(BigInteger playerId, String login,String email, int money, int points, int level) {
 		this.playerId=playerId;
 		this.login = login;
 		this.email=email;
 		this.money = money;
 		this.points = points;
 		this.level = level;
-		this.curCity = curCity;
 	}
 
-	public int getPlayerId() {
+	public BigInteger getPlayerId() {
 		return playerId;
 	}
 
-	public void setPlayerId(int playerId) {
+	public void setPlayerId(BigInteger playerId) {
 		this.playerId = playerId;
 	}
 
@@ -76,13 +79,6 @@ public class Player {
 		this.level = level;
 	}
 
-	public int getCurCity() {
-		return curCity;
-	}
-
-	public void setCurCity(int curCity) {
-		this.curCity = curCity;
-	}
     
     
 }

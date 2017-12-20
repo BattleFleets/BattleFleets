@@ -35,7 +35,10 @@ public class QueryExecutor {
                                JdbcConverter.toNumber(entityTypeId), JdbcConverter.toNumber(entityId) },
                 extractor);
     }
-    
+
+    public <T> T getAllEntitiesByType(@NotNull BigInteger entityTypeId, @NotNull ResultSetExtractor<T> extractor) {
+        return jdbcTemplate.query(Query.FIND_ALL_ENTITIES_BY_TYPE, new Object[] { JdbcConverter.toNumber(entityTypeId)},extractor);
+    }
     /**
      * Deletes entity which id is specified as {@code entityId} and type's id as {@code entityTypeId}.
      * @param entityId - id of entity

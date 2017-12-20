@@ -3,10 +3,11 @@ package com.nctc2017.bean;
 import java.math.BigInteger;
 
 public class City {
-    protected String cityName;
+	public static final String NAME = "CityName";
+	protected String cityName;
     protected Market market;
-    protected int cityId;
-	public City(String cityName, Market market, int cityId) {
+    protected BigInteger cityId;
+	public City(String cityName, Market market, BigInteger cityId) {
 		this.cityName = cityName;
 		this.market = market;
 		this.cityId=cityId;
@@ -24,11 +25,11 @@ public class City {
 		this.market = market;
 	}
 
-	public int getCityId() {
+	public BigInteger getCityId() {
 		return cityId;
 	}
 
-	public void setCityId(int cityId) {
+	public void setCityId(BigInteger cityId) {
 		this.cityId = cityId;
 	}
 }

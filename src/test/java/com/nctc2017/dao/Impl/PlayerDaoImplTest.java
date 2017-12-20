@@ -3,25 +3,30 @@ package com.nctc2017.dao.Impl;
 import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
+import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.AssertTrue;
 import java.math.BigInteger;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ApplicationConfig.class })
@@ -29,7 +34,10 @@ import static org.junit.Assert.assertNull;
 public class PlayerDaoImplTest {
     @Autowired
     PlayerDao playerDao;
-
+    @Autowired
+    CityDao cityDao;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     @Rollback(true)
@@ -46,7 +54,7 @@ public class PlayerDaoImplTest {
     public void findPlayerByLogin() throws Exception{
          playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
          Player topPlayer1=playerDao.findPlayerByLogin("Steve");
-         Player topPlayer2=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
+         Player topPlayer2=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1);
          assertEquals(topPlayer1.getLogin(),topPlayer2.getLogin());
          assertEquals(topPlayer1.getEmail(),topPlayer2.getEmail());
          assertEquals(topPlayer1.getLevel(),topPlayer2.getLevel());
@@ -66,12 +74,12 @@ public class PlayerDaoImplTest {
     public void updateLogin() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player player=playerDao.findPlayerByLogin("Steve");
-        playerDao.updateLogin(new BigInteger(Integer.toString(player.getPlayerId())),"Captain_America");
+        playerDao.updateLogin(player.getPlayerId(),"Captain_America");
         String login=playerDao.findPlayerByLogin("Captain_America").getLogin();
         assertEquals("Captain_America",login);
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void updateLoginIncorrectId() throws Exception {
         playerDao.updateLogin(new BigInteger("100"),"Qwerty");
@@ -82,26 +90,26 @@ public class PlayerDaoImplTest {
     public void updateLevel() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player player=playerDao.findPlayerByLogin("Steve");
-        playerDao.updateLevel(new BigInteger(Integer.toString(player.getPlayerId())),new BigInteger("80"));
+        playerDao.updateLevel(player.getPlayerId(),80);
         int level=playerDao.findPlayerByLogin("Steve").getLevel();
         assertEquals(80,level);
     }
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void updateLevelIncorrectId() throws Exception {
-        playerDao.updateLevel(new BigInteger("100"),new BigInteger("80"));
+        playerDao.updateLevel(new BigInteger("100"),80);
     }
     @Test
     @Rollback(true)
     public void updateEmail() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player player=playerDao.findPlayerByLogin("Steve");
-        playerDao.updateEmail(new BigInteger(Integer.toString(player.getPlayerId())),"80");
+        playerDao.updateEmail(player.getPlayerId(),"80");
         String email=playerDao.findPlayerByLogin("Steve").getEmail();
         assertEquals("80",email);
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void updateEmailIncorrectId() throws Exception {
         playerDao.updateEmail(new BigInteger("100"),"80");
@@ -112,23 +120,57 @@ public class PlayerDaoImplTest {
     public void updatePoints() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player player=playerDao.findPlayerByLogin("Steve");
-        playerDao.updatePoints(new BigInteger(Integer.toString(player.getPlayerId())),new BigInteger("100"));
+        playerDao.updatePoints(player.getPlayerId(),100);
         int points=playerDao.findPlayerByLogin("Steve").getPoints();
         assertEquals(100,points);
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void updatePointsIncorrectId() throws Exception {
-        playerDao.updatePoints(new BigInteger("100"),new BigInteger("80"));
+        playerDao.updatePoints(new BigInteger("100"),80);
     }
+
+    @Test
+    @Rollback(true)
+    public void updatePassword() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player=playerDao.findPlayerByLogin("Steve");
+        playerDao.updatePassword(player.getPlayerId(),"qwerty");
+        String password=playerDao.getPlayerPassword(player.getPlayerId());
+        assertEquals("qwerty",password);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Rollback(true)
+    public void updatePasswordIncorrectId() throws Exception {
+        playerDao.updatePassword(new BigInteger("100"),"80");
+    }
+
+    @Test
+    @Rollback(true)
+    public void updateMoney() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player=playerDao.findPlayerByLogin("Steve");
+        playerDao.updateMoney(player.getPlayerId(),300);
+        int money=playerDao.findPlayerByLogin("Steve").getMoney();
+        assertEquals(300,money);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Rollback(true)
+    public void updateMoneyIncorrectId() throws Exception {
+        playerDao.updateMoney(new BigInteger("100"),80);
+    }
+
+
     @Test
     @Rollback(true)
     public void findPlayerById() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        Player topPlayer1=playerDao.findPlayerById(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        Player topPlayer2=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
+        Player topPlayer1=playerDao.findPlayerById(topPlayer.getPlayerId());
+        Player topPlayer2=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1);
         assertEquals(topPlayer1.getLogin(),topPlayer2.getLogin());
         assertEquals(topPlayer1.getEmail(),topPlayer2.getEmail());
         assertEquals(topPlayer1.getLevel(),topPlayer2.getLevel());
@@ -136,7 +178,7 @@ public class PlayerDaoImplTest {
         assertEquals(topPlayer1.getMoney(),topPlayer2.getMoney());
         //assertEquals(topPlayer1.getCurCity(),topPlayer2.getCurCity());
     }
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void findPlayerByIdNotExistPlayer() throws Exception {
         Player player=playerDao.findPlayerById(new BigInteger("53"));
@@ -166,7 +208,7 @@ public class PlayerDaoImplTest {
     @Test
     @Rollback(true)
     public void getCountPlayers() throws Exception{
-        assertEquals(playerDao.getCountPlayers(),new BigInteger("5"));
+        assertEquals(playerDao.getCountPlayers(),5);
 
     }
 
@@ -175,12 +217,12 @@ public class PlayerDaoImplTest {
     public void getPlayerLogin() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        String login=playerDao.getPlayerLogin(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        Player topPlayer1=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
+        String login=playerDao.getPlayerLogin(topPlayer.getPlayerId());
+        Player topPlayer1=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1);
         assertEquals(login,topPlayer1.getLogin());
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void getPlayerLoginFailed() throws Exception{
       playerDao.getPlayerLogin(new BigInteger("80"));
@@ -191,11 +233,11 @@ public class PlayerDaoImplTest {
     public void getPlayerPassword() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        String password=playerDao.getPlayerPassword(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
+        String password=playerDao.getPlayerPassword(topPlayer.getPlayerId());
         assertEquals(password,"1111");
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void testGetPlayerPasswordFailed() throws Exception{
         playerDao.getPlayerPassword(new BigInteger("80"));
@@ -206,12 +248,12 @@ public class PlayerDaoImplTest {
     public void getPlayerEmail() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        String email=playerDao.getPlayerEmail(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        Player topPlayer2=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
+        String email=playerDao.getPlayerEmail(topPlayer.getPlayerId());
+        Player topPlayer2=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1);
         assertEquals(email,topPlayer2.getEmail());
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void getPlayerEmailFailed() throws Exception{
         playerDao.getPlayerEmail(new BigInteger("80"));
@@ -222,11 +264,11 @@ public class PlayerDaoImplTest {
     public void getPlayerMoney() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        BigInteger money=playerDao.getPlayerMoney(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        Player topPlayer2=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
-        assertEquals(money.intValue(),topPlayer2.getMoney());
+        int money=playerDao.getPlayerMoney(topPlayer.getPlayerId());
+        Player topPlayer2=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1);
+        assertEquals(money,topPlayer2.getMoney());
     }
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void getPlayerMoneyFailed() throws Exception{
         playerDao.getPlayerMoney(new BigInteger("80"));
@@ -237,11 +279,11 @@ public class PlayerDaoImplTest {
     public void getPlayerLevel() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        BigInteger lvl=playerDao.getPlayerLevel(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        Player topPlayer2=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
-        assertEquals(lvl.intValue(),topPlayer2.getLevel());
+        int lvl=playerDao.getPlayerLevel(topPlayer.getPlayerId());
+        Player topPlayer2=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1);
+        assertEquals(lvl,topPlayer2.getLevel());
     }
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void getPlayerLevelFailed() throws Exception{
         playerDao.getPlayerLevel(new BigInteger("80"));
@@ -252,11 +294,11 @@ public class PlayerDaoImplTest {
     public void getPlayerPoints() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        BigInteger points=playerDao.getPlayerPoints(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        Player topPlayer2=new Player(1,"Steve","Rogers@gmail.com",100,1,1,69);
-        assertEquals(points.intValue(),topPlayer2.getPoints());
+        int points=playerDao.getPlayerPoints(topPlayer.getPlayerId());
+        Player topPlayer2=new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1);
+        assertEquals(points,topPlayer2.getPoints());
     }
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void getPlayerPointsFailed() throws Exception{
         playerDao.getPlayerPoints(new BigInteger("80"));
@@ -265,13 +307,11 @@ public class PlayerDaoImplTest {
     @Test
     @Rollback(true)
     public void getPlayerCity() throws Exception{
-        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
-        Player topPlayer=playerDao.findPlayerByLogin("Steve");
-        City city=playerDao.getPlayerCity(new BigInteger(Integer.toString(topPlayer.getPlayerId())));
-        assertEquals(topPlayer.getCurCity(),city.getCityId());
+        playerDao.getPlayerCity(new BigInteger("41"));
+        assertEquals(new BigInteger("69"),playerDao.getPlayerCity(new BigInteger("41")));
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void getPlayerCityFailed() throws Exception{
         playerDao.getPlayerCity(new BigInteger("80"));
@@ -284,7 +324,7 @@ public class PlayerDaoImplTest {
 
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void findAllShipsFailed() throws Exception{
         playerDao.findAllShip(new BigInteger("71"));
@@ -293,23 +333,43 @@ public class PlayerDaoImplTest {
     @Test
     @Rollback(true)
     public void movePlayerToCity() throws Exception{
-        int cityId;
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
-        if(playerDao.findPlayerByLogin("Steve").getCurCity()==73) {
-             cityId=72;
+        BigInteger playerId=playerDao.findPlayerByLogin("Steve").getPlayerId();
+        BigInteger cityId=playerDao.getPlayerCity(playerId);
+        if(cityId.intValue()>69)
+        {
+            cityId=new BigInteger("69");
+            playerDao.movePlayerToCity(playerId, cityId);
+            assertEquals(playerDao.getPlayerCity(playerId).intValue(),69);
         }
         else{
-            cityId=playerDao.findPlayerByLogin("Steve").getCurCity()+1;
-        }
-        playerDao.movePlayerToCity(new BigInteger(Integer.toString(playerDao.findPlayerByLogin("Steve").getPlayerId())), new BigInteger(Integer.toString(cityId)));
+            cityId=new BigInteger("73");
+            playerDao.movePlayerToCity(playerId, cityId);
+            assertEquals(playerDao.getPlayerCity(playerId).intValue(),73);
 
+        }
     }
-    @Test(expected=RuntimeException.class)
+    @Test(expected=IllegalArgumentException.class)
     @Rollback(true)
     public void movePlayerToCityFailed() throws Exception{
-        int cityId;
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
-        playerDao.movePlayerToCity(new BigInteger(Integer.toString(playerDao.findPlayerByLogin("Steve").getPlayerId())), new BigInteger(Integer.toString(52)));
+        playerDao.movePlayerToCity(playerDao.findPlayerByLogin("Steve").getPlayerId(), new BigInteger(Integer.toString(52)));
+
+    }
+
+    @Test
+    @Rollback(true)
+    public void getPasswordByEmail() throws Exception{
+     playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+     Player player=playerDao.findPlayerByLogin("Steve");
+     String password=playerDao.getPasswordByEmail(player.getEmail());
+     assertEquals(password,"1111");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    @Rollback(true)
+    public void getPasswordByEmailFailed() throws Exception{
+        playerDao.getPasswordByEmail("qwerty");
 
     }
 }

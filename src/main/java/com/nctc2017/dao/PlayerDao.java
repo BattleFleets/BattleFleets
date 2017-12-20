@@ -16,19 +16,21 @@ public interface PlayerDao {
 
     void updateLogin(BigInteger playerId, String login);
 
-    void updateLevel(BigInteger playerId, BigInteger level);
+    void updateLevel(BigInteger playerId, int level);
 
     void updatePassword(BigInteger playerId, String password);
 
     void updateEmail(BigInteger playerId, String email);
 
-    void updatePoints(BigInteger playerId, BigInteger points);
+    void updatePoints(BigInteger playerId, int points);
+
+    void updateMoney(BigInteger playerId, int money);
 
     Player findPlayerById(BigInteger playerId);
 
     List<Player> findAllPlayers();
 
-    BigInteger getCountPlayers();
+    int getCountPlayers();
 
     String getPlayerLogin(BigInteger playerId);
 
@@ -36,13 +38,13 @@ public interface PlayerDao {
 
     String getPlayerEmail(BigInteger playerId);
 
-    BigInteger getPlayerMoney(BigInteger playerId);
+    int getPlayerMoney(BigInteger playerId);
 
-    BigInteger getPlayerLevel(BigInteger playerId);
+    int getPlayerLevel(BigInteger playerId);
 
-    BigInteger getPlayerPoints(BigInteger playerId);
+    int getPlayerPoints(BigInteger playerId);
 
-    City getPlayerCity(BigInteger playerId);
+    BigInteger getPlayerCity(BigInteger playerId);
 
     void addShip(BigInteger playerId, BigInteger shipId);
 
@@ -51,5 +53,7 @@ public interface PlayerDao {
     List<BigInteger> findAllShip(BigInteger playerId);
 
     void movePlayerToCity(BigInteger playerId, BigInteger cityId);
+
+    String getPasswordByEmail(String email);
 
 }
