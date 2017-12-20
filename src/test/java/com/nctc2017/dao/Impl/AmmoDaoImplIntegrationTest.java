@@ -1,9 +1,11 @@
 package com.nctc2017.dao.Impl;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +15,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nctc2017.bean.Ammo;
+import com.nctc2017.bean.Cannon;
+import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.AmmoDao;
+import com.nctc2017.dao.HoldDao;
+import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.dao.StockDao;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ApplicationConfig.class })
@@ -24,6 +31,15 @@ public class AmmoDaoImplIntegrationTest {
     
     @Autowired
     private AmmoDao ammoDao;
+    
+    @Autowired
+    private HoldDao holdDao;
+    
+    @Autowired
+    private StockDao stockDao;
+    
+    @Autowired
+    private PlayerDao playerDao;
     
     @Test
     @Rollback(true)
@@ -123,6 +139,73 @@ public class AmmoDaoImplIntegrationTest {
         // Then
         ammoDao.increaseAmmoQuantity(ammoId, increase);
         // Then Exception
+    }
+    
+    @Test
+    @Rollback(true)
+    public void testDecreaseAmmoQuantitySuccess() {
+        // When
+        int quantity = 41;
+        int decrease = 9;
+        BigInteger ammoId = ammoDao.createAmmo(DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID, quantity);
+        // Then
+        boolean res = ammoDao.decreaseAmmoQuantity(ammoId, decrease);
+        int quantityRes = ammoDao.getAmmoQuantity(ammoId);
+        // Then
+        assertTrue(res);
+        assertEquals(quantity - decrease, quantityRes);
+    }
+    
+    @Test
+    @Rollback(true)
+    public void testGetAllAmmoFromHoldSuccess() {
+        //Given
+        int quantityC = 17;
+        int quantityB = 28;
+        BigInteger idHold = holdDao.createHold();
+        BigInteger buckshotTemplateId = DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID;
+        BigInteger cannonballTemplateId = DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID;
+        BigInteger idB = ammoDao.createAmmo(buckshotTemplateId, quantityB);
+        BigInteger idC = ammoDao.createAmmo(cannonballTemplateId, quantityC);
+        holdDao.addCargo(idB, idHold);
+        holdDao.addCargo(idC, idHold);
+        // When
+        List<Ammo> list = ammoDao.getAllAmmoFromHold(idHold);
+        Ammo ammo1 = list.get(0);
+        Ammo ammo2 = list.get(1);
+        // Then
+        assertNotEquals(ammo1, ammo2);
+        assertTrue(ammo1.getThingId().equals(idB) || ammo1.getThingId().equals(idC));
+        assertTrue(ammo2.getThingId().equals(idB) || ammo2.getThingId().equals(idC));
+    }
+    @Test
+    @Ignore
+    @Rollback(true)
+    public void testGetAllAmmoFromHoldWithStockId() {
+        //Given
+        int quantityC = 17;
+        int quantityB = 28;
+        String login = "qwe";
+        String pass = "1111";
+        String email = "qwe@qwe.qwe";
+        BigInteger idHold = holdDao.createHold();
+        BigInteger buckshotTemplateId = DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID;
+        BigInteger cannonballTemplateId = DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID;
+        BigInteger idB = ammoDao.createAmmo(buckshotTemplateId, quantityB);
+        BigInteger idC = ammoDao.createAmmo(cannonballTemplateId, quantityC);
+        playerDao.addNewPlayer(login, pass, email);
+        Player player = playerDao.findPlayerByLogin(login);
+        //stockDao.createStock(player.getPlayerId());
+        holdDao.addCargo(idB, idHold);
+        holdDao.addCargo(idC, idHold);
         
+        // When
+        List<Ammo> list = ammoDao.getAllAmmoFromHold(idHold);
+        Ammo ammo1 = list.get(0);
+        Ammo ammo2 = list.get(1);
+        // Then
+        assertNotEquals(ammo1, ammo2);
+        assertTrue(ammo1.getThingId().equals(idB) || ammo1.getThingId().equals(idC));
+        assertTrue(ammo2.getThingId().equals(idB) || ammo2.getThingId().equals(idC));
     }
 }
