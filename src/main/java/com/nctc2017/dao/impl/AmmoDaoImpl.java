@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.nctc2017.bean.Ammo;
@@ -18,13 +19,17 @@ import com.nctc2017.dao.extractors.EntityListExtractor;
 import com.nctc2017.dao.extractors.ExtractingVisitor;
 import com.nctc2017.dao.utils.QueryBuilder;
 import com.nctc2017.dao.utils.QueryExecutor;
+import com.nctc2017.dao.utils.Validator;
 
 @Repository
 @Qualifier("ammoDao")
 public class AmmoDaoImpl implements AmmoDao {
     
     private static Logger log = Logger.getLogger(AmmoDaoImpl.class);
-
+    
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    
     @Autowired
     private QueryExecutor queryExecutor;
 
@@ -103,11 +108,13 @@ public class AmmoDaoImpl implements AmmoDao {
 
     @Override
     public List<Ammo> getAllAmmoFromStock(BigInteger idStock) {
+        Validator.dbInstanceOf(jdbcTemplate, "stock", idStock, DatabaseObject.STOCK_OBJTYPE_ID);
         return getAllAmmoFromAnywear(idStock);
     }
 
     @Override
     public List<Ammo> getAllAmmoFromHold(BigInteger idHold) {
+        Validator.dbInstanceOf(jdbcTemplate, "hold", idHold, DatabaseObject.HOLD_OBJTYPE_ID);
         return getAllAmmoFromAnywear(idHold);
     }
     

@@ -5,7 +5,6 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nctc2017.bean.Ammo;
-import com.nctc2017.bean.Cannon;
 import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
@@ -178,34 +176,32 @@ public class AmmoDaoImplIntegrationTest {
         assertTrue(ammo1.getThingId().equals(idB) || ammo1.getThingId().equals(idC));
         assertTrue(ammo2.getThingId().equals(idB) || ammo2.getThingId().equals(idC));
     }
-    @Test
-    @Ignore
+    
     @Rollback(true)
-    public void testGetAllAmmoFromHoldWithStockId() {
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetAmmoFromHoldWithStockId() {
         //Given
-        int quantityC = 17;
         int quantityB = 28;
+        int quantityC = 27;
+        
         String login = "qwe";
         String pass = "1111";
         String email = "qwe@qwe.qwe";
-        BigInteger idHold = holdDao.createHold();
+        
         BigInteger buckshotTemplateId = DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID;
-        BigInteger cannonballTemplateId = DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID;
         BigInteger idB = ammoDao.createAmmo(buckshotTemplateId, quantityB);
+        BigInteger cannonballTemplateId = DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID;
         BigInteger idC = ammoDao.createAmmo(cannonballTemplateId, quantityC);
+        
         playerDao.addNewPlayer(login, pass, email);
         Player player = playerDao.findPlayerByLogin(login);
-        //stockDao.createStock(player.getPlayerId());
-        holdDao.addCargo(idB, idHold);
-        holdDao.addCargo(idC, idHold);
         
+        BigInteger holdId = holdDao.createHold();
+        BigInteger stockId = stockDao.createStock(player.getPlayerId());
         // When
-        List<Ammo> list = ammoDao.getAllAmmoFromHold(idHold);
-        Ammo ammo1 = list.get(0);
-        Ammo ammo2 = list.get(1);
-        // Then
-        assertNotEquals(ammo1, ammo2);
-        assertTrue(ammo1.getThingId().equals(idB) || ammo1.getThingId().equals(idC));
-        assertTrue(ammo2.getThingId().equals(idB) || ammo2.getThingId().equals(idC));
+        holdDao.addCargo(idC, holdId);
+        stockDao.addCargo(idB, stockId);
+        ammoDao.getAllAmmoFromHold(stockId);
+        // Then Exception
     }
 }

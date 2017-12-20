@@ -13,19 +13,31 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.HoldDao;
+import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.dao.StockDao;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ApplicationConfig.class })
 @Transactional
 public class HoldDaoImplIntegrationTest {
+    
     @Autowired
-    HoldDao holdDao;
+    private HoldDao holdDao;
+    
     @Autowired
-    CannonDao cannonDao;
+    private CannonDao cannonDao;
+    
+    @Autowired
+    private StockDao stockDao;
+    
+    @Autowired
+    private PlayerDao playerDao;
+    
     
     @Test
     @Rollback(true)
@@ -122,7 +134,7 @@ public class HoldDaoImplIntegrationTest {
         BigInteger invalidShipId = BigInteger.ONE;
         // When
         holdDao.getOccupiedVolume(invalidShipId);
-        // Then ?
+        // Then ? TODO
     }
     
     @Test
@@ -146,5 +158,24 @@ public class HoldDaoImplIntegrationTest {
         // When
         holdDao.findHold(invalidShipId);
         // Then ?
+    }
+    
+    @Rollback(true)
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddCargoToHoldWithStockId() {
+        //Given
+        String login = "qwe";
+        String pass = "1111";
+        String email = "qwe@qwe.qwe";
+
+        BigInteger cargoId = cannonDao.createCannon(DatabaseObject.MORTAR_TEMPLATE_ID);
+        
+        playerDao.addNewPlayer(login, pass, email);
+        Player player = playerDao.findPlayerByLogin(login);
+
+        BigInteger stockId = stockDao.createStock(player.getPlayerId());
+        // When
+        holdDao.addCargo(cargoId, stockId);
+        // Then Exception
     }
 }
