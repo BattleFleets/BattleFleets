@@ -8,6 +8,7 @@ import com.nctc2017.dao.PlayerDao;
 
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.dao.extractors.EntityExtractor;
+import com.nctc2017.dao.extractors.EntityListExtractor;
 import com.nctc2017.dao.extractors.ExtractingVisitor;
 import com.nctc2017.dao.utils.QueryBuilder;
 import com.nctc2017.dao.utils.QueryExecutor;
@@ -154,12 +155,7 @@ public class PlayerDaoImpl implements PlayerDao{
 
     @Override
     public List<Player> findAllPlayers() {
-        List<Player> players=new ArrayList<>();
-        List<String> attributes = jdbcTemplate.queryForList(queryForPlayersAttributes, new Object[]{ DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(), DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
-        List<BigInteger> playersId = jdbcTemplate.queryForList("SELECT OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=?", BigInteger.class, DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact());
-        for(int i=0; i<attributes.size();i=i+5) {
-            players.add(new Player(playersId.get(i/5),attributes.get(i), attributes.get(i+4), parseInt(attributes.get(i+1)),parseInt(attributes.get(i+3)), parseInt(attributes.get(i+2))));
-        }
+        List<Player> players = queryExecutor.getAllEntitiesByType(DatabaseObject.PLAYER_OBJTYPE_ID,new EntityListExtractor<>( new PlayerVisitor()));
         return players;   
     }
 

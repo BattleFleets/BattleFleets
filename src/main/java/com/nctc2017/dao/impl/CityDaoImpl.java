@@ -47,13 +47,7 @@ public class CityDaoImpl implements CityDao {
 
     @Override
     public List<City> findAll() {
-        List<City> cities=new ArrayList<>();
-        List<String> citiesNames=jdbcTemplate.queryForList(queryForCity, String.class);
-        for(int i=0; i<citiesNames.size();i++)
-        {
-            BigInteger cityId=jdbcTemplate.queryForObject("SELECT OBJECT_ID FROM OBJECTS WHERE NAME=?",new Object[]{citiesNames.get(i)},BigInteger.class);
-            cities.add(new City(citiesNames.get(i),null,cityId));
-        }
+        List<City> cities = queryExecutor.getAllEntitiesByType(DatabaseObject.CITY_OBJTYPE_ID,new EntityListExtractor<>( new CityVisitor()));
         return cities;
     }
    private final class CityVisitor implements ExtractingVisitor<City> {

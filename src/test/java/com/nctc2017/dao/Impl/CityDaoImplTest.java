@@ -43,8 +43,12 @@ public class CityDaoImplTest {
     public void findAll() throws Exception {
         //TODO
         List<City> cities=cityDao.findAll();
-        assertEquals(cities.get(0).getCityName(),"Nassau");
-        assertEquals(cities.get(1).getCityName(),"Port Royal");
+        assertEquals(cities.get(0).getCityName(),"Montego Bay");
+        assertEquals(cities.get(1).getCityName(),"Inesville");
+        assertEquals(cities.get(2).getCityName(),"Santo Domingo");
+        assertEquals(cities.get(3).getCityName(),"Port Royal");
+        assertEquals(cities.get(4).getCityName(),"Nassau");
+
 
     }
 

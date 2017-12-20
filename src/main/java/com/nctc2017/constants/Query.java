@@ -37,7 +37,7 @@ public class Query {
      * */
 
     public static  final String FIND_ALL_ENTITIES_BY_TYPE=
-            "SELECT atr_obj.NAME, atr_val.VALUE " +
+            "SELECT entity_obj.OBJECT_ID, atr_obj.NAME, atr_val.VALUE " +
                     "FROM OBJECTS entity_obj, ATTRIBUTES atr_obj, ATTRIBUTES_VALUE atr_val " +
                     "WHERE " +
                     "entity_obj.OBJECT_TYPE_ID =? " +
