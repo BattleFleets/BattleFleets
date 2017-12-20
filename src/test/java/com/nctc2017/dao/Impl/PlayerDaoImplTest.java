@@ -130,6 +130,40 @@ public class PlayerDaoImplTest {
     public void updatePointsIncorrectId() throws Exception {
         playerDao.updatePoints(new BigInteger("100"),80);
     }
+
+    @Test
+    @Rollback(true)
+    public void updatePassword() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player=playerDao.findPlayerByLogin("Steve");
+        playerDao.updatePassword(player.getPlayerId(),"qwerty");
+        String password=playerDao.getPlayerPassword(player.getPlayerId());
+        assertEquals("qwerty",password);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Rollback(true)
+    public void updatePasswordIncorrectId() throws Exception {
+        playerDao.updatePassword(new BigInteger("100"),"80");
+    }
+
+    @Test
+    @Rollback(true)
+    public void updateMoney() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player=playerDao.findPlayerByLogin("Steve");
+        playerDao.updateMoney(player.getPlayerId(),300);
+        int money=playerDao.findPlayerByLogin("Steve").getMoney();
+        assertEquals(300,money);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Rollback(true)
+    public void updateMoneyIncorrectId() throws Exception {
+        playerDao.updateMoney(new BigInteger("100"),80);
+    }
+
+
     @Test
     @Rollback(true)
     public void findPlayerById() throws Exception{
@@ -315,11 +349,27 @@ public class PlayerDaoImplTest {
 
         }
     }
-    @Test(expected=RuntimeException.class)
+    @Test(expected=IllegalArgumentException.class)
     @Rollback(true)
     public void movePlayerToCityFailed() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         playerDao.movePlayerToCity(playerDao.findPlayerByLogin("Steve").getPlayerId(), new BigInteger(Integer.toString(52)));
+
+    }
+
+    @Test
+    @Rollback(true)
+    public void getPasswordByEmail() throws Exception{
+     playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+     Player player=playerDao.findPlayerByLogin("Steve");
+     String password=playerDao.getPasswordByEmail(player.getEmail());
+     assertEquals(password,"1111");
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    @Rollback(true)
+    public void getPasswordByEmailFailed() throws Exception{
+        playerDao.getPasswordByEmail("qwerty");
 
     }
 }

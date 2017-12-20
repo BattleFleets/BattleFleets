@@ -24,6 +24,8 @@ public interface PlayerDao {
 
     void updatePoints(BigInteger playerId, int points);
 
+    void updateMoney(BigInteger playerId, int points);
+
     Player findPlayerById(BigInteger playerId);
 
     List<Player> findAllPlayers();
@@ -51,5 +53,7 @@ public interface PlayerDao {
     List<BigInteger> findAllShip(BigInteger playerId);
 
     void movePlayerToCity(BigInteger playerId, BigInteger cityId);
+
+    String getPasswordByEmail(String email);
 
 }
