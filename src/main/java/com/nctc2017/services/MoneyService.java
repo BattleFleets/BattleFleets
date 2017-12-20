@@ -18,9 +18,8 @@ PlayerDao playerDao;
         return addMoney(playerId,-moneyDeduct);
     }
 
-    public boolean isEnoughMoney(BigInteger idPlayer, int money) {
-        // TODO implement here
-        return false;
+    public boolean isEnoughMoney(BigInteger playerId, int money) {
+        return (getPlayersMoney(playerId)>=money);
     }
 
     public int getPlayersMoney(BigInteger playerId) {
