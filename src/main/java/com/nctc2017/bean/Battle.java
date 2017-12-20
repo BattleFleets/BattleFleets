@@ -1,108 +1,204 @@
 package com.nctc2017.bean;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+
+import org.apache.log4j.Logger;
+
 public class Battle {
+    private static final String WRONG_PLAYER_WITH_ID = "Wrong player with id = ";
+    
+    private final String errorDescription;
+    
+    private Logger log = Logger.getLogger(Battle.class);
+
+    private Participant player1;
+    private Participant player2;
+    
     protected int distance;
 
-    protected int idShip1;
+    public Battle(int distance, BigInteger idPlayer1, BigInteger idPlayer2) {
+        this.distance = distance;
+        this.player1 = new Participant(idPlayer1);
+        this.player2 = new Participant(idPlayer2);
+        this.errorDescription = "because only two player permitted with id1 = " 
+                + idPlayer1 
+                + " and id2 = " 
+                + idPlayer2;
+    }
 
-    protected int idShip2;
+    public int getDistance() {
+        return distance;
+    }
 
-    protected int idPlayer1;
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+    
+    public BigInteger getShipId(BigInteger playerId) {
+        if (playerId.equals(player1.getPlayerId())) {
+            return player1.getShipId();
+        } else if (playerId.equals(player2.getPlayerId())) {
+            return player2.getShipId();
+        } else {
+            RuntimeException ex = 
+                    new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+            log.error("Error when getting player's ship from Battle, "
+                    + errorDescription, ex);
+            throw ex;
+        }
+    }
 
-    protected int idPlayer2;
+    public void setShipId(BigInteger playerId, BigInteger shipId) {
+        if (playerId.equals(player1.getPlayerId())) {
+            this.player1.setShipId(shipId);
+        } else if (playerId.equals(player2.getPlayerId())) {
+            this.player2.setShipId(shipId);
+        } else {
+            RuntimeException ex = 
+                    new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+            log.error("Error when setting player's ship for Battle, "
+                    + errorDescription, ex);
+            throw ex;
+        }
+    }
 
-    protected boolean readyPlayer1;
+    public BigInteger getIdPlayer1() {
+        return player1.getPlayerId();
+    }
 
-    protected boolean readyPlayer2;
+    public BigInteger getIdPlayer2() {
+        return player2.getPlayerId();
+    }
+    
+    public boolean isReadyPlayer2(BigInteger playerId) {
+        if (playerId.equals(player1.getPlayerId())) {
+            return player1.isReady();
+        } else if (playerId.equals(player2.getPlayerId())) {
+            return player2.isReady();
+        } else {
+            RuntimeException ex = 
+                    new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+            log.error("Error when checking player for ready to battle, "
+                    + errorDescription, ex);
+            throw ex;
+        }
+    }
+    
+    public void setReady(BigInteger playerId, boolean readyPlayer) {
+        if (playerId.equals(player1.getPlayerId())) {
+            player1.setReady(readyPlayer);
+        } else if (playerId.equals(player2.getPlayerId())) {
+            player2.setReady(readyPlayer);
+        } else {
+            RuntimeException ex = 
+                    new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+            log.error("Error when setting ready status in Battle, "
+                    + errorDescription, ex);
+            throw ex;
+        }
+    }
 
-    protected boolean convergencePlayer1;
+    public void setConvergence(BigInteger playerId, boolean convergence) {
+        if (playerId.equals(player1.getPlayerId())) {
+            player1.setConvergence(convergence);
+        } else if (playerId.equals(player2.getPlayerId())) {
+            player2.setConvergence(convergence);
+        } else {
+            RuntimeException ex = 
+                    new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+            log.error("Error when setting convergence in Battle, "
+                    + errorDescription, ex);
+            throw ex;
+        }
+    }
 
-    protected boolean convergencePlayer2;
+    public boolean isConvergence(BigInteger playerId) {
+        if (playerId.equals(player1.getPlayerId())) {
+            return player1.isConvergence();
+        } else if (playerId.equals(player2.getPlayerId())) {
+            return player2.isConvergence();
+        } else {
+            RuntimeException ex = 
+                    new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+            log.error("Error when checking convergence in Battle, "
+                    + errorDescription, ex);
+            throw ex;
+        }
+    }
 
+    public BigInteger getEnemyShipId(BigInteger playerId) {
+        if (playerId.equals(player1.getPlayerId())) {
+            return getShipId(player2.getPlayerId());
+        } else {
+            return getShipId(player1.getPlayerId());
+        }
+    }
 
-	public Battle(int distance, int idShip1, int idShip2, int idPlayer1, int idPlayer2) {
-		this.distance = distance;
-		this.idShip1 = idShip1;
-		this.idShip2 = idShip2;
-		this.idPlayer1 = idPlayer1;
-		this.idPlayer2 = idPlayer2;
-		this.readyPlayer1 = false;
-		this.convergencePlayer1 = false;
-		this.readyPlayer2 = false;
-		this.convergencePlayer2 = false;
-	}
-
-	public int getDistance() {
-		return distance;
-	}
-
-	public void setDistance(int distance) {
-		this.distance = distance;
-	}
-
-	public int getIdShip1() {
-		return idShip1;
-	}
-
-	public void setIdShip1(int idShip1) {
-		this.idShip1 = idShip1;
-	}
-
-	public int getIdShip2() {
-		return idShip2;
-	}
-
-	public void setIdShip2(int idShip2) {
-		this.idShip2 = idShip2;
-	}
-
-	public int getIdPlayer1() {
-		return idPlayer1;
-	}
-
-	public void setIdPlayer1(int idPlayer1) {
-		this.idPlayer1 = idPlayer1;
-	}
-
-	public int getIdPlayer2() {
-		return idPlayer2;
-	}
-
-	public void setIdPlayer2(int idPlayer2) {
-		this.idPlayer2 = idPlayer2;
-	}
-
-	public boolean isReadyPlayer1() {
-		return readyPlayer1;
-	}
-
-	public void setReadyPlayer1(boolean readyPlayer1) {
-		this.readyPlayer1 = readyPlayer1;
-	}
-
-	public boolean isReadyPlayer2() {
-		return readyPlayer2;
-	}
-
-	public void setReadyPlayer2(boolean readyPlayer2) {
-		this.readyPlayer2 = readyPlayer2;
-	}
-
-	public boolean isConvergencePlayer1() {
-		return convergencePlayer1;
-	}
-
-	public void setConvergencePlayer1(boolean convergencePlayer1) {
-		this.convergencePlayer1 = convergencePlayer1;
-	}
-
-	public boolean isConvergencePlayer2() {
-		return convergencePlayer2;
-	}
-
-	public void setConvergencePlayer2(boolean convergencePlayer2) {
-		this.convergencePlayer2 = convergencePlayer2;
-	}
+    public BigInteger getEnemyId(BigInteger playerId) {
+        if (playerId.equals(player1.getPlayerId())) {
+            return player2.getPlayerId();
+        } else if (playerId.equals(player2.getPlayerId())) {
+            return player1.getPlayerId();
+        } else {
+            RuntimeException ex = 
+                    new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+            log.error("Error when getting enemy from Battle, "
+                    + errorDescription, ex);
+            throw ex;
+        }
+    }
 
 
+    private class Participant {
+        
+        private BigInteger playerId;
+        private BigInteger shipId;
+        private ArrayList<BigInteger> shipsLeftBattle = new ArrayList<>();
+        private boolean ready;
+        private boolean convergence;
+        
+        public Participant(BigInteger playerId) {
+            this.playerId = playerId;
+            this.ready = false;
+            this.convergence = false;
+        }
+    
+        public BigInteger getShipId() {
+            return shipId;
+        }
+    
+        public void setShipId(BigInteger shipId) {
+            this.shipId = shipId;
+        }
+    
+        public ArrayList<BigInteger> getShipsLeftBattle() {
+            return shipsLeftBattle;
+        }
+    
+        public void addShipLeftBattle(BigInteger shipsLeftBattle) {
+            this.shipsLeftBattle.add(shipsLeftBattle);
+        }
+    
+        public BigInteger getPlayerId() {
+            return playerId;
+        }
+
+        public boolean isReady() {
+            return ready;
+        }
+
+        public void setReady(boolean ready) {
+            this.ready = ready;
+        }
+
+        public boolean isConvergence() {
+            return convergence;
+        }
+
+        public void setConvergence(boolean convergence) {
+            this.convergence = convergence;
+        }
+    }
 
 }

@@ -15,7 +15,7 @@ import com.nctc2017.services.utils.TravelManager;
 
 @Service
 public class TravelService {
-
+    
     @Autowired
     private BattleManager battleManager;
     @Autowired
@@ -64,7 +64,7 @@ public class TravelService {
         playerAutoDecision.get(playerId).interrupt();
         if (decision) {
             BigInteger enemyId = travelManager.getEnemyId(playerId);
-            battleManager.newBattleBetween(playerId, enemyId);
+            battleManager.newBattleBetween(/*TODO Cannon with max dist*/-1,playerId, enemyId);
         } else {
             travelManager.friendly(playerId);
         }
@@ -78,7 +78,7 @@ public class TravelService {
             return true;
     }
     
-    public int autoDecisionTimer(BigInteger playerId) {
+    private int autoDecisionTimer(BigInteger playerId) {
         Runnable decisionTask = new AutoDecisionTask(playerId);
         Thread decisionThread = new Thread(decisionTask);
         decisionThread.start();
@@ -86,8 +86,8 @@ public class TravelService {
         return getAutoDecisionTime() / 1000;
     }
     
-    private int getAutoDecisionTime() {
-        return AutoDecisionTask.DELAY;
+    public int getAutoDecisionTime() {
+        return AutoDecisionTask.DELAY / 1000;
     }
 
     private class AutoDecisionTask implements Runnable{

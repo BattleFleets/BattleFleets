@@ -4,12 +4,10 @@ import java.util.Locale;
 
 import javax.sql.DataSource;
 
-import com.nctc2017.dao.MastDao;
-import com.nctc2017.dao.impl.MastDaoImpl;
 import com.nctc2017.services.TravelService;
+import com.nctc2017.services.utils.BattleManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -65,5 +63,11 @@ public class ApplicationConfig {
     @Scope("singleton")
     public TravelService travelServiceSing() {
         return new TravelService();
+    }
+    
+    @Bean
+    @Scope("singleton")
+    public BattleManager battles() {
+        return new BattleManager();
     }
 }
