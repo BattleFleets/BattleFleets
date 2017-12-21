@@ -6,13 +6,13 @@ public interface HoldDao {
 
     BigInteger findHold(BigInteger shipId);
 
-    BigInteger getOccupiedVolume(BigInteger shipId);
+    int getOccupiedVolume(BigInteger shipId);
 
     BigInteger createHold();
 
     void deleteHold(BigInteger holdId);
 
-    boolean addCargo(BigInteger cargoId, BigInteger holdId);
+    void addCargo(BigInteger cargoId, BigInteger holdId);
 
     BigInteger createHold(BigInteger shipId);
 

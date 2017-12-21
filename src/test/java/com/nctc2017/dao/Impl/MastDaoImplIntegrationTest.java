@@ -33,10 +33,13 @@ public class MastDaoImplIntegrationTest {
     private static final BigInteger EXC_VALUE = new BigInteger("9223372036854775809");
 
     @Test
+    @Ignore
     @Rollback(true)
     public void testDaoFinding() {
-        //when
-        Mast mast = mastDao.findMast(TEST_MASt_OBJECT_ID);
+        // given
+        BigInteger id = mastDao.createNewMast(DatabaseObject.MAST1_TEMPLATE_OBJECT_ID, null);
+        //when TODO
+        Mast mast = mastDao.findMast(id);
         //then
         assertTrue(mast.getCost() > 0);
         assertTrue(mast.getCurSpeed() > 0);

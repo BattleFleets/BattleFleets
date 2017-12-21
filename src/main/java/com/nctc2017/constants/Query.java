@@ -75,7 +75,7 @@ public class Query {
                     + " AND atr_val.ATTR_ID = atr_obj.ATTR_ID"
                     + " AND atr_val.OBJECT_ID = entity_obj.OBJECT_ID";
 
-    public static final String GET_CURRVAL = "SELECT obj_sq.currval FROM DUAL";
+    public static final String GET_NEXTVAL = "SELECT obj_sq.nextval FROM DUAL";
     
     /**
      * To get value from field "OBJECT_ID" of "OBJECTS" table
@@ -90,6 +90,7 @@ public class Query {
     /**
      * INSERT data to the OBJECTS table.
      * You must have 5 parameters for PreparedStatement:<br> 
+     * OBJECT_ID - new object id from seq.nextval call.
      * PARENT_ID(can be null),<br> 
      * OBJECT_TYPE_ID, <br>
      * SOURCE_ID(Template_id),<br>
@@ -98,20 +99,21 @@ public class Query {
      * */
     public static final String CREATE_NEW_ENTITY =
             "INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME)"
-                    + " VALUES (obj_sq.nextval, ?, ?, ?, "
+                    + " VALUES (?, ?, ?, ?, "
                     + "(SELECT VALUE FROM ATTRIBUTES_VALUE"
                     + " WHERE OBJECT_ID = ? AND ATTR_ID = ?))";
     
     /**
      * INSERT data to the OBJECTS table.
      * You must have 3 parameters for PreparedStatement:<br> 
+     * OBJECT_ID - new object id from seq.nextval call.
      * PARENT_ID(can be null),<br> 
      * OBJECT_TYPE_ID, <br>
      * OBJECT_TYPE_ID.
      * */
     public static final String CRATE_NEW_CONTAINER = 
             "INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME)"
-                    + " VALUES (OBJ_SQ.NEXTVAL, ?, ?, null,"
+                    + " VALUES (?, ?, ?, null,"
                     + " (SELECT NAME FROM OBJTYPE WHERE OBJECT_TYPE_ID = ?))";
 
     /**

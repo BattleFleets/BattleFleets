@@ -14,6 +14,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nctc2017.configuration.ApplicationConfig;
+import com.nctc2017.constants.DatabaseObject;
+import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.HoldDao;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -22,18 +24,20 @@ import com.nctc2017.dao.HoldDao;
 public class HoldDaoImplIntegrationTest {
     @Autowired
     HoldDao holdDao;
-
+    @Autowired
+    CannonDao cannonDao;
+    
     @Test
     @Rollback(true)
     public void testCreateHold() {
         // When
         BigInteger id = holdDao.createHold();
-
+        
         // Then
         assertNotNull(id);
         assertTrue(id.longValueExact() > 0L);
     }
-
+    
     @Test
     @Ignore
     @Rollback(true)
@@ -41,60 +45,60 @@ public class HoldDaoImplIntegrationTest {
         //TODO create ship
         // When
         BigInteger id = holdDao.createHold();
-
+        
         // Then
         assertNotNull(id);
         assertTrue(id.longValueExact() > 0L);
     }
-
+    
     @Test
     @Rollback(true)
     public void testDeleteHold() {
         // Given
         BigInteger id = holdDao.createHold();
-
+        
         // When
         holdDao.deleteHold(id);
         // Then okay
     }
-
+    
     @Test
     @Rollback(true)
     public void testDeleteHoldFail() {
         // Given
         BigInteger id = BigInteger.ONE;
-
+        
         // When
         holdDao.deleteHold(id);
         // Then okay
     }
-
+    
     @Test
-    @Ignore
     @Rollback(true)
     public void testAddCargo() {
         // Given
-        //TODO create cargo
-        BigInteger id = holdDao.createHold();
-
+        BigInteger cargoId = cannonDao.createCannon(DatabaseObject.MORTAR_TEMPLATE_ID);
+        BigInteger holdId = holdDao.createHold();
+        
         // When
-        //holdDao.addCargo(cargoId, holdId);
-        // Then okay
+        holdDao.addCargo(cargoId, holdId);
+        // Then
+        // no exceptions;
     }
-
-    @Test
-    @Ignore
+    
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void testAddCargoToInvalidHold() {
         // Given
-        //TODO create cargo
+        BigInteger cargoId = cannonDao.createCannon(DatabaseObject.MORTAR_TEMPLATE_ID);
         BigInteger holdId = BigInteger.ONE;
-
+        
         // When
-        //holdDao.addCargo(cargoId, holdId);
-        // Then ?
+        holdDao.addCargo(cargoId, holdId);
+        // Then 
+        // exception;
     }
-
+    
     @Test
     @Ignore
     @Rollback(true)
@@ -103,14 +107,14 @@ public class HoldDaoImplIntegrationTest {
         //TODO create cargo
         //TODO create ship
         BigInteger id = holdDao.createHold();
-
+        
         // When
         //holdDao.addCargo(cargoId, holdId);
         //holdDao.addCargo(cargoId, holdId);
         //holdDao.getOccupiedVolume(shipId);
         // Then ?
     }
-
+    
     @Test
     @Rollback(true)
     public void testGetOccupiedVolumeInvalidShipId() {
@@ -120,7 +124,7 @@ public class HoldDaoImplIntegrationTest {
         holdDao.getOccupiedVolume(invalidShipId);
         // Then ?
     }
-
+    
     @Test
     @Ignore
     @Rollback(true)

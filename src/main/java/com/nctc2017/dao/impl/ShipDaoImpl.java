@@ -27,115 +27,115 @@ public class ShipDaoImpl implements ShipDao {
     JdbcTemplate jdbcTemplate;
 
     @Override
-	public Ship findShip(int shipId) {
+    public Ship findShip(int shipId) {
         // TODO implement here
         return null;
     }
 
     @Override
-	public BigInteger createNewShip(BigInteger shipTemplateId) {
+    public BigInteger createNewShip(BigInteger shipTemplateId) {
         // TODO implement here
         return null;
     }
 
     @Override
-	public boolean deleteShip(int shipId) {
+    public boolean deleteShip(int shipId) {
         // TODO implement here
         return false;
     }
 
     @Override
-	public boolean updateShipName(int shipId, int newShipName) {
+    public boolean updateShipName(int shipId, int newShipName) {
         // TODO implement here
         return false;
     }
 
     @Override
-	public boolean updateShipHealth(int shipId, int newhealthNumb) {
+    public boolean updateShipHealth(int shipId, int newhealthNumb) {
         // TODO implement here
         return false;
     }
 
     @Override
-	public boolean updateShipSailorsNumber(int shipId, int newsailorsNumb) {
+    public boolean updateShipSailorsNumber(int shipId, int newsailorsNumb) {
         // TODO implement here
         return false;
     }
 
     @Override
-	public String getCurrentShipName(int shipId) {
+    public String getCurrentShipName(int shipId) {
         // TODO implement here
         return "";
     }
 
     @Override
-	public int getCurrentShipHealth(int shipId) {
+    public int getCurrentShipHealth(int shipId) {
         // TODO implement here
         return 0;
     }
 
     @Override
-	public int getCurrentShipSailors(int shipId) {
+    public int getCurrentShipSailors(int shipId) {
         // TODO implement here
         return 0;
     }
 
     @Override
-	public int getHealthLimit(int shipId) {
+    public int getHealthLimit(int shipId) {
         // TODO implement here
         return 0;
     }
 
     @Override
-	public int getCarryingLimit(int shipId) {
+    public int getCarryingLimit(int shipId) {
         // TODO implement here
         return 0;
     }
 
     @Override
-	public int getCannonLimit(int shipId) {
+    public int getCannonLimit(int shipId) {
         // TODO implement here
         return 0;
     }
 
     @Override
-	public int getMastLimit(int shipId) {
+    public int getMastLimit(int shipId) {
         // TODO implement here
         return 0;
     }
 
     @Override
-	public int getSailorLimit(int shipId) {
+    public int getSailorLimit(int shipId) {
         // TODO implement here
         return 0;
     }
 
     @Override
-	public int getShipCost(int shipId) {
+    public int getShipCost(int shipId) {
         // TODO implement here
         return 0;
     }
 
     @Override
-	public List<ShipTemplate> findAllShipTemplates() {
+    public List<ShipTemplate> findAllShipTemplates() {
         // TODO implement here
         return null;
     }
 
     @Override
-	public List<Ship> findAllShips(List<Integer> shipsId) {
+    public List<Ship> findAllShips(List<Integer> shipsId) {
         // TODO implement here
-		return null;
+        return null;
     }
 
     @Override
-	public boolean setMastOnShip(int mastId, int shipId) {
+    public boolean setMastOnShip(int mastId, int shipId) {
         // TODO implement here
         return false;
     }
 
     @Override
-	public boolean setCannonOnShip(int cannonId, int shipId) {
+    public boolean setCannonOnShip(int cannonId, int shipId) {
         // TODO implement here
         return false;
     }

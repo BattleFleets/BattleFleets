@@ -1,10 +1,15 @@
 package com.nctc2017.bean;
+
+import java.math.BigInteger;
+
 public class City {
     protected String cityName;
     protected Market market;
-	public City(String cityName, Market market) {
+    protected BigInteger cityId;
+	public City(String cityName, Market market, BigInteger cityId) {
 		this.cityName = cityName;
 		this.market = market;
+		this.cityId=cityId;
 	}
 	public String getCityName() {
 		return cityName;
@@ -18,5 +23,12 @@ public class City {
 	public void setMarket(Market market) {
 		this.market = market;
 	}
-    
+
+	public BigInteger getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(BigInteger cityId) {
+		this.cityId = cityId;
+	}
 }

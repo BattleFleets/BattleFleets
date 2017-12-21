@@ -1,25 +1,39 @@
 package com.nctc2017.bean;
+
+import java.math.BigInteger;
+
 public class Player {
+	protected BigInteger playerId;
+
     protected String login;
 
+	protected String email;
 
-    protected String email;
-    protected int money;
+	protected BigInteger money;
 
-    protected int points;
+    protected BigInteger points;
 
-    protected int level;
+    protected BigInteger level;
 
-    protected int curCity;
+    protected BigInteger curCity;
     
 
-	public Player(String login,String email, int money, int points, int level, int curCity) {
+	public Player(BigInteger playerId, String login,String email, BigInteger money, BigInteger points, BigInteger level, BigInteger curCity) {
+		this.playerId=playerId;
 		this.login = login;
 		this.email=email;
 		this.money = money;
 		this.points = points;
 		this.level = level;
 		this.curCity = curCity;
+	}
+
+	public BigInteger getPlayerId() {
+		return playerId;
+	}
+
+	public void setPlayerId(BigInteger playerId) {
+		this.playerId = playerId;
 	}
 
 	public String getLogin() {
@@ -38,35 +52,35 @@ public class Player {
 		this.email = email;
 	}
 
-	public int getMoney() {
+	public BigInteger getMoney() {
 		return money;
 	}
 
-	public void setMoney(int money) {
+	public void setMoney(BigInteger money) {
 		this.money = money;
 	}
 
-	public int getPoints() {
+	public BigInteger getPoints() {
 		return points;
 	}
 
-	public void setPoints(int points) {
+	public void setPoints(BigInteger points) {
 		this.points = points;
 	}
 
-	public int getLevel() {
+	public BigInteger getLevel() {
 		return level;
 	}
 
-	public void setLevel(int level) {
+	public void setLevel(BigInteger level) {
 		this.level = level;
 	}
 
-	public int getCurCity() {
+	public BigInteger getCurCity() {
 		return curCity;
 	}
 
-	public void setCurCity(int curCity) {
+	public void setCurCity(BigInteger curCity) {
 		this.curCity = curCity;
 	}
     

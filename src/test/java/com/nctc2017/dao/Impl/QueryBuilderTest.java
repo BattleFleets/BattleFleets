@@ -36,8 +36,8 @@ public class QueryBuilderTest {
     @Rollback(true)
 
     public void testInsertOnlyObject() {
-        PreparedStatementCreator actualPreparedStmt = QueryBuilder.insert(BigInteger.valueOf(DatabaseObject.CANNON_OBJTYPE_ID))
-                .setSourceObjId(BigInteger.valueOf(DatabaseObject.BOMBARD_TEMPLATE_ID))
+        PreparedStatementCreator actualPreparedStmt = QueryBuilder.insert(DatabaseObject.CANNON_OBJTYPE_ID)
+                .setSourceObjId(DatabaseObject.BOMBARD_TEMPLATE_ID)
                 .build();
         int expectedUpdatedRowsCount = 1;
         assertTrue(jdbcTemplate.update(actualPreparedStmt) == expectedUpdatedRowsCount);

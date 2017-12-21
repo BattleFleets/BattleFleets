@@ -1,5 +1,6 @@
 package com.nctc2017.dao;
 
+import java.math.BigInteger;
 import java.util.*;
 
 import com.nctc2017.bean.City;
@@ -16,40 +17,40 @@ public interface PlayerDao {
 
     Player findPlayerByLogin(String login);
 
-    void updateLogin(int playerId, String login);
+    void updateLogin(BigInteger playerId, String login);
 
-    void updateLevel(int playerId, int level);
+    void updateLevel(BigInteger playerId, BigInteger level);
 
-    void updatePassword(int playerId, String password);
+    void updatePassword(BigInteger playerId, String password);
 
-    void updateEmail(int playerId, String email);
+    void updateEmail(BigInteger playerId, String email);
 
-    void updatePoints(int playerId, int points);
+    void updatePoints(BigInteger playerId, BigInteger points);
 
-    Player findPlayerById(int playerId);
+    Player findPlayerById(BigInteger playerId);
 
     List<Player> findAllPlayers();
 
-    int getCountPlayers();
+    BigInteger getCountPlayers();
 
-    String getPlayerLogin(int playerId);
+    String getPlayerLogin(BigInteger playerId);
 
-    String getPlayerPassword(int playerId);
+    String getPlayerPassword(BigInteger playerId);
 
-    String getPlayerEmail(int playerId);
+    String getPlayerEmail(BigInteger playerId);
 
-    int getPlayerMoney(int playerId);
+    BigInteger getPlayerMoney(BigInteger playerId);
 
-    int getPlayerLevel(int playerId);
+    BigInteger getPlayerLevel(BigInteger playerId);
 
-    int getPlayerPoints(int playerId);
+    BigInteger getPlayerPoints(BigInteger playerId);
 
-    City getPlayerCity(int playerId);
+    City getPlayerCity(BigInteger playerId);
 
-    void addShip(int playerId, int shipId);
+    void addShip(BigInteger playerId, BigInteger shipId);
 
-    void deleteShip(int playerId, int shipId);
+    void deleteShip(BigInteger playerId, BigInteger shipId);
 
-    List<Integer> findAllShip(int playerId);
+    List<BigInteger> findAllShip(BigInteger playerId);
 
 }

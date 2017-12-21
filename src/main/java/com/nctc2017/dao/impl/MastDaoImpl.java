@@ -1,5 +1,6 @@
 package com.nctc2017.dao.impl;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -68,6 +69,8 @@ public class MastDaoImpl implements MastDao {
 
     @Override
     public BigInteger createNewMast(BigInteger mastTemplateId, BigInteger containerOwnerId) {
+        BigDecimal newId = jdbcTemplate.queryForObject(Query.GET_NEXTVAL,BigDecimal.class);
+        
         PreparedStatementCreator psc = QueryBuilder
                 .insert(DatabaseObject.MAST_OBJTYPE_ID)
                 .setParentId(containerOwnerId)
@@ -76,7 +79,7 @@ public class MastDaoImpl implements MastDao {
                         String.valueOf(findMastTemplate(mastTemplateId).getMaxSpeed()))
                 .build();
         jdbcTemplate.update(psc);
-        return jdbcTemplate.queryForObject(Query.GET_CURRVAL, BigInteger.class);
+        return newId.toBigIntegerExact();
     }
 
 
