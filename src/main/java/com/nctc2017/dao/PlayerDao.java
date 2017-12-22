@@ -56,4 +56,6 @@ public interface PlayerDao {
 
     String getPasswordByEmail(String email);
 
+    int getFleetSpeed(BigInteger playerId);
+
 }
