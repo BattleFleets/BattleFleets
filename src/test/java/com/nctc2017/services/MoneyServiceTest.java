@@ -17,9 +17,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
-import javax.annotation.Resource;
 import java.io.OutputStream;
 import java.math.BigInteger;
 
@@ -27,7 +25,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
 @ContextConfiguration(classes = { ApplicationConfig.class })
 public class MoneyServiceTest {
     private static Player steve;
@@ -36,7 +33,6 @@ public class MoneyServiceTest {
     PlayerDao playerDao;
 
     @InjectMocks
-    @Resource(name="moneyServicePrototype")
     MoneyService moneyService;
 
     @BeforeClass
@@ -54,6 +50,9 @@ public class MoneyServiceTest {
 
     @Before
     public void initMocks() {
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ApplicationConfig.class);
+        moneyService = (MoneyService) applicationContext.getBean("moneyServicePrototype");
+        ((AnnotationConfigApplicationContext)applicationContext).close();
         MockitoAnnotations.initMocks(this);
 
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(150);
