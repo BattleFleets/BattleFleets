@@ -1,23 +1,29 @@
 package com.nctc2017.controllers;
 
 
+import org.springframework.security.access.annotation.Secured;
+
 public class BattlesController {
 
 
+    @Secured("ROLE_USER")
     public boolean escape(int id, int idHash) {
         // TODO implement here
         return false;
     }
 
+    @Secured("ROLE_USER")
     public void submit(int id, int idHash, int idShip) {
         // TODO implement here
     }
 
+    @Secured("ROLE_USER")
     public boolean waitForEnemy(int id, int idHash) {
         // TODO implement here
         return false;
     }
 
+    @Secured("ROLE_USER")
     public void getBattle(int id, int idHash) {
         // TODO implement here 
     }

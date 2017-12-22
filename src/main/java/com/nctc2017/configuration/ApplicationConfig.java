@@ -10,29 +10,49 @@ import com.nctc2017.services.TravelService;
 import com.nctc2017.services.utils.BattleManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
-
+@EnableWebMvc
 @Configuration
 @ComponentScan(basePackages = "com.nctc2017")
+@Import({ SecurityConfig.class })
 @PropertySource(value = { "classpath:application_external_db.properties" })
 @EnableTransactionManagement
-public class ApplicationConfig {
+public class ApplicationConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
     private Environment env;
 
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry
+                .addResourceHandler("/static/**")
+                .addResourceLocations("/static/");
+    }
+
     @Bean
+    public InternalResourceViewResolver viewResolver() {
+        InternalResourceViewResolver viewResolver
+                = new InternalResourceViewResolver();
+        viewResolver.setViewClass(JstlView.class);
+        viewResolver.setPrefix("/WEB-INF/pages/");
+        viewResolver.setSuffix(".jsp");
+        return viewResolver;
+    }
+
+    @Bean(name = "dataSource")
     public DataSource dataSource() {
         Locale.setDefault(Locale.ENGLISH);
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -43,12 +63,14 @@ public class ApplicationConfig {
         return dataSource;
     }
 
-    @Bean
+    @Bean(name="jdbcTemplate")
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.setResultsMapCaseInsensitive(true);
         return jdbcTemplate;
     }
+
+
 
     @Bean
     public PlatformTransactionManager transactionManager(DataSource dataSource) {
