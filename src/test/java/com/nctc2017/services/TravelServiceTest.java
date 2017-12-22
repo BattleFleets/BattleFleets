@@ -2,6 +2,7 @@ package com.nctc2017.services;
 
 import java.math.BigInteger;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,8 +10,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -19,11 +18,15 @@ import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
+import org.springframework.test.context.web.WebAppConfiguration;
+
+import javax.annotation.Resource;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
 @ContextConfiguration(classes = { ApplicationConfig.class })
 public class TravelServiceTest {
     
@@ -34,6 +37,7 @@ public class TravelServiceTest {
     private static City vataArt;
     
     @InjectMocks
+    @Resource(name="travelServicePrototype")
     private TravelService travelService;
 
     @Mock
@@ -74,9 +78,6 @@ public class TravelServiceTest {
     
     @Before
     public void initMocks() {
-        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ApplicationConfig.class);
-        travelService = (TravelService) applicationContext.getBean("travelServicePrototype");
-        ((AnnotationConfigApplicationContext)applicationContext).close();
         MockitoAnnotations.initMocks(this);
         
         when(mockCityDao.find(vataArt.getCityId())).thenReturn(vataArt);

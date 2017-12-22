@@ -1,34 +1,28 @@
 package com.nctc2017.dao.Impl;
 
-import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
-import com.nctc2017.constants.DatabaseObject;
-import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.AssertTrue;
 import java.math.BigInteger;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
 @ContextConfiguration(classes = { ApplicationConfig.class })
 @Transactional
 public class PlayerDaoImplTest {
@@ -163,6 +157,60 @@ public class PlayerDaoImplTest {
         playerDao.updateMoney(new BigInteger("100"),80);
     }
 
+    @Test
+    @Rollback(true)
+    public void updatePassiveIncome() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player=playerDao.findPlayerByLogin("Steve");
+        BigInteger playerId=player.getPlayerId();
+        playerDao.updateLevel(playerId,5);
+        playerDao.updatePassiveIncome(playerId,150);
+        int money=playerDao.getCurrentPassiveIncome(playerId);
+        assertEquals(150,money);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Rollback(true)
+    public void updatePassiveIncomeFailed() throws Exception{
+        playerDao.updatePassiveIncome(new BigInteger("100") ,150);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Rollback(true)
+    public void updatePassiveIncomeFailedLvl() throws Exception {
+        playerDao.addNewPlayer("Steve", "1111", "Rogers@gmail.com");
+        Player player = playerDao.findPlayerByLogin("Steve");
+        BigInteger playerId = player.getPlayerId();
+        playerDao.updatePassiveIncome(playerId, 150);
+    }
+
+    @Test
+    @Rollback(true)
+    public void updateMaxShips() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player=playerDao.findPlayerByLogin("Steve");
+        BigInteger playerId=player.getPlayerId();
+        playerDao.updateLevel(playerId,5);
+        playerDao.updateMaxShips(playerId,4);
+        int ships=playerDao.getCurrentMaxShips(playerId);
+        assertEquals(4,ships);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Rollback(true)
+    public void updateMaxShipsFailed() throws Exception{
+        playerDao.updateMaxShips(new BigInteger("100"),4 );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Rollback(true)
+    public void updateMaxShipsFailedLvl() throws Exception {
+        playerDao.addNewPlayer("Steve", "1111", "Rogers@gmail.com");
+        Player player = playerDao.findPlayerByLogin("Steve");
+        BigInteger playerId = player.getPlayerId();
+        playerDao.updateMaxShips(playerId, 4);
+
+    }
 
     @Test
     @Rollback(true)
@@ -371,5 +419,33 @@ public class PlayerDaoImplTest {
     public void getPasswordByEmailFailed() throws Exception{
         playerDao.getPasswordByEmail("qwerty");
 
+    }
+
+    @Test
+    @Rollback(true)
+    public void getCurrentPassiveIncome() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        BigInteger playerId=playerDao.findPlayerByLogin("Steve").getPlayerId();
+        int pas_inc=playerDao.getCurrentPassiveIncome(playerId);
+        assertEquals(pas_inc,100);
+    }
+    @Test(expected=IllegalArgumentException.class)
+    @Rollback(true)
+    public void getCurrentPassiveIncomeFailed() throws Exception{
+        playerDao.getCurrentPassiveIncome(new BigInteger("99"));
+    }
+
+    @Test
+    @Rollback(true)
+    public void getCurrentMaxShips() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        BigInteger playerId=playerDao.findPlayerByLogin("Steve").getPlayerId();
+        int ships=playerDao.getCurrentMaxShips(playerId);
+        assertEquals(ships,3);
+    }
+    @Test(expected=IllegalArgumentException.class)
+    @Rollback(true)
+    public void getCurrentMaxShipsFailed() throws Exception{
+        playerDao.getCurrentMaxShips(new BigInteger("99"));
     }
 }

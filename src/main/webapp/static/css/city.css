@@ -1,0 +1,12 @@
+body, html {
+    height: 100%;
+}
+
+body {
+
+    background:url("https://dl.dropboxusercontent.com/sh/i65q3npm1w9fo7q/AABWZWlElFmlsoFWzTHp_DC7a/%D0%A4%D0%BE%D0%BD%D1%8B/%D0%B3%D0%BE%D1%80%D0%BE%D0%B43.jpg?dl=0");
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}

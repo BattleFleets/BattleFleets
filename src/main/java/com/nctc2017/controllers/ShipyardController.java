@@ -5,9 +5,12 @@ import java.util.*;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
 import com.nctc2017.bean.Thing;
+import org.springframework.security.access.annotation.Secured;
+
 public class ShipyardController {
 
 
+    @Secured("ROLE_USER")
     public void buyShip(int playerId, int shipTemplateId) {
         // TODO implement here
     }

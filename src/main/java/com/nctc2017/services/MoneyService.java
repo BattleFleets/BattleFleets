@@ -2,29 +2,39 @@ package com.nctc2017.services;
 
 import com.nctc2017.dao.PlayerDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.log4j.Logger;
 
 import java.math.BigInteger;
 import java.util.*;
+
 public class MoneyService {
-@Autowired
-PlayerDao playerDao;
+    private static Logger log = Logger.getLogger(MoneyService.class);
 
-    public int addMoney(BigInteger playerId, int moneyAdd) {
+    @Autowired
+     PlayerDao playerDao;
 
+     public int addMoney(BigInteger playerId, int moneyAdd) {
         int newMoney=getPlayersMoney(playerId)+moneyAdd;
         playerDao.updateMoney(playerId,newMoney);
         return newMoney;
-    }
+     }
 
-    public int deductMoney(BigInteger playerId, int moneyDeduct) {
-        return addMoney(playerId,-moneyDeduct);
-    }
+     public int deductMoney(BigInteger playerId, int moneyDeduct) {
+         if(getPlayersMoney(playerId)>=moneyDeduct) {
+             return addMoney(playerId, -moneyDeduct);
+         }
+         else{
+             RuntimeException ex= new IllegalArgumentException("not enough money");
+             log.error("MoneyService Exception while deduct money.", ex);
+             throw ex;
+         }
+     }
 
-    public boolean isEnoughMoney(BigInteger playerId, int money) {
+     public boolean isEnoughMoney(BigInteger playerId, int money) {
         return (getPlayersMoney(playerId)>=money);
-    }
+     }
 
-    public int getPlayersMoney(BigInteger playerId) {
+     public int getPlayersMoney(BigInteger playerId) {
         return playerDao.getPlayerMoney(playerId);
     }
 

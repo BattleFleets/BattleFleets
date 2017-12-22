@@ -58,4 +58,13 @@ public interface PlayerDao {
 
     int getFleetSpeed(BigInteger playerId);
 
+    int getCurrentPassiveIncome(BigInteger playerId);
+
+    int getCurrentMaxShips(BigInteger playerId);
+
+    void updatePassiveIncome(BigInteger playerId, int passiveIncome);
+
+    void updateMaxShips(BigInteger playerId, int addShips);
+
+
 }

@@ -1,7 +1,10 @@
 package com.nctc2017.controllers;
 
+import org.springframework.security.access.annotation.Secured;
+
 public class TravelController {
 
+    @Secured("ROLE_USER")
     public boolean isEnemyOnHorizon(int id, int idHash) {
         // TODO implement here
         return false;
