@@ -21,7 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		/*auth.jdbcAuthentication().dataSource(dataSource)
 		.usersByUsernameQuery(ifPersonExist);*/
-        auth.inMemoryAuthentication().withUser("user").password("user").roles("USER");
+        //auth.inMemoryAuthentication().withUser("user").password("user").roles("USER");
     }
 
     @Override

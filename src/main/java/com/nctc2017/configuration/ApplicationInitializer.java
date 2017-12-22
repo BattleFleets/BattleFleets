@@ -26,7 +26,7 @@ public class ApplicationInitializer extends AbstractAnnotationConfigDispatcherSe
         return new String[]{"/"};
     }
 
-    @Override
+    /*@Override
     protected void customizeRegistration(ServletRegistration.Dynamic registration) {
         File uploadDirectory = new File(System.getProperty("java.io.tmpdir"));
         MultipartConfigElement multipartConfigElement = new MultipartConfigElement(uploadDirectory.getAbsolutePath(),
@@ -39,5 +39,5 @@ public class ApplicationInitializer extends AbstractAnnotationConfigDispatcherSe
         CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
         characterEncodingFilter.setEncoding("UTF-8");
         return new Filter[] { characterEncodingFilter};
-    }
+    }*/
 }
