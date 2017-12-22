@@ -10,11 +10,14 @@ import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.services.utils.AutoDecisionTask;
 import com.nctc2017.services.utils.BattleManager;
 import com.nctc2017.services.utils.TravelManager;
+import com.nctc2017.services.utils.Visitor;
 
 @Service
 public class TravelService {
+    private static final int DELAY = 50000;
     
     @Autowired
     private BattleManager battleManager;
@@ -79,7 +82,7 @@ public class TravelService {
     }
     
     private int autoDecisionTimer(BigInteger playerId) {
-        Runnable decisionTask = new AutoDecisionTask(playerId);
+        Runnable decisionTask = new AutoDecisionTask(new DecisionVisitor(playerId), DELAY);
         Thread decisionThread = new Thread(decisionTask);
         decisionThread.start();
         playerAutoDecision.put(playerId, decisionThread);
@@ -87,26 +90,20 @@ public class TravelService {
     }
     
     public int getAutoDecisionTime() {
-        return AutoDecisionTask.DELAY / 1000;
+        return DELAY / 1000;
     }
-
-    private class AutoDecisionTask implements Runnable{
-        private static final int DELAY = 50000;
-        private BigInteger playerId;
-
-        public AutoDecisionTask(BigInteger playerId) {
+    
+    private class DecisionVisitor implements Visitor{
+        BigInteger playerId;
+        public DecisionVisitor(BigInteger playerId) {
             this.playerId = playerId;
         }
 
         @Override
-        public void run() {
-            try {
-                Thread.sleep(DELAY);
-            } catch (InterruptedException e) {
-                return;
-            }
+        public void visit() {
             confirmAttack(playerId, true);
         }
         
     }
+    
 }

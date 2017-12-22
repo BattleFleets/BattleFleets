@@ -8,7 +8,7 @@ import com.nctc2017.bean.ShipTemplate;
 
 public interface ShipDao {
 
-    Ship findShip(int shipId);
+    Ship findShip(BigInteger shipId);
 
     BigInteger createNewShip(BigInteger shipTemplateId);
 
@@ -24,7 +24,7 @@ public interface ShipDao {
 
     int getCurrentShipHealth(int shipId);
 
-    int getCurrentShipSailors(int shipId);
+    int getCurrentShipSailors(BigInteger plyerShipId);
 
     int getHealthLimit(int shipId);
 
@@ -45,5 +45,9 @@ public interface ShipDao {
     boolean setMastOnShip(int mastId, int shipId);
 
     boolean setCannonOnShip(int cannonId, int shipId);
+
+    int getMaxShotDistance(BigInteger shipId);
+    
+    int getSpeed(BigInteger shipId);
 
 }

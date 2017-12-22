@@ -2,6 +2,7 @@ package com.nctc2017.bean;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -71,11 +72,11 @@ public class Battle {
         return player2.getPlayerId();
     }
     
-    public boolean isReadyPlayer2(BigInteger playerId) {
+    public boolean isEnemyReady(BigInteger playerId) {
         if (playerId.equals(player1.getPlayerId())) {
-            return player1.isReady();
-        } else if (playerId.equals(player2.getPlayerId())) {
             return player2.isReady();
+        } else if (playerId.equals(player2.getPlayerId())) {
+            return player1.isReady();
         } else {
             RuntimeException ex = 
                     new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
@@ -148,8 +149,21 @@ public class Battle {
             throw ex;
         }
     }
-
-
+    
+    public List<BigInteger> getShipsLeftBattle(BigInteger playerId) {
+        if (playerId.equals(player1.getPlayerId())) {
+            return player1.getShipsLeftBattle();
+        } else if (playerId.equals(player2.getPlayerId())) {
+            return player2.getShipsLeftBattle();
+        } else {
+            RuntimeException ex = 
+                    new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+            log.error("Error when getting ships which left Battle, "
+                    + errorDescription, ex);
+            throw ex;
+        }
+    }
+    
     private class Participant {
         
         private BigInteger playerId;
@@ -170,13 +184,14 @@ public class Battle {
     
         public void setShipId(BigInteger shipId) {
             this.shipId = shipId;
+            addShipLeftBattle(shipId);
         }
     
         public ArrayList<BigInteger> getShipsLeftBattle() {
             return shipsLeftBattle;
         }
     
-        public void addShipLeftBattle(BigInteger shipsLeftBattle) {
+        private void addShipLeftBattle(BigInteger shipsLeftBattle) {
             this.shipsLeftBattle.add(shipsLeftBattle);
         }
     

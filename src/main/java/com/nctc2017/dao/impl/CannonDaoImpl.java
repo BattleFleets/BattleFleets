@@ -108,7 +108,7 @@ public class CannonDaoImpl implements CannonDao {
         
         int rowsAffected = jdbcTemplate.update(Query.CREATE_NEW_ENTITY, 
                 new Object[] {JdbcConverter.toNumber(newId), 
-                        JdbcConverter.toNumber(containerOwnerId),// == null ? null : containerOwnerId.longValueExact(),
+                        JdbcConverter.toNumber(containerOwnerId),
                         JdbcConverter.toNumber(DatabaseObject.CANNON_OBJTYPE_ID), 
                         JdbcConverter.toNumber(cannonTemplateId), 
                         JdbcConverter.toNumber(cannonTemplateId),

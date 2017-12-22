@@ -1,6 +1,9 @@
 package com.nctc2017.bean;
+
+import java.math.BigInteger;
+
 public class Ship extends ShipTemplate {
-	protected int shipId;
+	protected BigInteger shipId;
 
 	protected String name;
 
@@ -15,7 +18,7 @@ public class Ship extends ShipTemplate {
 	protected int curCarryingLimit;
 
 
-	public Ship(ShipTemplate shipT,int shipId, String cur_name, int curHealth, int curSailorsQuantity, int curMastsQuantity,
+	public Ship(ShipTemplate shipT,BigInteger shipId, String cur_name, int curHealth, int curSailorsQuantity, int curMastsQuantity,
 				int curCannonQuantity, int curCarryingLimit) {
 		super(shipT.t_name, shipT.maxHealth, shipT.maxSailorsQuantity, shipT.cost, shipT.maxMastsQuantity, shipT.maxCannonQuantity, shipT.maxCarryingLimit);
 		this.shipId = shipId;
@@ -28,18 +31,18 @@ public class Ship extends ShipTemplate {
 	}
 
 
-	public Ship(ShipTemplate shipT, int shipId, String cur_name) {
+	public Ship(ShipTemplate shipT, BigInteger shipId, String cur_name) {
 		this(shipT,shipId, cur_name, shipT.maxHealth, shipT.maxSailorsQuantity, shipT.maxMastsQuantity,
 				shipT.maxCannonQuantity, shipT.maxCarryingLimit);
 	}
 
 
 
-	public int getShipId() {
+	public BigInteger getShipId() {
 		return shipId;
 	}
 
-	public void setShipId(int shipId) {
+	public void setShipId(BigInteger shipId) {
 		this.shipId = shipId;
 	}
 
