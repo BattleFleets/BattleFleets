@@ -64,14 +64,17 @@ public class PlayerDaoImpl implements PlayerDao{
     @Override
     public Player findPlayerByLogin(@NotNull String login) {
         try {
-            jdbcTemplate.queryForList(queryForPlayerAttributesByLogin, new Object[]{DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(), login, DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
+            jdbcTemplate.queryForList(queryForPlayerAttributesByLogin, new Object[]{DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(),
+                    login, DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
         }
         catch (EmptyResultDataAccessException e) {
             RuntimeException ex = new IllegalArgumentException("Player is not exist or login = " + login+ " is incorrect", e);
             log.error("PlayerDAO Exception while getting player login.", ex);
             throw ex;
         }
-        List<String>  attributes=jdbcTemplate.queryForList(queryForPlayerAttributesByLogin, new Object[]{DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(),login, DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
+        List<String>  attributes=jdbcTemplate.queryForList(queryForPlayerAttributesByLogin,
+                new Object[]{DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(),login,
+                DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
         BigInteger playerId=jdbcTemplate.queryForObject(queryForPlayerIdByLogin,BigInteger.class,DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(),login);
         Player player = new Player(playerId,attributes.get(0), attributes.get(4),  parseInt(attributes.get(1)), parseInt(attributes.get(3)), parseInt(attributes.get(2)));
         return player;
@@ -169,7 +172,8 @@ public class PlayerDaoImpl implements PlayerDao{
     @Override
     public Player findPlayerById(@NotNull BigInteger playerId) {
 
-        Player player = queryExecutor.findEntity(playerId,DatabaseObject.PLAYER_OBJTYPE_ID,new EntityExtractor<>(playerId, new PlayerVisitor()));
+        Player player = queryExecutor.findEntity(playerId,DatabaseObject.PLAYER_OBJTYPE_ID,
+                new EntityExtractor<>(playerId, new PlayerVisitor()));
         if (player == null){
             RuntimeException ex = new IllegalArgumentException("Wrong player object id = " + playerId);
             log.error("PlayerDAO Exception while find by id.", ex);
@@ -182,7 +186,8 @@ public class PlayerDaoImpl implements PlayerDao{
 
     @Override
     public List<Player> findAllPlayers() {
-        List<Player> players = queryExecutor.getAllEntitiesByType(DatabaseObject.PLAYER_OBJTYPE_ID,new EntityListExtractor<>( new PlayerVisitor()));
+        List<Player> players = queryExecutor.getAllEntitiesByType(DatabaseObject.PLAYER_OBJTYPE_ID,
+                new EntityListExtractor<>( new PlayerVisitor()));
         return players;   
     }
 
@@ -264,7 +269,9 @@ public class PlayerDaoImpl implements PlayerDao{
     @Override
     public BigInteger getPlayerCity(@NotNull BigInteger playerId) {
         try {
-            return jdbcTemplate.queryForObject("SELECT PARENT_ID FROM OBJECTS WHERE OBJECT_ID=? AND OBJECT_TYPE_ID=?",new Object[]{playerId.longValueExact(),DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact()},BigInteger.class);
+            return jdbcTemplate.queryForObject("SELECT PARENT_ID FROM OBJECTS WHERE OBJECT_ID=? AND OBJECT_TYPE_ID=?",
+                    new Object[]{playerId.longValueExact(),
+                    DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact()},BigInteger.class);
         } catch (EmptyResultDataAccessException e) {
             RuntimeException ex = new IllegalArgumentException("Invalid playerId = " + playerId, e);
             log.error("PlayerDAO Exception while getting player city.", ex);
@@ -288,7 +295,9 @@ public class PlayerDaoImpl implements PlayerDao{
     @Override
     public List<BigInteger> findAllShip(@NotNull BigInteger playerId) {
         findPlayerById(playerId);
-        List<BigInteger> ships=jdbcTemplate.queryForList("SELECT OBJECT_ID FROM OBJECTS WHERE PARENT_ID=? AND OBJECT_TYPE_ID=?",BigInteger.class,playerId.longValueExact(),DatabaseObject.SHIP_OBJTYPE_ID.longValueExact());
+        List<BigInteger> ships=jdbcTemplate.queryForList("SELECT OBJECT_ID FROM OBJECTS WHERE PARENT_ID=? AND OBJECT_TYPE_ID=?",
+                BigInteger.class,playerId.longValueExact(),
+                DatabaseObject.SHIP_OBJTYPE_ID.longValueExact());
         return ships;
     }
     
@@ -305,7 +314,9 @@ public class PlayerDaoImpl implements PlayerDao{
     @Override
     public String getPasswordByEmail(@NotNull String email){
         try {
-            return jdbcTemplate.queryForObject(queryForPasswordByEmail,new Object[]{email,DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()},String.class);
+            return jdbcTemplate.queryForObject(queryForPasswordByEmail,
+                    new Object[]{email,DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()},
+                    String.class);
         } catch (EmptyResultDataAccessException e) {
             RuntimeException ex = new IllegalArgumentException("Invalid email = " + email, e);
             log.error("PlayerDAO Exception while getting player password.", ex);

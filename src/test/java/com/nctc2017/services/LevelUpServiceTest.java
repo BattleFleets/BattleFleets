@@ -62,8 +62,6 @@ public class LevelUpServiceTest {
         doNothing().when(playerDao).updateLevel(steve.getPlayerId(),12);
         doNothing().when(playerDao).updatePassiveIncome(steve.getPlayerId(),200);
         doNothing().when(playerDao).updateMaxShips(steve.getPlayerId(),200);
-
-
     }
 
 

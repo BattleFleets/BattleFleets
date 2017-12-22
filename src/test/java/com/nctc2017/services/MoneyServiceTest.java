@@ -1,6 +1,5 @@
 package com.nctc2017.services;
 
-import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.dao.PlayerDao;
@@ -57,12 +56,10 @@ public class MoneyServiceTest {
         MockitoAnnotations.initMocks(this);
 
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(150);
-        doNothing().when(playerDao).updateMoney(steve.getPlayerId(),200);
+
 
 
     }
-
-
 
     @Test
     public void addMoney() throws Exception {
@@ -89,14 +86,12 @@ public class MoneyServiceTest {
 
     @Test
     public void isEnoughMoney() throws Exception {
-       int money=steve.getMoney();
        boolean isEnoughMoney=moneyService.isEnoughMoney(steve.getPlayerId(),100);
        assertTrue(isEnoughMoney);
     }
 
     @Test
     public void isEnoughMoneyFail() throws Exception {
-        int money=steve.getMoney();
         boolean isEnoughMoney=moneyService.isEnoughMoney(steve.getPlayerId(),300);
         assertFalse(isEnoughMoney);
     }
