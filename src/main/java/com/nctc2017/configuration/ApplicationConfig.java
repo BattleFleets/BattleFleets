@@ -4,6 +4,8 @@ import java.util.Locale;
 
 import javax.sql.DataSource;
 
+import com.nctc2017.services.LevelUpService;
+import com.nctc2017.services.MoneyService;
 import com.nctc2017.services.TravelService;
 import com.nctc2017.services.utils.BattleManager;
 
@@ -57,6 +59,18 @@ public class ApplicationConfig {
     @Scope("prototype")
     public TravelService travelServiceProt() {
         return new TravelService();
+    }
+
+    @Bean(name = "moneyServicePrototype")
+    @Scope("prototype")
+    public MoneyService moneyServiceProt() {
+        return new MoneyService();
+    }
+
+    @Bean(name = "levelUpServicePrototype")
+    @Scope("prototype")
+    public LevelUpService levelUpServiceProt() {
+        return new LevelUpService();
     }
 
     @Bean(name = "travelServiceSingleton")

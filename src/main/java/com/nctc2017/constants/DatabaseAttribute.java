@@ -11,6 +11,9 @@ public class DatabaseAttribute {
     public static final BigInteger EMAIL_ATR_ID = BigInteger.valueOf(41);
     public static final BigInteger POINTS_ATR_ID = BigInteger.valueOf(31);
     public static final BigInteger MONEY_ATR_ID = BigInteger.valueOf(29);
+    public static final BigInteger PASSIVE_INCOME_ATR_ID = BigInteger.valueOf(42);
+    public static final BigInteger MAX_SHIPS_ATR_ID = BigInteger.valueOf(43);
+
 
     public static final BigInteger GOODS_PURCHASE_PRICE = BigInteger.valueOf(36);
     public static final BigInteger GOODS_QUANTITY = BigInteger.valueOf(37);

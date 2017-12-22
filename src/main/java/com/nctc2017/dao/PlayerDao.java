@@ -56,4 +56,13 @@ public interface PlayerDao {
 
     String getPasswordByEmail(String email);
 
+    int getCurrentPassiveIncome(BigInteger playerId);
+
+    int getCurrentMaxShips(BigInteger playerId);
+
+    void updatePassiveIncome(BigInteger playerId, int passiveIncome);
+
+    void updateMaxShips(BigInteger playerId, int addShips);
+
+
 }

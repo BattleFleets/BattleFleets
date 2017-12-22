@@ -1,12 +1,10 @@
 package com.nctc2017.dao.impl;
 
-import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
 import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.PlayerDao;
 
-import com.nctc2017.dao.ShipDao;
 import com.nctc2017.dao.extractors.EntityExtractor;
 import com.nctc2017.dao.extractors.EntityListExtractor;
 import com.nctc2017.dao.extractors.ExtractingVisitor;
@@ -18,17 +16,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -137,6 +130,40 @@ public class PlayerDaoImpl implements PlayerDao{
                 .setAttribute(DatabaseAttribute.MONEY_ATR_ID, money)
                 .build();
         jdbcTemplate.update(psc);
+    }
+
+    @Override
+    public void updatePassiveIncome(@NotNull BigInteger playerId,@NotNull int passiveIncome) {
+        findPlayerById(playerId);
+        int lvl=getPlayerLevel(playerId);
+        if(lvl%5==0) {
+            PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(playerId)
+                    .setAttribute(DatabaseAttribute.PASSIVE_INCOME_ATR_ID, passiveIncome)
+                    .build();
+            jdbcTemplate.update(psc);
+        }
+        else{
+            RuntimeException ex= new IllegalArgumentException("Inappropriate level"+lvl);
+            log.error("PlayerDAO Exception while update passive income.", ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public void updateMaxShips(@NotNull BigInteger playerId,@NotNull int maxShips) {
+        findPlayerById(playerId);
+        int lvl=getPlayerLevel(playerId);
+        if(lvl%5==0) {
+            PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(playerId)
+                    .setAttribute(DatabaseAttribute.MAX_SHIPS_ATR_ID, maxShips)
+                    .build();
+            jdbcTemplate.update(psc);
+        }
+        else{
+             RuntimeException ex= new IllegalArgumentException("Inappropriate level"+lvl);
+             log.error("PlayerDAO Exception while update max ships.", ex);
+             throw ex;
+        }
     }
 
     @Override
@@ -276,7 +303,7 @@ public class PlayerDaoImpl implements PlayerDao{
     }
 
     @Override
-    public String getPasswordByEmail(String email){
+    public String getPasswordByEmail(@NotNull String email){
         try {
             return jdbcTemplate.queryForObject(queryForPasswordByEmail,new Object[]{email,DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()},String.class);
         } catch (EmptyResultDataAccessException e) {
@@ -285,6 +312,28 @@ public class PlayerDaoImpl implements PlayerDao{
             throw ex;
         }
 
+    }
+
+    @Override
+    public int getCurrentPassiveIncome(@NotNull BigInteger playerId){
+        try {
+            return queryExecutor.getAttrValue(playerId, DatabaseAttribute.PASSIVE_INCOME_ATR_ID, Integer.class);
+        } catch (EmptyResultDataAccessException e) {
+            RuntimeException ex = new IllegalArgumentException("Invalid playerId = " + playerId, e);
+            log.error("PlayerDAO Exception while getting player passive income.", ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public int getCurrentMaxShips(@NotNull BigInteger playerId){
+        try {
+            return queryExecutor.getAttrValue(playerId, DatabaseAttribute.MAX_SHIPS_ATR_ID, Integer.class);
+        } catch (EmptyResultDataAccessException e) {
+            RuntimeException ex = new IllegalArgumentException("Invalid playerId = " + playerId, e);
+            log.error("PlayerDAO Exception while getting player max ships.", ex);
+            throw ex;
+        }
     }
 
     private final class PlayerVisitor implements ExtractingVisitor<Player> {
