@@ -15,4 +15,7 @@ public class DatabaseAttribute {
     public static final BigInteger GOODS_QUANTITY = BigInteger.valueOf(37);
     public static final BigInteger TEMPLATE_GOODS_RARITY_COEF = BigInteger.valueOf(22);
 
+    public static final BigInteger ATTR_CURR_SHIP_NAME = BigInteger.valueOf(23);
+    public static final BigInteger ATTR_CURR_SHIP_HEALTH = BigInteger.valueOf(24);
+    public static final BigInteger ATTR_CURR_SHIP_SAILORS = BigInteger.valueOf(25);
 }

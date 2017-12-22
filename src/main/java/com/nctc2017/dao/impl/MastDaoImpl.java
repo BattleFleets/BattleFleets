@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import com.nctc2017.dao.utils.JdbcConverter;
+import com.nctc2017.dao.utils.QueryExecutor;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -30,20 +31,17 @@ import org.springframework.stereotype.Repository;
 @Qualifier("mastDao")
 public class MastDaoImpl implements MastDao {
 
-    private static final Logger log = Logger.getLogger(MastDaoImpl.class.getSimpleName());
+    private static final Logger log = Logger.getLogger(MastDaoImpl.class);
 
     @Autowired
     JdbcTemplate jdbcTemplate;
 
     @Override
     public Mast findMast(BigInteger mastId) {
-        Mast pickedUpMast = jdbcTemplate.query(Query.FIND_ANY_ENTITY,
-                new Object[]{JdbcConverter.toNumber(DatabaseObject.MAST_OBJTYPE_ID), JdbcConverter.toNumber(mastId),
-                        JdbcConverter.toNumber(DatabaseObject.MAST_OBJTYPE_ID), JdbcConverter.toNumber(mastId)},
-                new MastExtractor(mastId));
+        Mast pickedUpMast = new QueryExecutor().findEntity(mastId,DatabaseObject.MAST_OBJTYPE_ID,new MastExtractor(mastId));
         if (pickedUpMast == null) {
             IllegalArgumentException e =
-                    new IllegalArgumentException("Cannot find Mast,wrong mast object id = " + mastId);
+                    new IllegalArgumentException("Cannot find Mast,wrong mast object  id = " + mastId);
             log.log(Level.ERROR, "Exception: ", e);
             throw e;
         }
@@ -69,8 +67,8 @@ public class MastDaoImpl implements MastDao {
 
     @Override
     public BigInteger createNewMast(BigInteger mastTemplateId, BigInteger containerOwnerId) {
-        BigDecimal newId = jdbcTemplate.queryForObject(Query.GET_NEXTVAL,BigDecimal.class);
-        
+        BigDecimal newId = jdbcTemplate.queryForObject(Query.GET_NEXTVAL, BigDecimal.class);
+
         PreparedStatementCreator psc = QueryBuilder
                 .insert(DatabaseObject.MAST_OBJTYPE_ID)
                 .setParentId(containerOwnerId)
@@ -122,7 +120,7 @@ public class MastDaoImpl implements MastDao {
     }
 
 
-    private List<Mast> getShipMastsFromAnywhere(int containerID) {
+    private List<Mast> getShipMastsFromAnywhere(BigInteger containerID) {
         List<Mast> pickedUpMasts = jdbcTemplate.query(Query.GET_ENTITIES_FROM_CONTAINER,
                 new Object[]{DatabaseObject.MAST_OBJTYPE_ID, containerID, DatabaseObject.MAST_OBJTYPE_ID, containerID},
                 new MastListExtractor());
@@ -133,17 +131,17 @@ public class MastDaoImpl implements MastDao {
     }
 
     @Override
-    public List<Mast> getShipMastsFromShip(int shipId) {
+    public List<Mast> getShipMastsFromShip(BigInteger shipId) {
         return getShipMastsFromAnywhere(shipId);
     }
 
     @Override
-    public List<Mast> getShipMastsFromStock(int stockId) {
+    public List<Mast> getShipMastsFromStock(BigInteger stockId) {
         return getShipMastsFromAnywhere(stockId);
     }
 
     @Override
-    public List<Mast> getShipMastsFromHold(int holdId) {
+    public List<Mast> getShipMastsFromHold(BigInteger holdId) {
         return getShipMastsFromAnywhere(holdId);
     }
 
@@ -196,12 +194,11 @@ public class MastDaoImpl implements MastDao {
             while (rs.next()) {
                 papamMap.put(rs.getString(1), rs.getString(2));
             }
-
             return new Mast(Mast.QUANTITY,
                     mastId,
                     papamMap.remove(Mast.MAST_NAME),
                     Integer.valueOf(papamMap.remove(Mast.MAX_SPEED)),
-                    Integer.valueOf(papamMap.remove(Mast.Cur_MAST_SPEED)),
+                    JdbcConverter.parseInt(papamMap.remove(Mast.Cur_MAST_SPEED)),
                     Integer.valueOf(papamMap.remove(Mast.MAST_COST)));
         }
     }

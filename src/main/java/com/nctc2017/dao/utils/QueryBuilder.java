@@ -210,14 +210,14 @@ public class QueryBuilder {
             attributesQuery.append(oneAttributeQuery);
         }
 
-        String insertObjectQuery = "INSERT ALL INTO objects (object_id, parent_id, object_type_id, source_id, name)" +
+        String insertObjectQuery = "INSERT ALL INTO objects (object_id, parent_id, object_type_id, source_id, curName)" +
                 " values (obj_sq.nextval, ?, ?, ?, ";
 
         String objectNameQuery;
         if (objectColumnsValues.containsKey(SOURCE_OBJECT_ID)) {
-            objectNameQuery = "( SELECT name FROM objects WHERE object_id = ?)) ";
+            objectNameQuery = "( SELECT curName FROM objects WHERE object_id = ?)) ";
         } else {
-            objectNameQuery = "( SELECT name FROM objtype WHERE object_type_id = ?)) ";
+            objectNameQuery = "( SELECT curName FROM objtype WHERE object_type_id = ?)) ";
         }
 
         String selectQuery = " SELECT 1 FROM dual ";

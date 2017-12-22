@@ -95,7 +95,7 @@ public class Query {
      * OBJECT_TYPE_ID, <br>
      * SOURCE_ID(Template_id),<br>
      * Template_id,<br>
-     * ATTR_ID of your template object name (!NOT template OBJECT_TYPE name!)
+     * ATTR_ID of your template object curName (!NOT template OBJECT_TYPE curName!)
      * */
     public static final String CREATE_NEW_ENTITY =
             "INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME)"

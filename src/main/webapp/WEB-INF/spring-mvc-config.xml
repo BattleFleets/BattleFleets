@@ -8,10 +8,10 @@
 
 	<bean id="viewResolver"
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix">
+		<property curName="prefix">
 			<value>/WEB-INF/pages/</value>
 		</property>
-		<property name="suffix">
+		<property curName="suffix">
 			<value>.jsp</value>
 		</property>
 	</bean>

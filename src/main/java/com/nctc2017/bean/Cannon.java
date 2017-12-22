@@ -57,7 +57,7 @@ public class Cannon extends AbstractThing{
         StringBuilder builder = new StringBuilder();
         builder.append("Cannon id= ");
         builder.append(thingId);
-        builder.append(", name= ");
+        builder.append(", curName= ");
         builder.append(name);
         builder.append(", damage= ");
         builder.append(damage);

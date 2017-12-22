@@ -19,4 +19,12 @@ public final class JdbcConverter {
         }
         return numValue;
     }
+    /*This method should convert null to 0, istead of NumberFormatException*/
+    public static int parseInt(String value) {
+        try {
+            return Integer.valueOf(value);
+        } catch(NumberFormatException nfe) {
+            return 0;
+        }
+    }
 }

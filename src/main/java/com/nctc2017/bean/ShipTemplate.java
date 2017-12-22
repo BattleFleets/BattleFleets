@@ -22,9 +22,9 @@ public class ShipTemplate {
 
 
 
-	public ShipTemplate(String name, int maxHealth, int maxSailorsQuantity, int cost, int maxMastsQuantity,
+	public ShipTemplate(String t_name, int maxHealth, int maxSailorsQuantity, int cost, int maxMastsQuantity,
 			int maxCannonQuantity, int maxCarryingLimit) {
-		this.t_name = name;
+		this.t_name = t_name;
 		this.maxHealth = maxHealth;
 		this.maxSailorsQuantity = maxSailorsQuantity;
 		this.cost = cost;
@@ -34,11 +34,11 @@ public class ShipTemplate {
 
 	}
 
-	public String getName() {
+	public String getTName() {
 		return t_name;
 	}
-	public void setName(String name) {
-		this.t_name = name;
+	public void setTName(String tName) {
+		this.t_name = tName;
 	}
 	public int getMaxHealth() {
 		return maxHealth;

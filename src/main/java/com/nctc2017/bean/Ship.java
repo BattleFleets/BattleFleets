@@ -1,8 +1,11 @@
 package com.nctc2017.bean;
+
+import java.math.BigInteger;
+
 public class Ship extends ShipTemplate {
 
-	protected int shipId;
-	protected String name;
+	protected BigInteger shipId;
+	protected String curName;
 	protected int curHealth;
 	protected int curSailorsQuantity;
 	protected int curMastsQuantity;
@@ -15,41 +18,37 @@ public class Ship extends ShipTemplate {
 
 
 
-	public Ship(ShipTemplate shipT,int shipId, String cur_name, int curHealth, int curSailorsQuantity, int curMastsQuantity,
-				int curCannonQuantity, int curCarryingLimit) {
+	public Ship(ShipTemplate shipT, BigInteger shipId, String cur_name, int curHealth, int curSailorsQuantity, int curCarryingLimit) {
 		super(shipT.t_name, shipT.maxHealth, shipT.maxSailorsQuantity, shipT.cost, shipT.maxMastsQuantity,
 				shipT.maxCannonQuantity, shipT.maxCarryingLimit);
 		this.shipId = shipId;
-		this.name = cur_name;
+		this.curName = cur_name;
 		this.curHealth = curHealth;
 		this.curSailorsQuantity = curSailorsQuantity;
-		this.curMastsQuantity = curMastsQuantity;
-		this.curCannonQuantity = curCannonQuantity;
 		this.curCarryingLimit = curCarryingLimit;
 	}
 
 
-	public Ship(ShipTemplate shipT, int shipId, String cur_name) {
-		this(shipT,shipId, cur_name, shipT.maxHealth, shipT.maxSailorsQuantity, shipT.maxMastsQuantity,
-				shipT.maxCannonQuantity, shipT.maxCarryingLimit);
+	public Ship(ShipTemplate shipT, BigInteger shipId, String cur_name) {
+		this(shipT,shipId, cur_name, shipT.maxHealth, shipT.maxSailorsQuantity, shipT.maxCarryingLimit);
 	}
 
 
 
-	public int getShipId() {
+	public BigInteger getShipId() {
 		return shipId;
 	}
 
-	public void setShipId(int shipId) {
+	public void setShipId(BigInteger shipId) {
 		this.shipId = shipId;
 	}
 
-	public String getName() {
-		return name;
+	public String getCurName() {
+		return curName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setCurName(String curName) {
+		this.curName = curName;
 	}
 
 	public int getCurHealth() {
