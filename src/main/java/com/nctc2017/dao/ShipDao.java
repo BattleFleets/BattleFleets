@@ -1,10 +1,10 @@
 package com.nctc2017.dao;
 
-import java.math.BigInteger;
-import java.util.List;
-
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
+
+import java.math.BigInteger;
+import java.util.List;
 
 public interface ShipDao {
 
@@ -14,7 +14,7 @@ public interface ShipDao {
 
     boolean deleteShip(BigInteger shipId);
 
-    boolean updateShipName(BigInteger shipId, int newShipName);
+    boolean updateShipName(BigInteger shipId, String newShipName);
 
     boolean updateShipHealth(BigInteger shipId, int newhealthNumb);
 

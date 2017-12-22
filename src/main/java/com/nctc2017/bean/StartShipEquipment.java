@@ -39,4 +39,12 @@ public class StartShipEquipment {
     public int getStartNumMast() {
         return startNumMast;
     }
+
+    public void setStartCannonType(BigInteger startCannonType) {
+        this.startCannonType = startCannonType;
+    }
+
+    public void setStartMastType(BigInteger startMastType) {
+        this.startMastType = startMastType;
+    }
 }

@@ -8,8 +8,6 @@ public class Ship extends ShipTemplate {
 	protected String curName;
 	protected int curHealth;
 	protected int curSailorsQuantity;
-	protected int curMastsQuantity;
-	protected int curCannonQuantity;
 	protected int curCarryingLimit;
 
 	public static final String NAME = "CurShipName";
@@ -65,22 +63,6 @@ public class Ship extends ShipTemplate {
 
 	public void setCurSailorsQuantity(int curSailorsQuantity) {
 		this.curSailorsQuantity = curSailorsQuantity;
-	}
-
-	public int getCurMastsQuantity() {
-		return curMastsQuantity;
-	}
-
-	public void setCurMastsQuantity(int curMastsQuantity) {
-		this.curMastsQuantity = curMastsQuantity;
-	}
-
-	public int getCurCannonQuantity() {
-		return curCannonQuantity;
-	}
-
-	public void setCurCannonQuantity(int curCannonQuantity) {
-		this.curCannonQuantity = curCannonQuantity;
 	}
 
 	public int getCurCarryingLimit() {

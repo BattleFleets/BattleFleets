@@ -1,38 +1,28 @@
 package com.nctc2017.dao.impl;
 
-import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
 import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.PlayerDao;
-
-import com.nctc2017.dao.ShipDao;
 import com.nctc2017.dao.extractors.EntityExtractor;
 import com.nctc2017.dao.extractors.EntityListExtractor;
 import com.nctc2017.dao.extractors.ExtractingVisitor;
 import com.nctc2017.dao.utils.QueryBuilder;
 import com.nctc2017.dao.utils.QueryExecutor;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.InvocationTargetException;
+import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.validation.constraints.NotNull;
 
 import static java.lang.Integer.parseInt;
 

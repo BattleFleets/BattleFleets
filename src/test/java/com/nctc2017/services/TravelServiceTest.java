@@ -1,7 +1,10 @@
 package com.nctc2017.services;
 
-import java.math.BigInteger;
-
+import com.nctc2017.bean.City;
+import com.nctc2017.bean.Player;
+import com.nctc2017.configuration.ApplicationConfig;
+import com.nctc2017.dao.CityDao;
+import com.nctc2017.dao.PlayerDao;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,11 +17,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.nctc2017.bean.City;
-import com.nctc2017.bean.Player;
-import com.nctc2017.configuration.ApplicationConfig;
-import com.nctc2017.dao.CityDao;
-import com.nctc2017.dao.PlayerDao;
+import java.math.BigInteger;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;

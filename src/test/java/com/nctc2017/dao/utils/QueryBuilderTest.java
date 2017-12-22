@@ -8,7 +8,6 @@ import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
 import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.GoodsDao;
-import com.nctc2017.dao.utils.QueryBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,24 +1,17 @@
 package com.nctc2017.dao.impl;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.Map.Entry;
-
-import com.nctc2017.dao.utils.JdbcConverter;
-import com.nctc2017.dao.utils.QueryExecutor;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
-
 import com.nctc2017.bean.Mast;
 import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
 import com.nctc2017.dao.MastDao;
+import com.nctc2017.dao.extractors.EntityExtractor;
+import com.nctc2017.dao.extractors.ExtractingVisitor;
+import com.nctc2017.dao.utils.JdbcConverter;
 import com.nctc2017.dao.utils.QueryBuilder;
+import com.nctc2017.dao.utils.QueryExecutor;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
@@ -26,6 +19,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
+
+import javax.validation.constraints.NotNull;
+import java.math.BigInteger;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 @Repository
 @Qualifier("mastDao")
@@ -36,9 +39,13 @@ public class MastDaoImpl implements MastDao {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    QueryExecutor queryExecutor;
+
     @Override
-    public Mast findMast(BigInteger mastId) {
-        Mast pickedUpMast = new QueryExecutor().findEntity(mastId,DatabaseObject.MAST_OBJTYPE_ID,new MastExtractor(mastId));
+    public Mast findMast(@NotNull BigInteger mastId) {
+        Mast pickedUpMast = queryExecutor.findEntity(mastId, DatabaseObject.MAST_OBJTYPE_ID,
+                new EntityExtractor<>(mastId, new MastsVisitor()));
         if (pickedUpMast == null) {
             IllegalArgumentException e =
                     new IllegalArgumentException("Cannot find Mast,wrong mast object  id = " + mastId);
@@ -48,16 +55,12 @@ public class MastDaoImpl implements MastDao {
         return pickedUpMast;
     }
 
-    private Mast findMastTemplate(BigInteger mastTemplateId) {
-        Mast pickedUpMast = jdbcTemplate.query(Query.FIND_ANY_ENTITY,
-                new Object[]{JdbcConverter.toNumber(DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID),
-                        JdbcConverter.toNumber(mastTemplateId),
-                        JdbcConverter.toNumber(DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID),
-                        JdbcConverter.toNumber(mastTemplateId)},
-                new MastExtractor(mastTemplateId));
+    private Mast findMastTemplate(@NotNull BigInteger mastTemplateId) {
+        Mast pickedUpMast = queryExecutor.findEntity(mastTemplateId, DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID,
+                new EntityExtractor<>(mastTemplateId, new MastsVisitor()));
         if (pickedUpMast == null) {
             IllegalArgumentException e =
-                    new IllegalArgumentException("Cannot find MastTemplate,wrong mastTempl object id = " + mastTemplateId);
+                    new IllegalArgumentException("Cannot find MastTemplate,wrong mastTemplateId = " + mastTemplateId);
             log.log(Level.ERROR, "Exception: ", e);
             throw e;
         }
@@ -67,17 +70,18 @@ public class MastDaoImpl implements MastDao {
 
     @Override
     public BigInteger createNewMast(BigInteger mastTemplateId, BigInteger containerOwnerId) {
-        BigDecimal newId = jdbcTemplate.queryForObject(Query.GET_NEXTVAL, BigDecimal.class);
+        BigInteger newId = queryExecutor.getNextval();
+        Mast templ = findMastTemplate(mastTemplateId);
 
         PreparedStatementCreator psc = QueryBuilder
-                .insert(DatabaseObject.MAST_OBJTYPE_ID, newId.toBigInteger())
+                .insert(DatabaseObject.MAST_OBJTYPE_ID, newId)
                 .setParentId(containerOwnerId)
                 .setSourceObjId(mastTemplateId)
                 .setAttribute(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID,
                         String.valueOf(findMastTemplate(mastTemplateId).getMaxSpeed()))
                 .build();
         jdbcTemplate.update(psc);
-        return newId.toBigIntegerExact();
+        return newId;
     }
 
 
@@ -103,20 +107,11 @@ public class MastDaoImpl implements MastDao {
 
     @Override
     public boolean updateCurMastSpeed(BigInteger mastId, int newMastSpeed) {
-        if (newMastSpeed > findMast(mastId).getMaxSpeed()) {
-            log.log(Level.INFO, "Speed cannot be more than max maxSpeed of that mast");
-            return false;
-        }
-        try {
-            jdbcTemplate.update(Query.UPDATE_ONE_ATTRIBUTE_VALUE,
-                    new Object[]{newMastSpeed, DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID, mastId,
-                            DatabaseObject.MAST_OBJTYPE_ID, mastId});
-            return true;
-        } catch (DataAccessException e) {
-            IllegalArgumentException ex = new IllegalArgumentException("Can not update mast, wrong mastID = " + mastId);
-            log.log(Level.ERROR, "Exception: ", ex);
-            throw ex;
-        }
+        PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(mastId)
+                .setAttribute(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID, newMastSpeed)
+                .build();
+        jdbcTemplate.update(psc);
+        return true;
     }
 
 
@@ -180,22 +175,12 @@ public class MastDaoImpl implements MastDao {
     }
 
 
-    private final class MastExtractor implements ResultSetExtractor<Mast> {
-        private BigInteger mastId;
-
-
-        public MastExtractor(BigInteger mastId) {
-            this.mastId = mastId;
-        }
+    private final class MastsVisitor implements ExtractingVisitor<Mast> {
 
         @Override
-        public Mast extractData(ResultSet rs) throws SQLException, DataAccessException {
-            Map<String, String> papamMap = new HashMap<>();
-            while (rs.next()) {
-                papamMap.put(rs.getString(1), rs.getString(2));
-            }
+        public Mast visit(BigInteger entityId, Map<String, String> papamMap) {
             return new Mast(Mast.QUANTITY,
-                    mastId,
+                    entityId,
                     papamMap.remove(Mast.MAST_NAME),
                     Integer.valueOf(papamMap.remove(Mast.MAX_SPEED)),
                     JdbcConverter.parseInt(papamMap.remove(Mast.Cur_MAST_SPEED)),

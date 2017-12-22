@@ -1,32 +1,23 @@
 package com.nctc2017.dao.Impl;
 
-import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
-import com.nctc2017.constants.DatabaseObject;
-import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.AssertTrue;
 import java.math.BigInteger;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ApplicationConfig.class })

@@ -1,18 +1,5 @@
 package com.nctc2017.dao.Impl;
 
-import java.math.BigInteger;
-import java.util.List;
-
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.nctc2017.bean.Ammo;
 import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
@@ -21,6 +8,18 @@ import com.nctc2017.dao.AmmoDao;
 import com.nctc2017.dao.HoldDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.StockDao;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ApplicationConfig.class })
