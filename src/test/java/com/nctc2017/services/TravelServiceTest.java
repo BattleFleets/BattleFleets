@@ -10,6 +10,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -37,8 +39,10 @@ public class TravelServiceTest {
     private static City vataArt;
     
     @InjectMocks
-    @Resource(name="travelServicePrototype")
     private TravelService travelService;
+
+    @Autowired
+    private ApplicationContext context;
 
     @Mock
     private PlayerDao mockPlayerDao;
@@ -78,6 +82,7 @@ public class TravelServiceTest {
     
     @Before
     public void initMocks() {
+        travelService = (TravelService)this.context.getBean("travelServicePrototype");
         MockitoAnnotations.initMocks(this);
         
         when(mockCityDao.find(vataArt.getCityId())).thenReturn(vataArt);
