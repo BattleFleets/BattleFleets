@@ -18,7 +18,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import javax.annotation.Resource;
 import java.io.OutputStream;
 import java.math.BigInteger;
 
@@ -30,12 +29,14 @@ import static org.mockito.Mockito.*;
 @ContextConfiguration(classes = { ApplicationConfig.class })
 public class MoneyServiceTest {
     private static Player steve;
-
+    
+    @Autowired
+    private ApplicationContext context;
+    
     @Mock
     PlayerDao playerDao;
 
     @InjectMocks
-    @Resource(name="moneyServicePrototype")
     MoneyService moneyService;
 
     @BeforeClass
@@ -53,6 +54,7 @@ public class MoneyServiceTest {
 
     @Before
     public void initMocks() {
+        this.context.getBean("moneyServicePrototype");
         MockitoAnnotations.initMocks(this);
 
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(150);

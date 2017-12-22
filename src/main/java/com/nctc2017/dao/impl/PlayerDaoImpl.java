@@ -3,11 +3,13 @@ package com.nctc2017.dao.impl;
 import com.nctc2017.bean.Player;
 import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
+import com.nctc2017.constants.Query;
 import com.nctc2017.dao.PlayerDao;
 
 import com.nctc2017.dao.extractors.EntityExtractor;
 import com.nctc2017.dao.extractors.EntityListExtractor;
 import com.nctc2017.dao.extractors.ExtractingVisitor;
+import com.nctc2017.dao.utils.JdbcConverter;
 import com.nctc2017.dao.utils.QueryBuilder;
 import com.nctc2017.dao.utils.QueryExecutor;
 
@@ -323,6 +325,15 @@ public class PlayerDaoImpl implements PlayerDao{
             throw ex;
         }
 
+    }
+    
+    @Override
+    public int getFleetSpeed(BigInteger playerId) {
+        return jdbcTemplate.queryForObject(Query.GET_FLEET_SPEED,
+                new Object[]{JdbcConverter.toNumber(playerId),
+                        JdbcConverter.toNumber(DatabaseObject.MAST_OBJTYPE_ID),
+                        JdbcConverter.toNumber(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID)},
+                Integer.class);
     }
 
     @Override

@@ -103,14 +103,14 @@ public class TravelServiceTest {
         testRelocate(nik, vataArt);
     }
     
-    private void relocateTwoPerson() {
+    private void relocateTwoPersons() {
         testRelocate(nik, vataArt);
         testRelocate(steve, netcracken);
     }
     
     @Test
-    public void testRelocateTwoPerson() {
-        relocateTwoPerson();
+    public void testRelocateTwoPersons() {
+        relocateTwoPersons();
     }
     
     private void testIsEnemyOnHorizon(Player player) {
@@ -120,7 +120,7 @@ public class TravelServiceTest {
     
     @Test
     public void test_IsEnemyOnHorizon_For_Players_With_Lvl_Difference_Less_Then_5() {
-        relocateTwoPerson();
+        relocateTwoPersons();
         testIsEnemyOnHorizon(nik);
         testIsEnemyOnHorizon(steve);
     }
@@ -134,7 +134,7 @@ public class TravelServiceTest {
     }
     
     private void confirmAttackNik(boolean decision) {
-        relocateTwoPerson();
+        relocateTwoPersons();
         testIsEnemyOnHorizon(nik);
         travelService.confirmAttack(nik.getPlayerId(), decision);
     }

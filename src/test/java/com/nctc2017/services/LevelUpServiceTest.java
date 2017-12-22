@@ -10,13 +10,13 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import javax.annotation.Resource;
 import java.math.BigInteger;
 
 import static org.junit.Assert.*;
@@ -28,12 +28,12 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration(classes = { ApplicationConfig.class })
 public class LevelUpServiceTest {
     private static Player steve;
-
+    @Autowired
+    private ApplicationContext context;
     @Mock
     PlayerDao playerDao;
 
     @InjectMocks
-    @Resource(name="levelUpServicePrototype")
     LevelUpService levelUpService;
 
     @BeforeClass
@@ -51,6 +51,7 @@ public class LevelUpServiceTest {
 
     @Before
     public void initMocks() {
+        this.context.getBean("levelUpServicePrototype");
         MockitoAnnotations.initMocks(this);
 
         when(playerDao.getPlayerLevel(steve.getPlayerId())).thenReturn(10).thenReturn(12);
