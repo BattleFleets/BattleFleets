@@ -17,8 +17,8 @@ cache:
     - .m2/repository
 
 stages:
-  - test
   - build
+  - test
   - deploy
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.

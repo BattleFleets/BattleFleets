@@ -2,6 +2,7 @@ package com.nctc2017.services;
 
 import java.math.BigInteger;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,11 +20,13 @@ import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
 @ContextConfiguration(classes = { ApplicationConfig.class })
 public class TravelServiceTest {
     
