@@ -2,6 +2,8 @@ package com.nctc2017.dao.utils;
 
 import oracle.jdbc.OracleTypes;
 import oracle.sql.NUMBER;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.core.SqlParameter;
@@ -13,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class QueryBuilder {
+
+    private static final Logger logger = Logger.getLogger(QueryBuilder.class);
 
     private static final SqlParameter NUMERIC_PARAM = new SqlParameter(OracleTypes.NUMERIC);
     public static final SqlParameter VARCHAR_PARAM = new SqlParameter(OracleTypes.VARCHAR);
@@ -28,7 +32,6 @@ public class QueryBuilder {
     private Map<BigInteger, String> attributes;
     private Map<BigInteger, String> dateAttributes;
 
-
     private enum Operation {
         INSERT, UPDATE_OBJECT_PARENT_ID, UPDATE_OBJECT_ATTRIBUTE_VALUE, DELETE
     }
@@ -42,7 +45,7 @@ public class QueryBuilder {
 
     private QueryBuilder(Operation operation, BigInteger objectId) {
         this(operation);
-        this.setObjectId(objectId);
+        this.setObjectIdPrivate(objectId);
     }
 
     /**
@@ -50,8 +53,15 @@ public class QueryBuilder {
      *
      * @return builder
      */
+    public static QueryBuilder insert(@NotNull BigInteger objectTypeId, @NotNull BigInteger objectId) {
+        QueryBuilder builder = new QueryBuilder(Operation.INSERT, objectId);
+        builder.setObjectTypeId(objectTypeId);
+
+        return builder;
+    }
+
     public static QueryBuilder insert(@NotNull BigInteger objectTypeId) {
-        QueryBuilder builder = new QueryBuilder(Operation.INSERT) ;
+        QueryBuilder builder = new QueryBuilder(Operation.INSERT);
         builder.setObjectTypeId(objectTypeId);
 
         return builder;
@@ -92,8 +102,13 @@ public class QueryBuilder {
     }
 
 
-    private void setObjectId(BigInteger id) {
+    private void setObjectIdPrivate(BigInteger id) {
         objectColumnsValues.put(OBJECT_ID, id);
+    }
+
+    public QueryBuilder setObjectId(BigInteger id) {
+        objectColumnsValues.put(OBJECT_ID, id);
+        return this;
     }
 
     /**
@@ -158,6 +173,18 @@ public class QueryBuilder {
     }
 
     /**
+     * Set new value for attribute with id = attributeId
+     *
+     * @param attributeId    - id of attribute that will be updated in query
+     * @param attributeValue - attribute value that will be set in query
+     * @return builder
+     */
+    public QueryBuilder setAttribute(BigInteger attributeId, int attributeValue) {
+        setAttribute(attributeId, String.valueOf(attributeValue));
+        return this;
+    }
+
+    /**
      * Set new date value for attribute with id = attributeId
      *
      * @param attributeId        - id of attribute that will be updated in query
@@ -178,7 +205,12 @@ public class QueryBuilder {
      *
      * @return preparedStatement with query
      */
-    public PreparedStatementCreator build() {
+    public PreparedStatementCreator build() throws IllegalArgumentException {
+
+        if (objectColumnsValues.get(OBJECT_ID) == null) {
+            logger.log(Level.ERROR, "QueryBuilder has null object_id");
+            throw new IllegalArgumentException("QueryBuilder Exception. Null object_id, cannot perform any query");
+        }
 
         switch (queryOperation) {
 
@@ -200,30 +232,32 @@ public class QueryBuilder {
 
     }
 
-    private PreparedStatementCreator insertQuery(){
+    private PreparedStatementCreator insertQuery() {
         ArrayList<SqlParameter> declaredParams = new ArrayList<>();
         NUMBER newObjectId = JdbcConverter.toNumber(objectColumnsValues.get(OBJECT_ID));
 
         StringBuilder attributesQuery = new StringBuilder();
-        String oneAttributeQuery = " INTO attributes_value(attr_id, object_id, value, date_value) VALUES ( ? , obj_sq.currval, ?, ? ) ";
+        String oneAttributeQuery = " INTO attributes_value(attr_id, object_id, value, date_value) VALUES ( ? , ?, ?, ? ) ";
         for (int i = 0; i < attributes.size() + dateAttributes.size(); i++) {
             attributesQuery.append(oneAttributeQuery);
         }
 
-        String insertObjectQuery = "INSERT ALL INTO objects (object_id, parent_id, object_type_id, source_id, curName)" +
-                " values (obj_sq.nextval, ?, ?, ?, ";
+        String insertObjectQuery = "INSERT ALL INTO objects (object_id, parent_id, object_type_id, source_id, name)" +
+                " values (?, ?, ?, ?, ";
 
         String objectNameQuery;
         if (objectColumnsValues.containsKey(SOURCE_OBJECT_ID)) {
-            objectNameQuery = "( SELECT curName FROM objects WHERE object_id = ?)) ";
+            objectNameQuery = "( SELECT name FROM objects WHERE object_id = ?)) ";
         } else {
-            objectNameQuery = "( SELECT curName FROM objtype WHERE object_type_id = ?)) ";
+            objectNameQuery = "( SELECT name FROM objtype WHERE object_type_id = ?)) ";
         }
 
         String selectQuery = " SELECT 1 FROM dual ";
 
         ArrayList<Object> paramsInsert = new ArrayList<>();
 
+        paramsInsert.add(newObjectId);
+        declaredParams.add(NUMERIC_PARAM);
         paramsInsert.add(JdbcConverter.toNumber(objectColumnsValues.getOrDefault(PARENT_ID, null)));
         declaredParams.add(NUMERIC_PARAM);
         paramsInsert.add(JdbcConverter.toNumber(objectColumnsValues.getOrDefault(OBJECT_TYPE_ID, null)));
@@ -237,6 +271,8 @@ public class QueryBuilder {
         for (Map.Entry<BigInteger, String> cursor : attributes.entrySet()) {
             paramsInsert.add(JdbcConverter.toNumber(cursor.getKey()));
             declaredParams.add(NUMERIC_PARAM);
+            paramsInsert.add(newObjectId);
+            declaredParams.add(NUMERIC_PARAM);
             paramsInsert.add(cursor.getValue());
             declaredParams.add(VARCHAR_PARAM);
             paramsInsert.add(null); // date_value is always null here
@@ -244,6 +280,8 @@ public class QueryBuilder {
         }
         for (Map.Entry<BigInteger, String> cursor : dateAttributes.entrySet()) {
             paramsInsert.add(JdbcConverter.toNumber(cursor.getKey()));
+            declaredParams.add(NUMERIC_PARAM);
+            paramsInsert.add(newObjectId);
             declaredParams.add(NUMERIC_PARAM);
             paramsInsert.add(null); // value is always null here
             declaredParams.add(NULL_PARAM);
@@ -257,7 +295,7 @@ public class QueryBuilder {
         return stmtInsert.newPreparedStatementCreator(paramsInsert);
     }
 
-    private PreparedStatementCreator updateParentQuery(){
+    private PreparedStatementCreator updateParentQuery() {
         ArrayList<SqlParameter> declaredParams = new ArrayList<>();
 
         String updateObjectQuery = "UPDATE objects SET parent_id = ? WHERE object_id = ?";
@@ -273,7 +311,7 @@ public class QueryBuilder {
         return stmtUpdateParent.newPreparedStatementCreator(paramsUpdateParent);
     }
 
-    private PreparedStatementCreator updateAttributeValueQuery(){
+    private PreparedStatementCreator updateAttributeValueQuery() {
         ArrayList<SqlParameter> declaredParams = new ArrayList<>();
 
         StringBuilder updateAttrQuery = new StringBuilder("BEGIN ");
@@ -314,7 +352,7 @@ public class QueryBuilder {
         return stmtUpdateAttr.newPreparedStatementCreator(paramsUpdateAttr);
     }
 
-    private PreparedStatementCreator deleteQuery(){
+    private PreparedStatementCreator deleteQuery() {
         ArrayList<SqlParameter> declaredParams = new ArrayList<>();
 
         String deleteObjectQuery = "delete from objects where object_id = ?";
@@ -326,6 +364,22 @@ public class QueryBuilder {
         PreparedStatementCreatorFactory stmtDeleteObject =
                 new PreparedStatementCreatorFactory(deleteObjectQuery, declaredParams);
         return stmtDeleteObject.newPreparedStatementCreator(paramsDeleteObject);
+    }
+
+    public boolean isInsertOperation() {
+        return queryOperation.equals(Operation.INSERT);
+    }
+
+    public boolean isUpdateAttrValueOperation() {
+        return queryOperation.equals(Operation.UPDATE_OBJECT_ATTRIBUTE_VALUE);
+    }
+
+    public boolean isDeleteOperation() {
+        return queryOperation.equals(Operation.DELETE);
+    }
+
+    public boolean isUpdateParentIdOperation() {
+        return queryOperation.equals(Operation.UPDATE_OBJECT_PARENT_ID);
     }
 
 }

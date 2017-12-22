@@ -70,7 +70,7 @@ public class MastDaoImpl implements MastDao {
         BigDecimal newId = jdbcTemplate.queryForObject(Query.GET_NEXTVAL, BigDecimal.class);
 
         PreparedStatementCreator psc = QueryBuilder
-                .insert(DatabaseObject.MAST_OBJTYPE_ID)
+                .insert(DatabaseObject.MAST_OBJTYPE_ID, newId.toBigInteger())
                 .setParentId(containerOwnerId)
                 .setSourceObjId(mastTemplateId)
                 .setAttribute(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID,

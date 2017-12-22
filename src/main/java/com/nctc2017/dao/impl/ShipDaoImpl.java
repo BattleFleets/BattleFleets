@@ -191,8 +191,9 @@ public class ShipDaoImpl implements ShipDao {
         return null;
     }
 
-    @Override
-    public List<Ship> findAllShips(List<Integer> shipsId) {
+
+    public List<Ship> findAllShips(List<BigInteger> shipsId) {
+        // TODO
         return null;
     }
 

@@ -10,10 +10,15 @@ public class DatabaseAttribute {
     public static final BigInteger LEVEL_ATR_ID = BigInteger.valueOf(30);
     public static final BigInteger EMAIL_ATR_ID = BigInteger.valueOf(41);
     public static final BigInteger POINTS_ATR_ID = BigInteger.valueOf(31);
+    public static final BigInteger MONEY_ATR_ID = BigInteger.valueOf(29);
 
     public static final BigInteger GOODS_PURCHASE_PRICE = BigInteger.valueOf(36);
     public static final BigInteger GOODS_QUANTITY = BigInteger.valueOf(37);
     public static final BigInteger TEMPLATE_GOODS_RARITY_COEF = BigInteger.valueOf(22);
+    public static final BigInteger AMMO_NAME = BigInteger.valueOf(18);
+    public static final BigInteger AMMO_DAMAGE_TYPE = BigInteger.valueOf(19);
+    public static final BigInteger AMMO_COST = BigInteger.valueOf(20);
+    public static final BigInteger AMMO_NUM = BigInteger.valueOf(34);
 
     public static final BigInteger ATTR_CURR_SHIP_NAME = BigInteger.valueOf(23);
     public static final BigInteger ATTR_CURR_SHIP_HEALTH = BigInteger.valueOf(24);

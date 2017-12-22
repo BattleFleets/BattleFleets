@@ -3,6 +3,7 @@ package com.nctc2017.dao.Impl;
 import static org.junit.Assert.*;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,13 +17,18 @@ import com.nctc2017.bean.Cannon;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.CannonDao;
+import com.nctc2017.dao.HoldDao;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ApplicationConfig.class })
 @Transactional
 public class CannonDaoImplIntegrationTest {
+    
     @Autowired
     CannonDao cannonDao;
+
+    @Autowired
+    HoldDao holdDao;
 
     @Test
     @Rollback(true)
@@ -146,5 +152,26 @@ public class CannonDaoImplIntegrationTest {
         // when
         cannonDao.findById(wrongCannonId);
         // then
+    }
+    
+    @Rollback(true)
+    @Test
+    public void testGetCannonFromHold() {
+        // Given
+        BigInteger idHold = holdDao.createHold();
+        BigInteger mortarTemplateId = DatabaseObject.MORTAR_TEMPLATE_ID;
+        BigInteger bombardTemplateId = DatabaseObject.BOMBARD_TEMPLATE_ID;
+        BigInteger idM = cannonDao.createCannon(mortarTemplateId);
+        BigInteger idB = cannonDao.createCannon(bombardTemplateId);
+        holdDao.addCargo(idM, idHold);
+        holdDao.addCargo(idB, idHold);
+        // When
+        List<Cannon> list = cannonDao.getAllCannonFromHold(idHold);
+        Cannon cannon1 = list.get(0);
+        Cannon cannon2 = list.get(1);
+        // Then
+        assertNotEquals(cannon1, cannon2);
+        assertTrue(cannon1.getThingId().equals(idB) || cannon1.getThingId().equals(idM));
+        assertTrue(cannon2.getThingId().equals(idB) || cannon2.getThingId().equals(idM));
     }
 }

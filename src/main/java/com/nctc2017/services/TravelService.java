@@ -1,55 +1,112 @@
 package com.nctc2017.services;
 
+import java.math.BigInteger;
 import java.util.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.nctc2017.bean.City;
+import com.nctc2017.bean.Player;
+import com.nctc2017.dao.CityDao;
+import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.services.utils.BattleManager;
+import com.nctc2017.services.utils.TravelManager;
+
+@Service
 public class TravelService {
+    
+    @Autowired
+    private BattleManager battleManager;
+    @Autowired
+    private TravelManager travelManager;
+    @Autowired
+    private PlayerDao playerDao;
+    @Autowired
+    private CityDao cityDao;
+    
+    private Map<BigInteger, Thread> playerAutoDecision = new HashMap<>();
 
-
-    public void relocate(int idUser, int cityId) {
-        // TODO implement here
+    public void relocate(BigInteger playerId, BigInteger cityId) {
+        Player player = playerDao.findPlayerById(playerId);
+        travelManager.startJourney(playerId, player.getLevel(), cityId);
     }
 
-    public String getCurrentCity(int playerId) {
-        // TODO implement here
-        return "";
+    public City getCurrentCity(BigInteger playerId) {
+        BigInteger cityId = playerDao.getPlayerCity(playerId);
+        City city=cityDao.find(cityId);
+        return city;
     }
 
-    public String getCities() {
-        // TODO implement here
-        return "";
+    public List<City> getCities() {
+        List<City> allCity = cityDao.findAll();
+        return allCity;
     }
 
-    public int getRelocateTime(int playerId) {
-        // TODO implement here
-        return 0;
+    public int getRelocateTime(BigInteger playerId) {
+        return travelManager.getRelocateTime(playerId);
     }
 
-    public boolean isEnemyOnHorizon(int playerId) {
-        // TODO implement here
-        return false;
+    public boolean isEnemyOnHorizon(BigInteger playerId) {
+        if(travelManager.prepareEnemyFor(playerId)) { 
+            autoDecisionTimer(playerId);
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public int pauseRelocateTime(int playerId) {
-        // TODO implement here
-        return 0;
+    public int resumeRelocateTime(BigInteger playerId) {
+        return travelManager.continueTravel(playerId);
     }
 
-    public int resumeRelocateTime(int playerId) {
-        // TODO implement here
-        return 0;
+    public void confirmAttack(BigInteger playerId, boolean decision) {
+        playerAutoDecision.get(playerId).interrupt();
+        if (decision) {
+            BigInteger enemyId = travelManager.getEnemyId(playerId);
+            battleManager.newBattleBetween(/*TODO Cannon with max dist*/-1,playerId, enemyId);
+        } else {
+            travelManager.friendly(playerId);
+        }
     }
 
-    public void confirmAttack(int playerId, boolean decision) {
-        // TODO implement here
+    public boolean isBattleStart(BigInteger playerId) {
+        BigInteger enemyId = battleManager.getEnemyId(playerId);
+        if (enemyId == null)
+            return false;
+        else
+            return true;
+    }
+    
+    private int autoDecisionTimer(BigInteger playerId) {
+        Runnable decisionTask = new AutoDecisionTask(playerId);
+        Thread decisionThread = new Thread(decisionTask);
+        decisionThread.start();
+        playerAutoDecision.put(playerId, decisionThread);
+        return getAutoDecisionTime() / 1000;
+    }
+    
+    public int getAutoDecisionTime() {
+        return AutoDecisionTask.DELAY / 1000;
     }
 
-    public int isBattleStart(int playerId) {
-        // TODO implement here
-        return 0;
-    }
+    private class AutoDecisionTask implements Runnable{
+        private static final int DELAY = 50000;
+        private BigInteger playerId;
 
-    public int autoDecisionTimer(int playerId) {
-        // TODO implement here
-        return 0;
-    }
+        public AutoDecisionTask(BigInteger playerId) {
+            this.playerId = playerId;
+        }
 
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(DELAY);
+            } catch (InterruptedException e) {
+                return;
+            }
+            confirmAttack(playerId, true);
+        }
+        
+    }
 }

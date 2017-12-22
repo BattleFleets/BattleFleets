@@ -40,7 +40,7 @@ public interface ShipDao {
 
     List<ShipTemplate> findAllShipTemplates();
 
-    List<Ship> findAllShips(List<Integer> shipsId);
+    List<Ship> findAllShips(List<BigInteger> shipsId);
 
     boolean setMastOnShip(BigInteger mastId, BigInteger shipId);
 

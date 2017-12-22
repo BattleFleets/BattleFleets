@@ -3,7 +3,8 @@ package com.nctc2017.bean;
 import java.math.BigInteger;
 
 public class City {
-    protected String cityName;
+	public static final String NAME = "CityName";
+	protected String cityName;
     protected Market market;
     protected BigInteger cityId;
 	public City(String cityName, Market market, BigInteger cityId) {

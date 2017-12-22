@@ -2,14 +2,11 @@ package com.nctc2017.services;
 
 import java.util.*;
 
-import com.nctc2017.bean.Battles;
 import com.nctc2017.bean.Player;
 import com.nctc2017.bean.Ship;
 
 public class BattleService {
-	
-    protected Battles battles;
-    
+	    
     public boolean calculateDamage(List<List<Integer>> ammoCannon, int idPlayer) {
         // TODO implement here
 		return false;

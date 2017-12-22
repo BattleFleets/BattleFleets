@@ -1,5 +1,6 @@
 package com.nctc2017.controllers;
 
+import com.nctc2017.exception.PlayerValidationException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -15,15 +16,22 @@ import com.nctc2017.services.AuthRegService;
 @RequestMapping("/")
 public class HelloWorldController {
 
-	@RequestMapping(method = RequestMethod.GET)
-	public ModelAndView helloWorld() {
-		AbstractApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
-		AuthRegService authRegService = (AuthRegService) context.getBean("authRegService");
-        
-		ModelAndView model = new ModelAndView("HelloWorldPage");
-		model.addObject("msg", "hello world");
-		model.addObject(Player.class.getSimpleName(), authRegService.autorization("", ""));
-		
-		return model;
-	}
+    @RequestMapping(method = RequestMethod.GET)
+    public ModelAndView helloWorld() {
+        AbstractApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
+        AuthRegService authRegService = (AuthRegService) context.getBean("authRegService");
+
+        ModelAndView model = new ModelAndView("HelloWorldPage");
+        model.addObject("msg", "hello world");
+        String messange;
+        try {
+            Player player = authRegService.authorization("", "");
+            messange = player.getLogin();
+        } catch (PlayerValidationException e) {
+            messange = e.getMessage();
+        }
+        model.addObject(Player.class.getSimpleName(), messange);
+
+        return model;
+    }
 }

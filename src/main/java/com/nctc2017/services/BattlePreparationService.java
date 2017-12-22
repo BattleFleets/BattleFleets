@@ -1,30 +1,41 @@
 package com.nctc2017.services;
 
+import java.math.BigInteger;
 import java.util.*;
 
-import com.nctc2017.bean.Battles;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.nctc2017.bean.Ship;
+import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.dao.ShipDao;
+import com.nctc2017.services.utils.BattleManager;
 
 public class BattlePreparationService {
-    protected Battles battles;    
+    @Autowired
+    protected BattleManager battles;    
+    
+    @Autowired
+    private PlayerDao playerDao;
+    @Autowired
+    private ShipDao shipDao;
     
     public boolean escape(int playerId) {
         // TODO implement here
         return false;
     }
 
-    public ArrayList<Ship> getShips(int playerId) {
-        // TODO implement here
-        return null;
+    public List<Ship> getShips(BigInteger playerId) {
+        List<BigInteger> listShipsId = playerDao.findAllShip(playerId);
+        return shipDao.findAllShips(listShipsId);
     }
 
-    public ArrayList<Ship> getEnemyShips(int playerId) {
-        // TODO implement here
-        return null;
+    public List<Ship> getEnemyShips(BigInteger playerId) {
+        BigInteger enemyId = battles.getEnemyId(playerId);
+        return getShips(enemyId);
     }
 
-    public void chooseShip(int shipId) {
-        // TODO implement here
+    public void chooseShip(BigInteger playerId, BigInteger shipId) {
+        battles.getBattle(playerId).setShipId(playerId, shipId);
     }
 
     public boolean waitForEnemyReady(int playerId) {

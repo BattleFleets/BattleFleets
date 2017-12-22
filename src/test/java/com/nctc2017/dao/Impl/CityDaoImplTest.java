@@ -3,6 +3,7 @@ package com.nctc2017.dao.Impl;
 import com.nctc2017.bean.City;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.dao.CityDao;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,18 +32,23 @@ public class CityDaoImplTest {
         assertEquals(city.getCityName(),"Nassau");
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void findFailed() throws Exception {
-        City city=cityDao.find(new BigInteger("77"));
+        City city=cityDao.find(new BigInteger("83"));
     }
 
     @Test
     @Rollback(true)
     public void findAll() throws Exception {
+        //TODO
         List<City> cities=cityDao.findAll();
-        assertEquals(cities.get(0).getCityName(),"Nassau");
-        assertEquals(cities.get(1).getCityName(),"Port Royal");
+        assertEquals(cities.get(0).getCityName(),"Montego Bay");
+        assertEquals(cities.get(1).getCityName(),"Inesville");
+        assertEquals(cities.get(2).getCityName(),"Santo Domingo");
+        assertEquals(cities.get(3).getCityName(),"Port Royal");
+        assertEquals(cities.get(4).getCityName(),"Nassau");
+
 
     }
 

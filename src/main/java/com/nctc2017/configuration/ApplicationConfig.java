@@ -1,20 +1,18 @@
 package com.nctc2017.configuration;
 
-import java.util.Locale;
-
-import javax.sql.DataSource;
-
+import com.nctc2017.services.TravelService;
+import com.nctc2017.services.utils.BattleManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import javax.sql.DataSource;
+import java.util.Locale;
 
 
 @Configuration
@@ -49,5 +47,21 @@ public class ApplicationConfig {
         final PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
         return transactionManager;
     }
+    @Bean(name = "travelServicePrototype")
+    @Scope("prototype")
+    public TravelService travelServiceProt() {
+        return new TravelService();
+    }
 
+    @Bean(name = "travelServiceSingleton")
+    @Scope("singleton")
+    public TravelService travelServiceSing() {
+        return new TravelService();
+    }
+
+    @Bean
+    @Scope("singleton")
+    public BattleManager battles() {
+        return new BattleManager();
+    }
 }

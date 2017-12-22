@@ -1,13 +1,15 @@
 package com.nctc2017.dao;
 
+import java.math.BigInteger;
+
 public interface StockDao {
 
-    int findStockId(int player_id);
+    BigInteger findStockId(BigInteger playerId);
 
-    int createStock(int playerId);
+    BigInteger createStock(BigInteger playerId);
 
-    void deleteStock(int playerId);
+    void deleteStock(BigInteger playerId);
 
-    void addCargo(int cargoId);
+    void addCargo(BigInteger cargoId, BigInteger playerId);
 
 }

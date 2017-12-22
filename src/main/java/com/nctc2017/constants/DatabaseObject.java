@@ -19,18 +19,25 @@ public class DatabaseObject {
     public static final BigInteger GEMS_TEMPLATE_ID = BigInteger.valueOf(26);
     public static final BigInteger T_CARAVELLA_OBJECT_ID = BigInteger.valueOf(1);
     public static final BigInteger MAST1_TEMPLATE_OBJECT_ID = BigInteger.valueOf(6);
-    public static final BigInteger MAST_TEMPLATE_OBJTYPE_ID = BigInteger.valueOf(2);
+    public static final BigInteger CANNONBALL_TEMPLATE_OBJECT_ID = BigInteger.valueOf(14);
+    public static final BigInteger CHAIN_TEMPLATE_OBJECT_ID = BigInteger.valueOf(15);
+    public static final BigInteger BUCKSHOT_TEMPLATE_OBJECT_ID = BigInteger.valueOf(16);
     
+    public static final BigInteger MAST_TEMPLATE_OBJTYPE_ID = BigInteger.valueOf(2);
     public static final BigInteger CANNON_TEMPLATE_TYPE_ID = BigInteger.valueOf(3);
     public static final BigInteger GOODS_TEMPLATE_TYPE_ID = BigInteger.valueOf(5);
 
     public static final BigInteger SHIP_TEMPLATE_OBJTYPE_ID = BigInteger.valueOf(1);
+    public static final BigInteger AMMO_TEMPLATE_TYPE_ID = BigInteger.valueOf(4);
+    
     public static final BigInteger SHIP_OBJTYPE_ID = BigInteger.valueOf(6);
     public static final BigInteger HOLD_OBJTYPE_ID = BigInteger.valueOf(9);
     public static final BigInteger CANNON_OBJTYPE_ID = BigInteger.valueOf(8);
     public static final BigInteger PLAYER_OBJTYPE_ID = BigInteger.valueOf(10);
     public static final BigInteger MAST_OBJTYPE_ID = BigInteger.valueOf(7);
     public static final BigInteger GOODS_OBJTYPE_ID = BigInteger.valueOf(14);
-
+    public static final BigInteger CITY_OBJTYPE_ID = BigInteger.valueOf(16);
+    public static final BigInteger STOCK_OBJTYPE_ID = BigInteger.valueOf(12);
+    public static final BigInteger AMMO_OBJTYPE_ID = BigInteger.valueOf(11);
 
 }

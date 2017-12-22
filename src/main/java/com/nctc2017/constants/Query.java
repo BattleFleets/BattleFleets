@@ -29,16 +29,30 @@ public class Query {
                     + " AND atr_val.OBJECT_ID = entity_obj.OBJECT_ID";
     
     /**
-     * You must have 2 parameters for PreparedStatement: <br>
-     * OBJECT_TYPE_ID of container owner<br>
-     * OBJECT_ID of owner
+     * You must have 3 parameters for PreparedStatement: <br>
+     * OBJECT_TYPE_ID of container<br>
+     * OBJECT_ID of owner<br>
+     * OBJECT_TYPE_ID of container
+     *
      * */
+
+    public static  final String FIND_ALL_ENTITIES_BY_TYPE=
+            "SELECT entity_obj.OBJECT_ID, atr_obj.NAME, atr_val.VALUE " +
+                    "FROM OBJECTS entity_obj, ATTRIBUTES atr_obj, ATTRIBUTES_VALUE atr_val " +
+                    "WHERE " +
+                    "entity_obj.OBJECT_TYPE_ID =? " +
+                    "AND atr_obj.OBJECT_TYPE_ID = entity_obj.OBJECT_TYPE_ID " +
+                    "AND atr_val.ATTR_ID = atr_obj.ATTR_ID " +
+                    "AND atr_val.OBJECT_ID = entity_obj.OBJECT_ID";
+
     public static final String FIND_CONTAINER_BY_OWNER_ID = 
-            "SELECT container_obj.OBJECT_ID" 
-                    + " FROM OBJECTS container_obj" 
-                    + " WHERE"
-                    + "     container_obj.OBJECT_TYPE_ID = ?"// owner type id
-                    + " AND container_obj.PARENT_ID = ?";// id owner obj
+            "SELECT child_obj.OBJECT_ID " +
+                    "    FROM OBJECTS child_obj, OBJECTS parent_obj " +
+                    "    WHERE child_obj.PARENT_ID = parent_obj.OBJECT_ID " +
+                    "        and child_obj.OBJECT_TYPE_ID = ? " + // container object type
+                    "        and child_obj.PARENT_ID = ? " + // owner object id
+                    "        and  parent_obj.OBJECT_TYPE_ID = ? "; // owner object type
+
     
     /** See this {@link #FIND_CONTAINER_BY_OWNER_ID} */
     public static final String FIND_ALL_IN_CONTAINER_BY_OWNER_ID = 
@@ -54,7 +68,7 @@ public class Query {
      * Call execute() or query() must have 4 parameters for PreparedStatement: OBJECT_TYPE_ID, OBJECT_ID of Container, OBJECT_TYPE_ID, OBJECT_ID of Container 
      * */
     public static final String GET_ENTITIES_FROM_CONTAINER = 
-            "SELECT entity_obj.OBJECT_ID, atr_temp.NAME, atr_val.VALUE" 
+            "SELECT entity_obj.OBJECT_ID, atr_temp.NAME, atr_val.VALUE "
                     + "FROM OBJECTS entity_obj, ATTRIBUTES atr_temp, OBJECTS entity_templ, ATTRIBUTES_VALUE atr_val"
                     + " WHERE"
                     + "    entity_obj.OBJECT_TYPE_ID = ?"//type id entity"

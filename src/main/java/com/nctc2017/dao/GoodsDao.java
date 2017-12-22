@@ -8,16 +8,24 @@ import com.nctc2017.bean.Goods;
 
 public interface GoodsDao {
 
-	BigInteger createNewGoods(BigInteger goodsTemplateId, int quantity, int price);
+    BigInteger createNewGoods(BigInteger goodsTemplateId, int quantity, int price);
 
-	void increaseGoodsQuantity(BigInteger goodsId, int quantity);
+    Goods findById(BigInteger goodsId);
 
-	boolean decreaseGoodsQuantity(BigInteger goodsId, int quantity);
+    void increaseGoodsQuantity(BigInteger goodsId, int increaseValue);
 
-	int getGoodsRaraty(BigInteger goodsTemplateId);
+    void decreaseGoodsQuantity(BigInteger goodsId, int decreaseValue);
 
-	List<Goods> getAllGoodsFromStock(BigInteger stockId);
+    void updateGoodsQuantity(BigInteger goodsId, int quantity);
 
-	List<Goods> getAllGoodsFromHold(BigInteger holdId);
+    void deleteGoods(BigInteger goodsId);
+
+    int getGoodsRarity(BigInteger goodsTemplateId);
+
+    int getGoodsQuantity(BigInteger goodsTemplateId);
+
+    List<Goods> getAllGoodsFromStock(BigInteger stockId);
+
+    List<Goods> getAllGoodsFromHold(BigInteger holdId);
 
 }

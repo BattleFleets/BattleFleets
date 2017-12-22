@@ -2,12 +2,9 @@ package com.nctc2017.services;
 
 import java.util.*;
 
-import com.nctc2017.bean.Battles;
 import com.nctc2017.bean.Goods;
 
 public class BattleEndingService {
-
-    protected Battles battles;
 
     public List<Goods> passBoardGoodsToWinner(int idPlayer) {
         // TODO implement here
