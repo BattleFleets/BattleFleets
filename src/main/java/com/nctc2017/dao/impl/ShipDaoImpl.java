@@ -3,14 +3,24 @@ package com.nctc2017.dao.impl;
 import java.math.BigInteger;
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
+import com.nctc2017.constants.DatabaseAttribute;
+import com.nctc2017.constants.DatabaseObject;
+import com.nctc2017.constants.Query;
 import com.nctc2017.dao.ShipDao;
+import com.nctc2017.dao.utils.JdbcConverter;
 
 public class ShipDaoImpl implements ShipDao {
-
+    
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+    
     @Override
-    public Ship findShip(int shipId) {
+    public Ship findShip(BigInteger shipId) {
         // TODO implement here
         return null;
     }
@@ -58,7 +68,7 @@ public class ShipDaoImpl implements ShipDao {
     }
 
     @Override
-    public int getCurrentShipSailors(int shipId) {
+    public int getCurrentShipSailors(BigInteger shipId) {
         // TODO implement here
         return 0;
     }
@@ -121,5 +131,22 @@ public class ShipDaoImpl implements ShipDao {
     public boolean setCannonOnShip(int cannonId, int shipId) {
         // TODO implement here
         return false;
+    }
+    
+    @Override
+    public int getMaxShotDistance(BigInteger shipId) {
+        return jdbcTemplate.queryForObject(Query.GET_MAX_SHOT_DISTANCE,
+                new Object[]{JdbcConverter.toNumber(shipId),
+                        JdbcConverter.toNumber(DatabaseAttribute.CANNON_DISTANCE)},
+                Integer.class);
+    }
+
+    @Override
+    public int getSpeed(BigInteger shipId) {
+        return jdbcTemplate.queryForObject(Query.GET_CURRENT_SPEED,
+                new Object[]{JdbcConverter.toNumber(shipId),
+                        JdbcConverter.toNumber(DatabaseObject.MAST_OBJTYPE_ID),
+                        JdbcConverter.toNumber(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID)},
+                Integer.class);
     }
 }
