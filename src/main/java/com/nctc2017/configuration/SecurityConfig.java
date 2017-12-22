@@ -21,7 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		/*auth.jdbcAuthentication().dataSource(dataSource)
 		.usersByUsernameQuery(ifPersonExist);*/
-        //auth.inMemoryAuthentication().withUser("user").password("user").roles("USER");
+        auth.inMemoryAuthentication().withUser("user").password("user").roles("USER");
     }
 
     @Override
@@ -33,27 +33,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // по которым будет определятся доступ к ресурсам и остальным данным
                 .authorizeRequests()
                 .antMatchers("/static/**").permitAll()
-                .antMatchers("/**").permitAll()//.access("hasRole('ROLE_USER')")
-                //.anyRequest().permitAll()
+                .antMatchers("/**").access("hasRole('ROLE_USER')")
                 .and();
 
-        /*http.formLogin()
+        http.formLogin()
                 // указываем страницу с формой логина
                 .loginPage("/login")
                 // указываем action с формы логина
                 .loginProcessingUrl("/j_spring_security_check")
                 // указываем URL при неудачном логине
                 .failureUrl("/login?error")
+                .defaultSuccessUrl("/city", true)
                 // Указываем параметры логина и пароля с формы логина
                 .usernameParameter("username")
                 .passwordParameter("password")
                 // устанавливаем success handler для маппинга админа/юзера
                 //.successHandler(new UrlAuthenticationSuccessHandler(userDAO))
                 // даем доступ к форме логина всем
-                .permitAll();*/
+                .permitAll();
 
 
-        /*http.logout()
+        http.logout()
                 // разрешаем делать логаут всем
                 .permitAll()
                 // указываем URL логаута
@@ -61,6 +61,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // указываем URL при удачном логауте
                 .logoutSuccessUrl("/login?logout")
                 // делаем не валидной текущую сессию
-                .invalidateHttpSession(true);*/
+                .invalidateHttpSession(true);
     }
 }

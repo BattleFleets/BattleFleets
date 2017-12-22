@@ -10,7 +10,6 @@ import java.io.File;
 
 public class ApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
-    private int maxUploadSizeInBytes = 5242880;
     @Override
     protected Class<?>[] getRootConfigClasses() {
         return new Class[]{ApplicationConfig.class}; // We dont need any special servlet config yet.
@@ -26,18 +25,4 @@ public class ApplicationInitializer extends AbstractAnnotationConfigDispatcherSe
         return new String[]{"/"};
     }
 
-    /*@Override
-    protected void customizeRegistration(ServletRegistration.Dynamic registration) {
-        File uploadDirectory = new File(System.getProperty("java.io.tmpdir"));
-        MultipartConfigElement multipartConfigElement = new MultipartConfigElement(uploadDirectory.getAbsolutePath(),
-                maxUploadSizeInBytes, maxUploadSizeInBytes * 2, maxUploadSizeInBytes / 2);
-        registration.setMultipartConfig(multipartConfigElement);
-    }
-
-    @Override
-    protected Filter[] getServletFilters() {
-        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-        characterEncodingFilter.setEncoding("UTF-8");
-        return new Filter[] { characterEncodingFilter};
-    }*/
 }
