@@ -48,7 +48,7 @@ besteam-dev:
   - gem install dpl
   - dpl --provider=heroku --app=besteam-dev --api-key=$HEROKU_STAGING_API_KEY
   environment:
-    curName: staging
+    name: staging
     url: https://besteam-dev.herokuapp.com
   only:
   - dev
@@ -62,7 +62,7 @@ besteam:
   - gem install dpl
   - dpl --provider=heroku --app=besteam --api-key=$HEROKU_STAGING_API_KEY
   environment:
-    curName: production
+    name: production
     url: https://besteam.herokuapp.com
   only:
   - master
