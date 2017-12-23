@@ -69,7 +69,7 @@ public class LevelUpServiceTest {
 
     @Test
     public void getCurrentLevel() throws Exception {
-      int lvl=levelUpService.getCurrentLevel(steve.getPlayerId());
+      int lvl = levelUpService.getCurrentLevel(steve.getPlayerId());
       assertEquals(lvl,steve.getLevel());
     }
 
@@ -81,7 +81,7 @@ public class LevelUpServiceTest {
 
     @Test
     public void getCurrentPoints() throws Exception {
-        int lvl=levelUpService.getCurrentPoints(steve.getPlayerId());
+        int lvl = levelUpService.getCurrentPoints(steve.getPlayerId());
         assertEquals(lvl,steve.getPoints());
     }
 
@@ -93,7 +93,7 @@ public class LevelUpServiceTest {
 
     @Test
     public void getPassiveIncome() throws Exception {
-        int income=levelUpService.getPassiveIncome(steve.getPlayerId());
+        int income = levelUpService.getPassiveIncome(steve.getPlayerId());
         assertEquals(income, 100);
     }
 
@@ -105,7 +105,7 @@ public class LevelUpServiceTest {
 
     @Test
     public void getMaxShips() throws Exception{
-        int ships=levelUpService.getMaxShips(steve.getPlayerId());
+        int ships = levelUpService.getMaxShips(steve.getPlayerId());
         assertEquals(ships, 3);
     }
 

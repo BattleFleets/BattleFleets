@@ -30,21 +30,20 @@ public class CityDaoImplTest {
     @Test
     @Rollback(true)
     public void find() throws Exception {
-        City city=cityDao.find(new BigInteger("69"));
+        City city = cityDao.find(new BigInteger("69"));
         assertEquals(city.getCityName(),"Nassau");
     }
 
     @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void findFailed() throws Exception {
-        City city=cityDao.find(new BigInteger("83"));
+        City city = cityDao.find(new BigInteger("83"));
     }
 
     @Test
     @Rollback(true)
     public void findAll() throws Exception {
-        //TODO
-        List<City> cities=cityDao.findAll();
+        List<City> cities = cityDao.findAll();
         assertEquals(cities.get(0).getCityName(),"Montego Bay");
         assertEquals(cities.get(1).getCityName(),"Inesville");
         assertEquals(cities.get(2).getCityName(),"Santo Domingo");

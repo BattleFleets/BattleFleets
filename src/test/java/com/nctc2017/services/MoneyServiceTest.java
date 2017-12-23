@@ -61,43 +61,43 @@ public class MoneyServiceTest {
 
     @Test
     public void addMoney() throws Exception {
-        int money=steve.getMoney();
+        int money = steve.getMoney();
         steve.setMoney(moneyService.addMoney(steve.getPlayerId(),50));
-        assertEquals(money+50,steve.getMoney());
+        assertEquals(money+50, steve.getMoney());
         steve.setMoney(150);
     }
 
     @Test
     public void deductMoney() throws Exception {
-        int money=steve.getMoney();
+        int money = steve.getMoney();
         steve.setMoney(moneyService.deductMoney(steve.getPlayerId(),50));
-        assertEquals(money-50,steve.getMoney());
+        assertEquals(money-50, steve.getMoney());
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void deductMoneyFailed() throws Exception {
-        int money=steve.getMoney();
+        int money = steve.getMoney();
         steve.setMoney(moneyService.deductMoney(steve.getPlayerId(),300));
-        assertEquals(money-50,steve.getMoney());
+        assertEquals(money-50, steve.getMoney());
     }
 
     @Test
     public void isEnoughMoney() throws Exception {
-       boolean isEnoughMoney=moneyService.isEnoughMoney(steve.getPlayerId(),100);
+       boolean isEnoughMoney = moneyService.isEnoughMoney(steve.getPlayerId(),100);
        assertTrue(isEnoughMoney);
     }
 
     @Test
     public void isEnoughMoneyFail() throws Exception {
-        boolean isEnoughMoney=moneyService.isEnoughMoney(steve.getPlayerId(),300);
+        boolean isEnoughMoney = moneyService.isEnoughMoney(steve.getPlayerId(),300);
         assertFalse(isEnoughMoney);
     }
 
     @Test
     public void getPlayersMoney() throws Exception {
-        int money1=steve.getMoney();
-        int money2=moneyService.getPlayersMoney(steve.getPlayerId());
-        assertEquals(money1,money2);
+        int money1 = steve.getMoney();
+        int money2 = moneyService.getPlayersMoney(steve.getPlayerId());
+        assertEquals(money1, money2);
     }
 
 }

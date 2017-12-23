@@ -18,7 +18,7 @@ public class LevelUpService {
     }
 
     public int levelUp(BigInteger playerId,int level) {
-        playerDao.updateLevel(playerId,level);
+        playerDao.updateLevel(playerId, level);
         return getCurrentLevel(playerId);
     }
 
@@ -27,7 +27,7 @@ public class LevelUpService {
     }
 
     public int PointsUp(BigInteger playerId, int points) {
-        playerDao.updatePoints(playerId,points);
+        playerDao.updatePoints(playerId, points);
         return getCurrentPoints(playerId);
     }
 
@@ -36,7 +36,7 @@ public class LevelUpService {
     }
 
     public int incomeUp(BigInteger playerId) {
-       int curPass=playerDao.getCurrentPassiveIncome(playerId);
+       int curPass = playerDao.getCurrentPassiveIncome(playerId);
        playerDao.updatePassiveIncome(playerId,curPass+upPassiveIncome);
        return playerDao.getCurrentPassiveIncome(playerId);
     }
@@ -46,7 +46,7 @@ public class LevelUpService {
     }
 
     public int shipUp(BigInteger playerId) {
-        int curMaxShips=playerDao.getCurrentMaxShips(playerId);
+        int curMaxShips = playerDao.getCurrentMaxShips(playerId);
         playerDao.updateMaxShips(playerId,curMaxShips+upMaxShips);
         return playerDao.getCurrentMaxShips(playerId);
     }

@@ -13,8 +13,8 @@ public class MoneyService {
      PlayerDao playerDao;
 
      public int addMoney(BigInteger playerId, int moneyAdd) {
-        int newMoney=getPlayersMoney(playerId)+moneyAdd;
-        playerDao.updateMoney(playerId,newMoney);
+        int newMoney = getPlayersMoney(playerId)+moneyAdd;
+        playerDao.updateMoney(playerId, newMoney);
         return newMoney;
      }
 
@@ -23,7 +23,7 @@ public class MoneyService {
              return addMoney(playerId, -moneyDeduct);
          }
          else{
-             RuntimeException ex= new IllegalArgumentException("not enough money");
+             RuntimeException ex = new IllegalArgumentException("not enough money");
              log.error("MoneyService Exception while deduct money.", ex);
              throw ex;
          }

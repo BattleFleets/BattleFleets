@@ -36,14 +36,14 @@ public class ShipServiceTest {
     private static ShipTemplate flyingDutchmanTemp;
     private static ShipTemplate blackPerlTemp;
     private static ShipTemplate queenAnneRevengeTemp;
-    private static List<ShipTemplate> shipTemplates=new ArrayList<>();
+    private static List<ShipTemplate> shipTemplates = new ArrayList<>();
 
 
     private static Ship flyingDutchman;
     private static Ship blackPerl;
     private static Ship queenAnneRevenge;
-    private static List<Ship> ships=new ArrayList<>();
-    private static List<BigInteger> shipsId=new ArrayList<>();
+    private static List<Ship> ships = new ArrayList<>();
+    private static List<BigInteger> shipsId = new ArrayList<>();
 
     private static Player steve;
 
@@ -61,23 +61,23 @@ public class ShipServiceTest {
 
     @BeforeClass
     public static void createShipFlyingDutchman(){
-         String t_name="Ghost ship";
-         int maxHealth=100;
-         int maxSailorsQuantity=100;
-         int cost=300;
-         int maxMastsQuantity=5;
-         int maxCannonQuantity=30;
-         int maxCarryingLimit=90;
-         BigInteger shipId=new BigInteger("1");
-         String curName="Flying Dutchman";
-         int curHealth=80;
-         int curSailorsQuantity=80;
-         int curCarryingLimit=60;
+         String t_name = "Ghost ship";
+         int maxHealth = 100;
+         int maxSailorsQuantity = 100;
+         int cost = 300;
+         int maxMastsQuantity = 5;
+         int maxCannonQuantity = 30;
+         int maxCarryingLimit = 90;
+         BigInteger shipId = new BigInteger("1");
+         String curName = "Flying Dutchman";
+         int curHealth = 80;
+         int curSailorsQuantity = 80;
+         int curCarryingLimit = 60;
 
-         flyingDutchmanTemp=new ShipTemplate(t_name, maxHealth, maxSailorsQuantity,
+         flyingDutchmanTemp = new ShipTemplate(t_name, maxHealth, maxSailorsQuantity,
                 cost, maxMastsQuantity, maxCannonQuantity, maxCarryingLimit);
         shipTemplates.add(flyingDutchmanTemp);
-        flyingDutchman=new Ship(flyingDutchmanTemp,shipId,curName,curHealth,
+        flyingDutchman = new Ship(flyingDutchmanTemp,shipId,curName,curHealth,
                  curSailorsQuantity,curCarryingLimit);
         ships.add(flyingDutchman);
         shipsId.add(flyingDutchman.getShipId());
@@ -85,48 +85,48 @@ public class ShipServiceTest {
 
     @BeforeClass
     public static void createShipBlackPerl(){
-        String t_name="Fregata";
-        int maxHealth=100;
-        int maxSailorsQuantity=100;
-        int cost=300;
-        int maxMastsQuantity=5;
-        int maxCannonQuantity=30;
-        int maxCarryingLimit=90;
-        BigInteger shipId=new BigInteger("2");
-        String curName="Black Perl";
-        int curHealth=80;
-        int curSailorsQuantity=80;
-        int curCarryingLimit=60;
+        String t_name = "Fregata";
+        int maxHealth = 100;
+        int maxSailorsQuantity = 100;
+        int cost = 300;
+        int maxMastsQuantity = 5;
+        int maxCannonQuantity = 30;
+        int maxCarryingLimit = 90;
+        BigInteger shipId = new BigInteger("2");
+        String curName = "Black Perl";
+        int curHealth = 80;
+        int curSailorsQuantity = 80;
+        int curCarryingLimit = 60;
 
-        blackPerlTemp=new ShipTemplate(t_name, maxHealth, maxSailorsQuantity,
+        blackPerlTemp = new ShipTemplate(t_name, maxHealth, maxSailorsQuantity,
                 cost, maxMastsQuantity, maxCannonQuantity, maxCarryingLimit);
         shipTemplates.add(blackPerlTemp);
-        blackPerl=new Ship(blackPerlTemp,shipId,curName,curHealth,
-                curSailorsQuantity,curCarryingLimit);
+        blackPerl = new Ship(blackPerlTemp, shipId, curName, curHealth,
+                curSailorsQuantity, curCarryingLimit);
         ships.add(blackPerl);
         shipsId.add(blackPerl.getShipId());
     }
 
     @BeforeClass
     public static void createShipTemplateQueenAnneRevenge(){
-        String t_name="Full-rigged ship";
-        int maxHealth=100;
-        int maxSailorsQuantity=100;
-        int cost=300;
-        int maxMastsQuantity=5;
-        int maxCannonQuantity=30;
-        int maxCarryingLimit=90;
-        BigInteger shipId=new BigInteger("3");
-        String curName="Quenn Anne's Revenge";
-        int curHealth=80;
-        int curSailorsQuantity=80;
-        int curCarryingLimit=60;
+        String t_name = "Full-rigged ship";
+        int maxHealth = 100;
+        int maxSailorsQuantity = 100;
+        int cost = 300;
+        int maxMastsQuantity = 5;
+        int maxCannonQuantity = 30;
+        int maxCarryingLimit = 90;
+        BigInteger shipId = new BigInteger("3");
+        String curName = "Quenn Anne's Revenge";
+        int curHealth = 80;
+        int curSailorsQuantity = 80;
+        int curCarryingLimit = 60;
 
-        queenAnneRevengeTemp=new ShipTemplate(t_name, maxHealth, maxSailorsQuantity,
+        queenAnneRevengeTemp = new ShipTemplate(t_name, maxHealth, maxSailorsQuantity,
                 cost, maxMastsQuantity, maxCannonQuantity, maxCarryingLimit);
         shipTemplates.add(queenAnneRevengeTemp);
-        queenAnneRevenge=new Ship(queenAnneRevengeTemp,shipId,curName,curHealth,
-                curSailorsQuantity,curCarryingLimit);
+        queenAnneRevenge = new Ship(queenAnneRevengeTemp, shipId, curName, curHealth,
+                curSailorsQuantity, curCarryingLimit);
         ships.add(queenAnneRevenge);
         shipsId.add(queenAnneRevenge.getShipId());
     }
@@ -158,18 +158,18 @@ public class ShipServiceTest {
 
     @Test
     public void getAllShipTemplates() throws Exception {
-        List<ShipTemplate> shipTemplates=shipService.getAllShipTemplates();
-        assertEquals(shipTemplates.get(0),blackPerlTemp);
-        assertEquals(shipTemplates.get(1),queenAnneRevengeTemp);
-        assertEquals(shipTemplates.get(2),flyingDutchmanTemp);
+        List<ShipTemplate> shipTemplates = shipService.getAllShipTemplates();
+        assertEquals(shipTemplates.get(0), blackPerlTemp);
+        assertEquals(shipTemplates.get(1), queenAnneRevengeTemp);
+        assertEquals(shipTemplates.get(2), flyingDutchmanTemp);
     }
 
     @Test
     public void getAllPlayerShips() throws Exception {
-        List<Ship> ships=shipService.getAllPlayerShips(steve.getPlayerId());
-        assertEquals(ships.get(0),blackPerl);
-        assertEquals(ships.get(1),queenAnneRevenge);
-        assertEquals(ships.get(2),flyingDutchman);
+        List<Ship> ships = shipService.getAllPlayerShips(steve.getPlayerId());
+        assertEquals(ships.get(0), blackPerl);
+        assertEquals(ships.get(1), queenAnneRevenge);
+        assertEquals(ships.get(2), flyingDutchman);
     }
 
 }
