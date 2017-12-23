@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.nctc2017</groupId>
-    <artifactId>Ships</artifactId>
-    <version>0.0.1</version>
-    <packaging>war</packaging>
+	<groupId>com.nctc2017</groupId>
+	<artifactId>Ships</artifactId>
+	<version>0.0.1</version>
+	<packaging>war</packaging>
 
-    <name>Ships</name>
-    <description>Student's project.</description>
+	<curName>Ships</curName>
+	<description>Student's project.</description>
 
-    <properties>
+	<properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring.version>4.3.5.RELEASE</spring.version>
         <springsecuriry.version>4.2.2.RELEASE</springsecuriry.version>
     </properties>
-
-    <repositories>
+	
+	<repositories>
         <repository>
             <id>central</id>
             <url>https://repo1.maven.org/maven2</url>
@@ -34,8 +34,8 @@
         </repository>
     </repositories>
 
-    <dependencies>
-        <dependency>
+	<dependencies>
+		 <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
@@ -50,7 +50,7 @@
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
         </dependency>
-        <dependency>
+		<dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
@@ -66,25 +66,25 @@
             <version>3.2.5</version>
         </dependency>
         <dependency>
-            <groupId>com.github.jsimone</groupId>
-            <artifactId>webapp-runner</artifactId>
-            <version>8.5.15.1</version>
+        	<groupId>com.github.jsimone</groupId>
+        	<artifactId>webapp-runner</artifactId>
+        	<version>8.5.15.1</version>
         </dependency>
         <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc6</artifactId>
-            <version>11.2.0.2.0</version>
+        	<groupId>com.oracle</groupId>
+        	<artifactId>ojdbc6</artifactId>
+        	<version>11.2.0.2.0</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
+        	<groupId>junit</groupId>
+        	<artifactId>junit</artifactId>
+        	<version>4.12</version>
+        	<scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
+        	<groupId>log4j</groupId>
+        	<artifactId>log4j</artifactId>
+        	<version>1.2.17</version>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
@@ -93,9 +93,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>2.9.0</version>
+        	<groupId>org.mockito</groupId>
+        	<artifactId>mockito-core</artifactId>
+        	<version>2.9.0</version>
         </dependency>
 
         <!-- Add Spring Security -->
@@ -123,9 +123,9 @@
             <artifactId>taglibs-standard-jstlel</artifactId>
             <version>1.2.1</version>
         </dependency>
-    </dependencies>
+	</dependencies>
 
-    <build>
+	<build>
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
