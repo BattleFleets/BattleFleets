@@ -1,10 +1,10 @@
 package com.nctc2017.bean;
 
-import org.apache.log4j.Logger;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 public class Battle {
     private static final String WRONG_PLAYER_WITH_ID = "Wrong player with id = ";
