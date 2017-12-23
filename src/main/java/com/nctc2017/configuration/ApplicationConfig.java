@@ -6,6 +6,7 @@ import javax.sql.DataSource;
 
 import com.nctc2017.services.LevelUpService;
 import com.nctc2017.services.MoneyService;
+import com.nctc2017.services.ShipService;
 import com.nctc2017.services.TravelService;
 import com.nctc2017.services.utils.BattleManager;
 
@@ -87,6 +88,12 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     @Scope("prototype")
     public MoneyService moneyServiceProt() {
         return new MoneyService();
+    }
+
+    @Bean(name = "shipServicePrototype")
+    @Scope("prototype")
+    public ShipService shipServiceProt() {
+        return new ShipService();
     }
 
     @Bean(name = "levelUpServicePrototype")

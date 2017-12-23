@@ -2,8 +2,10 @@ package com.nctc2017.dao.Impl;
 
 import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
+import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.dao.ShipDao;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,7 @@ public class PlayerDaoImplTest {
     @Autowired
     CityDao cityDao;
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    ShipDao shipDao;
 
     @Test
     @Rollback(true)
@@ -363,6 +365,63 @@ public class PlayerDaoImplTest {
     @Rollback(true)
     public void getPlayerCityFailed() throws Exception{
         playerDao.getPlayerCity(new BigInteger("80"));
+    }
+
+    @Test
+    @Rollback(true)
+    public void addShip() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player=playerDao.findPlayerByLogin("Steve");
+        BigInteger shipId=shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID,null);
+        playerDao.addShip(player.getPlayerId(),shipId);
+        List<BigInteger> ships=playerDao.findAllShip(player.getPlayerId());
+        assertEquals(ships.get(0),shipId);
+
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    @Rollback(true)
+    public void addShipWrongPlayerId() throws Exception{
+        BigInteger shipId=shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID,null);
+        playerDao.addShip(new BigInteger("100"),shipId);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    @Rollback(true)
+    public void addShipWrongShipId() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player=playerDao.findPlayerByLogin("Steve");
+        playerDao.addShip(player.getPlayerId(),new BigInteger("100"));
+    }
+
+    @Test
+    @Rollback(true)
+    public void deleteShip() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player=playerDao.findPlayerByLogin("Steve");
+        BigInteger shipId=shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID,null);
+        playerDao.addShip(player.getPlayerId(),shipId);
+        playerDao.deleteShip(player.getPlayerId(),shipId);
+        List<BigInteger> ships=playerDao.findAllShip(player.getPlayerId());
+        assertEquals(ships.size(),0);
+
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    @Rollback(true)
+    public void deleteShipWrongPlayerId() throws Exception{
+        BigInteger shipId=shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, null);
+        playerDao.deleteShip(new BigInteger("10"),shipId);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    @Rollback(true)
+    public void deleteShipWrongShipId() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player=playerDao.findPlayerByLogin("Steve");
+        BigInteger shipId=shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID,null);
+        playerDao.addShip(player.getPlayerId(),shipId);
+        playerDao.deleteShip(player.getPlayerId(),new BigInteger("10"));
     }
 
     @Test

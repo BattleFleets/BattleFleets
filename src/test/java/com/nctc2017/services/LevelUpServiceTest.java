@@ -12,10 +12,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 
@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = { ApplicationConfig.class })
+@Transactional
 public class LevelUpServiceTest {
     private static Player steve;
     @Autowired
@@ -70,7 +71,6 @@ public class LevelUpServiceTest {
     public void getCurrentLevel() throws Exception {
       int lvl=levelUpService.getCurrentLevel(steve.getPlayerId());
       assertEquals(lvl,steve.getLevel());
-
     }
 
     @Test

@@ -5,12 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.log4j.Logger;
 
 import java.math.BigInteger;
-import java.util.*;
 
 public class MoneyService {
     private static Logger log = Logger.getLogger(MoneyService.class);
 
-    @Autowired
+     @Autowired
      PlayerDao playerDao;
 
      public int addMoney(BigInteger playerId, int moneyAdd) {

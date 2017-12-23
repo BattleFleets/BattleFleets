@@ -11,14 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.context.ApplicationContext;;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.OutputStream;
 import java.math.BigInteger;
 
 import static org.junit.Assert.*;
@@ -27,6 +25,7 @@ import static org.mockito.Mockito.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = { ApplicationConfig.class })
+@Transactional
 public class MoneyServiceTest {
     private static Player steve;
     
@@ -58,9 +57,6 @@ public class MoneyServiceTest {
         MockitoAnnotations.initMocks(this);
 
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(150);
-
-
-
     }
 
     @Test
@@ -69,7 +65,6 @@ public class MoneyServiceTest {
         steve.setMoney(moneyService.addMoney(steve.getPlayerId(),50));
         assertEquals(money+50,steve.getMoney());
         steve.setMoney(150);
-
     }
 
     @Test

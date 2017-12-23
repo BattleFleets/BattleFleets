@@ -26,7 +26,8 @@ public class CityDaoImpl implements CityDao {
     private QueryExecutor queryExecutor;
     @Override
     public City find(@NotNull BigInteger cityId) {
-        City city = queryExecutor.findEntity(cityId,DatabaseObject.CITY_OBJTYPE_ID,new EntityExtractor<>(cityId, new CityVisitor()));
+        City city = queryExecutor.findEntity(cityId,DatabaseObject.CITY_OBJTYPE_ID,
+                new EntityExtractor<>(cityId, new CityVisitor()));
         if (city == null){
             RuntimeException ex = new IllegalArgumentException("Wrong city object id = " + cityId);
             log.error("CityDAO Exception while find by id.", ex);
@@ -38,14 +39,15 @@ public class CityDaoImpl implements CityDao {
 
     @Override
     public List<City> findAll() {
-        List<City> cities = queryExecutor.getAllEntitiesByType(DatabaseObject.CITY_OBJTYPE_ID,new EntityListExtractor<>( new CityVisitor()));
+        List<City> cities = queryExecutor.getAllEntitiesByType(DatabaseObject.CITY_OBJTYPE_ID,
+                new EntityListExtractor<>( new CityVisitor()));
         return cities;
     }
     private final class CityVisitor implements ExtractingVisitor<City> {
 
         @Override
         public City visit(BigInteger entityId, Map<String, String> cityMap) {
-            return new City( cityMap.get(City.NAME),null,entityId );
+            return new City(cityMap.get(City.NAME),null, entityId );
         }
 
     }

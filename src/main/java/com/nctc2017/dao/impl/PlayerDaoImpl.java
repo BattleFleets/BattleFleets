@@ -6,6 +6,7 @@ import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
 import com.nctc2017.dao.PlayerDao;
 
+import com.nctc2017.dao.ShipDao;
 import com.nctc2017.dao.extractors.EntityExtractor;
 import com.nctc2017.dao.extractors.EntityListExtractor;
 import com.nctc2017.dao.extractors.ExtractingVisitor;
@@ -41,10 +42,6 @@ public class PlayerDaoImpl implements PlayerDao{
             "AND OBJECTS.NAME=? " +
             "AND ATTRIBUTES_VALUE.ATTR_ID<>?";
     public static final String queryForPlayerIdByLogin="SELECT OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=? AND NAME=?";
-    public static final String queryForPlayersAttributes="SELECT VALUE FROM ATTRIBUTES_VALUE,OBJECTS " +
-            "WHERE OBJECTS.OBJECT_ID=ATTRIBUTES_VALUE.OBJECT_ID " +
-            "AND OBJECTS.OBJECT_TYPE_ID=? " +
-            "AND ATTRIBUTES_VALUE.ATTR_ID<>?";
     public static final String queryForPasswordByEmail="SELECT pass.VALUE FROM ATTRIBUTES_VALUE pass, ATTRIBUTES_VALUE email " +
             "WHERE email.VALUE=? " +
             "AND pass.ATTR_ID=? " +
@@ -54,6 +51,8 @@ public class PlayerDaoImpl implements PlayerDao{
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private QueryExecutor queryExecutor;
+    @Autowired
+    private ShipDao shipDao;
 
     @Override
     public String addNewPlayer(@NotNull String login,@NotNull String password,@NotNull String email) {
@@ -77,8 +76,14 @@ public class PlayerDaoImpl implements PlayerDao{
         List<String>  attributes=jdbcTemplate.queryForList(queryForPlayerAttributesByLogin,
                 new Object[]{DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(),login,
                 DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
-        BigInteger playerId=jdbcTemplate.queryForObject(queryForPlayerIdByLogin,BigInteger.class,DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(),login);
-        Player player = new Player(playerId,attributes.get(0), attributes.get(4),  parseInt(attributes.get(1)), parseInt(attributes.get(3)), parseInt(attributes.get(2)));
+        BigInteger playerId=jdbcTemplate.queryForObject(queryForPlayerIdByLogin,
+                BigInteger.class,DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(),login);
+        Player player = new Player(playerId,
+                attributes.get(0),
+                attributes.get(4),
+                parseInt(attributes.get(1)),
+                parseInt(attributes.get(3)),
+                parseInt(attributes.get(2)));
         return player;
     }
 
@@ -284,14 +289,17 @@ public class PlayerDaoImpl implements PlayerDao{
     @Override
     public void addShip(@NotNull BigInteger playerId,@NotNull BigInteger shipId) {
         findPlayerById(playerId);
-        jdbcTemplate.update("UPDATE OBJECTS SET PARENT_ID=? WHERE OBJECT_ID=?",playerId,shipId);
-
+        shipDao.findShip(shipId);
+        PreparedStatementCreator psc = QueryBuilder.updateParent(shipId,playerId).build();
+        jdbcTemplate.update(psc);
     }
 
     @Override
     public void deleteShip(@NotNull BigInteger playerId,@NotNull BigInteger shipId) {
         findPlayerById(playerId);
-        jdbcTemplate.update("UPDATE OBJECTS SET PARENT_ID=? WHERE OBJECT_ID=? AND PARENT_ID=?",null,shipId,playerId);
+        shipDao.findShip(shipId);
+        jdbcTemplate.update("UPDATE OBJECTS SET PARENT_ID=? WHERE OBJECT_ID=? AND PARENT_ID=?",
+                null,shipId.longValueExact(),playerId.longValueExact());
     }
 
     @Override
