@@ -30,7 +30,7 @@ public interface PlayerDao {
 
     List<Player> findAllPlayers();
 
-    int getCountPlayers();
+    int getPlayersCount();
 
     String getPlayerLogin(BigInteger playerId);
 

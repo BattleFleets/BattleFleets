@@ -1,5 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@page session="true"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,7 +8,7 @@
 <body>
 <h1 class="messageText">City View</h1>
 
-<a href="/logout" class="messageText">Logout</a>
+<a href="/logout" class="logOutBottom">Logout</a>
 
 
 </body>

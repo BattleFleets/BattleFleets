@@ -1,24 +1,68 @@
 package com.nctc2017.bean;
 
+import org.apache.log4j.Logger;
+
+import java.math.BigInteger;
 import java.util.*;
+
 public class Market {
-	private static final int INITIAL_VALUE = 10;
-    protected Map<String, GoodsForSale> bar;
 
-    public Market() {
-    	bar = new HashMap<>(INITIAL_VALUE);
-    }
-    public void buy(String nameOfGoods, int quantity, int price) {
-        // TODO implement here
+    private static final int INITIAL_CAPACITY = 21;
+
+    protected Map<BigInteger, GoodsForSale> bar;
+
+    public Market(List<GoodsForSale> goodsForSales) {
+        bar = new HashMap<>(INITIAL_CAPACITY);
+
+        for (GoodsForSale goods : goodsForSales) {
+            if (goods != null) {
+                bar.put(goods.getTemplateId(), goods);
+            }
+        }
     }
 
-    public void sale(String nameOfGoods, int quantity, int price) {
-        // TODO implement here
+    public Market(Market market) {
+        bar = new HashMap<>(INITIAL_CAPACITY);
+        for (Map.Entry<BigInteger, GoodsForSale> entry : market.bar.entrySet()){
+            bar.put(entry.getKey(), new GoodsForSale(entry.getValue()));
+        }
     }
 
-    public List<Thing> getAllGoods() {
-        // TODO implement here
-        return null;
+    public int getGoodsQuantity(BigInteger id) {
+        return bar.get(id).getQuantity();
+    }
+
+    public GoodsForSale.GoodsType getGoodsType(BigInteger id) {
+        return bar.get(id).getType();
+    }
+
+    public int getGoodsBuyingPrice(BigInteger id) {
+        return bar.get(id).getBuyingPrice();
+    }
+
+    public int getGoodsSalePrice(BigInteger id) {
+        return bar.get(id).getSalePrice();
+    }
+
+    public GoodsForSale getGoods(BigInteger id) {
+        return bar.get(id);
+    }
+
+    public void updateGoodsQuantity(BigInteger id, int quantity) {
+        GoodsForSale goods = bar.get(id);
+        goods.setQuantity(quantity);
+    }
+
+    public void updateGoodsBuyingPrice(BigInteger id, int newGoodsPrice) {
+        bar.get(id).setBuyingPrice(newGoodsPrice);
+    }
+
+    public void updateGoodsSalePrice(BigInteger id, int newGoodsPrice) {
+        bar.get(id).setSalePrice(newGoodsPrice);
+    }
+
+    public Set<BigInteger> getAllGoodsIds() {
+        return bar.keySet();
     }
 
 }

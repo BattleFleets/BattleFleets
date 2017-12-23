@@ -20,7 +20,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		/*auth.jdbcAuthentication().dataSource(dataSource)
-		.usersByUsernameQuery(ifPersonExist);*/
+		.usersByUsernameQuery(PersonPass)
+        .authoritiesByUsernameQuery(PersonRole);*/
         auth.inMemoryAuthentication().withUser("user").password("user").roles("USER");
     }
 
@@ -40,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // указываем страницу с формой логина
                 .loginPage("/login")
                 // указываем action с формы логина
-                .loginProcessingUrl("/j_spring_security_check")
+                .loginProcessingUrl("/login")
                 // указываем URL при неудачном логине
                 .failureUrl("/login?error")
                 .defaultSuccessUrl("/city", true)
@@ -62,5 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/login?logout")
                 // делаем не валидной текущую сессию
                 .invalidateHttpSession(true);
+
+        http.sessionManagement().maximumSessions(1);
     }
 }
