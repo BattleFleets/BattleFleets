@@ -256,7 +256,7 @@ public class PlayerDaoImplTest {
     @Test
     @Rollback(true)
     public void getCountPlayers() throws Exception{
-        assertEquals(playerDao.getCountPlayers(),5);
+        assertEquals(playerDao.getPlayersCount(),5);
 
     }
 

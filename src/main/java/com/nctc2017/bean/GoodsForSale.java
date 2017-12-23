@@ -1,73 +1,78 @@
 package com.nctc2017.bean;
+
+import java.math.BigInteger;
+
 public class GoodsForSale {
-    protected String name;
 
-    protected int buyingPrice;
+    protected final BigInteger templateId;
+    protected final String name;
+    protected final String goodsDescription;
+    protected final GoodsType type;
+    protected int goodsRarity;
+    protected volatile int buyingPrice;
+    protected volatile int quantity;
+    protected volatile int salePrice;
 
-    protected int raraty;
+    public enum GoodsType{
+        GOODS, AMMO, MAST, CANNON
+    }
 
-    protected int quantity;
+    public GoodsForSale(BigInteger templateId, String name, String goodsDescription, GoodsType type) {
+        this.templateId = templateId;
+        this.name = name;
+        this.goodsDescription = goodsDescription;
+        this.type = type;
+    }
 
-    protected int salePrice;
+    public GoodsForSale(GoodsForSale origin){
+        this(origin.templateId, origin.name, origin.goodsDescription, origin.type);
+    }
 
-    protected int templateId;
-    
+    public String getName() {
+        return name;
+    }
 
-	public GoodsForSale(String name, int buyingPrice, int raraty, int quantity, int salePrice, int templateId) {
-		this.name = name;
-		this.buyingPrice = buyingPrice;
-		this.raraty = raraty;
-		this.quantity = quantity;
-		this.salePrice = salePrice;
-		this.templateId = templateId;
-	}
+    public String getGoodsDescription() {
+        return goodsDescription;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public int getBuyingPrice() {
+        return buyingPrice;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setBuyingPrice(int buyingPrice) {
+        this.buyingPrice = buyingPrice;
+    }
 
-	public int getBuyingPrice() {
-		return buyingPrice;
-	}
+    public int getQuantity() {
+        return quantity;
+    }
 
-	public void setBuyingPrice(int buyingPrice) {
-		this.buyingPrice = buyingPrice;
-	}
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 
-	public int getRaraty() {
-		return raraty;
-	}
+    public int getSalePrice() {
+        return salePrice;
+    }
 
-	public void setRaraty(int raraty) {
-		this.raraty = raraty;
-	}
+    public void setSalePrice(int salePrice) {
+        this.salePrice = salePrice;
+    }
 
-	public int getQuantity() {
-		return quantity;
-	}
+    public int getGoodsRarity() {
+        return goodsRarity;
+    }
 
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
+    public void setGoodsRarity(int goodsRarity) {
+        this.goodsRarity = goodsRarity;
+    }
 
-	public int getSalePrice() {
-		return salePrice;
-	}
+    public BigInteger getTemplateId() {
+        return templateId;
+    }
 
-	public void setSalePrice(int salePrice) {
-		this.salePrice = salePrice;
-	}
-
-	public int getTemplateId() {
-		return templateId;
-	}
-
-	public void setTemplateId(int templateId) {
-		this.templateId = templateId;
-	}
-
+    public GoodsType getType() {
+        return type;
+    }
 }

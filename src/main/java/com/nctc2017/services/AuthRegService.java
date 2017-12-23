@@ -20,7 +20,7 @@ public class AuthRegService {
         if (!isLoginValid(login)) {
             throw new PlayerValidationException(NOT_VALID_LOGIN);
         }
-        if (isPasswordValid(password)) {
+        if (!isPasswordValid(password)) {
             throw new PlayerValidationException(NOT_VALID_PASS);
         }
         String playerRegistrationResult = playerDao.addNewPlayer(login.trim(), String.valueOf(password.trim().hashCode()), email.trim());

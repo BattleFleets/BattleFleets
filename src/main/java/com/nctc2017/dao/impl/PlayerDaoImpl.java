@@ -189,9 +189,9 @@ public class PlayerDaoImpl implements PlayerDao{
     }
 
     @Override
-    public int getCountPlayers() {
-        return findAllPlayers().size();
-
+    public int getPlayersCount() {
+        return jdbcTemplate.queryForObject("SELECT COUNT(object_id) FROM objects WHERE object_type_id = ?",
+                new Object[] {JdbcConverter.toNumber(DatabaseObject.PLAYER_OBJTYPE_ID)}, Integer.class);
     }
 
     @Override
