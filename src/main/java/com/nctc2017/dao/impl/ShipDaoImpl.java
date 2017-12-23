@@ -251,6 +251,16 @@ public class ShipDaoImpl implements ShipDao {
         return true;
     }
 
+    @Override
+    public int getMaxShotDistance(BigInteger shipId) {
+        return 0;
+    }
+
+    @Override
+    public int getSpeed(BigInteger shipId) {
+        return 0;
+    }
+
     private final class ShipVisitor implements ExtractingVisitor<Ship> {
         @Override
         public Ship visit(BigInteger entityId, Map<String, String> papamMap) {

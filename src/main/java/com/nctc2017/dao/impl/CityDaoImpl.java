@@ -10,14 +10,10 @@ import com.nctc2017.dao.extractors.ExtractingVisitor;
 import com.nctc2017.dao.utils.QueryExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
@@ -25,12 +21,7 @@ import org.apache.log4j.Logger;
 @Repository
 @Qualifier("cityDao")
 public class CityDaoImpl implements CityDao {
-    public static final String queryForCity="SELECT city.NAME FROM OBJECTS city, OBJTYPE city_type " +
-            "WHERE city_type.NAME='CITY' " +
-            "AND city_type.OBJECT_TYPE_ID=city.OBJECT_TYPE_ID";
     private static Logger log = Logger.getLogger(CityDaoImpl.class);
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
     @Autowired
     private QueryExecutor queryExecutor;
     @Override
@@ -50,7 +41,7 @@ public class CityDaoImpl implements CityDao {
         List<City> cities = queryExecutor.getAllEntitiesByType(DatabaseObject.CITY_OBJTYPE_ID,new EntityListExtractor<>( new CityVisitor()));
         return cities;
     }
-   private final class CityVisitor implements ExtractingVisitor<City> {
+    private final class CityVisitor implements ExtractingVisitor<City> {
 
         @Override
         public City visit(BigInteger entityId, Map<String, String> cityMap) {

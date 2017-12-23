@@ -3,9 +3,12 @@ package com.nctc2017.controllers;
 import java.util.*;
 
 import com.nctc2017.bean.Thing;
+import org.springframework.security.access.annotation.Secured;
+
 public class TradeController {
 
 
+    @Secured("ROLE_USER")
     public void buy(int id, int idHash, int goodsTemplateId, int quantity, int price) {
         // TODO implement here
     }

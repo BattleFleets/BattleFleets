@@ -3,12 +3,16 @@ package com.nctc2017.dao.impl;
 import com.nctc2017.bean.Player;
 import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
+import com.nctc2017.constants.Query;
 import com.nctc2017.dao.PlayerDao;
+
 import com.nctc2017.dao.extractors.EntityExtractor;
 import com.nctc2017.dao.extractors.EntityListExtractor;
 import com.nctc2017.dao.extractors.ExtractingVisitor;
+import com.nctc2017.dao.utils.JdbcConverter;
 import com.nctc2017.dao.utils.QueryBuilder;
 import com.nctc2017.dao.utils.QueryExecutor;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +23,11 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+
+import javax.validation.constraints.NotNull;
 
 import static java.lang.Integer.parseInt;
 
@@ -76,8 +81,8 @@ public class PlayerDaoImpl implements PlayerDao{
 
     @Override
     public void updateLogin(@NotNull BigInteger playerId,@NotNull String login) {
-            findPlayerById(playerId);
-            jdbcTemplate.update("UPDATE OBJECTS SET NAME =? WHERE OBJECT_ID=?", login, playerId.longValueExact());
+        findPlayerById(playerId);
+        jdbcTemplate.update("UPDATE OBJECTS SET NAME =? WHERE OBJECT_ID=?", login, playerId.longValueExact());
         PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(playerId)
                 .setAttribute(DatabaseAttribute.LOGIN_ATR_ID, login)
                 .build();
@@ -130,6 +135,40 @@ public class PlayerDaoImpl implements PlayerDao{
     }
 
     @Override
+    public void updatePassiveIncome(@NotNull BigInteger playerId,@NotNull int passiveIncome) {
+        findPlayerById(playerId);
+        int lvl=getPlayerLevel(playerId);
+        if(lvl%5==0) {
+            PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(playerId)
+                    .setAttribute(DatabaseAttribute.PASSIVE_INCOME_ATR_ID, passiveIncome)
+                    .build();
+            jdbcTemplate.update(psc);
+        }
+        else{
+            RuntimeException ex= new IllegalArgumentException("Inappropriate level"+lvl);
+            log.error("PlayerDAO Exception while update passive income.", ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public void updateMaxShips(@NotNull BigInteger playerId,@NotNull int maxShips) {
+        findPlayerById(playerId);
+        int lvl=getPlayerLevel(playerId);
+        if(lvl%5==0) {
+            PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(playerId)
+                    .setAttribute(DatabaseAttribute.MAX_SHIPS_ATR_ID, maxShips)
+                    .build();
+            jdbcTemplate.update(psc);
+        }
+        else{
+            RuntimeException ex= new IllegalArgumentException("Inappropriate level"+lvl);
+            log.error("PlayerDAO Exception while update max ships.", ex);
+            throw ex;
+        }
+    }
+
+    @Override
     public Player findPlayerById(@NotNull BigInteger playerId) {
 
         Player player = queryExecutor.findEntity(playerId,DatabaseObject.PLAYER_OBJTYPE_ID,new EntityExtractor<>(playerId, new PlayerVisitor()));
@@ -146,7 +185,7 @@ public class PlayerDaoImpl implements PlayerDao{
     @Override
     public List<Player> findAllPlayers() {
         List<Player> players = queryExecutor.getAllEntitiesByType(DatabaseObject.PLAYER_OBJTYPE_ID,new EntityListExtractor<>( new PlayerVisitor()));
-        return players;   
+        return players;
     }
 
     @Override
@@ -254,7 +293,7 @@ public class PlayerDaoImpl implements PlayerDao{
         List<BigInteger> ships=jdbcTemplate.queryForList("SELECT OBJECT_ID FROM OBJECTS WHERE PARENT_ID=? AND OBJECT_TYPE_ID=?",BigInteger.class,playerId.longValueExact(),DatabaseObject.SHIP_OBJTYPE_ID.longValueExact());
         return ships;
     }
-    
+
     @Override
     public void movePlayerToCity(@NotNull BigInteger playerId, @NotNull BigInteger cityId) {
         int res = queryExecutor.putEntityToContainer(cityId, playerId, DatabaseObject.CITY_OBJTYPE_ID);
@@ -266,7 +305,7 @@ public class PlayerDaoImpl implements PlayerDao{
     }
 
     @Override
-    public String getPasswordByEmail(String email){
+    public String getPasswordByEmail(@NotNull String email){
         try {
             return jdbcTemplate.queryForObject(queryForPasswordByEmail,new Object[]{email,DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()},String.class);
         } catch (EmptyResultDataAccessException e) {
@@ -275,6 +314,37 @@ public class PlayerDaoImpl implements PlayerDao{
             throw ex;
         }
 
+    }
+
+    @Override
+    public int getFleetSpeed(BigInteger playerId) {
+        return jdbcTemplate.queryForObject(Query.GET_FLEET_SPEED,
+                new Object[]{JdbcConverter.toNumber(playerId),
+                        JdbcConverter.toNumber(DatabaseObject.MAST_OBJTYPE_ID),
+                        JdbcConverter.toNumber(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID)},
+                Integer.class);
+    }
+
+    @Override
+    public int getCurrentPassiveIncome(@NotNull BigInteger playerId){
+        try {
+            return queryExecutor.getAttrValue(playerId, DatabaseAttribute.PASSIVE_INCOME_ATR_ID, Integer.class);
+        } catch (EmptyResultDataAccessException e) {
+            RuntimeException ex = new IllegalArgumentException("Invalid playerId = " + playerId, e);
+            log.error("PlayerDAO Exception while getting player passive income.", ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public int getCurrentMaxShips(@NotNull BigInteger playerId){
+        try {
+            return queryExecutor.getAttrValue(playerId, DatabaseAttribute.MAX_SHIPS_ATR_ID, Integer.class);
+        } catch (EmptyResultDataAccessException e) {
+            RuntimeException ex = new IllegalArgumentException("Invalid playerId = " + playerId, e);
+            log.error("PlayerDAO Exception while getting player max ships.", ex);
+            throw ex;
+        }
     }
 
     private final class PlayerVisitor implements ExtractingVisitor<Player> {

@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 public class DatabaseAttribute {
     public static final BigInteger CANNON_NAME_ID = BigInteger.valueOf(14);
+    public static final BigInteger CANNON_DISTANCE = BigInteger.valueOf(16);
     public static final BigInteger ATTR_CURR_MAST_SPEED_ID = BigInteger.valueOf(26);
     public static final BigInteger PASSWORD_ATR_ID = BigInteger.valueOf(28);
     public static final BigInteger LOGIN_ATR_ID = BigInteger.valueOf(27);
@@ -11,6 +12,9 @@ public class DatabaseAttribute {
     public static final BigInteger EMAIL_ATR_ID = BigInteger.valueOf(41);
     public static final BigInteger POINTS_ATR_ID = BigInteger.valueOf(31);
     public static final BigInteger MONEY_ATR_ID = BigInteger.valueOf(29);
+    public static final BigInteger PASSIVE_INCOME_ATR_ID = BigInteger.valueOf(42);
+    public static final BigInteger MAX_SHIPS_ATR_ID = BigInteger.valueOf(43);
+
 
     public static final BigInteger GOODS_PURCHASE_PRICE = BigInteger.valueOf(36);
     public static final BigInteger GOODS_QUANTITY = BigInteger.valueOf(37);

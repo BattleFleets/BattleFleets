@@ -29,5 +29,9 @@ public class BattleManager {
     public Battle getBattle(BigInteger playerId) {
         return battles.get(playerId);
     }
+
+    public void endBattle(BigInteger playerId) {
+        battles.remove(playerId);
+    }
     
 }
