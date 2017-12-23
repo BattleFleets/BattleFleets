@@ -15,11 +15,11 @@ public interface MastDao {
 
     boolean updateCurMastSpeed(BigInteger mastId, int newMastSpeed);
 
-    List<Mast> getShipMastsFromShip(int shipId);
+    List<Mast> getShipMastsFromShip(BigInteger shipId);
 
-    List<Mast> getShipMastsFromStock(int stockId);
+    List<Mast> getShipMastsFromStock(BigInteger stockId);
 
-    List<Mast> getShipMastsFromHold(int holdId);
+    List<Mast> getShipMastsFromHold(BigInteger holdId);
 
     int getCurMastSpeed(BigInteger mastId);
 

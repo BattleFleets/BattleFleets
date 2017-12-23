@@ -100,7 +100,7 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     public TravelService travelServiceSing() {
         return new TravelService();
     }
-    
+
     @Bean
     @Scope("singleton")
     public BattleManager battles() {

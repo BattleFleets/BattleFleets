@@ -1,33 +1,44 @@
 package com.nctc2017.bean;
 public class ShipTemplate {
+
     protected String t_name;
-
     protected int maxHealth;
-
     protected int maxSailorsQuantity;
-
     protected int cost;
-
     protected int maxMastsQuantity;
-
     protected int maxCannonQuantity;
-
     protected int maxCarryingLimit;
-	public ShipTemplate(String name, int maxHealth, int maxSailorsQuantity, int cost, int maxMastsQuantity,
+
+
+	public static final String T_SHIPNAME = "ShipName";
+	public static final String T_MAX_HEALTH = "HealthLimit";
+	public static final String T_MAX_SAILORS_QUANTITY = "SailorLimit";
+	public static final String T_MAX_COST = "ShipCost";
+	public static final String MAX_MASTS_QUANTITY = "MastLimit";
+	public static final String MAX_CANNON_QUANTITY = "CannonLimit";
+	public static final String MAX_CARRYING_LIMIT = "CarryingLimit";
+
+
+
+
+
+	public ShipTemplate(String t_name, int maxHealth, int maxSailorsQuantity, int cost, int maxMastsQuantity,
 			int maxCannonQuantity, int maxCarryingLimit) {
-		this.t_name = name;
+		this.t_name = t_name;
 		this.maxHealth = maxHealth;
 		this.maxSailorsQuantity = maxSailorsQuantity;
 		this.cost = cost;
 		this.maxMastsQuantity = maxMastsQuantity;
 		this.maxCannonQuantity = maxCannonQuantity;
 		this.maxCarryingLimit = maxCarryingLimit;
+
 	}
-	public String getName() {
+
+	public String getTName() {
 		return t_name;
 	}
-	public void setName(String name) {
-		this.t_name = name;
+	public void setTName(String tName) {
+		this.t_name = tName;
 	}
 	public int getMaxHealth() {
 		return maxHealth;

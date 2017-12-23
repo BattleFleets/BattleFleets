@@ -1,50 +1,50 @@
 package com.nctc2017.dao;
 
-import java.math.BigInteger;
-import java.util.List;
-
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
+
+import java.math.BigInteger;
+import java.util.List;
 
 public interface ShipDao {
 
     Ship findShip(BigInteger shipId);
 
-    BigInteger createNewShip(BigInteger shipTemplateId);
+    BigInteger createNewShip(BigInteger shipTemplateId,BigInteger playerId);
 
-    boolean deleteShip(int shipId);
+    boolean deleteShip(BigInteger shipId);
 
-    boolean updateShipName(int shipId, int newShipName);
+    boolean updateShipName(BigInteger shipId, String newShipName);
 
-    boolean updateShipHealth(int shipId, int newhealthNumb);
+    boolean updateShipHealth(BigInteger shipId, int newhealthNumb);
 
-    boolean updateShipSailorsNumber(int shipId, int newsailorsNumb);
+    boolean updateShipSailorsNumber(BigInteger shipId, int newsailorsNumb);
 
-    String getCurrentShipName(int shipId);
+    String getCurrentShipName(BigInteger shipId);
 
-    int getCurrentShipHealth(int shipId);
+    int getCurrentShipHealth(BigInteger shipId);
 
-    int getCurrentShipSailors(BigInteger plyerShipId);
+    int getCurrentShipSailors(BigInteger shipId);
 
-    int getHealthLimit(int shipId);
+    int getHealthLimit(BigInteger shipId);
 
-    int getCarryingLimit(int shipId);
+    int getCarryingLimit(BigInteger shipId);
 
-    int getCannonLimit(int shipId);
+    int getCannonLimit(BigInteger shipId);
 
-    int getMastLimit(int shipId);
+    int getMastLimit(BigInteger shipId);
 
-    int getSailorLimit(int shipId);
+    int getSailorLimit(BigInteger shipId);
 
-    int getShipCost(int shipId);
+    int getShipCost(BigInteger shipId);
 
     List<ShipTemplate> findAllShipTemplates();
 
     List<Ship> findAllShips(List<BigInteger> shipsId);
 
-    boolean setMastOnShip(int mastId, int shipId);
+    boolean setMastOnShip(BigInteger mastId, BigInteger shipId);
 
-    boolean setCannonOnShip(int cannonId, int shipId);
+    boolean setCannonOnShip(BigInteger cannonId, BigInteger shipId);
 
     int getMaxShotDistance(BigInteger shipId);
     

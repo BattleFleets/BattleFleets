@@ -34,10 +34,10 @@ public class MoneyServiceTest {
     private ApplicationContext context;
     
     @Mock
-    PlayerDao playerDao;
+    private PlayerDao playerDao;
 
     @InjectMocks
-    MoneyService moneyService;
+    private MoneyService moneyService;
 
     @BeforeClass
     public static void createPlayerSteve() {
@@ -54,7 +54,7 @@ public class MoneyServiceTest {
 
     @Before
     public void initMocks() {
-        this.context.getBean("moneyServicePrototype");
+        moneyService = (MoneyService)this.context.getBean("moneyServicePrototype");
         MockitoAnnotations.initMocks(this);
 
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(150);

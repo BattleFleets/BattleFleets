@@ -59,7 +59,7 @@ public class QueryBuilder {
 
         return builder;
     }
-    
+
     public static QueryBuilder insert(@NotNull BigInteger objectTypeId) {
         QueryBuilder builder = new QueryBuilder(Operation.INSERT);
         builder.setObjectTypeId(objectTypeId);
@@ -105,7 +105,7 @@ public class QueryBuilder {
     private void setObjectIdPrivate(BigInteger id) {
         objectColumnsValues.put(OBJECT_ID, id);
     }
-    
+
     public QueryBuilder setObjectId(BigInteger id) {
         objectColumnsValues.put(OBJECT_ID, id);
         return this;
@@ -171,7 +171,7 @@ public class QueryBuilder {
         }
         return this;
     }
-    
+
     /**
      * Set new value for attribute with id = attributeId
      *
@@ -365,19 +365,19 @@ public class QueryBuilder {
                 new PreparedStatementCreatorFactory(deleteObjectQuery, declaredParams);
         return stmtDeleteObject.newPreparedStatementCreator(paramsDeleteObject);
     }
-    
+
     public boolean isInsertOperation() {
         return queryOperation.equals(Operation.INSERT);
     }
-    
+
     public boolean isUpdateAttrValueOperation() {
         return queryOperation.equals(Operation.UPDATE_OBJECT_ATTRIBUTE_VALUE);
     }
-    
+
     public boolean isDeleteOperation() {
         return queryOperation.equals(Operation.DELETE);
     }
-    
+
     public boolean isUpdateParentIdOperation() {
         return queryOperation.equals(Operation.UPDATE_OBJECT_PARENT_ID);
     }

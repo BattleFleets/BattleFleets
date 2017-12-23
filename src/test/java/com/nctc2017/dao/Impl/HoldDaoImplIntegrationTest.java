@@ -1,9 +1,12 @@
 package com.nctc2017.dao.Impl;
 
-import static org.junit.Assert.*;
-
-import java.math.BigInteger;
-
+import com.nctc2017.bean.Player;
+import com.nctc2017.configuration.ApplicationConfig;
+import com.nctc2017.constants.DatabaseObject;
+import com.nctc2017.dao.CannonDao;
+import com.nctc2017.dao.HoldDao;
+import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.dao.StockDao;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,13 +17,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.nctc2017.bean.Player;
-import com.nctc2017.configuration.ApplicationConfig;
-import com.nctc2017.constants.DatabaseObject;
-import com.nctc2017.dao.CannonDao;
-import com.nctc2017.dao.HoldDao;
-import com.nctc2017.dao.PlayerDao;
-import com.nctc2017.dao.StockDao;
+import java.math.BigInteger;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

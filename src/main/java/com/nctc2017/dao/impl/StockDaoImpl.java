@@ -1,6 +1,5 @@
 package com.nctc2017.dao.impl;
 
-import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
 import com.nctc2017.dao.StockDao;

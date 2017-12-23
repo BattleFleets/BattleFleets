@@ -26,6 +26,8 @@ public class DatabaseObject {
     public static final BigInteger MAST_TEMPLATE_OBJTYPE_ID = BigInteger.valueOf(2);
     public static final BigInteger CANNON_TEMPLATE_TYPE_ID = BigInteger.valueOf(3);
     public static final BigInteger GOODS_TEMPLATE_TYPE_ID = BigInteger.valueOf(5);
+
+    public static final BigInteger SHIP_TEMPLATE_OBJTYPE_ID = BigInteger.valueOf(1);
     public static final BigInteger AMMO_TEMPLATE_TYPE_ID = BigInteger.valueOf(4);
     
     public static final BigInteger SHIP_OBJTYPE_ID = BigInteger.valueOf(6);

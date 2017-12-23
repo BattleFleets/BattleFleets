@@ -24,4 +24,10 @@ public class DatabaseAttribute {
     public static final BigInteger AMMO_COST = BigInteger.valueOf(20);
     public static final BigInteger AMMO_NUM = BigInteger.valueOf(34);
 
+    public static final BigInteger ATTR_CURR_SHIP_NAME = BigInteger.valueOf(23);
+    public static final BigInteger ATTR_CURR_SHIP_HEALTH = BigInteger.valueOf(24);
+    public static final BigInteger ATTR_CURR_SHIP_SAILORS = BigInteger.valueOf(25);
+    public static final BigInteger ATTR_SHIP_START_MAST_TYPE = BigInteger.valueOf(9);
+    public static final BigInteger ATTR_SHIP_START_CANNON_TYPE = BigInteger.valueOf(8);
+
 }

@@ -31,10 +31,10 @@ public class LevelUpServiceTest {
     @Autowired
     private ApplicationContext context;
     @Mock
-    PlayerDao playerDao;
+    private PlayerDao playerDao;
 
     @InjectMocks
-    LevelUpService levelUpService;
+    private LevelUpService levelUpService;
 
     @BeforeClass
     public static void createPlayerSteve() {
@@ -51,7 +51,7 @@ public class LevelUpServiceTest {
 
     @Before
     public void initMocks() {
-        this.context.getBean("levelUpServicePrototype");
+        levelUpService = (LevelUpService)this.context.getBean("levelUpServicePrototype");
         MockitoAnnotations.initMocks(this);
 
         when(playerDao.getPlayerLevel(steve.getPlayerId())).thenReturn(10).thenReturn(12);

@@ -109,7 +109,7 @@ public class Query {
      * OBJECT_TYPE_ID, <br>
      * SOURCE_ID(Template_id),<br>
      * Template_id,<br>
-     * ATTR_ID of your template object name (!NOT template OBJECT_TYPE name!)
+     * ATTR_ID of your template object curName (!NOT template OBJECT_TYPE curName!)
      * */
     public static final String CREATE_NEW_ENTITY =
             "INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME)"
@@ -168,7 +168,31 @@ public class Query {
      */
     public static final String GET_ATTR_VALUE =
             "SELECT value FROM attributes_value WHERE object_id = ? and attr_id = ? ";
-    
+
+    /**
+     * This query allows to get Attributes_Value by Reference table
+     * You must have 4 parameters for PreparedStatement:
+     * OBJECT_TYPE_ID of entity
+     * OBJECT_ID of entity
+     * OBJECT_TYPE_ID of reference
+     * ATTR_ID of attributes in etity
+     * */
+    public static final String FIND_ATTR_BY_REF =
+            "SELECT obj_ref.object_id " +
+                    "FROM objects obj, objtype obj_type, " +
+                    "attributes attr, " +
+                    "objects obj_ref, objtype obj_ref_type, " +
+                    "objreference table_ref " +
+                    "WHERE " +
+                    "obj_type.object_type_id = ? " +
+                    "AND obj.object_id = ? " +
+                    "AND obj.object_type_id  = obj_type.object_type_id " +
+                    "AND obj_ref_type.object_type_id = ? " +
+                    "AND obj_ref.object_type_id = obj_ref_type.object_type_id " +
+                    "AND attr.attr_id = ? " +
+                    "AND table_ref.object_id = obj.object_id " +
+                    "AND table_ref.reference = obj_ref.object_id ";
+
     /**
      * This query allows to get fleet speed of player by his id.
      * PreparedStatement args:<br>

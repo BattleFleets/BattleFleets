@@ -4,7 +4,6 @@ package com.nctc2017.dao.Impl;
 import com.nctc2017.bean.Goods;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
-import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.GoodsDao;
 import com.nctc2017.dao.StockDao;
 import org.junit.Test;

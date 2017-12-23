@@ -18,11 +18,11 @@ import com.nctc2017.dao.impl.CannonDaoImpl;
 @Component("validator")
 public class Validator {
     
-    private static Logger log = Logger.getLogger(CannonDaoImpl.class);
+    private static Logger log = Logger.getLogger(Validator.class);
     
     /**
      * Checks whether the object <code>objId</code> belongs to type <code>objTypeId</code>
-     * @param description - what is your object name.
+     * @param description - what is your object curName.
      * @param objId - id of object
      * @param objTypeId - id of type of object
      * */
