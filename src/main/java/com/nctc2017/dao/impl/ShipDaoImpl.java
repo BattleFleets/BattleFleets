@@ -10,6 +10,7 @@ import com.nctc2017.dao.HoldDao;
 import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.dao.extractors.EntityExtractor;
+import com.nctc2017.dao.extractors.EntityListExtractor;
 import com.nctc2017.dao.extractors.ExtractingVisitor;
 import com.nctc2017.dao.utils.JdbcConverter;
 import com.nctc2017.dao.utils.QueryBuilder;
@@ -17,21 +18,13 @@ import com.nctc2017.dao.utils.QueryExecutor;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 @Repository
 @Qualifier("shipDao")
@@ -135,7 +128,7 @@ public class ShipDaoImpl implements ShipDao {
     @Override
     public boolean deleteShip(BigInteger shipId) {
         queryExecutor.delete(shipId, DatabaseObject.SHIP_OBJTYPE_ID);
-        return false;
+        return true;
     }
 
     @Override
@@ -216,13 +209,14 @@ public class ShipDaoImpl implements ShipDao {
     @Override
     public int getShipCost(BigInteger shipId) {
         Ship s = findShip(shipId);
-        //TODO
-        return 0;
+        return s.getCost();
     }
 
     @Override
     public List<ShipTemplate> findAllShipTemplates() {
-        return null;
+        List<ShipTemplate> result= queryExecutor.getAllEntitiesByType(DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID,
+                new EntityListExtractor<>(new ShipTemplateVisitor()));
+        return result;
     }
 
 
@@ -287,6 +281,22 @@ public class ShipDaoImpl implements ShipDao {
         }
     }
 
+    private final class ShipTemplateVisitor implements ExtractingVisitor<ShipTemplate> {
+        @Override
+        public ShipTemplate visit(BigInteger entityId, Map<String, String> papamMap) {
+            ShipTemplate shipT = new ShipTemplate(
+                    papamMap.remove(ShipTemplate.T_SHIPNAME),
+                    Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_HEALTH)),
+                    Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_SAILORS_QUANTITY)),
+                    Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_COST)),
+                    Integer.valueOf(papamMap.remove(ShipTemplate.MAX_MASTS_QUANTITY)),
+                    Integer.valueOf(papamMap.remove(ShipTemplate.MAX_CANNON_QUANTITY)),
+                    Integer.valueOf(papamMap.remove(ShipTemplate.MAX_CARRYING_LIMIT))
+            );
+            return shipT;
+        }
+    }
+
     private final class StartShipEquipmentVisitor implements ExtractingVisitor<StartShipEquipment> {
         @Override
         public StartShipEquipment visit(BigInteger entityId, Map<String, String> papamMap) {
@@ -297,55 +307,6 @@ public class ShipDaoImpl implements ShipDao {
                     Integer.valueOf(papamMap.remove(StartShipEquipment.START_NUM_CANNON)),
                     Integer.valueOf(papamMap.remove(StartShipEquipment.START_NUM_MAST))
             );
-        }
-    }
-
-    private final class ShipListExtractor implements ResultSetExtractor<List<Ship>> {
-
-        @Override
-        public List<Ship> extractData(ResultSet rs) throws SQLException, DataAccessException {
-            Map<String, String> papamMap;
-            Map<BigDecimal, Map<String, String>> shipMap = new HashMap<>();
-            BigDecimal idShip;
-            while (rs.next()) {
-                idShip = rs.getBigDecimal(1);
-                papamMap = shipMap.get(idShip);
-                if (papamMap == null) {
-                    papamMap = new HashMap<>();
-                    papamMap.put(rs.getString(2), rs.getString(3));
-                    shipMap.put(idShip, papamMap);
-                } else {
-                    papamMap.put(rs.getString(2), rs.getString(3));
-                }
-            }
-
-            List<Ship> shipList = new ArrayList<>(shipMap.size());
-            Ship nextShip;
-            Map<String, String> nextParamMap;
-            for (Entry<BigDecimal, Map<String, String>> entry : shipMap.entrySet()) {
-                nextParamMap = entry.getValue();
-                BigInteger shipId = entry.getKey().toBigInteger();
-                ShipTemplate shipT = new ShipTemplate(
-                        nextParamMap.remove(ShipTemplate.T_SHIPNAME),
-                        Integer.valueOf(nextParamMap.remove(ShipTemplate.T_MAX_HEALTH)),
-                        Integer.valueOf(nextParamMap.remove(ShipTemplate.T_MAX_SAILORS_QUANTITY)),
-                        Integer.valueOf(nextParamMap.remove(ShipTemplate.T_MAX_COST)),
-                        Integer.valueOf(nextParamMap.remove(ShipTemplate.MAX_MASTS_QUANTITY)),
-                        Integer.valueOf(nextParamMap.remove(ShipTemplate.MAX_CANNON_QUANTITY)),
-                        Integer.valueOf(nextParamMap.remove(ShipTemplate.MAX_CARRYING_LIMIT))
-                );
-
-                int curCarryLimit = shipT.getMaxCarryingLimit() - holdDao.getOccupiedVolume(shipId);
-                nextShip = new Ship(
-                        shipT,
-                        shipId,
-                        nextParamMap.remove(Ship.NAME),
-                        JdbcConverter.parseInt(nextParamMap.remove(Ship.CUR_HEALTH)),
-                        JdbcConverter.parseInt(nextParamMap.remove(Ship.CUR_SAILORS_QUANTITY)),
-                        curCarryLimit);
-                shipList.add(nextShip);
-            }
-            return shipList;
         }
     }
 }
