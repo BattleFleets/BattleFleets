@@ -17,7 +17,14 @@ public class DatabaseObject {
     public static final BigInteger SILK_TEMPLATE_ID = BigInteger.valueOf(24);
     public static final BigInteger RUM_TEMPLATE_ID = BigInteger.valueOf(25);
     public static final BigInteger GEMS_TEMPLATE_ID = BigInteger.valueOf(26);
+
     public static final BigInteger T_CARAVELLA_OBJECT_ID = BigInteger.valueOf(1);
+    public static final BigInteger T_CARАССА_OBJECT_ID = BigInteger.valueOf(2);
+    public static final BigInteger T_GALION_OBJECT_ID = BigInteger.valueOf(3);
+    public static final BigInteger T_CLIPPER_OBJECT_ID = BigInteger.valueOf(4);
+    public static final BigInteger T_FREGATA_OBJECT_ID = BigInteger.valueOf(5);
+
+
     public static final BigInteger MAST1_TEMPLATE_OBJECT_ID = BigInteger.valueOf(6);
     public static final BigInteger CANNONBALL_TEMPLATE_OBJECT_ID = BigInteger.valueOf(14);
     public static final BigInteger CHAIN_TEMPLATE_OBJECT_ID = BigInteger.valueOf(15);
