@@ -18,7 +18,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = { ApplicationConfig.class })
-@Transactional
 public class ShipServiceTest {
 
     private static ShipTemplate flyingDutchmanTemp;

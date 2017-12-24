@@ -3,20 +3,25 @@ package com.nctc2017.services;
 import java.math.BigInteger;
 import java.util.*;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.dao.impl.HoldDaoImpl;
 import com.nctc2017.services.utils.AutoDecisionTask;
 import com.nctc2017.services.utils.BattleManager;
 import com.nctc2017.services.utils.TravelManager;
 import com.nctc2017.services.utils.Visitor;
 
 @Service
+@Transactional
 public class TravelService {
+    private static final Logger LOG = Logger.getLogger(TravelService.class);
     private static final int DELAY = 50000;
     
     @Autowired
@@ -32,6 +37,13 @@ public class TravelService {
 
     public void relocate(BigInteger playerId, BigInteger cityId) {
         Player player = playerDao.findPlayerById(playerId);
+        BigInteger curCityId = playerDao.getPlayerCity(playerId);
+        if (curCityId.equals(cityId)) {
+            RuntimeException ex = new IllegalArgumentException("You cannot move to the same city.");
+            LOG.warn("Exception while relocating from city with id = " + curCityId 
+                    + "to city with id = " + cityId, ex);
+            throw ex;
+        }
         travelManager.startJourney(playerId, player.getLevel(), cityId);
     }
 
@@ -67,7 +79,7 @@ public class TravelService {
         playerAutoDecision.get(playerId).interrupt();
         if (decision) {
             BigInteger enemyId = travelManager.getEnemyId(playerId);
-            battleManager.newBattleBetween(/*TODO Cannon with max dist*/-1,playerId, enemyId);
+            battleManager.newBattleBetween(playerId, enemyId);
         } else {
             travelManager.friendly(playerId);
         }

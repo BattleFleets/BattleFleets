@@ -4,9 +4,13 @@ import java.math.BigInteger;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nctc2017.bean.Battle;
+import com.nctc2017.bean.Cannon;
 import com.nctc2017.bean.Ship;
+import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
@@ -14,6 +18,8 @@ import com.nctc2017.services.utils.AutoDecisionTask;
 import com.nctc2017.services.utils.BattleManager;
 import com.nctc2017.services.utils.Visitor;
 
+@Service
+@Transactional
 public class BattlePreparationService {
     private static final int DELAY = 60000;
     
@@ -24,6 +30,8 @@ public class BattlePreparationService {
     private PlayerDao playerDao;
     @Autowired
     private ShipDao shipDao;
+    @Autowired
+    private CannonDao cannonDao;
     
     private Random randomShip = new Random(System.currentTimeMillis());
     private Map<BigInteger, Thread> playerChoiceShipTimer = new HashMap<>();
@@ -56,7 +64,18 @@ public class BattlePreparationService {
         if (timer != null && timer.isAlive()) {
             timer.interrupt();
         }
-        battles.getBattle(playerId).setShipId(playerId, shipId);
+        Battle battle = battles.getBattle(playerId);
+        battle.setShipId(playerId, shipId);
+        List<Cannon> cannons = cannonDao.getAllCannonFromShip(shipId);
+        int maxDist = 0;
+        int dist;
+        for (Cannon cannon : cannons) {
+            dist = cannon.getDistance();
+            if (maxDist < dist) {
+                maxDist = dist;
+            }
+        }
+        battle.setDistance(maxDist);
     }
 
     public void setReady(BigInteger playerId) {

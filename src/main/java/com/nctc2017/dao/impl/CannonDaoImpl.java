@@ -98,7 +98,7 @@ public class CannonDaoImpl implements CannonDao {
     }
     
     @Override
-    public BigInteger createCannon(@NotNull BigInteger cannonTemplateId, BigInteger containerOwnerId) {
+    public BigInteger createCannon(@NotNull BigInteger cannonTemplateId, BigInteger containerId) {
         Validator.dbInstanceOf(jdbcTemplate,
                 "cannon template", 
                 cannonTemplateId, 
@@ -108,7 +108,7 @@ public class CannonDaoImpl implements CannonDao {
         
         int rowsAffected = jdbcTemplate.update(Query.CREATE_NEW_ENTITY, 
                 new Object[] {JdbcConverter.toNumber(newId), 
-                        JdbcConverter.toNumber(containerOwnerId),
+                        JdbcConverter.toNumber(containerId),
                         JdbcConverter.toNumber(DatabaseObject.CANNON_OBJTYPE_ID), 
                         JdbcConverter.toNumber(cannonTemplateId), 
                         JdbcConverter.toNumber(cannonTemplateId),

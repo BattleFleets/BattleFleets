@@ -2,9 +2,12 @@ package com.nctc2017.services;
 
 import java.math.BigInteger;
 import java.sql.SQLDataException;
+import java.sql.SQLException;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nctc2017.bean.Battle;
 import com.nctc2017.bean.Player;
@@ -15,6 +18,8 @@ import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.DeadEndException;
 import com.nctc2017.services.utils.BattleManager;
 
+@Service
+@Transactional
 public class BattleService {
     
     @Autowired
@@ -29,7 +34,7 @@ public class BattleService {
     
     private Random random = new Random(System.currentTimeMillis());
 
-    public boolean calculateDamage(List<List<Integer>> ammoCannon, BigInteger playerId) throws SQLDataException {
+    public boolean calculateDamage(int[][] ammoCannon, BigInteger playerId) throws SQLException {
         Battle battle = battles.getBattle(playerId);
         BigInteger enemyShipId = battle.getEnemyShipId(playerId);
         BigInteger plyerShipId = battle.getShipId(playerId);
