@@ -16,9 +16,9 @@ public interface ShipDao {
 
     boolean updateShipName(BigInteger shipId, String newShipName);
 
-    boolean updateShipHealth(BigInteger shipId, int newhealthNumb);
+    boolean updateShipHealth(BigInteger shipId, int newHealthNumb);
 
-    boolean updateShipSailorsNumber(BigInteger shipId, int newsailorsNumb);
+    boolean updateShipSailorsNumber(BigInteger shipId, int newSailorsNumb);
 
     String getCurrentShipName(BigInteger shipId);
 

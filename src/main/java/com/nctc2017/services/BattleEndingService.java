@@ -2,8 +2,13 @@ package com.nctc2017.services;
 
 import java.util.*;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.nctc2017.bean.Goods;
 
+@Service
+@Transactional
 public class BattleEndingService {
 
     public List<Goods> passBoardGoodsToWinner(int idPlayer) {

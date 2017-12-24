@@ -6,6 +6,7 @@ import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.HoldDao;
 import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.dao.ShipDao;
 import com.nctc2017.dao.StockDao;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,8 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -40,6 +40,9 @@ public class HoldDaoImplIntegrationTest {
     @Autowired
     private PlayerDao playerDao;
     
+    @Autowired
+    private ShipDao shipDao;
+    
     
     @Test
     @Rollback(true)
@@ -56,13 +59,14 @@ public class HoldDaoImplIntegrationTest {
     @Ignore
     @Rollback(true)
     public void testCreateHoldForShip() {
-        //TODO create ship
+        BigInteger shipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, null);
         // When
-        BigInteger id = holdDao.createHold();
-        
+        BigInteger id = holdDao.createHold(shipId);
+        int volume = holdDao.getOccupiedVolume(shipId);
         // Then
         assertNotNull(id);
         assertTrue(id.longValueExact() > 0L);
+        assertTrue(volume > 1);
     }
     
     @Test
@@ -118,15 +122,18 @@ public class HoldDaoImplIntegrationTest {
     @Rollback(true)
     public void testGetOccupiedVolume() {
         // Given
-        //TODO create cargo
-        //TODO create ship
-        BigInteger id = holdDao.createHold();
+        BigInteger shipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, null);
+        BigInteger holdId = holdDao.createHold(shipId);
+        BigInteger cargoId1 = cannonDao.createCannon(DatabaseObject.KULEVRIN_TEMPLATE_ID, holdId);
+        BigInteger cargoId2 = cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, holdId);
         
         // When
-        //holdDao.addCargo(cargoId, holdId);
-        //holdDao.addCargo(cargoId, holdId);
-        //holdDao.getOccupiedVolume(shipId);
-        // Then ?
+        int emptyShipVolume = holdDao.getOccupiedVolume(shipId);
+        holdDao.addCargo(cargoId1, holdId);
+        holdDao.addCargo(cargoId2, holdId);
+        int volume = holdDao.getOccupiedVolume(shipId);
+        // Then 
+        assertEquals(emptyShipVolume + 2, volume);
     }
     
     @Test

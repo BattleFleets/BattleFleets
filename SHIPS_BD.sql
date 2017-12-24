@@ -556,7 +556,7 @@ CREATE OR REPLACE  FUNCTION CREATE_CANNON(objectIdTemplate NUMBER) RETURN NUMBER
   END;
 /
 CREATE OR REPLACE FUNCTION CREATE_PLAYER(login VARCHAR, password VARCHAR, email VARCHAR) RETURN VARCHAR
-IS
+is
   CURSOR players_logins IS SELECT VALUE FROM ATTRIBUTES_VALUE WHERE ATTR_ID=27;
   CURSOR players_emails IS SELECT VALUE FROM ATTRIBUTES_VALUE WHERE ATTR_ID=41;
   start_money NUMBER:=100;
@@ -576,7 +576,7 @@ IS
       IF players_login.value=login THEN
         RETURN 'Login exists, enter another login';
       END IF;
-    END LOOP;
+    end LOOP;
     FOR players_email IN players_emails LOOP
       IF players_email.value=email THEN
         RETURN 'Email exists, enter another email';
@@ -594,39 +594,363 @@ IS
     RETURN 'Registration is successfull';
   END;
 /
-CREATE OR REPLACE FUNCTION MOVE_CARGO_TO_WINNER(shipWinId NUMBER, shipLoseId NUMBER) RETURN VARCHAR2
-IS
-  health NUMBER;
-  holdIdWin NUMBER;
-  holdIdLose NUMBER;
-  HealthAttrId NUMBER:=24;
-  holdAttrId NUMBER:=9;
-  goodsObjTypeId NUMBER:=14;
-  quantityAttrId NUMBER:=37;
-  CURSOR goodsId IS SELECT goods.OBJECT_ID Identificator FROM OBJECTS ship, OBJECTS hold, OBJECTS goods WHERE ship.OBJECT_ID=hold.PARENT_ID AND ship.OBJECT_ID=shipLoseId AND hold.OBJECT_TYPE_ID=holdAttrId AND hold.OBJECT_ID=goods.PARENT_ID AND goods.OBJECT_TYPE_ID=goodsObjTypeId;
-  BEGIN
-    SELECT VALUE INTO health FROM ATTRIBUTES_VALUE WHERE ATTR_ID=HealthAttrId AND OBJECT_ID=shipLoseId;
-    SELECT hold.OBJECT_ID INTO holdIdWin FROM OBJECTS ship, OBJECTS hold WHERE ship.OBJECT_ID=hold.PARENT_ID AND ship.OBJECT_ID=shipWinId AND hold.OBJECT_TYPE_ID=holdAttrId;
-    SELECT hold.OBJECT_ID INTO holdIdLose FROM OBJECTS ship, OBJECTS hold WHERE ship.OBJECT_ID=hold.PARENT_ID AND ship.OBJECT_ID=shipLoseId AND hold.OBJECT_TYPE_ID=holdAttrId;
-    IF health<=0
-    THEN
-      FOR goodId IN goodsId LOOP
-        UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE*0.5 WHERE ATTR_ID=quantityAttrId AND OBJECT_ID=goodId.Identificator;
-      END LOOP;
-    END IF;
-    UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE PARENT_ID=holdIdLose AND OBJECT_TYPE_ID=goodsObjTypeId;
-    IF health<=0
-    THEN
-      RETURN 'You received part of goods from enemy ship';
+drop TYPE stringlist_list;
+CREATE OR REPLACE TYPE list_i AS VARRAY(9) OF INTEGER;
+/
+CREATE OR REPLACE TYPE stringlist AS TABLE OF INTEGER;
+/
+CREATE OR REPLACE TYPE stringlist_list AS TABLE OF stringlist;
+/
+CREATE OR REPLACE FUNCTION calculate_damage (in_l list_i, 
+                                         playerShipId NUMBER, 
+                                         enemyShipId NUMBER,
+                                         dem INTEGER) RETURN BOOLEAN is
+    in_list stringlist_list := stringlist_list();
+    row_ stringlist := stringlist();
+    j INTEGER;
+    t_kulevrin INTEGER := 13;
+    t_bombard INTEGER := 12;
+    t_mortar INTEGER := 11;
+    mast_type_id INTEGER := 7;
+    ship_health_id INTEGER := 24;
+    ship_crew_id INTEGER := 25;
+    ammo_quantity_id INTEGER := 34;
+    t_cball_id INTEGER := 14;
+    t_chain_id INTEGER := 15;
+    t_bshot_id INTEGER := 16;
+    ex_custom EXCEPTION;
+    PRAGMA EXCEPTION_INIT( ex_custom, -20001 );
+    damage_atr_id NUMBER(38) := 15;
+    mast_cur_speed_atr_id NUMBER(38) := 26;
+    cball_obj_id NUMBER(38);
+    chain_obj_id NUMBER(38);
+    bshot_obj_id NUMBER(38);
+    ammo_qnt INTEGER;
+    total_ammo_qnt INTEGER;
+    ammo_for_shot INTEGER;
+    enemy_health INTEGER;
+    enemy_crew INTEGER;
+    mast_counter INTEGER;
+    damages stringlist := stringlist();
+    cannons_type_count stringlist := stringlist();
+    TYPE number_array IS TABLE OF NUMBER;
+    speeds number_array;
+    mast_obj_ids number_array;
+    all_damage INTEGER;
+BEGIN
+    in_list.EXTEND(in_l.LAST/dem);
+            DBMS_OUTPUT.PUT_LINE(in_l.LAST/dem);
+            DBMS_OUTPUT.PUT_LINE(dem);
+            
+    row_.EXTEND(dem);
+    j := 1;
+    FOR i IN 1..in_l.LAST LOOP
+        IF j = 4 THEN
+            in_list(i/j) := row_;
+            j := 1;
+            row_ := stringlist();
+            row_.EXTEND(dem);
+            DBMS_OUTPUT.PUT_LINE(CHR(10));
+        END IF;
+        row_(j) := in_l(i);
+        DBMS_OUTPUT.PUT_LINE(in_l(i));
+        j := j + 1;
+    END LOOP;
+    in_list((in_l.LAST+1)/j) := row_;
+                         /*STEP 1 Hull Damage*/
+              /*====Getting count of cannon of each type====*/
+    cannons_type_count.EXTEND(in_list.LAST);
+    SELECT count(OBJECT_ID) INTO cannons_type_count(1) 
+    FROM OBJECTS 
+    WHERE PARENT_ID = playerShipId AND SOURCE_ID = t_mortar;
+    /*DBMS_OUTPUT.PUT_LINE('1 MORTARS: '|| cannons_type_count(1));*/
+    
+    SELECT count(OBJECT_ID) INTO cannons_type_count(2) 
+    FROM OBJECTS 
+    WHERE PARENT_ID = playerShipId AND SOURCE_ID = t_bombard;
+    /*DBMS_OUTPUT.PUT_LINE('2 BOMBARDS: '|| cannons_type_count(2));*/
+    
+    SELECT count(OBJECT_ID) INTO cannons_type_count(3) 
+    FROM OBJECTS 
+    WHERE PARENT_ID = playerShipId AND SOURCE_ID = t_kulevrin;
+    /*DBMS_OUTPUT.PUT_LINE('3 KULEVRINES: '|| cannons_type_count(3) || CHR(10));*/
+    
+    FOR j IN 1 .. cannons_type_count.LAST LOOP
+        ammo_qnt := 0;
+        FOR i IN 1 .. in_list(1).LAST LOOP
+            ammo_qnt := ammo_qnt + in_list(j)(i);
+            IF ammo_qnt > cannons_type_count(j) THEN
+                ROLLBACK;
+                raise_application_error( -20002, 
+                'It is impossible shooting with count of ammos greater than cannons.' );
+            END IF;
+        END LOOP;
+    END LOOP;
+    
+              /*====Getting damages of each cannon types====*/
+    damages.EXTEND(in_list.LAST);
+    SELECT atr_v.VALUE INTO damages(1) 
+    FROM ATTRIBUTES_VALUE atr_v 
+    WHERE atr_v.OBJECT_ID = t_mortar AND atr_v.ATTR_ID = damage_atr_id;
+    /*DBMS_OUTPUT.PUT_LINE('MORTAR DAMAGE: '|| damages(1));*/
+    
+    SELECT atr_v.VALUE INTO damages(2)  
+    FROM ATTRIBUTES_VALUE atr_v 
+    WHERE atr_v.OBJECT_ID = t_bombard AND atr_v.ATTR_ID = damage_atr_id;
+    /*DBMS_OUTPUT.PUT_LINE('BOMBARD DAMAGE: '|| damages(2));*/
+    
+    SELECT atr_v.VALUE INTO damages(3)  
+    FROM ATTRIBUTES_VALUE atr_v 
+    WHERE atr_v.OBJECT_ID = t_kulevrin AND atr_v.ATTR_ID = damage_atr_id;
+    /*DBMS_OUTPUT.PUT_LINE('KULIVRINE DAMAGE: '|| damages(3) || CHR(10));*/
+    
+                       /*====Getting enemy health====*/
+    enemy_health := get_attr_val(enemyShipId, ship_health_id);
+    
+    /*====Getting OBJECT_ID of cannonballs which in hold of players ship====*/
+    cball_obj_id:= get_ammo_in_hold(playerShipId, t_cball_id); 
+    
+                /*====Quantity of cannonball in ship hold====*/
+    total_ammo_qnt := get_attr_val(cball_obj_id, ammo_quantity_id);
+    /*DBMS_OUTPUT.PUT_LINE('CANNONBALL IN HOLD '|| total_ammo_qnt);*/
+    
+      /*====Check if inputs cannonballs not greater than ship have.====*/
+    ammo_for_shot := check_and_get_quantity(in_list, 1, total_ammo_qnt);
+    /*DBMS_OUTPUT.PUT_LINE('TOTAL CANNONBALL TO SHOT ' || ammo_for_shot);*/
+    
+                        /*====Damage calculating====*/
+    /*DBMS_OUTPUT.PUT_LINE('ENEMY HP: '|| enemy_health);*/
+    FOR i IN 1 .. in_list.LAST
+    LOOP
+        ammo_qnt := in_list(i)(1);
+        /*DBMS_OUTPUT.PUT_LINE('CANNONBALL IN CANNONS with type' || i || ': ' || ammo_qnt);*/
+        all_damage := ammo_qnt * damages(i);
+        /*DBMS_OUTPUT.PUT_LINE('DAMAGE: MAX ' || all_damage 
+                             || ' MIN ' || (all_damage / 2));*/
+        enemy_health := enemy_health - 
+                (all_damage - all_damage * DBMS_RANDOM.VALUE(0, 0.5));
+        /*DBMS_OUTPUT.PUT_LINE('AFTER SHOT '|| i ||', ENEMY HP: ' 
+                              || enemy_health || CHR(10));*/
+    END LOOP;
+    
+                  /*====Decrease cannonballs=====*/
+    total_ammo_qnt := total_ammo_qnt - ammo_for_shot;
+    IF total_ammo_qnt = 0 THEN
+        /*DBMS_OUTPUT.PUT_LINE('CANNONBALL with ID = '
+        || cball_obj_id ||' delete because quantity ' || total_ammo_qnt);*/
+        DELETE objects WHERE object_id = cball_obj_id;
     ELSE
-      RETURN 'You received all goods from enemy ship';
+        update_atr_val(total_ammo_qnt, cball_obj_id, ammo_quantity_id);
     END IF;
-  END;
+    /*DBMS_OUTPUT.PUT_LINE('CANNONBALL MUST WILL BE '|| total_ammo_qnt);*/
+    
+                   /*Make damage to enemy ship*/
+    update_atr_val(enemy_health, enemyShipId, ship_health_id);             
+    /*DBMS_OUTPUT.PUT_LINE('ENEMY HP NOW '|| enemy_health || CHR(10));*/
+    
+                          /*STEP 2 Crew Damage*/
+                       /*====Getting enemy crew quantity====*/
+    enemy_crew := get_attr_val(enemyShipId, ship_crew_id);
+    /*DBMS_OUTPUT.PUT_LINE('ENEMY CREW: '|| enemy_crew);*/
+    
+        /*====Getting OBJECT_ID of backshot which in hold of players ship====*/
+    bshot_obj_id:= get_ammo_in_hold(playerShipId, t_bshot_id);
+        
+        /*====Quantity of buckshot in ship hold====*/
+    total_ammo_qnt := get_attr_val(bshot_obj_id, ammo_quantity_id);
+    /*DBMS_OUTPUT.PUT_LINE('BUCKSHOT IN HOLD '|| total_ammo_qnt);*/
+    
+          /*====Check if inputs buckshot not greater than ship have.====*/
+    ammo_for_shot := check_and_get_quantity(in_list, 2, total_ammo_qnt);
+    /*DBMS_OUTPUT.PUT_LINE('TOTAL BUCKSHOT TO SHOT ' || ammo_for_shot || CHR(10));*/
+    
+                   /*====Damage crew calculating====*/
+    enemy_crew := buckshot_damage (in_list, cannons_type_count, 
+                                    damages, enemy_crew);   
+                          
+                    /*====Decrease buckshot====*/  
+    total_ammo_qnt := total_ammo_qnt - ammo_for_shot;
+    IF total_ammo_qnt = 0 THEN
+        /*DBMS_OUTPUT.PUT_LINE('BUCKSHOT with ID = '
+        || bshot_obj_id ||' delete because quantity '|| total_ammo_qnt);*/
+        DELETE objects WHERE object_id = bshot_obj_id;
+    ELSE
+        update_atr_val(total_ammo_qnt, bshot_obj_id, ammo_quantity_id);
+    END IF;
+    /*DBMS_OUTPUT.PUT_LINE('BUCKSHOTS MUST WILL BE '|| total_ammo_qnt);*/
+    
+                   /*Make damage to enemy crew*/
+    update_atr_val(enemy_crew, enemyShipId, ship_crew_id);             
+    /*DBMS_OUTPUT.PUT_LINE('ENEMY CREW NOW '|| enemy_crew || CHR(10));*/
+    
+                     /*STEP 3 Mast Damage*/
+              /*====Getting id of masts on ship====*/
+    SELECT attr_v.VALUE, ob.OBJECT_ID 
+    BULK COLLECT INTO speeds, mast_obj_ids
+    FROM ATTRIBUTES_VALUE attr_v, OBJECTS ob
+    WHERE ATTR_ID = mast_cur_speed_atr_id 
+    AND ATTR_V.OBJECT_ID = ob.OBJECT_ID
+    AND ob.OBJECT_TYPE_ID = mast_type_id
+    AND ob.PARENT_ID = enemyShipId;
+    
+     /*====Getting OBJECT_ID of chain which in hold of players ship====*/
+    chain_obj_id := get_ammo_in_hold(playerShipId, t_chain_id);
+        
+        /*====Quantity of chain in ship hold====*/
+    total_ammo_qnt := get_attr_val(chain_obj_id, ammo_quantity_id);
+    /*DBMS_OUTPUT.PUT_LINE('CHAIN IN HOLD '|| total_ammo_qnt);*/
+    
+          /*====Check if inputs chain not greater than ship have.====*/
+    ammo_for_shot :=  check_and_get_quantity(in_list, 3, total_ammo_qnt);
+    /*DBMS_OUTPUT.PUT_LINE('TOTAL CHAIN TO SHOT ' || ammo_for_shot || CHR(10));*/
+    
+                  /*====Damage mast calculating====*/
+    mast_counter := speeds.LAST;
+    FOR i IN 1 .. in_list.LAST
+    LOOP
+        ammo_qnt := in_list(i)(3);
+        /*DBMS_OUTPUT.PUT_LINE('CHAIN IN CANNONS with type' || i || ': ' || ammo_qnt);*/
+        all_damage := ammo_qnt * damages(i) * DBMS_RANDOM.VALUE(0.05, 0.35);
+        /*DBMS_OUTPUT.PUT_LINE('START DAMAGE WITH VALUE: ' || all_damage);*/
+        WHILE (all_damage > 0) LOOP
+        /*DBMS_OUTPUT.PUT_LINE('VOLLEY ' || i);
+        DBMS_OUTPUT.PUT_LINE('MAST_' || mast_counter || ' SPEED ' || speeds(mast_counter));
+        DBMS_OUTPUT.PUT_LINE('DAMAGE ' || all_damage || CHR(10));*/
+            IF speeds(mast_counter) < all_damage THEN
+                all_damage := all_damage - speeds(mast_counter);
+                IF speeds(mast_counter) = 0 THEN
+                    DELETE OBJECTS WHERE OBJECT_ID = mast_obj_ids(mast_counter);
+                    speeds(mast_counter) := -1;
+                    all_damage := all_damage - 1;
+                ELSE
+                    speeds(mast_counter) := 0;
+                END IF;
+                mast_counter := mast_counter - 1;
+            ELSE
+                speeds(mast_counter) := speeds(mast_counter) - all_damage;
+                all_damage := 0;
+            END IF;
+        END LOOP;
+        EXIT WHEN (mast_counter = 0);
+    END LOOP;
+    IF speeds(1) = 0 THEN
+        speeds(1) := 1;
+    END IF;
+    
+                 /*====Decrease chain====*/  
+    total_ammo_qnt := total_ammo_qnt - ammo_for_shot;
+    IF total_ammo_qnt = 0 THEN
+        /*DBMS_OUTPUT.PUT_LINE('CHAIN with ID = '
+        || bshot_obj_id ||' delete because quantity '|| total_ammo_qnt);*/
+        DELETE objects WHERE object_id = bshot_obj_id;
+    ELSE
+        update_atr_val(total_ammo_qnt, chain_obj_id, ammo_quantity_id);
+    END IF;
+    /*DBMS_OUTPUT.PUT_LINE('CHAIN MUST WILL BE '|| total_ammo_qnt);*/
+            
+            /*====Make mast damage====*/
+    FOR i IN 1 .. speeds.LAST LOOP
+        IF speeds(i) > -1 THEN
+            update_atr_val(speeds(i), mast_obj_ids(i), mast_cur_speed_atr_id);
+            /*DBMS_OUTPUT.PUT_LINE('MAST_' || i || ' ID '|| mast_obj_ids(i) 
+                                ||' SPEED: ' || speeds(i));*/
+        END IF;
+    END LOOP;
+    
+    RETURN true;
+EXCEPTION WHEN NO_DATA_FOUND THEN
+    ROLLBACK;
+    RETURN false;
+END;
 /
 
+CREATE OR REPLACE PROCEDURE update_atr_val (new_val_ NUMBER, obj_id NUMBER,
+                                            attr_id_ NUMBER) IS
+BEGIN                          
+    UPDATE ATTRIBUTES_VALUE attr_val 
+    SET attr_val.VALUE = new_val_
+    WHERE  attr_val.OBJECT_ID = obj_id
+    AND attr_val.ATTR_ID = attr_id_;
+END;    
+/
 
+CREATE OR REPLACE FUNCTION check_and_get_quantity (in_list stringlist_list, 
+                                       ammo_col INTEGER, total_ammo_qnt INTEGER) 
+                                       RETURN INTEGER IS
+    summ INTEGER := 0;
+BEGIN
+    FOR i IN 1 .. in_list.LAST LOOP
+        summ := summ + in_list(i)(ammo_col);
+    END LOOP;
+    IF total_ammo_qnt < summ THEN
+        ROLLBACK;
+        raise_application_error( -20001, 
+        'It is impossible shooting with count of ammo greater than have.' );
+    END IF;
+    RETURN summ;
+END;
+/
 
+CREATE OR REPLACE FUNCTION buckshot_damage (in_list stringlist_list, 
+                              cannons_type_count stringlist, 
+                              damages stringlist, 
+                              e_crew INTEGER) RETURN INTEGER is
+    val INTEGER;
+    ammo_qnt INTEGER; 
+    all_damage INTEGER; 
+    max_game_damage INTEGER;
+    damage_attr_id INTEGER := 15;
+    cannon_lim_attr_id INTEGER := 3;
+    enemy_crew INTEGER := e_crew;
+BEGIN
+           /*==== MAX Damage in this game ====*/
+    SELECT d_max * c_l_max INTO max_game_damage FROM 
+        (SELECT max(damage.value) d_max 
+        FROM ATTRIBUTES_VALUE damage 
+        WHERE ATTR_ID = damage_attr_id),
+        (SELECT max(cannon_lim.value)c_l_max 
+        FROM ATTRIBUTES_VALUE cannon_lim 
+        WHERE ATTR_ID = cannon_lim_attr_id);
+                     /*====Damage calculating====*/
+    FOR i IN 1 .. in_list.LAST
+    LOOP
+        ammo_qnt := in_list(i)(2);
+        /*DBMS_OUTPUT.PUT_LINE('BUCKSHOT IN CANNONS with type' || i || ': ' || ammo_qnt);*/
+        all_damage := ammo_qnt * damages(i);
+        /*DBMS_OUTPUT.PUT_LINE('DAMAGE: MAX ' || (all_damage * 0.8) 
+                             || ' MIN ' || (all_damage * 0.4));*/
+        enemy_crew := enemy_crew - 
+                ((all_damage * DBMS_RANDOM.VALUE(0.4, 0.8) / max_game_damage) * enemy_crew);
+        /*DBMS_OUTPUT.PUT_LINE('AFTER SHOT '|| i ||', ENEMY CREW: ' 
+                              || enemy_crew || CHR(10));*/
+    END LOOP;
+    RETURN enemy_crew;
+END;
+/
 
+CREATE OR REPLACE FUNCTION get_ammo_in_hold (playerShipId NUMBER, templ_id NUMBER) RETURN INTEGER is
+    val INTEGER;
+    hold_objtype_id INTEGER := 9;
+    ammo_objtype_id INTEGER := 11;
+    obj_id NUMBER;
+BEGIN
+    SELECT obj.OBJECT_ID INTO obj_id FROM OBJECTS obj WHERE PARENT_ID = 
+        (SELECT hold.OBJECT_ID 
+        FROM OBJECTS hold 
+        WHERE hold.PARENT_ID = playerShipId AND hold.OBJECT_TYPE_ID = hold_objtype_id)
+    AND obj.OBJECT_TYPE_ID = ammo_objtype_id AND obj.SOURCE_ID = templ_id;
+    
+    RETURN obj_id;
+END;
+/
 
-
-
+CREATE OR REPLACE FUNCTION get_attr_val (objId NUMBER, attrId NUMBER) RETURN INTEGER is
+    val INTEGER;
+BEGIN
+    SELECT atr_v.VALUE INTO val 
+    FROM ATTRIBUTES_VALUE atr_v 
+    WHERE atr_v.OBJECT_ID = objId AND atr_v.ATTR_ID = attrId;
+    
+    RETURN val;
+END;
+/

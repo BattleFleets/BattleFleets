@@ -13,8 +13,8 @@ public class BattleManager {
     
     private Map<BigInteger, Battle> battles = new HashMap<>();
     
-    public void newBattleBetween(int distance, BigInteger pl1, BigInteger pl2) {
-        Battle newBattle = new Battle(distance, pl1, pl2);
+    public void newBattleBetween(BigInteger pl1, BigInteger pl2) {
+        Battle newBattle = new Battle(pl1, pl2);
         battles.put(pl1, newBattle);
         battles.put(pl2, newBattle);
     }
