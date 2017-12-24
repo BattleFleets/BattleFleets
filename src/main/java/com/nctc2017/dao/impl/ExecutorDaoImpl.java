@@ -38,7 +38,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
     }
 
     @Override
-    public boolean calculateDamage(List<List<Integer>> ammoCannon, BigInteger playerShipId, BigInteger idEnemyShip) throws SQLDataException {
+    public boolean calculateDamage(int[][] ammoCannon, BigInteger playerShipId, BigInteger idEnemyShip) throws SQLDataException {
         SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate)
                 .withFunctionName(CALCULATE_DAMAGE_FUNCTION_NAME);
         SqlParameterSource in = new MapSqlParameterSource().addValue(IN_LIST, ammoCannon)
