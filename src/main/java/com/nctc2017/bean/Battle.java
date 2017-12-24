@@ -18,8 +18,7 @@ public class Battle {
     
     protected int distance;
 
-    public Battle(int distance, BigInteger idPlayer1, BigInteger idPlayer2) {
-        this.distance = distance;
+    public Battle(BigInteger idPlayer1, BigInteger idPlayer2) {
         this.player1 = new Participant(idPlayer1);
         this.player2 = new Participant(idPlayer2);
         this.errorDescription = "because only two player permitted with id1 = " 

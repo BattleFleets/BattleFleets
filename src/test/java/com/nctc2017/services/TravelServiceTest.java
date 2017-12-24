@@ -21,8 +21,7 @@ import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import javax.annotation.Resource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
@@ -84,6 +83,8 @@ public class TravelServiceTest {
     public void initMocks() {
         travelService = (TravelService)this.context.getBean("travelServicePrototype");
         MockitoAnnotations.initMocks(this);
+        ReflectionTestUtils.setField(travelService, "playerDao", mockPlayerDao);
+        ReflectionTestUtils.setField(travelService, "cityDao", mockCityDao);
 
         when(mockCityDao.find(vataArt.getCityId())).thenReturn(vataArt);
         when(mockCityDao.find(netcracken.getCityId())).thenReturn(netcracken);
@@ -107,6 +108,11 @@ public class TravelServiceTest {
     @Test
     public void testRelocateOnePerson() {
         testRelocate(nik, vataArt);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testRelocateOnePersonIntoTheSameCity() {
+        testRelocate(nik, netcracken);
     }
 
     private void relocateTwoPersons() {

@@ -71,13 +71,12 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         return jdbcTemplate;
     }
 
-
-
     @Bean
     public PlatformTransactionManager transactionManager(DataSource dataSource) {
         final PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
         return transactionManager;
     }
+    
     @Bean(name = "travelServicePrototype")
     @Scope("prototype")
     public TravelService travelServiceProt() {
@@ -108,9 +107,9 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         return new TravelService();
     }
 
-    @Bean
+  /*  @Bean
     @Scope("singleton")
     public BattleManager battles() {
         return new BattleManager();
-    }
+    }*/
 }
