@@ -1,41 +1,50 @@
 package com.nctc2017.services;
 
+import com.nctc2017.bean.*;
 import com.nctc2017.dao.*;
+import com.nctc2017.dao.utils.JdbcConverter;
+import com.nctc2017.exception.GoodsLackException;
 import com.nctc2017.exception.MoneyLackException;
 import com.nctc2017.services.utils.MarketManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Objects;
 
+@Transactional
 @Service("tradeService")
 public class TradeService {
+
     private static final Logger log = Logger.getLogger(TradeService.class);
 
     @Autowired
-    MoneyService moneyService;
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
-    MarketManager marketManager;
+    private MoneyService moneyService;
+    @Autowired
+    private MarketManager marketManager;
 
     @Autowired
-    PlayerDao playerDao;
+    private PlayerDao playerDao;
     @Autowired
-    StockDao stockDao;
+    private StockDao stockDao;
 
     @Autowired
-    GoodsDao goodsDao;
+    private GoodsDao goodsDao;
     @Autowired
-    AmmoDao ammoDao;
+    private AmmoDao ammoDao;
     @Autowired
-    CannonDao cannonDao;
+    private CannonDao cannonDao;
     @Autowired
-    MastDao mastDao;
+    private MastDao mastDao;
 
 
-    @Transactional
     public String buy(BigInteger playerId, BigInteger goodsTemplateId, int price, int quantity) {
         int totalCost = price * quantity;
 
@@ -47,14 +56,16 @@ public class TradeService {
         BigInteger cityId = playerDao.getPlayerCity(playerId);
         if (!marketManager.isActualBuyingPrice(cityId, goodsTemplateId, price)) {
             RuntimeException e = new IllegalArgumentException("Not actual price for goods");
-            log.error("TradeService Exception. While buying/selling");
+            log.error("TradeService Exception while buying", e);
             throw e;
         }
+
 
         switch (marketManager.findMarketByCityId(cityId).getGoodsType(goodsTemplateId)) {
 
             case GOODS:
                 buyGoods(playerId, goodsTemplateId, price, quantity);
+                marketManager.decreaseGoodsQuantity(cityId, goodsTemplateId, quantity);
                 break;
 
             case AMMO:
@@ -63,27 +74,63 @@ public class TradeService {
 
             case MAST:
                 buyMast(goodsTemplateId, stockDao.findStockId(playerId), quantity);
+                marketManager.decreaseGoodsQuantity(cityId, goodsTemplateId, quantity);
                 break;
 
             case CANNON:
-               buyCannon(goodsTemplateId, stockDao.findStockId(playerId), quantity);
+                buyCannon(goodsTemplateId, stockDao.findStockId(playerId), quantity);
+                marketManager.decreaseGoodsQuantity(cityId, goodsTemplateId, quantity);
                 break;
         }
-
-        marketManager.decreaseGoodsQuantity(cityId, goodsTemplateId, quantity);
         moneyService.deductMoney(playerId, totalCost);
 
         return "Success!";
     }
 
+    private BigInteger isSuchGoods(BigInteger playerId, BigInteger goodsTemplateId, int price) {
+        BigInteger stockId = stockDao.findStockId(playerId);
+        List<Goods> goodsList = goodsDao.getAllGoodsFromStock(stockDao.findStockId(playerId));
+        for (Goods goods : goodsList) {
+            boolean isSuchGoods = stockDao.isSuchCargoInStock(goods.getThingId(), goodsTemplateId, stockId);
+
+            if (isSuchGoods && goods.getPurchasePrice() == price) {
+                return goods.getThingId();
+            }
+        }
+        return null;
+    }
+
+    private BigInteger isSuchAmmo(BigInteger playerId, BigInteger goodsTemplateId) {
+        BigInteger stockId = stockDao.findStockId(playerId);
+        List<Ammo> ammoList = ammoDao.getAllAmmoFromStock(stockDao.findStockId(playerId));
+        for (Ammo ammo : ammoList) {
+            boolean isSuchAmmo = stockDao.isSuchCargoInStock(ammo.getThingId(), goodsTemplateId, stockId);
+
+            if (isSuchAmmo) {
+                return ammo.getThingId();
+            }
+        }
+        return null;
+    }
+
     private void buyGoods(BigInteger playerId, BigInteger goodsTemplateId, int price, int quantity) {
-        BigInteger newGoodId = goodsDao.createNewGoods(goodsTemplateId, quantity, price);
-        stockDao.addCargo(newGoodId, playerId);
+        BigInteger existingGoodId = isSuchGoods(playerId, goodsTemplateId, price);
+        if (existingGoodId == null) {
+            BigInteger newGoodId = goodsDao.createNewGoods(goodsTemplateId, quantity, price);
+            stockDao.addCargo(newGoodId, playerId);
+        } else {
+            goodsDao.increaseGoodsQuantity(existingGoodId, quantity);
+        }
     }
 
     private void buyAmmo(BigInteger playerId, BigInteger goodsTemplateId, int quantity) {
-        BigInteger newGoodId = ammoDao.createAmmo(goodsTemplateId, quantity);
-        stockDao.addCargo(newGoodId, playerId);
+        BigInteger existingAmmoId = isSuchAmmo(playerId, goodsTemplateId);
+        if (existingAmmoId == null) {
+            BigInteger newGoodId = ammoDao.createAmmo(goodsTemplateId, quantity);
+            stockDao.addCargo(newGoodId, playerId);
+        } else {
+            ammoDao.increaseAmmoQuantity(existingAmmoId, quantity);
+        }
     }
 
     private void buyCannon(BigInteger goodsTemplateId, BigInteger playersStock, int quantity) {
@@ -99,12 +146,154 @@ public class TradeService {
     }
 
 
-    public String sell(BigInteger playerId, BigInteger goodsId, int goodsTemplateId, int price, int quantity) {
+    public String sell(BigInteger playerId, BigInteger goodsId, BigInteger goodsTemplateId, int price, int quantity) {
 
-        // поняла что реализацию продажи можно сделать с помощью CargoMovementService
-        // решила переделать после реализации CargoMovementService
+        BigInteger cityId = playerDao.getPlayerCity(playerId);
+        if (!marketManager.isActualSalePrice(cityId, goodsTemplateId, price)) {
+            RuntimeException e = new IllegalArgumentException("Not actual price for goods");
+            log.error("TradeService Exception while selling", e);
+            throw e;
+        }
 
-        return "";
+        GoodsForSale.GoodsType type = marketManager.findMarketByCityId(cityId).getGoodsType(goodsTemplateId);
+
+        switch (type) {
+
+            case GOODS:
+                sellGoods(playerId, goodsId, cityId, goodsTemplateId, quantity, price);
+                break;
+
+            case AMMO:
+                sellAmmo(playerId, goodsId, quantity, price);
+                break;
+
+            case MAST:
+                sellMast(playerId, goodsId, cityId, goodsTemplateId, price);
+                break;
+
+            case CANNON:
+                sellCannon(playerId, goodsId, cityId, goodsTemplateId, price);
+                break;
+        }
+        return "Success!";
     }
 
+    private void sellGoods(BigInteger playerId, BigInteger goodsId,
+                           BigInteger cityId, BigInteger goodsTemplateId,
+                           int sellingQuantity, int price) {
+
+        List<Goods> things = goodsDao.getAllGoodsFromStock(stockDao.findStockId(playerId));
+        Goods sellingGoods = null;
+        for (Goods thing : things) {
+            if (Objects.equals(thing.getThingId(), goodsId)) {
+                sellingGoods = thing;
+                break;
+            }
+        }
+
+        if (sellingGoods == null) {
+            RuntimeException e = new IllegalArgumentException("Not valid goods id");
+            log.error("TradeService Exception while selling", e);
+            throw e;
+        }
+
+        int actualQuantity = sellingGoods.getQuantity();
+
+        if (actualQuantity < sellingQuantity) {
+            GoodsLackException e = new GoodsLackException("Trying to sell more goods than have");
+            log.error("TradeService Exception while selling", e);
+            throw e;
+        }
+
+        if (actualQuantity == sellingQuantity) {
+            goodsDao.deleteGoods(sellingGoods.getThingId());
+        }
+
+        if (actualQuantity > sellingQuantity) {
+            goodsDao.decreaseGoodsQuantity(sellingGoods.getThingId(), sellingQuantity);
+        }
+        marketManager.decreaseGoodsQuantity(cityId, goodsTemplateId, sellingQuantity);
+        moneyService.addMoney(playerId, sellingQuantity * price);
+    }
+
+    private void sellAmmo(BigInteger playerId, BigInteger ammoId, int sellingQuantity, int price) {
+        List<Ammo> things = ammoDao.getAllAmmoFromStock(stockDao.findStockId(playerId));
+        Ammo sellingGoods = null;
+        for (Ammo thing : things) {
+            if (Objects.equals(thing.getThingId(), ammoId)) {
+                sellingGoods = thing;
+                break;
+            }
+        }
+
+        if (sellingGoods == null) {
+            RuntimeException e = new IllegalArgumentException("Not valid goods id");
+            log.error("TradeService Exception while selling", e);
+            throw e;
+        }
+
+        int actualQuantity = sellingGoods.getQuantity();
+
+        if (actualQuantity < sellingQuantity) {
+            GoodsLackException e = new GoodsLackException("Trying to sell more goods than have");
+            log.error("TradeService Exception while selling", e);
+            throw e;
+        }
+
+        if (actualQuantity == sellingQuantity) {
+            ammoDao.deleteAmmo(sellingGoods.getThingId());
+        }
+
+        if (actualQuantity > sellingQuantity) {
+            ammoDao.decreaseAmmoQuantity(sellingGoods.getThingId(), sellingQuantity);
+        }
+
+        moneyService.addMoney(playerId, sellingQuantity * price);
+    }
+
+    private void sellMast(BigInteger playerId, BigInteger goodsId,
+                          BigInteger cityId, BigInteger goodsTemplateId, int price) {
+
+        List<Mast> things = mastDao.getShipMastsFromStock(stockDao.findStockId(playerId));
+        Mast sellingGoods = null;
+        for (Mast thing : things) {
+            if (Objects.equals(thing.getThingId(), goodsId)) {
+                sellingGoods = thing;
+                break;
+            }
+        }
+
+        if (sellingGoods == null) {
+            RuntimeException e = new IllegalArgumentException("Not valid goods id");
+            log.error("TradeService Exception while selling", e);
+            throw e;
+        }
+
+        mastDao.deleteMast(sellingGoods.getThingId());
+        marketManager.decreaseGoodsQuantity(cityId, goodsTemplateId, 1);
+        moneyService.addMoney(playerId, price);
+    }
+
+    private void sellCannon(BigInteger playerId, BigInteger goodsId,
+                            BigInteger cityId, BigInteger goodsTemplateId, int price) {
+
+        List<Cannon> things = cannonDao.getAllCannonFromStock(stockDao.findStockId(playerId));
+        Cannon sellingGoods = null;
+        for (Cannon thing : things) {
+            if (Objects.equals(thing.getThingId(), goodsId)) {
+                sellingGoods = thing;
+                break;
+            }
+        }
+
+        if (sellingGoods == null) {
+            RuntimeException e = new IllegalArgumentException("Not valid goods id");
+            log.error("TradeService Exception while selling", e);
+            throw e;
+        }
+
+        cannonDao.deleteCannon(sellingGoods.getThingId());
+        marketManager.decreaseGoodsQuantity(cityId, goodsTemplateId, 1);
+        moneyService.addMoney(playerId, price);
+    }
 }

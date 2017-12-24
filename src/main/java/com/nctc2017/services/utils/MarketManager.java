@@ -146,7 +146,9 @@ public class MarketManager {
                 if (currentTime >= nextUpdateTime) {
                     for (Map.Entry<BigInteger, Market> entity : markets.entrySet()) {
                         Market market = entity.getValue();
-                        generateMarketForCity(market);
+                        synchronized (market) {
+                            generateMarketForCity(market);
+                        }
                     }
                     nextUpdateTime = currentTime + DELAY;
                 }

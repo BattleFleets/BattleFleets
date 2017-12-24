@@ -27,4 +27,6 @@ public interface AmmoDao {
 
     BigInteger createAmmo(BigInteger ammoTemplateId, int quantity);
 
+    void deleteAmmo(BigInteger ammoId);
+
 }
