@@ -6,6 +6,7 @@ import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
 import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.extractors.EntityExtractor;
+import com.nctc2017.dao.extractors.EntityListExtractor;
 import com.nctc2017.dao.extractors.ExtractingVisitor;
 import com.nctc2017.dao.utils.JdbcConverter;
 import com.nctc2017.dao.utils.QueryBuilder;
@@ -14,21 +15,14 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 @Repository
 @Qualifier("mastDao")
@@ -116,9 +110,10 @@ public class MastDaoImpl implements MastDao {
 
 
     private List<Mast> getShipMastsFromAnywhere(BigInteger containerID) {
-        List<Mast> pickedUpMasts = jdbcTemplate.query(Query.GET_ENTITIES_FROM_CONTAINER,
-                new Object[]{DatabaseObject.MAST_OBJTYPE_ID, containerID, DatabaseObject.MAST_OBJTYPE_ID, containerID},
-                new MastListExtractor());
+        List<Mast> pickedUpMasts = queryExecutor
+                .getEntitiesFromContainer(containerID,
+                        DatabaseObject.MAST_OBJTYPE_ID,
+                        new EntityListExtractor<>(new MastsVisitor()));
         if (pickedUpMasts == null) {
             log.log(Level.INFO, "Wrong containerID / Empty container");
         }
@@ -185,42 +180,6 @@ public class MastDaoImpl implements MastDao {
                     Integer.valueOf(papamMap.remove(Mast.MAX_SPEED)),
                     JdbcConverter.parseInt(papamMap.remove(Mast.Cur_MAST_SPEED)),
                     Integer.valueOf(papamMap.remove(Mast.MAST_COST)));
-        }
-    }
-
-    private final class MastListExtractor implements ResultSetExtractor<List<Mast>> {
-
-        @Override
-        public List<Mast> extractData(ResultSet rs) throws SQLException, DataAccessException {
-            Map<String, String> papamMap;
-            Map<BigInteger, Map<String, String>> mastMap = new HashMap<>();
-            BigInteger idMast;
-            while (rs.next()) {
-                idMast = rs.getBigDecimal(1).toBigInteger();
-                papamMap = mastMap.get(idMast);
-                if (papamMap == null) {
-                    papamMap = new HashMap<>();
-                    papamMap.put(rs.getString(2), rs.getString(3));
-                    mastMap.put(idMast, papamMap);
-                } else {
-                    papamMap.put(rs.getString(2), rs.getString(3));
-                }
-            }
-
-            List<Mast> mastList = new ArrayList<>(mastMap.size());
-            Mast nextMast;
-            Map<String, String> nextParamMap;
-            for (Entry<BigInteger, Map<String, String>> entry : mastMap.entrySet()) {
-                nextParamMap = entry.getValue();
-                nextMast = new Mast(Mast.QUANTITY,
-                        entry.getKey(),
-                        nextParamMap.remove(Mast.MAST_NAME),
-                        Integer.valueOf(nextParamMap.remove(Mast.MAX_SPEED)),
-                        Integer.valueOf(nextParamMap.remove(Mast.Cur_MAST_SPEED)),
-                        Integer.valueOf(nextParamMap.remove(Mast.MAST_COST)));
-                mastList.add(nextMast);
-            }
-            return mastList;
         }
     }
 
