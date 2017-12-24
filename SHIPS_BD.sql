@@ -594,47 +594,69 @@ is
     RETURN 'Registration is successfull';
   END;
 /
-CREATE OR REPLACE FUNCTION calculate_damage (in_list stringlist_list, 
+drop TYPE stringlist_list;
+CREATE OR REPLACE TYPE list_i AS VARRAY(9) OF INTEGER;
+/
+CREATE OR REPLACE TYPE stringlist AS TABLE OF INTEGER;
+/
+CREATE OR REPLACE TYPE stringlist_list AS TABLE OF stringlist;
+/
+CREATE OR REPLACE FUNCTION calculate_damage (in_l list_i, 
                                          playerShipId NUMBER, 
-                                         enemyShipId NUMBER) RETURN BOOLEAN is
+                                         enemyShipId NUMBER,
+                                         dem INTEGER) RETURN BOOLEAN is
+    in_list stringlist_list := stringlist_list();
+    row_ stringlist := stringlist();
+    j INTEGER;
     t_kulevrin INTEGER := 13;
     t_bombard INTEGER := 12;
     t_mortar INTEGER := 11;
-    
     mast_type_id INTEGER := 7;
-    
     ship_health_id INTEGER := 24;
     ship_crew_id INTEGER := 25;
     ammo_quantity_id INTEGER := 34;
-    damage_atr_id NUMBER(38) := 15;
-    mast_cur_speed_atr_id NUMBER(38) := 26;
-    
     t_cball_id INTEGER := 14;
     t_chain_id INTEGER := 15;
     t_bshot_id INTEGER := 16;
-    
     ex_custom EXCEPTION;
     PRAGMA EXCEPTION_INIT( ex_custom, -20001 );
-    
+    damage_atr_id NUMBER(38) := 15;
+    mast_cur_speed_atr_id NUMBER(38) := 26;
     cball_obj_id NUMBER(38);
     chain_obj_id NUMBER(38);
     bshot_obj_id NUMBER(38);
-    
     ammo_qnt INTEGER;
     total_ammo_qnt INTEGER;
     ammo_for_shot INTEGER;
     enemy_health INTEGER;
     enemy_crew INTEGER;
     mast_counter INTEGER;
-    all_damage INTEGER;
-    
     damages stringlist := stringlist();
     cannons_type_count stringlist := stringlist();
-    
     TYPE number_array IS TABLE OF NUMBER;
     speeds number_array;
     mast_obj_ids number_array;
+    all_damage INTEGER;
 BEGIN
+    in_list.EXTEND(in_l.LAST/dem);
+            DBMS_OUTPUT.PUT_LINE(in_l.LAST/dem);
+            DBMS_OUTPUT.PUT_LINE(dem);
+            
+    row_.EXTEND(dem);
+    j := 1;
+    FOR i IN 1..in_l.LAST LOOP
+        IF j = 4 THEN
+            in_list(i/j) := row_;
+            j := 1;
+            row_ := stringlist();
+            row_.EXTEND(dem);
+            DBMS_OUTPUT.PUT_LINE(CHR(10));
+        END IF;
+        row_(j) := in_l(i);
+        DBMS_OUTPUT.PUT_LINE(in_l(i));
+        j := j + 1;
+    END LOOP;
+    in_list((in_l.LAST+1)/j) := row_;
                          /*STEP 1 Hull Damage*/
               /*====Getting count of cannon of each type====*/
     cannons_type_count.EXTEND(in_list.LAST);
