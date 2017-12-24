@@ -141,18 +141,18 @@ public class ShipDaoImpl implements ShipDao {
     }
 
     @Override
-    public boolean updateShipHealth(BigInteger shipId, int newhealthNumb) {
+    public boolean updateShipHealth(BigInteger shipId, int newHealthNumb) {
         PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(shipId)
-                .setAttribute(DatabaseAttribute.ATTR_CURR_SHIP_HEALTH, newhealthNumb)
+                .setAttribute(DatabaseAttribute.ATTR_CURR_SHIP_HEALTH, newHealthNumb)
                 .build();
         jdbcTemplate.update(psc);
         return true;
     }
 
     @Override
-    public boolean updateShipSailorsNumber(BigInteger shipId, int newsailorsNumb) {
+    public boolean updateShipSailorsNumber(BigInteger shipId, int newSailorsNumb) {
         PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(shipId)
-                .setAttribute(DatabaseAttribute.ATTR_CURR_SHIP_SAILORS, newsailorsNumb)
+                .setAttribute(DatabaseAttribute.ATTR_CURR_SHIP_SAILORS, newSailorsNumb)
                 .build();
         jdbcTemplate.update(psc);
         return true;
