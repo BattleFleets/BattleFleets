@@ -556,7 +556,7 @@ CREATE OR REPLACE  FUNCTION CREATE_CANNON(objectIdTemplate NUMBER) RETURN NUMBER
   END;
 /
 CREATE OR REPLACE FUNCTION CREATE_PLAYER(login VARCHAR, password VARCHAR, email VARCHAR) RETURN VARCHAR
-is
+IS
   CURSOR players_logins IS SELECT VALUE FROM ATTRIBUTES_VALUE WHERE ATTR_ID=27;
   CURSOR players_emails IS SELECT VALUE FROM ATTRIBUTES_VALUE WHERE ATTR_ID=41;
   start_money NUMBER:=100;
@@ -576,7 +576,7 @@ is
       IF players_login.value=login THEN
         RETURN 'Login exists, enter another login';
       END IF;
-    end LOOP;
+    END LOOP;
     FOR players_email IN players_emails LOOP
       IF players_email.value=email THEN
         RETURN 'Email exists, enter another email';
@@ -594,7 +594,35 @@ is
     RETURN 'Registration is successfull';
   END;
 /
-
+CREATE OR REPLACE FUNCTION MOVE_CARGO_TO_WINNER(shipWinId NUMBER, shipLoseId NUMBER) RETURN VARCHAR2
+IS
+  health NUMBER;
+  holdIdWin NUMBER;
+  holdIdLose NUMBER;
+  HealthAttrId NUMBER:=24;
+  holdAttrId NUMBER:=9;
+  goodsObjTypeId NUMBER:=14;
+  quantityAttrId NUMBER:=37;
+  CURSOR goodsId IS SELECT goods.OBJECT_ID Identificator FROM OBJECTS ship, OBJECTS hold, OBJECTS goods WHERE ship.OBJECT_ID=hold.PARENT_ID AND ship.OBJECT_ID=shipLoseId AND hold.OBJECT_TYPE_ID=holdAttrId AND hold.OBJECT_ID=goods.PARENT_ID AND goods.OBJECT_TYPE_ID=goodsObjTypeId;
+  BEGIN
+    SELECT VALUE INTO health FROM ATTRIBUTES_VALUE WHERE ATTR_ID=HealthAttrId AND OBJECT_ID=shipLoseId;
+    SELECT hold.OBJECT_ID INTO holdIdWin FROM OBJECTS ship, OBJECTS hold WHERE ship.OBJECT_ID=hold.PARENT_ID AND ship.OBJECT_ID=shipWinId AND hold.OBJECT_TYPE_ID=holdAttrId;
+    SELECT hold.OBJECT_ID INTO holdIdLose FROM OBJECTS ship, OBJECTS hold WHERE ship.OBJECT_ID=hold.PARENT_ID AND ship.OBJECT_ID=shipLoseId AND hold.OBJECT_TYPE_ID=holdAttrId;
+    IF health<=0
+    THEN
+      FOR goodId IN goodsId LOOP
+        UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE*0.5 WHERE ATTR_ID=quantityAttrId AND OBJECT_ID=goodId.Identificator;
+      END LOOP;
+    END IF;
+    UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE PARENT_ID=holdIdLose AND OBJECT_TYPE_ID=goodsObjTypeId;
+    IF health<=0
+    THEN
+      RETURN 'You received part of goods from enemy ship';
+    ELSE
+      RETURN 'You received all goods from enemy ship';
+    END IF;
+  END;
+/
 
 
 

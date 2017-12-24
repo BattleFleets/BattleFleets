@@ -2,9 +2,7 @@ package com.nctc2017.dao.impl;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.rmi.UnexpectedException;
 import java.sql.SQLDataException;
-import java.sql.SQLException;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +16,12 @@ import org.springframework.stereotype.Repository;
 import com.nctc2017.dao.ExecutorDao;
 import com.nctc2017.dao.utils.JdbcConverter;
 
-import oracle.jdbc.driver.DatabaseError;
 
 @Repository
 @Qualifier("executorDao")
 public class ExecutorDaoImpl implements ExecutorDao {
     private static final String CREATE_CANNON_FUNCTION_NAME = "CREATE_CANNON";
+    private static final String MOVE_CARGO_TO_WINNER_FUNCTION_NAME = "MOVE_CARGO_TO_WINNER";
     private static final String CREATE_CANNON_PARAMETER_NAME = "ObjectIdTemplate";
     private static final String CALCULATE_DAMAGE_FUNCTION_NAME = "calculate_damage";
     private static final String PLAYER_SHIP_ID = "playerShipId";
@@ -65,8 +63,9 @@ public class ExecutorDaoImpl implements ExecutorDao {
 
     @Override
     public String moveCargoToWinner(BigInteger shipWinnerId, BigInteger shipLosserId) {
-        // TODO implement here
-        return "";
+        SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(MOVE_CARGO_TO_WINNER_FUNCTION_NAME);
+        String result = call.executeFunction(String.class,shipWinnerId,shipLosserId);
+        return result;
     }
 
     @Override
