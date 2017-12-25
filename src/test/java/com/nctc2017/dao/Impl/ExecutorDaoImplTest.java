@@ -9,6 +9,8 @@ import com.nctc2017.dao.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -87,5 +89,63 @@ public class ExecutorDaoImplTest {
         assertEquals(goodsDao.findById(enemyWoodId).getQuantity(), 40);
         assertEquals(goodsDao.findById(enemyTeaId).getQuantity(), 350);
         assertEquals(res, "You received part of goods from enemy ship");
+    }
+    @Test(expected=IllegalArgumentException.class)
+    @Rollback(true)
+    public void moveCargoToWinnerWrongTwoId() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player = playerDao.findPlayerByLogin("Steve");
+        BigInteger myShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());
+        BigInteger myHoldId = holdDao.createHold(myShipId);
+        BigInteger myWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,100,40);
+        holdDao.addCargo(myWoodId, myHoldId);
+        playerDao.addNewPlayer("Iogan","1111","Shmidt@gmail.com");
+        Player enemy = playerDao.findPlayerByLogin("Iogan");
+        BigInteger enemyShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, enemy.getPlayerId());
+        BigInteger enemyHoldId = holdDao.createHold(enemyShipId);
+        BigInteger enemyWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,80,30);
+        BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,700,50);
+        holdDao.addCargo(enemyWoodId, enemyHoldId);
+        holdDao.addCargo(enemyTeaId, enemyHoldId);
+        executorDao.moveCargoToWinner(player.getPlayerId(), enemy.getPlayerId());
+    }
+    @Test(expected=IllegalArgumentException.class)
+    @Rollback(true)
+    public void moveCargoToWinneWrongWinId() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player = playerDao.findPlayerByLogin("Steve");
+        BigInteger myShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());
+        BigInteger myHoldId = holdDao.createHold(myShipId);
+        BigInteger myWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,100,40);
+        holdDao.addCargo(myWoodId, myHoldId);
+        playerDao.addNewPlayer("Iogan","1111","Shmidt@gmail.com");
+        Player enemy = playerDao.findPlayerByLogin("Iogan");
+        BigInteger enemyShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, enemy.getPlayerId());
+        BigInteger enemyHoldId = holdDao.createHold(enemyShipId);
+        BigInteger enemyWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,80,30);
+        BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,700,50);
+        holdDao.addCargo(enemyWoodId, enemyHoldId);
+        holdDao.addCargo(enemyTeaId, enemyHoldId);
+        executorDao.moveCargoToWinner(myHoldId, enemyShipId);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    @Rollback(true)
+    public void moveCargoToWinneIdWrongLoseId() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player = playerDao.findPlayerByLogin("Steve");
+        BigInteger myShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());
+        BigInteger myHoldId = holdDao.createHold(myShipId);
+        BigInteger myWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,100,40);
+        holdDao.addCargo(myWoodId, myHoldId);
+        playerDao.addNewPlayer("Iogan","1111","Shmidt@gmail.com");
+        Player enemy = playerDao.findPlayerByLogin("Iogan");
+        BigInteger enemyShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, enemy.getPlayerId());
+        BigInteger enemyHoldId = holdDao.createHold(enemyShipId);
+        BigInteger enemyWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,80,30);
+        BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,700,50);
+        holdDao.addCargo(enemyWoodId, enemyHoldId);
+        holdDao.addCargo(enemyTeaId, enemyHoldId);
+        executorDao.moveCargoToWinner(myShipId, enemyHoldId);
     }
 }

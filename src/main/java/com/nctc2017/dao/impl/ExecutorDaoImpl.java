@@ -5,8 +5,11 @@ import java.math.BigInteger;
 import java.sql.SQLDataException;
 import java.util.*;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -27,6 +30,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
     private static final String PLAYER_SHIP_ID = "playerShipId";
     private static final String ENEMY_SHIP_ID = "enemyShipId";
     private static final String IN_LIST = "in_list";
+    private static Logger log = Logger.getLogger(ExecutorDaoImpl.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -64,8 +68,15 @@ public class ExecutorDaoImpl implements ExecutorDao {
     @Override
     public String moveCargoToWinner(BigInteger shipWinnerId, BigInteger shipLosserId) {
         SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(MOVE_CARGO_TO_WINNER_FUNCTION_NAME);
-        String result = call.executeFunction(String.class,shipWinnerId,shipLosserId);
-        return result;
+        try {
+            String result = call.executeFunction(String.class, shipWinnerId, shipLosserId);
+            return result;
+        }
+        catch (DataIntegrityViolationException e){
+            RuntimeException ex = new IllegalArgumentException("Wrong id " + shipWinnerId + " or " + shipLosserId, e);
+            log.error("ExecutorDAO Exception while call moveCargoToWinner.", ex);
+            throw ex;
+        }
     }
 
     @Override
