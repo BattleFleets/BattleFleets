@@ -6,7 +6,9 @@ import javax.sql.DataSource;
 
 import com.nctc2017.services.LevelUpService;
 import com.nctc2017.services.MoneyService;
+import com.nctc2017.services.ShipRepairService;
 import com.nctc2017.services.ShipService;
+import com.nctc2017.services.ShipTradeService;
 import com.nctc2017.services.TravelService;
 import com.nctc2017.services.utils.BattleManager;
 
@@ -23,6 +25,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+
 
 @EnableWebMvc
 @Configuration
@@ -84,7 +87,7 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean(name = "moneyServicePrototype")
-    @Scope("prototype")
+    @Scope("singleton")
     public MoneyService moneyServiceProt() {
         return new MoneyService();
     }
@@ -107,4 +110,22 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         return new TravelService();
     }
 
+
+    @Bean(name = "shipRepairService")
+    @Scope("singleton")
+    public ShipRepairService shipRepairService() {
+        return new ShipRepairService();
+    }
+
+    @Bean(name = "shipTradeService")
+    @Scope("prototype")
+    public ShipTradeService shipTradeServiceTest() {
+        return new ShipTradeService();
+    }
+
+    @Bean
+    @Scope("singleton")
+    public BattleManager battles() {
+        return new BattleManager();
+    }
 }

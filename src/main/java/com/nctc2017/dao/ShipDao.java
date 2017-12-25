@@ -10,6 +10,8 @@ public interface ShipDao {
 
     Ship findShip(BigInteger shipId);
 
+    ShipTemplate findShipTemplate(BigInteger shipId);
+
     BigInteger createNewShip(BigInteger shipTemplateId,BigInteger playerId);
 
     boolean deleteShip(BigInteger shipId);

@@ -17,7 +17,7 @@ public class Ship extends ShipTemplate {
 
 
 	public Ship(ShipTemplate shipT, BigInteger shipId, String cur_name, int curHealth, int curSailorsQuantity, int curCarryingLimit) {
-		super(shipT.t_name, shipT.maxHealth, shipT.maxSailorsQuantity, shipT.cost, shipT.maxMastsQuantity,
+		super(shipT.templateId,shipT.t_name, shipT.maxHealth, shipT.maxSailorsQuantity, shipT.cost, shipT.maxMastsQuantity,
 				shipT.maxCannonQuantity, shipT.maxCarryingLimit);
 		this.shipId = shipId;
 		this.curName = cur_name;
