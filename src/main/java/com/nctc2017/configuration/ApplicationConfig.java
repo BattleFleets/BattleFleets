@@ -1,15 +1,7 @@
 package com.nctc2017.configuration;
 
-import java.util.Locale;
-
-import javax.sql.DataSource;
-
-import com.nctc2017.services.LevelUpService;
-import com.nctc2017.services.MoneyService;
-import com.nctc2017.services.ShipService;
-import com.nctc2017.services.TravelService;
+import com.nctc2017.services.*;
 import com.nctc2017.services.utils.BattleManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
@@ -23,6 +15,9 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+
+import javax.sql.DataSource;
+import java.util.Locale;
 
 @EnableWebMvc
 @Configuration
@@ -85,7 +80,7 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean(name = "moneyServicePrototype")
-    @Scope("prototype")
+    @Scope("singleton")
     public MoneyService moneyServiceProt() {
         return new MoneyService();
     }
@@ -106,6 +101,12 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     @Scope("singleton")
     public TravelService travelServiceSing() {
         return new TravelService();
+    }
+
+    @Bean(name = "shipTradeService")
+    @Scope("prototype")
+    public ShipTradeService shipTradeServiceTest() {
+        return new ShipTradeService();
     }
 
     @Bean

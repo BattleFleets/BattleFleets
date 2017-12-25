@@ -61,6 +61,7 @@ public class ShipServiceTest {
 
     @BeforeClass
     public static void createShipFlyingDutchman(){
+        BigInteger shipTemplId = BigInteger.ZERO;
          String t_name = "Ghost ship";
          int maxHealth = 100;
          int maxSailorsQuantity = 100;
@@ -74,7 +75,7 @@ public class ShipServiceTest {
          int curSailorsQuantity = 80;
          int curCarryingLimit = 60;
 
-         flyingDutchmanTemp = new ShipTemplate(t_name, maxHealth, maxSailorsQuantity,
+         flyingDutchmanTemp = new ShipTemplate(shipTemplId,t_name, maxHealth, maxSailorsQuantity,
                 cost, maxMastsQuantity, maxCannonQuantity, maxCarryingLimit);
         shipTemplates.add(flyingDutchmanTemp);
         flyingDutchman = new Ship(flyingDutchmanTemp,shipId,curName,curHealth,
@@ -85,6 +86,7 @@ public class ShipServiceTest {
 
     @BeforeClass
     public static void createShipBlackPerl(){
+        BigInteger shipTemplId = BigInteger.TEN;
         String t_name = "Fregata";
         int maxHealth = 100;
         int maxSailorsQuantity = 100;
@@ -98,7 +100,7 @@ public class ShipServiceTest {
         int curSailorsQuantity = 80;
         int curCarryingLimit = 60;
 
-        blackPerlTemp = new ShipTemplate(t_name, maxHealth, maxSailorsQuantity,
+        blackPerlTemp = new ShipTemplate(shipTemplId,t_name, maxHealth, maxSailorsQuantity,
                 cost, maxMastsQuantity, maxCannonQuantity, maxCarryingLimit);
         shipTemplates.add(blackPerlTemp);
         blackPerl = new Ship(blackPerlTemp, shipId, curName, curHealth,
@@ -109,6 +111,7 @@ public class ShipServiceTest {
 
     @BeforeClass
     public static void createShipTemplateQueenAnneRevenge(){
+        BigInteger shipTemplId = BigInteger.ONE;
         String t_name = "Full-rigged ship";
         int maxHealth = 100;
         int maxSailorsQuantity = 100;
@@ -122,7 +125,7 @@ public class ShipServiceTest {
         int curSailorsQuantity = 80;
         int curCarryingLimit = 60;
 
-        queenAnneRevengeTemp = new ShipTemplate(t_name, maxHealth, maxSailorsQuantity,
+        queenAnneRevengeTemp = new ShipTemplate(shipTemplId,t_name, maxHealth, maxSailorsQuantity,
                 cost, maxMastsQuantity, maxCannonQuantity, maxCarryingLimit);
         shipTemplates.add(queenAnneRevengeTemp);
         queenAnneRevenge = new Ship(queenAnneRevengeTemp, shipId, curName, curHealth,
