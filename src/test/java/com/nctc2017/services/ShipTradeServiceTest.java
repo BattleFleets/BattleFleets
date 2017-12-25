@@ -4,6 +4,7 @@ import com.nctc2017.bean.Player;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
 import com.nctc2017.configuration.ApplicationConfig;
+import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import org.junit.Before;
@@ -45,6 +46,8 @@ public class ShipTradeServiceTest {
 
     @Mock
     private ShipDao shipDao;
+    @Mock
+    private MastDao mastDao;
 
     @Mock
     private PlayerDao playerDao;
@@ -53,6 +56,8 @@ public class ShipTradeServiceTest {
     private ShipTradeService shipTradeService;
     @InjectMocks
     private MoneyService moneyService;
+    @Mock
+    private ShipRepairService shipRepairService;
 
     private static Player steve;
     private static ShipTemplate t_BlackPerl;
@@ -91,9 +96,9 @@ public class ShipTradeServiceTest {
         String curName = "Black Perl";
         int curHealth = 80;
 
-        t_BlackPerl = new ShipTemplate(shipTemplId,t_name, maxHealth, maxSailorsQuantity,
+        t_BlackPerl = new ShipTemplate(shipTemplId, t_name, maxHealth, maxSailorsQuantity,
                 cost, maxMastsQuantity, maxCannonQuantity, maxCarryingLimit);
-        blackPerl = new Ship(t_BlackPerl, shipId, curName, curHealth,curSailorsQuantity, curCarryingLimit);
+        blackPerl = new Ship(t_BlackPerl, shipId, curName, curHealth, curSailorsQuantity, curCarryingLimit);
     }
 
     @Before
@@ -105,12 +110,13 @@ public class ShipTradeServiceTest {
         doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
-                steve.setMoney((int)args[1]);
+                steve.setMoney((int) args[1]);
                 return null;
             }
-        }).when(playerDao).updateMoney(any(),anyInt());
+        }).when(playerDao).updateMoney(any(), anyInt());
 
-        when(shipDao.createNewShip(any(),any())).thenReturn(any());
+        when(shipRepairService.countRepairCost(any())).thenReturn(0);
+        when(shipDao.createNewShip(any(), any())).thenReturn(any());
         when(shipDao.findShipTemplate(t_BlackPerl.getTemplateId())).thenReturn(t_BlackPerl);
         when(shipDao.findShip(blackPerl.getShipId())).thenReturn(blackPerl);
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(steve.getMoney());
@@ -121,7 +127,7 @@ public class ShipTradeServiceTest {
         money = steve.getMoney();
         BigInteger shipTempId = t_BlackPerl.getTemplateId();
 
-        assertTrue(shipTradeService.buyShip(steve.getPlayerId(),shipTempId));
+        assertTrue(shipTradeService.buyShip(steve.getPlayerId(), shipTempId));
         assertEquals(money - t_BlackPerl.getCost(), steve.getMoney());
     }
 

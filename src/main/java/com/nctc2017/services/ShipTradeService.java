@@ -16,6 +16,8 @@ public class ShipTradeService {
     @Autowired
     MoneyService moneyService;
     @Autowired
+    ShipRepairService shipRepairService;
+    @Autowired
     ShipDao shipDao;
 
 
@@ -25,7 +27,7 @@ public class ShipTradeService {
             moneyService.deductMoney(playerId, shipTemplate.getCost());
             shipDao.createNewShip(shipTemplateId, playerId);
             return true;
-        }catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             return false;
         }
     }
@@ -33,11 +35,12 @@ public class ShipTradeService {
     public boolean sellShip(BigInteger playerId, BigInteger shipId) {
         try {
             Ship shipFroSelling = shipDao.findShip(shipId);
-            moneyService.addMoney(playerId, shipFroSelling.getCost());
+            int costOfShip = shipFroSelling.getCost() - shipRepairService.countRepairCost(shipId);
+            moneyService.addMoney(playerId, costOfShip);
             return true;
-        }catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             RuntimeException ex = new IllegalArgumentException("Can not sell ship with that id: " + shipId);
-            log.error("ShipTradeService Exception while selling a ship",ex);
+            log.error("ShipTradeService Exception while selling a ship", ex);
             return false;
         }
 
