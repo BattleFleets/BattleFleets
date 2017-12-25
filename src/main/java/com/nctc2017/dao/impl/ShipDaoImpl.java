@@ -54,7 +54,8 @@ public class ShipDaoImpl implements ShipDao {
         return pickedUpShip;
     }
 
-    private Ship findShipTemplate(BigInteger shipTemplId) {
+    @Override
+    public Ship findShipTemplate(BigInteger shipTemplId) {
         Ship pickedUpShip = queryExecutor.findEntity(shipTemplId, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID,
                 new EntityExtractor<>(shipTemplId, new ShipVisitor()));
         if (pickedUpShip == null) {
@@ -259,6 +260,7 @@ public class ShipDaoImpl implements ShipDao {
         @Override
         public Ship visit(BigInteger entityId, Map<String, String> papamMap) {
             ShipTemplate shipT = new ShipTemplate(
+                    entityId,
                     papamMap.remove(ShipTemplate.T_SHIPNAME),
                     Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_HEALTH)),
                     Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_SAILORS_QUANTITY)),
@@ -285,6 +287,7 @@ public class ShipDaoImpl implements ShipDao {
         @Override
         public ShipTemplate visit(BigInteger entityId, Map<String, String> papamMap) {
             ShipTemplate shipT = new ShipTemplate(
+                    entityId,
                     papamMap.remove(ShipTemplate.T_SHIPNAME),
                     Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_HEALTH)),
                     Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_SAILORS_QUANTITY)),

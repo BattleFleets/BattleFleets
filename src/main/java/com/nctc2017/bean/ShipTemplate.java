@@ -1,6 +1,10 @@
 package com.nctc2017.bean;
+
+import java.math.BigInteger;
+
 public class ShipTemplate {
 
+	protected BigInteger templateId;
     protected String t_name;
     protected int maxHealth;
     protected int maxSailorsQuantity;
@@ -22,8 +26,9 @@ public class ShipTemplate {
 
 
 
-	public ShipTemplate(String t_name, int maxHealth, int maxSailorsQuantity, int cost, int maxMastsQuantity,
+	public ShipTemplate(BigInteger templateId,String t_name, int maxHealth, int maxSailorsQuantity, int cost, int maxMastsQuantity,
 			int maxCannonQuantity, int maxCarryingLimit) {
+		this.templateId = templateId;
 		this.t_name = t_name;
 		this.maxHealth = maxHealth;
 		this.maxSailorsQuantity = maxSailorsQuantity;
@@ -34,6 +39,9 @@ public class ShipTemplate {
 
 	}
 
+	public BigInteger getTemplateId() {
+		return templateId;
+	}
 	public String getTName() {
 		return t_name;
 	}
