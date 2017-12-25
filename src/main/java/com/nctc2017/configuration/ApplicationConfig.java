@@ -123,9 +123,4 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         return new ShipTradeService();
     }
 
-    @Bean
-    @Scope("singleton")
-    public BattleManager battles() {
-        return new BattleManager();
-    }
 }
