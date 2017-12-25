@@ -237,7 +237,7 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public boolean setCannonOnShip(BigInteger cannonId, BigInteger shipId) {
-        int rowsAffected = new QueryExecutor().putEntityToContainer(shipId, cannonId, DatabaseObject.SHIP_OBJTYPE_ID);
+        int rowsAffected = queryExecutor.putEntityToContainer(shipId, cannonId, DatabaseObject.SHIP_OBJTYPE_ID);
         if (rowsAffected == 0) {
             log.warn("Can not put cannon: " + cannonId + " on the ship " + shipId);
             return false;

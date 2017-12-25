@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -25,19 +27,25 @@ public class TravelManager {
     private final int lvlDiff = 5;
     private final int maxTime = 300000;
     private final int minTime = 60000;
-    private final long managerWakeUp = 1000;
+    private final long managerWakeUp = 10000;
     
     private Map<BigInteger, TravelBook> journals = Collections.synchronizedMap(new HashMap<BigInteger, TravelBook>());
     private GregorianCalendar clock = new GregorianCalendar();
     private Random rand = new Random(clock.getTimeInMillis());
+    private Thread manager;
     
     public TravelManager(){
         Runnable managerTask = new ManagerTask();
-        Thread manager = new Thread(managerTask);
+        manager = new Thread(managerTask);
         
         log.debug("TravelManager starting");
         manager.start();
         log.debug("TravelManager running");
+    }
+    
+    @PreDestroy
+    private void interruptManager() {
+        manager.interrupt();
     }
     
     public boolean prepareEnemyFor(BigInteger playerId) {
@@ -217,11 +225,6 @@ public class TravelManager {
                     Thread.sleep(managerWakeUp);
                 } catch (InterruptedException e) {
                     log.error("TravelManager was Interrupted", e);
-                    log.debug("TravelManager will start again");
-                    Thread manager = new Thread(this);
-                    log.debug("TravelManager starting");
-                    manager.start();
-                    log.debug("TravelManager running");
                 }
                 log.debug("TravelManager awoke");
             }
