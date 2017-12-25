@@ -24,6 +24,10 @@ import java.math.BigInteger;
 public class StockDaoImpl implements StockDao {
 
     private static final Logger log = Logger.getLogger(StockDaoImpl.class);
+    private static final String CHECK_EXISTENCE_QUERY = "SELECT count(*) FROM objects " +
+            "WHERE object_id = ? " +
+            "AND source_id = ? " +
+            "AND parent_id = ?;";
 
 
     @Autowired
@@ -105,5 +109,17 @@ public class StockDaoImpl implements StockDao {
         }
 
     }
+
+    @Override
+    public boolean isSuchCargoInStock(BigInteger cargoId, BigInteger cargoTemplateId, BigInteger stockId){
+        int count = jdbcTemplate.queryForObject(CHECK_EXISTENCE_QUERY,
+                new Object[]{JdbcConverter.toNumber(cargoId),
+                        JdbcConverter.toNumber(cargoTemplateId),
+                        JdbcConverter.toNumber(stockId)},
+                Integer.class);
+        return count != 0;
+    }
+
+
 
 }

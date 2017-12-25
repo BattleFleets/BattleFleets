@@ -12,4 +12,6 @@ public interface StockDao {
 
     void addCargo(BigInteger cargoId, BigInteger playerId);
 
+    boolean isSuchCargoInStock(BigInteger cargoId, BigInteger cargoTemplateId, BigInteger stockId);
+
 }

@@ -48,6 +48,12 @@ public class QueryExecutor {
         return rowsAffected;
     }
 
+    public int delete(QueryBuilder builder){
+        int rowsAffected = jdbcTemplate.update(builder.build());
+
+        return rowsAffected;
+    }
+
     /**
      * This method allows finds and return all entities with specific type,
      * that contains in some container like Hold or Stock.

@@ -107,6 +107,13 @@ public class AmmoDaoImpl implements AmmoDao {
     }
 
     @Override
+    public void deleteAmmo(BigInteger ammoId) {
+        QueryBuilder builder = QueryBuilder.delete(ammoId);
+
+        queryExecutor.delete(builder);
+    }
+
+    @Override
     public List<Ammo> getAllAmmoFromStock(BigInteger idStock) {
         Validator.dbInstanceOf(jdbcTemplate, "stock", idStock, DatabaseObject.STOCK_OBJTYPE_ID);
         return getAllAmmoFromAnywear(idStock);
