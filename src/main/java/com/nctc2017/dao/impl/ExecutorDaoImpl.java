@@ -2,20 +2,14 @@ package com.nctc2017.dao.impl;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Connection;
 import java.sql.SQLDataException;
 import java.sql.SQLException;
-import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.jdbc.support.oracle.SqlArrayValue;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SqlOutParameter;
-import org.springframework.jdbc.core.SqlParameter;
-import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
@@ -23,11 +17,6 @@ import org.springframework.stereotype.Repository;
 
 import com.nctc2017.dao.ExecutorDao;
 import com.nctc2017.dao.utils.JdbcConverter;
-
-import oracle.jdbc.OracleTypes;
-import oracle.sql.CHAR;
-import oracle.sql.CharacterSet;
-import oracle.sql.ArrayDescriptor;
 
 
 @Repository
@@ -53,7 +42,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
     }
 
     @Override
-    public boolean calculateDamage(int[][] ammoCannon, BigInteger playerShipId, BigInteger idEnemyShip) throws SQLException {
+    public void calculateDamage(int[][] ammoCannon, BigInteger playerShipId, BigInteger idEnemyShip) throws SQLException {
         
         StringBuilder arrToStr = new StringBuilder();
         for (int i = 0; i < ammoCannon.length; i++) {
@@ -69,7 +58,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
             array2[counter] = integers.toArray(new int[integers.size()]);
         }*/
         SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate.getDataSource())
-                .withFunctionName(CALCULATE_DAMAGE_FUNCTION_NAME);/*
+                .withProcedureName(CALCULATE_DAMAGE_FUNCTION_NAME);/*
                 .declareParameters(new SqlOutParameter("RETURN", OracleTypes.BOOLEAN))
                 .withoutProcedureColumnMetaDataAccess()
                 .declareParameters(
@@ -89,19 +78,14 @@ public class ExecutorDaoImpl implements ExecutorDao {
                 .addValue(ENEMY_SHIP_ID, idEnemyShip.longValueExact())
                 .addValue(DIMENSION, ammoCannon.length);
         
-        BigDecimal success;
         try {
-            success = call.executeFunction(BigDecimal.class, in);
+            call.execute(in);
         } catch (UncategorizedSQLException e) {
             LOG.warn("Mistake on client side, may be incorrect ratio of ammunition to cannons "
                     + "or ammunition to quantity in hold");
             throw new SQLDataException("Incorrect placement of ammo ", e);
         }
         
-        
-        if (success != null)
-            return success.intValueExact() > 0;
-        throw new SQLDataException("Database return null when boolean expected");
     }
 
     @Override

@@ -655,7 +655,8 @@ BEGIN
     IF total_ammo_qnt < summ THEN
         ROLLBACK;
         raise_application_error( -20001, 
-        'It is impossible shooting with count of ammo greater than have.' );
+        'It is impossible shooting with count of ammo greater than have.' 
+        || 'Total have: ' || total_ammo_qnt || '. Input sum: ' || summ );
     END IF;
     RETURN summ;
 END;
@@ -726,10 +727,10 @@ END;
 /
 
 
-CREATE OR REPLACE FUNCTION calculate_damage (in_l VARCHAR2,
+CREATE OR REPLACE PROCEDURE calculate_damage (in_l VARCHAR2,
                                          playerShipId NUMBER, 
                                          enemyShipId NUMBER,
-                                         dimension_ INTEGER) RETURN INTEGER is
+                                         dimension_ INTEGER) is
     ammo_to_cannon INT_LIST_LIST := INT_LIST_LIST();
     j INTEGER;
     t_kulevrin INTEGER := 13;
@@ -788,7 +789,9 @@ BEGIN
             IF ammo_qnt > cannons_type_count(j) THEN
                 ROLLBACK;
                 raise_application_error( -20002, 
-                'It is impossible shooting with count of ammos greater than cannons.' );
+                'It is impossible shooting with count of ammos greater than cannons.' 
+                || ' Input quantity of ammo type_' || i || ': ' || ammo_qnt 
+                || ' and cannon type_' || j || ': ' || cannons_type_count(j));
             END IF;
         END LOOP;
     END LOOP;
@@ -963,10 +966,12 @@ BEGIN
         END IF;
     END LOOP;
     
-    RETURN 1;
 EXCEPTION WHEN NO_DATA_FOUND THEN
     ROLLBACK;
-    RETURN 0;
+    raise_application_error( -20003, 
+                'NO_DATA_FOUND check ammos or cannons or ships (with id = '
+    			|| playerShipId || ' and id = ' || enemyShipId || ')'
+				|| 'objects and attr existing' );
 END;
 /
 

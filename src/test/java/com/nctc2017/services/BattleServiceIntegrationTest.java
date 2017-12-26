@@ -172,9 +172,8 @@ public class BattleServiceIntegrationTest {
     
     public void calculateDamage(int[][] cannonAmmo) throws SQLException {
         // When
-        boolean res = battleService.calculateDamage(cannonAmmo, nikId);
+        battleService.calculateDamage(cannonAmmo, nikId, null);
         // Then
-        assertTrue(res);
     }
     
     private void tesstMastNotDamaged(BigInteger playerId) {
