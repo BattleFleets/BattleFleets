@@ -51,7 +51,7 @@ public class MoneyServiceTest {
 
     @Before
     public void initMocks() {
-        moneyService = (MoneyService)this.context.getBean("moneyServicePrototype");
+        moneyService = (MoneyService)this.context.getBean("moneyServiceSingleton");
         MockitoAnnotations.initMocks(this);
 
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(150);

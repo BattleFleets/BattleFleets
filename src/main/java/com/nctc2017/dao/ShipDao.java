@@ -48,6 +48,8 @@ public interface ShipDao {
 
     boolean setCannonOnShip(BigInteger cannonId, BigInteger shipId);
 
+    boolean setHoldOnShip(BigInteger holdId, BigInteger shipId);
+
     int getMaxShotDistance(BigInteger shipId);
     
     int getSpeed(BigInteger shipId);
