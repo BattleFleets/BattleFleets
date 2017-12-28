@@ -698,6 +698,9 @@ BEGIN
         /*DBMS_OUTPUT.PUT_LINE('AFTER SHOT '|| i ||', ENEMY CREW: ' 
                               || enemy_crew || CHR(10));*/
     END LOOP;
+    IF enemy_crew <= 0 THEN
+        enemy_crew := 1;
+    END IF;
     RETURN enemy_crew;
 END;
 /

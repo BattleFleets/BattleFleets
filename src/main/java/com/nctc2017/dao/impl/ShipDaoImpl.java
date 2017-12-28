@@ -1,5 +1,7 @@
 package com.nctc2017.dao.impl;
 
+import com.nctc2017.bean.Cannon;
+import com.nctc2017.bean.Mast;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
 import com.nctc2017.bean.StartShipEquipment;
@@ -248,12 +250,26 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public int getMaxShotDistance(BigInteger shipId) {
-        return 0;
+        List<Cannon> cannons = cannonDao.getAllCannonFromShip(shipId);
+        int maxDist = 0;
+        int dist;
+        for (Cannon cannon : cannons) {
+            dist = cannon.getDistance();
+            if (maxDist < dist) {
+                maxDist = dist;
+            }
+        }
+        return maxDist;
     }
 
     @Override
     public int getSpeed(BigInteger shipId) {
-        return 0;
+        int currSpeed = 0; 
+        List<Mast> steveMasts = mastDao.getShipMastsFromShip(shipId);
+        for (Mast mast : steveMasts) {
+            currSpeed += mast.getCurSpeed();
+        }
+        return currSpeed;
     }
 
     private final class ShipVisitor implements ExtractingVisitor<Ship> {

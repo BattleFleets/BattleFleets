@@ -34,7 +34,6 @@ public class Battle {
     }
 
     public void setDistance(int distance) {
-        if (this.distance < distance)
             this.distance = distance;
     }
     

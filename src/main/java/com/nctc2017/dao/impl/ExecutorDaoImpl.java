@@ -74,8 +74,8 @@ public class ExecutorDaoImpl implements ExecutorDao {
         //CHAR chars = new CHAR(arrInStr, new CharacterSet());
         SqlParameterSource in = new MapSqlParameterSource()
                 .addValue(IN_LIST, arrInStr)
-                .addValue(PLAYER_SHIP_ID, playerShipId.longValueExact())
-                .addValue(ENEMY_SHIP_ID, idEnemyShip.longValueExact())
+                .addValue(PLAYER_SHIP_ID, JdbcConverter.toNumber(playerShipId))
+                .addValue(ENEMY_SHIP_ID, JdbcConverter.toNumber(idEnemyShip))
                 .addValue(DIMENSION, ammoCannon.length);
         
         try {

@@ -124,6 +124,11 @@ public class BattleService {
         shipDao.updateShipHealth(winnerShipId, random.nextInt(RAPAIR_BONUS));
         visitor.endCaseVisit(playerDao, shipDao, winnerShipId, loserShipId, winnerId, loserId);
     }
+    
+    public void setConvergaceOfDist(BigInteger playerId, boolean decision) {
+        Battle battle = battles.getBattle(playerId); 
+        battle.setConvergence(playerId, decision);
+    }
 
     public void decreaseOfDistance(BigInteger playerId) {
         Battle battle =battles.getBattle(playerId); 
@@ -135,6 +140,7 @@ public class BattleService {
                 dist = dist - Math.round(speed / 10);
                 if (dist < 0) dist = 0;
                 battle.setDistance(dist); // (speed *10) / 100; => 10%
+                battle.setConvergence(playerId, false);
             }
         }
     }
@@ -185,7 +191,7 @@ public class BattleService {
                 shipDao.updateShipSailorsNumber(enemyShipId, 0);
                 throw new DeadEndException("No one won. Full mortality!");
             }
-            shipDao.updateShipSailorsNumber(shipWiner, boarding);
+            shipDao.updateShipSailorsNumber(shipWiner, Math.abs(boarding));
             shipDao.updateShipSailorsNumber(shipLoser, 0);
             
             visitor.endCaseVisit(playerDao, shipDao, shipWiner, shipLoser, winner, loser);

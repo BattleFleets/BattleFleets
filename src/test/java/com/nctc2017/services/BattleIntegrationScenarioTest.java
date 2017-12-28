@@ -44,7 +44,7 @@ import com.nctc2017.services.utils.BattleEndVisitor;
 @Transactional
 @Rollback(true)
 @FixMethodOrder
-public class BattleScenarioWithShipDestroyTest {
+public class BattleIntegrationScenarioTest {
     @Autowired
     private ApplicationContext context;
     
@@ -134,8 +134,12 @@ public class BattleScenarioWithShipDestroyTest {
         
         nikShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, nikId);
         steveShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, steveId);
+        assertTrue(shipDao.getSpeed(nikShipId) > 0);
+        assertTrue(shipDao.getSpeed(steveShipId) > 0);
         getMoreCannons(24, nikShipId);
         getMoreCannons(24, steveShipId);
+        assertTrue(shipDao.getCurrentShipSailors(nikShipId) > 0);
+        assertTrue(shipDao.getCurrentShipSailors(steveShipId) > 0);
         
         cannonballId = 
                 ammoDao.createAmmo(DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID, 1000);
@@ -150,9 +154,12 @@ public class BattleScenarioWithShipDestroyTest {
         holdDao.addCargo(cannonballId, nikHoldId);
         holdDao.addCargo(buckshotId, steveHoldId);
         holdDao.addCargo(chainId, steveHoldId);
-        BigInteger goodsId = 
+        BigInteger goodsId_1 = 
                 goodsDao.createNewGoods(DatabaseObject.GRAIN_TEMPLATE_ID, 10, 10);
-        holdDao.addCargo(goodsId, steveHoldId);
+        holdDao.addCargo(goodsId_1, steveHoldId);
+        BigInteger goodsId_2 = 
+                goodsDao.createNewGoods(DatabaseObject.GRAIN_TEMPLATE_ID, 10, 10);
+        holdDao.addCargo(goodsId_2, nikHoldId);
         
         BigInteger cityIdNik = playerDao.getPlayerCity(nik.getPlayerId());
         BigInteger cityIdSteve = playerDao.getPlayerCity(steve.getPlayerId());
@@ -194,21 +201,16 @@ public class BattleScenarioWithShipDestroyTest {
     
     @Test(expected = IllegalStateException.class)
     public void testBoardingWithBigDist() throws DeadEndException, BattleEndException {
-
         battleService.boarding(nikId, null);
     }
     
     private int totalCurrSpeed(BigInteger shipId) {
-        int currSpeed = 0; 
-        List<Mast> steveMasts = mastDao.getShipMastsFromShip(shipId);
-        for (Mast mast : steveMasts) {
-            currSpeed += mast.getCurSpeed();
-        }
+        int currSpeed = shipDao.getSpeed(shipId);
         return currSpeed;
     }
     
     @Test
-    public void testBattle() throws DeadEndException, BattleEndException, SQLException {
+    public void testBattleWithShipDestroy() throws DeadEndException, BattleEndException, SQLException {
 
         Ship steveShipBefore;
         Ship nikShipAfter;
@@ -250,6 +252,71 @@ public class BattleScenarioWithShipDestroyTest {
         
     }
     
+    @Test
+    public void testBoarding() throws BattleEndException, SQLException {
+
+        Ship nikShipBefore = shipDao.findShip(nikShipId);
+        Ship steveShipBefore = shipDao.findShip(steveShipId);
+        Ship nikShipAfter;
+        Ship steveShipAfter;
+        int dist;
+        int[] mortars = new int[] {0, 5, 0};
+        int[] kulevrins = new int[] {0, 5, 0};
+        int[] bombards = new int[] {0, 5, 0};
+
+        int[][] ammoCannons = new int [][]{mortars, kulevrins, bombards};
+        int[][] ammoCannonsNik = new int [][]{{0, 0, 0},{0, 0, 0},{0, 0, 0}};
+        while(true) {
+            dist = battleService.getDistance(nikId);
+            battleService.setConvergaceOfDist(nikId, true);
+            battleService.setConvergaceOfDist(steveId, true);
+            battleService.decreaseOfDistance(nikId);
+            battleService.decreaseOfDistance(steveId);
+            
+            battleService.calculateDamage(ammoCannonsNik, nikId, null);
+            battleService.calculateDamage(ammoCannons, steveId, null);
+            int currSteveSailors = shipDao.getCurrentShipSailors(steveShipId);
+            assertEquals("" + currSteveSailors + " != " + steveShipBefore.getCurSailorsQuantity(), 
+                    currSteveSailors, 
+                    steveShipBefore.getCurSailorsQuantity());
+            
+            assertTrue(battleService.getDistance(nikId) >= 0);
+            assertTrue(battleService.getDistance(nikId) < dist);
+            
+            if (battleService.getDistance(nikId) == 0) {
+                try {
+                    battleService.boarding(nikId, new DefaultBoardingBattleEnd());
+                    break;
+                } catch (DeadEndException e) {
+                    shipDao.updateShipSailorsNumber(nikShipId, 20);
+                    shipDao.updateShipSailorsNumber(steveShipId, 20);
+                }
+            }
+        }
+        nikShipAfter = shipDao.findShip(nikShipId);
+        steveShipAfter = shipDao.findShip(steveShipId);
+        assertTrue(nikShipAfter.getCurSailorsQuantity() >= 0);
+        assertTrue(nikShipAfter.getCurSailorsQuantity() < nikShipBefore.getCurSailorsQuantity());
+        int steveCurSailors = steveShipAfter.getCurSailorsQuantity();
+        assertTrue("steve crew after battle: " + steveCurSailors + " >= 0", steveCurSailors >= 0);
+        assertTrue(steveShipAfter.getCurSailorsQuantity() < steveShipBefore.getCurSailorsQuantity());
+        assertTrue(battleService.getDistance(nikId) >= 0);
+       
+        assertTrue(battleService.isBattleFinish(nikId));
+        assertTrue(battleService.isBattleFinish(steveId));
+        assertTrue(battleService.isLeaveBattleFieldAvailable(steveId));
+        assertTrue(battleService.isLeaveBattleFieldAvailable(nikId));
+        assertTrue(battleService.leaveBattleField(nikId));
+        try {
+            battleService.leaveBattleField(steveId);
+        } catch (BattleEndException e1) {
+            return;
+        }
+        fail("BattleEndException expected");
+        return;
+        
+    }
+    
     private class DefaultDestroyBattleEnd implements BattleEndVisitor {
 
         @Override
@@ -261,9 +328,25 @@ public class BattleScenarioWithShipDestroyTest {
             int loserVolumeAfter = holdDao.getOccupiedVolume(loserShipId);
             int winerVolumeAfter = holdDao.getOccupiedVolume(winnerShipId);
             assertTrue(loserVolumeBefore > loserVolumeAfter);
-            //assertEquals(loserVolumeAfter, loserVolumeBefore - 10); TODO
+            assertEquals(loserVolumeAfter, loserVolumeBefore - 10);
             assertTrue(winerVolumeBefore < winerVolumeAfter);
             shipDao.deleteShip(loserShipId);
+        }
+        
+    }
+    
+    private class DefaultBoardingBattleEnd implements BattleEndVisitor {
+
+        @Override
+        public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
+                BigInteger winnerId, BigInteger loserId) {
+            int loserVolumeBefore = holdDao.getOccupiedVolume(loserShipId);
+            int winerVolumeBefore = holdDao.getOccupiedVolume(winnerShipId);
+            battleEnd.passCargoToWinnerAfterBoarding(winnerShipId, loserShipId);
+            int loserVolumeAfter = holdDao.getOccupiedVolume(loserShipId);
+            int winerVolumeAfter = holdDao.getOccupiedVolume(winnerShipId);
+            assertTrue(loserVolumeBefore > loserVolumeAfter);
+            assertTrue(winerVolumeBefore < winerVolumeAfter);
         }
         
     }
