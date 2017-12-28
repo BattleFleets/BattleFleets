@@ -598,12 +598,15 @@ is
 DROP TYPE INT_LIST_LIST;
 CREATE OR REPLACE TYPE STRING_LIST AS TABLE OF VARCHAR(10);
 /
+CREATE OR REPLACE TYPE number_array IS TABLE OF NUMBER;
+/
 CREATE OR REPLACE TYPE INT_LIST AS TABLE OF INTEGER;
 /
 CREATE OR REPLACE TYPE INT_LIST_LIST AS TABLE OF INT_LIST;
 /
 
-CREATE OR REPLACE FUNCTION to_array (var_list VARCHAR2, dem INTEGER) RETURN INT_LIST_LIST is
+CREATE OR REPLACE FUNCTION to_array (var_list VARCHAR2, dem INTEGER) 
+                                                         RETURN INT_LIST_LIST IS
     in_str_list STRING_LIST := STRING_LIST();
     out_list INT_LIST_LIST := INT_LIST_LIST();
     row_ INT_LIST := INT_LIST();
@@ -665,7 +668,7 @@ END;
 CREATE OR REPLACE FUNCTION buckshot_damage (ammo_to_cannon INT_LIST_LIST, 
                               cannons_type_count INT_LIST, 
                               damages INT_LIST, 
-                              e_crew INTEGER) RETURN INTEGER is
+                              e_crew INTEGER) RETURN INTEGER IS
     val INTEGER;
     ammo_qnt INTEGER; 
     all_damage INTEGER; 
@@ -699,7 +702,8 @@ BEGIN
 END;
 /
 
-CREATE OR REPLACE FUNCTION get_ammo_in_hold (playerShipId NUMBER, templ_id NUMBER) RETURN INTEGER is
+CREATE OR REPLACE FUNCTION get_ammo_in_hold (playerShipId NUMBER, 
+                                            templ_id NUMBER) RETURN INTEGER IS
     val INTEGER;
     hold_objtype_id INTEGER := 9;
     ammo_objtype_id INTEGER := 11;
@@ -712,10 +716,13 @@ BEGIN
     AND obj.OBJECT_TYPE_ID = ammo_objtype_id AND obj.SOURCE_ID = templ_id;
     
     RETURN obj_id;
+EXCEPTION WHEN NO_DATA_FOUND THEN
+    RETURN NULL;
 END;
 /
 
-CREATE OR REPLACE FUNCTION get_attr_val (objId NUMBER, attrId NUMBER) RETURN INTEGER is
+CREATE OR REPLACE FUNCTION get_attr_val (objId NUMBER, attrId NUMBER) 
+                                                               RETURN INTEGER IS
     val INTEGER;
 BEGIN
     SELECT atr_v.VALUE INTO val 
@@ -723,14 +730,103 @@ BEGIN
     WHERE atr_v.OBJECT_ID = objId AND atr_v.ATTR_ID = attrId;
     
     RETURN val;
+EXCEPTION WHEN NO_DATA_FOUND THEN
+    RETURN 0;
 END;
 /
 
+CREATE OR REPLACE FUNCTION calc_cannonball_damage (ammo_to_cannon INT_LIST_LIST,
+                                                   damages INT_LIST,
+                                                   e_health INTEGER) 
+                                                   RETURN INTEGER IS 
+    ammo_qnt INTEGER;
+    all_damage INTEGER;
+    enemy_health INTEGER;
+BEGIN
+    enemy_health := e_health;
+    /*DBMS_OUTPUT.PUT_LINE('ENEMY HP: '|| enemy_health);*/
+    FOR i IN 1 .. ammo_to_cannon.LAST
+    LOOP
+        ammo_qnt := ammo_to_cannon(i)(1);
+        /*DBMS_OUTPUT.PUT_LINE('CANNONBALL IN CANNONS with type' || i || ': ' || ammo_qnt);*/
+        all_damage := ammo_qnt * damages(i);
+        /*DBMS_OUTPUT.PUT_LINE('DAMAGE: MAX ' || all_damage 
+                             || ' MIN ' || (all_damage / 2));*/
+        enemy_health := enemy_health - 
+                (all_damage - all_damage * DBMS_RANDOM.VALUE(0, 0.5));
+        /*DBMS_OUTPUT.PUT_LINE('AFTER SHOT '|| i ||', ENEMY HP: ' 
+                              || enemy_health || CHR(10));*/
+    END LOOP;
+    RETURN enemy_health;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE decrease_ammo_quantity (new_ammo_val INTEGER,
+                                                    concrete_obj_id NUMBER) IS
+    ammo_quantity_id INTEGER := 34;
+BEGIN
+        IF new_ammo_val = 0 THEN
+            /*DBMS_OUTPUT.PUT_LINE('AMMO with ID = '
+            || concrete_obj_id ||' delete because quantity ' || new_ammo_val);*/
+            DELETE objects WHERE object_id = concrete_obj_id;
+        ELSE
+            update_atr_val(new_ammo_val, concrete_obj_id, ammo_quantity_id);
+        END IF;
+END;
+/
+
+CREATE OR REPLACE FUNCTION calc_chains_damage (speeds_ number_array,
+                                               ammo_to_cannon INT_LIST_LIST,
+                                               damages INT_LIST,
+                                               mast_obj_ids number_array) 
+                                               RETURN number_array IS
+    ammo_qnt INTEGER;
+    all_damage INTEGER;
+    mast_counter INTEGER;
+    speeds number_array;
+BEGIN
+    speeds := speeds_;
+    mast_counter := speeds.LAST;
+    FOR i IN 1 .. ammo_to_cannon.LAST
+    LOOP
+        ammo_qnt := ammo_to_cannon(i)(3);
+        /*DBMS_OUTPUT.PUT_LINE('CHAIN IN CANNONS with type' || i || ': ' || ammo_qnt);*/
+        all_damage := ammo_qnt * damages(i) * DBMS_RANDOM.VALUE(0.05, 0.35);
+        /*DBMS_OUTPUT.PUT_LINE('START DAMAGE WITH VALUE: ' || all_damage);*/
+        WHILE (all_damage > 0) LOOP
+        /*DBMS_OUTPUT.PUT_LINE('VOLLEY ' || i);
+        DBMS_OUTPUT.PUT_LINE('MAST_' || mast_counter || ' SPEED ' || speeds(mast_counter));
+        DBMS_OUTPUT.PUT_LINE('DAMAGE ' || all_damage || CHR(10));*/
+            IF speeds(mast_counter) < all_damage THEN
+                all_damage := all_damage - speeds(mast_counter);
+                IF speeds(mast_counter) = 0 AND mast_counter > 1 THEN
+                    DELETE OBJECTS WHERE OBJECT_ID = mast_obj_ids(mast_counter);
+                    /*DBMS_OUTPUT.PUT_LINE('DELETE MAST_' || mast_counter || ' ' || mast_obj_ids(mast_counter));*/
+                    speeds(mast_counter) := -1;
+                    all_damage := all_damage - 1;
+                ELSE
+                    speeds(mast_counter) := 0;
+                END IF;
+                mast_counter := mast_counter - 1;
+            ELSE
+                speeds(mast_counter) := speeds(mast_counter) - all_damage;
+                all_damage := 0;
+            END IF;
+            EXIT WHEN (mast_counter = 0);
+        END LOOP;
+        EXIT WHEN (mast_counter = 0);
+    END LOOP;
+    IF speeds(1) <= 0 THEN
+        speeds(1) := 1;
+    END IF;
+    RETURN speeds;
+END;
+/
 
 CREATE OR REPLACE PROCEDURE calculate_damage (in_l VARCHAR2,
                                          playerShipId NUMBER, 
                                          enemyShipId NUMBER,
-                                         dimension_ INTEGER) is
+                                         dimension_ INTEGER) IS
     ammo_to_cannon INT_LIST_LIST := INT_LIST_LIST();
     j INTEGER;
     t_kulevrin INTEGER := 13;
@@ -755,13 +851,10 @@ CREATE OR REPLACE PROCEDURE calculate_damage (in_l VARCHAR2,
     ammo_for_shot INTEGER;
     enemy_health INTEGER;
     enemy_crew INTEGER;
-    mast_counter INTEGER;
     damages INT_LIST := INT_LIST();
     cannons_type_count INT_LIST := INT_LIST();
-    TYPE number_array IS TABLE OF NUMBER;
     speeds number_array;
     mast_obj_ids number_array;
-    all_damage INTEGER;
 BEGIN
     ammo_to_cannon := to_array(in_l, dimension_);
                                  /*STEP 1 Hull Damage*/
@@ -827,36 +920,20 @@ BEGIN
     ammo_for_shot := check_and_get_quantity(ammo_to_cannon, 1, total_ammo_qnt);
     /*DBMS_OUTPUT.PUT_LINE('TOTAL CANNONBALL TO SHOT ' || ammo_for_shot);*/
     
-                        /*====Damage calculating====*/
-    /*DBMS_OUTPUT.PUT_LINE('ENEMY HP: '|| enemy_health);*/
-    FOR i IN 1 .. ammo_to_cannon.LAST
-    LOOP
-        ammo_qnt := ammo_to_cannon(i)(1);
-        /*DBMS_OUTPUT.PUT_LINE('CANNONBALL IN CANNONS with type' || i || ': ' || ammo_qnt);*/
-        all_damage := ammo_qnt * damages(i);
-        /*DBMS_OUTPUT.PUT_LINE('DAMAGE: MAX ' || all_damage 
-                             || ' MIN ' || (all_damage / 2));*/
-        enemy_health := enemy_health - 
-                (all_damage - all_damage * DBMS_RANDOM.VALUE(0, 0.5));
-        /*DBMS_OUTPUT.PUT_LINE('AFTER SHOT '|| i ||', ENEMY HP: ' 
-                              || enemy_health || CHR(10));*/
-    END LOOP;
-    
-                  /*====Decrease cannonballs=====*/
-    total_ammo_qnt := total_ammo_qnt - ammo_for_shot;
-    IF total_ammo_qnt = 0 THEN
-        /*DBMS_OUTPUT.PUT_LINE('CANNONBALL with ID = '
-        || cball_obj_id ||' delete because quantity ' || total_ammo_qnt);*/
-        DELETE objects WHERE object_id = cball_obj_id;
-    ELSE
-        update_atr_val(total_ammo_qnt, cball_obj_id, ammo_quantity_id);
+    IF total_ammo_qnt > 0 AND ammo_for_shot > 0 THEN
+                            /*====Damage calculating====*/
+        enemy_health := 
+            calc_cannonball_damage (ammo_to_cannon, damages, enemy_health);
+        
+                      /*====Decrease cannonballs=====*/
+        total_ammo_qnt := total_ammo_qnt - ammo_for_shot;
+        decrease_ammo_quantity (total_ammo_qnt, cball_obj_id);
+        /*DBMS_OUTPUT.PUT_LINE('CANNONBALL MUST WILL BE '|| total_ammo_qnt);*/
+        
+                       /*Make damage to enemy ship*/
+        update_atr_val(enemy_health, enemyShipId, ship_health_id);             
+        /*DBMS_OUTPUT.PUT_LINE('ENEMY HP NOW '|| enemy_health || CHR(10));*/
     END IF;
-    /*DBMS_OUTPUT.PUT_LINE('CANNONBALL MUST WILL BE '|| total_ammo_qnt);*/
-    
-                   /*Make damage to enemy ship*/
-    update_atr_val(enemy_health, enemyShipId, ship_health_id);             
-    /*DBMS_OUTPUT.PUT_LINE('ENEMY HP NOW '|| enemy_health || CHR(10));*/
-    
                           /*STEP 2 Crew Damage*/
                        /*====Getting enemy crew quantity====*/
     enemy_crew := get_attr_val(enemyShipId, ship_crew_id);
@@ -873,24 +950,20 @@ BEGIN
     ammo_for_shot := check_and_get_quantity(ammo_to_cannon, 2, total_ammo_qnt);
     /*DBMS_OUTPUT.PUT_LINE('TOTAL BUCKSHOT TO SHOT ' || ammo_for_shot || CHR(10));*/
     
-                   /*====Damage crew calculating====*/
-    enemy_crew := buckshot_damage (ammo_to_cannon, cannons_type_count, 
-                                    damages, enemy_crew);   
-                          
-                    /*====Decrease buckshot====*/  
-    total_ammo_qnt := total_ammo_qnt - ammo_for_shot;
-    IF total_ammo_qnt = 0 THEN
-        /*DBMS_OUTPUT.PUT_LINE('BUCKSHOT with ID = '
-        || bshot_obj_id ||' delete because quantity '|| total_ammo_qnt);*/
-        DELETE objects WHERE object_id = bshot_obj_id;
-    ELSE
-        update_atr_val(total_ammo_qnt, bshot_obj_id, ammo_quantity_id);
+    IF total_ammo_qnt > 0 AND ammo_for_shot > 0 THEN
+                       /*====Damage crew calculating====*/
+        enemy_crew := buckshot_damage (ammo_to_cannon, cannons_type_count, 
+                                        damages, enemy_crew);   
+                              
+                        /*====Decrease buckshot====*/  
+        total_ammo_qnt := total_ammo_qnt - ammo_for_shot;
+        decrease_ammo_quantity (total_ammo_qnt, bshot_obj_id);
+        /*DBMS_OUTPUT.PUT_LINE('BUCKSHOTS MUST WILL BE '|| total_ammo_qnt);*/
+        
+                       /*Make damage to enemy crew*/
+        update_atr_val(enemy_crew, enemyShipId, ship_crew_id);             
+        /*DBMS_OUTPUT.PUT_LINE('ENEMY CREW NOW '|| enemy_crew || CHR(10));*/
     END IF;
-    /*DBMS_OUTPUT.PUT_LINE('BUCKSHOTS MUST WILL BE '|| total_ammo_qnt);*/
-    
-                   /*Make damage to enemy crew*/
-    update_atr_val(enemy_crew, enemyShipId, ship_crew_id);             
-    /*DBMS_OUTPUT.PUT_LINE('ENEMY CREW NOW '|| enemy_crew || CHR(10));*/
     
                      /*STEP 3 Mast Damage*/
               /*====Getting id of masts on ship====*/
@@ -913,65 +986,27 @@ BEGIN
     ammo_for_shot :=  check_and_get_quantity(ammo_to_cannon, 3, total_ammo_qnt);
     /*DBMS_OUTPUT.PUT_LINE('TOTAL CHAIN TO SHOT ' || ammo_for_shot || CHR(10));*/
     
-                  /*====Damage mast calculating====*/
-    mast_counter := speeds.LAST;
-    FOR i IN 1 .. ammo_to_cannon.LAST
-    LOOP
-        ammo_qnt := ammo_to_cannon(i)(3);
-        /*DBMS_OUTPUT.PUT_LINE('CHAIN IN CANNONS with type' || i || ': ' || ammo_qnt);*/
-        all_damage := ammo_qnt * damages(i) * DBMS_RANDOM.VALUE(0.05, 0.35);
-        /*DBMS_OUTPUT.PUT_LINE('START DAMAGE WITH VALUE: ' || all_damage);*/
-        WHILE (all_damage > 0) LOOP
-        /*DBMS_OUTPUT.PUT_LINE('VOLLEY ' || i);
-        DBMS_OUTPUT.PUT_LINE('MAST_' || mast_counter || ' SPEED ' || speeds(mast_counter));
-        DBMS_OUTPUT.PUT_LINE('DAMAGE ' || all_damage || CHR(10));*/
-            IF speeds(mast_counter) < all_damage THEN
-                all_damage := all_damage - speeds(mast_counter);
-                IF speeds(mast_counter) = 0 THEN
-                    DELETE OBJECTS WHERE OBJECT_ID = mast_obj_ids(mast_counter);
-                    speeds(mast_counter) := -1;
-                    all_damage := all_damage - 1;
-                ELSE
-                    speeds(mast_counter) := 0;
-                END IF;
-                mast_counter := mast_counter - 1;
-            ELSE
-                speeds(mast_counter) := speeds(mast_counter) - all_damage;
-                all_damage := 0;
+    IF total_ammo_qnt > 0 AND ammo_for_shot > 0 THEN
+                      /*====Damage mast calculating====*/
+        speeds := calc_chains_damage (speeds, ammo_to_cannon, 
+                                      damages, mast_obj_ids);
+        
+                     /*====Decrease chain====*/  
+        total_ammo_qnt := total_ammo_qnt - ammo_for_shot;
+        decrease_ammo_quantity (total_ammo_qnt, chain_obj_id);
+        /*DBMS_OUTPUT.PUT_LINE('CHAIN MUST WILL BE '|| total_ammo_qnt);*/
+                
+                /*====Make mast damage====*/
+        FOR i IN 1 .. speeds.LAST LOOP
+            IF speeds(i) > -1 THEN
+                update_atr_val(speeds(i), mast_obj_ids(i), mast_cur_speed_atr_id);
+                /*DBMS_OUTPUT.PUT_LINE('MAST_' || i || ' ID '|| mast_obj_ids(i) 
+                                    ||' SPEED: ' || speeds(i));*/
             END IF;
         END LOOP;
-        EXIT WHEN (mast_counter = 0);
-    END LOOP;
-    IF speeds(1) = 0 THEN
-        speeds(1) := 1;
     END IF;
     
-                 /*====Decrease chain====*/  
-    total_ammo_qnt := total_ammo_qnt - ammo_for_shot;
-    IF total_ammo_qnt = 0 THEN
-        /*DBMS_OUTPUT.PUT_LINE('CHAIN with ID = '
-        || bshot_obj_id ||' delete because quantity '|| total_ammo_qnt);*/
-        DELETE objects WHERE object_id = bshot_obj_id;
-    ELSE
-        update_atr_val(total_ammo_qnt, chain_obj_id, ammo_quantity_id);
-    END IF;
-    /*DBMS_OUTPUT.PUT_LINE('CHAIN MUST WILL BE '|| total_ammo_qnt);*/
-            
-            /*====Make mast damage====*/
-    FOR i IN 1 .. speeds.LAST LOOP
-        IF speeds(i) > -1 THEN
-            update_atr_val(speeds(i), mast_obj_ids(i), mast_cur_speed_atr_id);
-            /*DBMS_OUTPUT.PUT_LINE('MAST_' || i || ' ID '|| mast_obj_ids(i) 
-                                ||' SPEED: ' || speeds(i));*/
-        END IF;
-    END LOOP;
-    
-EXCEPTION WHEN NO_DATA_FOUND THEN
-    ROLLBACK;
-    raise_application_error( -20003, 
-                'NO_DATA_FOUND check ammos or cannons or ships (with id = '
-    			|| playerShipId || ' and id = ' || enemyShipId || ')'
-				|| 'objects and attr existing' );
+
 END;
 /
 

@@ -132,7 +132,9 @@ public class BattleService {
                 int dist = battle.getDistance();
                 BigInteger shipId = battle.getShipId(playerId);
                 int speed = shipDao.getSpeed(shipId);
-                battle.setDistance(dist - Math.round(speed / 10)); // (speed *10) / 100; => 10%
+                dist = dist - Math.round(speed / 10);
+                if (dist < 0) dist = 0;
+                battle.setDistance(dist); // (speed *10) / 100; => 10%
             }
         }
     }
@@ -153,6 +155,7 @@ public class BattleService {
                 throw new BattleEndException("Battle already finish.\n"
                         + "Your crwe: " + shipDao.getCurrentShipSailors(plyerShipId)
                         + "Enemy crwe: " + shipDao.getCurrentShipSailors(enemyShipId));
+            if(battle.getDistance() > 0) throw new IllegalStateException("Distance too big for boarding");
             
             int enemyCrew = shipDao.getCurrentShipSailors(enemyShipId);
             int playerCrew = shipDao.getCurrentShipSailors(plyerShipId);
