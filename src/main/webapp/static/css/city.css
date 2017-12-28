@@ -10,3 +10,60 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
 }
+
+table {
+    background: url("https://lh3.googleusercontent.com/oTjhlucD1uKXEXJZMNnh9TcWeSrhirLG_3jgr7fCNjpe0uLqv8sl-Wkk8HSL3mgOXek1cHv8Oi9qPGlq92w6=w1367-h547");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: 4px ridge black; /* Параметры границы */
+    padding: 5%;
+    border-spacing: 10%;
+
+}
+
+input[type=submit] {
+    width: 175%;  height: 150%;
+}
+
+.button {
+    background-image:url("https://lh4.googleusercontent.com/XqRo1m7urD89UhB9oUToElKYGmr3hBZxIStQ-QDFVeFxZQcg3eUnvfoDtu7IO654JjfOIx73tbN0Pubv1Oez=w1367-h547"); 
+    display: inline-block;
+    border-radius: 16px;
+    background-color: #f4511e;
+    border: none;
+    color: white;
+    text-align: center;
+    font-size: 28px;
+    font-family: fantasy;
+    width: 250px;
+    height: 50px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 25px;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
+}

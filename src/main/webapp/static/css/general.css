@@ -4,13 +4,38 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.titleText {
+	background-image: url("https://lh3.googleusercontent.com/oTjhlucD1uKXEXJZMNnh9TcWeSrhirLG_3jgr7fCNjpe0uLqv8sl-Wkk8HSL3mgOXek1cHv8Oi9qPGlq92w6=w1367-h547");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    
+    border: 4px ridge black; 
+    padding: 1%;
+    width: 50%;
+    
+    text-align: center;
+    color: white;
+    font-family: "Lucida Bright", Georgia, serif;
+	font-size: 48px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 700;
+	line-height: 100%;
+	
+}
+
 .logOutBottom {
+	background-image: url("https://lh3.googleusercontent.com/oTjhlucD1uKXEXJZMNnh9TcWeSrhirLG_3jgr7fCNjpe0uLqv8sl-Wkk8HSL3mgOXek1cHv8Oi9qPGlq92w6=w1367-h547");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
     position: absolute;
-    border: 2px solid #a94442;
+    border: 2px solid black;
     top: 8px;
     right: 16px;
-    color: #a94442;
+    color: white;
     font-size: 18px;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Lucida Bright", Georgia, serif;
     padding: 5px 20px;
 }

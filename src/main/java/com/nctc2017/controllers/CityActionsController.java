@@ -34,6 +34,7 @@ public class CityActionsController {
         ModelAndView model = new ModelAndView();
         model.addObject("msg", "This is protected page - Only for Users!");
         model.setViewName("CityView");
+        model.addObject("city", "Port Royal");
         return model;
     }
 
