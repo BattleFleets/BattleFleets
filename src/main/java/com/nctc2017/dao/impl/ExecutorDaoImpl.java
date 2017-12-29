@@ -3,10 +3,12 @@ package com.nctc2017.dao.impl;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.SQLDataException;
-import java.util.*;
+import java.sql.SQLException;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -20,13 +22,15 @@ import com.nctc2017.dao.utils.JdbcConverter;
 @Repository
 @Qualifier("executorDao")
 public class ExecutorDaoImpl implements ExecutorDao {
+    private static final Logger LOG = Logger.getLogger(ExecutorDaoImpl.class);
     private static final String CREATE_CANNON_FUNCTION_NAME = "CREATE_CANNON";
     private static final String MOVE_CARGO_TO_WINNER_FUNCTION_NAME = "MOVE_CARGO_TO_WINNER";
     private static final String CREATE_CANNON_PARAMETER_NAME = "ObjectIdTemplate";
-    private static final String CALCULATE_DAMAGE_FUNCTION_NAME = "calculate_damage";
+    private static final String CALCULATE_DAMAGE_FUNCTION_NAME = "CALCULATE_DAMAGE";
     private static final String PLAYER_SHIP_ID = "playerShipId";
     private static final String ENEMY_SHIP_ID = "enemyShipId";
-    private static final String IN_LIST = "in_list";
+    private static final String DIMENSION = "dimension_";
+    private static final String IN_LIST = "in_l";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -38,16 +42,50 @@ public class ExecutorDaoImpl implements ExecutorDao {
     }
 
     @Override
-    public boolean calculateDamage(int[][] ammoCannon, BigInteger playerShipId, BigInteger idEnemyShip) throws SQLDataException {
-        SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate)
-                .withFunctionName(CALCULATE_DAMAGE_FUNCTION_NAME);
-        SqlParameterSource in = new MapSqlParameterSource().addValue(IN_LIST, ammoCannon)
+    public void calculateDamage(int[][] ammoCannon, BigInteger playerShipId, BigInteger idEnemyShip) throws SQLException {
+        
+        StringBuilder arrToStr = new StringBuilder();
+        for (int i = 0; i < ammoCannon.length; i++) {
+            for (int j = 0; j < ammoCannon[i].length; j++) {
+                arrToStr.append(ammoCannon[i][j]);
+                arrToStr.append(",");
+            }
+        }
+        String arrInStr = arrToStr.toString();
+        /*int[][] array2 = new int[ammoCannon.size()][];
+        int counter = 0;
+        for (List<Integer> integers : ammoCannon) {
+            array2[counter] = integers.toArray(new int[integers.size()]);
+        }*/
+        SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate.getDataSource())
+                .withProcedureName(CALCULATE_DAMAGE_FUNCTION_NAME);/*
+                .declareParameters(new SqlOutParameter("RETURN", OracleTypes.BOOLEAN))
+                .withoutProcedureColumnMetaDataAccess()
+                .declareParameters(
+                        new SqlParameter(IN_LIST, OracleTypes.VARCHAR),
+                        new SqlParameter(PLAYER_SHIP_ID, OracleTypes.NUMBER),
+                        new SqlParameter(ENEMY_SHIP_ID, OracleTypes.NUMBER),
+                        new SqlParameter(DIMENSION, OracleTypes.INTEGER));*/
+        //Connection conn = jdbcTemplate.getDataSource().getConnection();
+        //ArrayDescriptor desc = ArrayDescriptor.createDescriptor("STRINGLIST_LIST", conn);
+        //ArrayDescriptor intDesc = new ArrayDescriptor("LIST_I", conn);
+        //ARRAY sqlInLine = new ARRAY(intDesc, conn, inLine);
+        //SqlArrayValue<Integer> arr = new SqlArrayValue<>(inLine);
+        //CHAR chars = new CHAR(arrInStr, new CharacterSet());
+        SqlParameterSource in = new MapSqlParameterSource()
+                .addValue(IN_LIST, arrInStr)
                 .addValue(PLAYER_SHIP_ID, JdbcConverter.toNumber(playerShipId))
-                .addValue(ENEMY_SHIP_ID, JdbcConverter.toNumber(idEnemyShip));
-        Boolean success = call.executeFunction(Boolean.class, in);
-        if (success != null)
-            return success;
-        throw new SQLDataException("Database return null when boolean expected");
+                .addValue(ENEMY_SHIP_ID, JdbcConverter.toNumber(idEnemyShip))
+                .addValue(DIMENSION, ammoCannon.length);
+        
+        try {
+            call.execute(in);
+        } catch (UncategorizedSQLException e) {
+            LOG.warn("Mistake on client side, may be incorrect ratio of ammunition to cannons "
+                    + "or ammunition to quantity in hold");
+            throw new SQLDataException("Incorrect placement of ammo ", e);
+        }
+        
     }
 
     @Override

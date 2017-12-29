@@ -1,7 +1,17 @@
 package com.nctc2017.configuration;
 
-import com.nctc2017.services.*;
+import java.util.Locale;
+
+import javax.sql.DataSource;
+
+import com.nctc2017.services.LevelUpService;
+import com.nctc2017.services.MoneyService;
+import com.nctc2017.services.ShipRepairService;
+import com.nctc2017.services.ShipService;
+import com.nctc2017.services.ShipTradeService;
+import com.nctc2017.services.TravelService;
 import com.nctc2017.services.utils.BattleManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
@@ -16,8 +26,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import javax.sql.DataSource;
-import java.util.Locale;
 
 @EnableWebMvc
 @Configuration
@@ -102,6 +110,7 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         return new TravelService();
     }
 
+
     @Bean(name = "shipRepairService")
     @Scope("singleton")
     public ShipRepairService shipRepairService() {
@@ -114,9 +123,4 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         return new ShipTradeService();
     }
 
-    @Bean
-    @Scope("singleton")
-    public BattleManager battles() {
-        return new BattleManager();
-    }
 }

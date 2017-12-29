@@ -66,16 +66,9 @@ public class BattlePreparationService {
         }
         Battle battle = battles.getBattle(playerId);
         battle.setShipId(playerId, shipId);
-        List<Cannon> cannons = cannonDao.getAllCannonFromShip(shipId);
-        int maxDist = 0;
-        int dist;
-        for (Cannon cannon : cannons) {
-            dist = cannon.getDistance();
-            if (maxDist < dist) {
-                maxDist = dist;
-            }
-        }
-        battle.setDistance(maxDist);
+        int maxDist = shipDao.getMaxShotDistance(shipId);
+        if (battle.getDistance() < maxDist)
+            battle.setDistance(maxDist);
     }
 
     public void setReady(BigInteger playerId) {

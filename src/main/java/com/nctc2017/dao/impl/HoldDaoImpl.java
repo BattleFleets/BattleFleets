@@ -44,10 +44,15 @@ public class HoldDaoImpl implements HoldDao {
     @Override
     public int getOccupiedVolume(BigInteger shipId) {
         List<BigInteger> entitiesId = 
-                queryExecutor.findAllEntitiesInContainerByOwnerId(DatabaseObject.HOLD_OBJTYPE_ID, shipId, DatabaseObject.SHIP_OBJTYPE_ID);
+                queryExecutor.findAllEntitiesInContainerByOwnerId(DatabaseObject.HOLD_OBJTYPE_ID, 
+                        shipId, 
+                        DatabaseObject.SHIP_OBJTYPE_ID);
         //if (entitiesId == null) throwRuntimeException(new IllegalArgumentException("Wrong ship object id to find Hold. Id = " + shipId));
-
-        return entitiesId.size();
+        Integer totalQuantityOfGoodsAndAmmo = 
+                jdbcTemplate.queryForObject(Query.GET_OCUPATED_VOLUME_GOODS_AMMO, 
+                        new Object[]{JdbcConverter.toNumber(shipId)}, 
+                        Integer.class); 
+        return entitiesId.size() + totalQuantityOfGoodsAndAmmo;
     }
 
     @Override

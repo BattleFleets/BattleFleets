@@ -9,4 +9,62 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    background-attachment: fixed;
+}
+
+table {
+    background: url("https://lh5.googleusercontent.com/dIoBinnbeciCt80t00EVmRU36NQjip24e-F0afGEK_e3TPUylJpyr2608pqwB99p1LPBs2w7AnHu07JzjmB9=w1367-h607");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: 4px ridge black; /* Параметры границы */
+    padding: 5%;
+    border-spacing: 10%;
+
+}
+
+input[type=submit] {
+    width: 175%;  height: 150%;
+}
+
+.button {
+    background-image:url("https://lh6.googleusercontent.com/fzXpM6JIDhE4D52elp5TOodcx4YxqXMf-xEa-cqONlhigI_jDEIzlJ2eGZd1-CDIAcgR-WPcmh-Ip-U7wKtA=w1367-h607"); 
+    display: inline-block;
+    border-radius: 16px;
+    background-color: #f4511e;
+    border: none;
+    color: white;
+    text-align: center;
+    font-size: 28px;
+    font-family: fantasy;
+    width: 250px;
+    height: 50px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 25px;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
 }

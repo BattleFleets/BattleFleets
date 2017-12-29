@@ -9,7 +9,7 @@ public interface ExecutorDao {
 
     boolean ifThingBelongToPlayer(BigInteger id, BigInteger idPerson);
 
-    boolean calculateDamage(int[][] ammoCannon, BigInteger idMyShip, BigInteger idEnemyShip) throws SQLException;
+    void calculateDamage(int[][] ammoCannon, BigInteger idMyShip, BigInteger idEnemyShip) throws SQLException;
 
     BigInteger boarding(BigInteger idMyShip, BigInteger idEnemyShip);
 

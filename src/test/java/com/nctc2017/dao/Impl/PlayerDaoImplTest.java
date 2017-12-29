@@ -357,7 +357,7 @@ public class PlayerDaoImplTest {
     @Test
     @Rollback(true)
     public void getPlayerCity() throws Exception{
-        playerDao.getPlayerCity(new BigInteger("41"));
+        BigInteger t = playerDao.getPlayerCity(new BigInteger("41"));
         assertEquals(new BigInteger("69"), playerDao.getPlayerCity(new BigInteger("41")));
     }
 

@@ -30,8 +30,13 @@ public class BattleManager {
         return battles.get(playerId);
     }
 
-    public void endBattle(BigInteger playerId) {
-        battles.remove(playerId);
+    public boolean endBattle(BigInteger playerId) {
+        return battles.remove(playerId) == null ? false : true;
     }
+
+    public void resetBattle(BigInteger playerId) {
+        battles.get(playerId).resetAll();
+    }
+
     
 }
