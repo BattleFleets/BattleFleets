@@ -6,7 +6,7 @@
     <link href="static/css/general.css" rel="stylesheet" media="screen">
 </head>
 <div align="center">
-	<h1 class="titleText">${city}</h1>
+	<h1 class="titleText">${info}</h1>
 </div>
 <body>
 	<p>World map</p>

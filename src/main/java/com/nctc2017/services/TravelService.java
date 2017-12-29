@@ -10,8 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
+import com.nctc2017.bean.Ship;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.dao.ShipDao;
 import com.nctc2017.dao.impl.HoldDaoImpl;
 import com.nctc2017.services.utils.AutoDecisionTask;
 import com.nctc2017.services.utils.BattleManager;
@@ -32,6 +34,8 @@ public class TravelService {
     private PlayerDao playerDao;
     @Autowired
     private CityDao cityDao;
+    @Autowired
+    private ShipDao shipDao;
     
     private Map<BigInteger, Thread> playerAutoDecision = new HashMap<>();
 
@@ -91,6 +95,21 @@ public class TravelService {
             return false;
         else
             return true;
+    }
+    
+    public boolean isFleetSpeedOk(BigInteger playerId) {
+        return playerDao.getFleetSpeed(playerId) > 1;
+    }
+    
+    public boolean isSailorsEnough(BigInteger playerId) {
+        List<BigInteger> shipsId = playerDao.findAllShip(playerId);
+        for (BigInteger shipId : shipsId) {
+            Ship ship = shipDao.findShip(shipId);
+            if (ship.getCurSailorsQuantity() < ship.getMaxSailorsQuantity() / 2) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private int autoDecisionTimer(BigInteger playerId) {
