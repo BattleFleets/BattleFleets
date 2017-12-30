@@ -1,5 +1,6 @@
 package com.nctc2017.dao.Impl;
 
+import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
@@ -58,7 +59,7 @@ public class PlayerDaoImplTest {
         assertEquals(topPlayer1.getMoney(), topPlayer2.getMoney());
     }
 
-    @Test(expected = EmptyResultDataAccessException.class)
+    @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void findPlayerByLoginNotExistPlayer() throws Exception {
         Player player = playerDao.findPlayerByLogin("Qwerty");
@@ -357,8 +358,11 @@ public class PlayerDaoImplTest {
     @Test
     @Rollback(true)
     public void getPlayerCity() throws Exception{
-        BigInteger t = playerDao.getPlayerCity(new BigInteger("41"));
-        assertEquals(new BigInteger("69"), playerDao.getPlayerCity(new BigInteger("41")));
+        playerDao.addNewPlayer("Steve", "1111", "Rogers@Gmail.com");
+        Player player = playerDao.findPlayerByLogin("Steve");
+        BigInteger cityId = playerDao.getPlayerCity(player.getPlayerId());
+        City city = cityDao.find(cityId);
+        assertEquals(cityId, city.getCityId());
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -41,19 +41,20 @@ public class ExecutorDaoImplTest {
 
     @Test
     @Rollback(true)
-    public void moveCargoToWinnerBoarding() throws Exception {
+    public void moveCargoToWinnerBoardingAllFree() throws Exception {
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player player = playerDao.findPlayerByLogin("Steve");
         BigInteger myShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());
+        Ship ship = shipDao.findShip(myShipId);
         BigInteger myHoldId = holdDao.createHold(myShipId);
-        BigInteger myWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,100,40);
+        BigInteger myWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,10,40);
         holdDao.addCargo(myWoodId, myHoldId);
         playerDao.addNewPlayer("Iogan","1111","Shmidt@gmail.com");
         Player enemy = playerDao.findPlayerByLogin("Iogan");
         BigInteger enemyShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, enemy.getPlayerId());
         BigInteger enemyHoldId = holdDao.createHold(enemyShipId);
-        BigInteger enemyWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,80,30);
-        BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,700,50);
+        BigInteger enemyWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,10,30);
+        BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,10,50);
         holdDao.addCargo(enemyWoodId, enemyHoldId);
         holdDao.addCargo(enemyTeaId, enemyHoldId);
         String res = executorDao.moveCargoToWinner(myShipId, enemyShipId);
@@ -61,8 +62,37 @@ public class ExecutorDaoImplTest {
         List<Goods> enemyGoods = goodsDao.getAllGoodsFromHold(enemyHoldId);
         assertEquals(myGoods.size(),3);
         assertEquals(enemyGoods.size(), 0);
-        assertEquals(res, "You received all goods from enemy ship");
+        assertEquals(res, "You received part of goods from enemy ship as a result of boarding");
     }
+
+    @Test
+    @Rollback(true)
+    public void moveCargoToWinnerBoardingPartFree() throws Exception {
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player = playerDao.findPlayerByLogin("Steve");
+        BigInteger myShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());
+        Ship ship = shipDao.findShip(myShipId);
+        BigInteger myHoldId = holdDao.createHold(myShipId);
+        BigInteger myWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,10,40);
+        holdDao.addCargo(myWoodId, myHoldId);
+        playerDao.addNewPlayer("Iogan","1111","Shmidt@gmail.com");
+        Player enemy = playerDao.findPlayerByLogin("Iogan");
+        BigInteger enemyShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, enemy.getPlayerId());
+        BigInteger enemyHoldId = holdDao.createHold(enemyShipId);
+        BigInteger enemyWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,10,30);
+        BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,90,50);
+        holdDao.addCargo(enemyWoodId, enemyHoldId);
+        holdDao.addCargo(enemyTeaId, enemyHoldId);
+        String res = executorDao.moveCargoToWinner(myShipId, enemyShipId);
+        List<Goods> myGoods = goodsDao.getAllGoodsFromHold(myHoldId);
+        List<Goods> enemyGoods = goodsDao.getAllGoodsFromHold(enemyHoldId);
+        assertEquals(myGoods.size(),3);
+        assertEquals(enemyGoods.size(), 1);
+        assertEquals(holdDao.getOccupiedVolume(myShipId),100);
+        assertEquals(holdDao.getOccupiedVolume(enemyShipId),10);
+        assertEquals(res, "You received part of goods from enemy ship as a result of boarding");
+    }
+
     @Test
     @Rollback(true)
     public void moveCargoToWinnerDestroy() throws Exception {
@@ -86,11 +116,9 @@ public class ExecutorDaoImplTest {
         List<Goods> enemyGoods = goodsDao.getAllGoodsFromHold(enemyHoldId);
         assertEquals(myGoods.size(),3);
         assertEquals(enemyGoods.size(), 0);
-        assertEquals(goodsDao.findById(enemyWoodId).getQuantity(), 40);
-        assertEquals(goodsDao.findById(enemyTeaId).getQuantity(), 350);
-        assertEquals(res, "You received part of goods from enemy ship");
+        assertEquals(res, "You received part of goods from enemy ship as a result of destruction");
     }
-    @Test(expected=IllegalArgumentException.class)
+    @Test()
     @Rollback(true)
     public void moveCargoToWinnerWrongTwoId() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
@@ -107,9 +135,10 @@ public class ExecutorDaoImplTest {
         BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,700,50);
         holdDao.addCargo(enemyWoodId, enemyHoldId);
         holdDao.addCargo(enemyTeaId, enemyHoldId);
-        executorDao.moveCargoToWinner(player.getPlayerId(), enemy.getPlayerId());
+        String res = executorDao.moveCargoToWinner(player.getPlayerId(), enemy.getPlayerId());
+        assertEquals(res, "Wrong input data");
     }
-    @Test(expected=IllegalArgumentException.class)
+    @Test()
     @Rollback(true)
     public void moveCargoToWinneWrongWinId() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
@@ -126,10 +155,12 @@ public class ExecutorDaoImplTest {
         BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,700,50);
         holdDao.addCargo(enemyWoodId, enemyHoldId);
         holdDao.addCargo(enemyTeaId, enemyHoldId);
-        executorDao.moveCargoToWinner(myHoldId, enemyShipId);
+        String res = executorDao.moveCargoToWinner(myHoldId, enemyShipId);
+        assertEquals(res, "Wrong input data");
+
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test()
     @Rollback(true)
     public void moveCargoToWinneIdWrongLoseId() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
@@ -146,6 +177,7 @@ public class ExecutorDaoImplTest {
         BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,700,50);
         holdDao.addCargo(enemyWoodId, enemyHoldId);
         holdDao.addCargo(enemyTeaId, enemyHoldId);
-        executorDao.moveCargoToWinner(myShipId, enemyHoldId);
+        String res = executorDao.moveCargoToWinner(myShipId, enemyHoldId);
+        assertEquals(res, "Wrong input data");
     }
 }

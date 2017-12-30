@@ -36,11 +36,7 @@ import static java.lang.Integer.parseInt;
 @Qualifier("playerDao")
 public class PlayerDaoImpl implements PlayerDao{
     public static final String createPlayerFunctionName = "CREATE_PLAYER";
-    public static final String queryForPlayerAttributesByLogin = "SELECT VALUE FROM ATTRIBUTES_VALUE,OBJECTS " +
-            "WHERE OBJECTS.OBJECT_TYPE_ID=? " +
-            "AND OBJECTS.OBJECT_ID=ATTRIBUTES_VALUE.OBJECT_ID " +
-            "AND OBJECTS.NAME=? " +
-            "AND ATTRIBUTES_VALUE.ATTR_ID<>?";
+    public static final String queryForPlayerAttributesByLogin ="SELECT OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=? AND NAME=?";
     public static final String queryForPlayerIdByLogin = "SELECT OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=? AND NAME=?";
     public static final String queryForPasswordByEmail = "SELECT pass.VALUE FROM ATTRIBUTES_VALUE pass, ATTRIBUTES_VALUE email " +
             "WHERE email.VALUE=? " +
@@ -65,26 +61,16 @@ public class PlayerDaoImpl implements PlayerDao{
     @Override
     public Player findPlayerByLogin(@NotNull String login) {
         try {
-            jdbcTemplate.queryForList(queryForPlayerAttributesByLogin, new Object[]{DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(),
-                    login, DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
+            BigInteger playerId = jdbcTemplate.queryForObject(queryForPlayerAttributesByLogin, BigInteger.class,
+                    DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(),
+                    login);
+            return findPlayerById(playerId);
         }
-        catch (EmptyResultDataAccessException e) {
-            RuntimeException ex = new IllegalArgumentException("Player is not exist or login = " + login+ " is incorrect", e);
-            log.error("PlayerDAO Exception while getting player login.", ex);
+        catch (EmptyResultDataAccessException e){
+            RuntimeException ex = new IllegalArgumentException("Wrong player login = " + login);
+            log.error("PlayerDAO Exception while find by login.", ex);
             throw ex;
         }
-        List<String>  attributes = jdbcTemplate.queryForList(queryForPlayerAttributesByLogin,
-                new Object[]{DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(), login,
-                DatabaseAttribute.PASSWORD_ATR_ID.longValueExact()}, String.class);
-        BigInteger playerId=jdbcTemplate.queryForObject(queryForPlayerIdByLogin,
-                BigInteger.class, DatabaseObject.PLAYER_OBJTYPE_ID.longValueExact(), login);
-        Player player = new Player(playerId,
-                attributes.get(0),
-                attributes.get(4),
-                parseInt(attributes.get(1)),
-                parseInt(attributes.get(3)),
-                parseInt(attributes.get(2)));
-        return player;
     }
 
     @Override
@@ -377,6 +363,5 @@ public class PlayerDaoImpl implements PlayerDao{
                     Integer.valueOf(papamMap.get(Player.POINTS)),
                     Integer.valueOf(papamMap.get(Player.LEVEL)));
         }
-
     }
 }
