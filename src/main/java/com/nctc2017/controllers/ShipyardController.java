@@ -17,7 +17,7 @@ public class ShipyardController {
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/shipyard", method = RequestMethod.GET)
-    public ModelAndView shipyardWalcome(
+    public ModelAndView shipyardWelcome(
             @RequestParam(value = "shipyard", required = false) String city) {
         ModelAndView model = new ModelAndView();
         model.addObject("msg", "This is protected page - Only for Users!");

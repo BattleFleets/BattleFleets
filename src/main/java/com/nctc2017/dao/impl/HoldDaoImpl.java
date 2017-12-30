@@ -50,7 +50,8 @@ public class HoldDaoImpl implements HoldDao {
         //if (entitiesId == null) throwRuntimeException(new IllegalArgumentException("Wrong ship object id to find Hold. Id = " + shipId));
         Integer totalQuantityOfGoodsAndAmmo = 
                 jdbcTemplate.queryForObject(Query.GET_OCUPATED_VOLUME_GOODS_AMMO, 
-                        new Object[]{JdbcConverter.toNumber(shipId)}, 
+                        new Object[]{JdbcConverter.toNumber(shipId), 
+                                JdbcConverter.toNumber(DatabaseObject.HOLD_OBJTYPE_ID)}, 
                         Integer.class); 
         return entitiesId.size() + totalQuantityOfGoodsAndAmmo;
     }

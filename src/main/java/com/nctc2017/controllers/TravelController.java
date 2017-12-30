@@ -19,7 +19,7 @@ public class TravelController {
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/world", method = RequestMethod.GET)
-    public ModelAndView worldWalcome(
+    public ModelAndView worldWelcome(
             @RequestParam(value = "info", required = false) String city) {
         ModelAndView model = new ModelAndView();
         model.addObject("info", city);

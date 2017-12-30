@@ -14,6 +14,7 @@ import com.nctc2017.bean.Ship;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
+import com.nctc2017.dao.StockDao;
 import com.nctc2017.dao.impl.HoldDaoImpl;
 import com.nctc2017.services.utils.AutoDecisionTask;
 import com.nctc2017.services.utils.BattleManager;
@@ -36,6 +37,8 @@ public class TravelService {
     private CityDao cityDao;
     @Autowired
     private ShipDao shipDao;
+    @Autowired
+    private StockDao stockDao;
     
     private Map<BigInteger, Thread> playerAutoDecision = new HashMap<>();
 
@@ -110,6 +113,10 @@ public class TravelService {
             }
         }
         return true;
+    }
+    
+    public boolean isEmptyStock(BigInteger playerId) {
+        return stockDao.getOccupiedVolume(playerId) == 0;
     }
     
     private int autoDecisionTimer(BigInteger playerId) {

@@ -15,7 +15,7 @@ public class TradeController {
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/market", method = RequestMethod.GET)
-    public ModelAndView marketWalcome(
+    public ModelAndView marketWelcome(
             @RequestParam(value = "market", required = false) String city) {
         ModelAndView model = new ModelAndView();
         model.addObject("msg", "This is protected page - Only for Users!");

@@ -21,15 +21,20 @@ public class CityActionsController {
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/travel", method = RequestMethod.GET)
-    public ModelAndView travelWalcome() {
+    public ModelAndView travelWelcome() {
        // travelService
         ModelAndView model = new ModelAndView();
         BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
         boolean fleetSpeedOk = travelService.isFleetSpeedOk(debugId);
         boolean sailorsEnough = travelService.isSailorsEnough(debugId);
+        boolean emptyStock = travelService.isEmptyStock(debugId);
         model.setViewName("fragment/message");
-        if (fleetSpeedOk && sailorsEnough) {
+        if (fleetSpeedOk && sailorsEnough && emptyStock) {
             model.setStatus(HttpStatus.OK);
+        } else if (!emptyStock) {
+            model.setStatus(HttpStatus.FOUND);
+            model.addObject("errorMes", "You forgot something in stock. Do you want to come back?");
+            model.addObject("errTitle", "Things in stock");
         } else {
             model.setStatus(HttpStatus.LOCKED);
             model.addObject("errorMes", 

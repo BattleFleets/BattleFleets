@@ -14,4 +14,6 @@ public interface StockDao {
 
     boolean isSuchCargoInStock(BigInteger cargoId, BigInteger cargoTemplateId, BigInteger stockId);
 
+    int getOccupiedVolume(BigInteger playerId);
+
 }

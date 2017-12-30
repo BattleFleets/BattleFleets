@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 
 
 @Repository
@@ -49,6 +50,20 @@ public class StockDaoImpl implements StockDao {
         }
     }
 
+    @Override
+    public int getOccupiedVolume(BigInteger playerId) {
+        List<BigInteger> entitiesId = 
+                queryExecutor.findAllEntitiesInContainerByOwnerId(DatabaseObject.STOCK_OBJTYPE_ID, 
+                        playerId, 
+                        DatabaseObject.PLAYER_OBJTYPE_ID);
+        Integer totalQuantityOfGoodsAndAmmo = 
+                jdbcTemplate.queryForObject(Query.GET_OCUPATED_VOLUME_GOODS_AMMO, 
+                        new Object[]{JdbcConverter.toNumber(playerId), 
+                                JdbcConverter.toNumber(DatabaseObject.STOCK_OBJTYPE_ID)}, 
+                        Integer.class); 
+        return entitiesId.size() + totalQuantityOfGoodsAndAmmo;
+    }
+    
     @Override
     public BigInteger createStock(BigInteger playerId) {
         if(stockExists(playerId)){

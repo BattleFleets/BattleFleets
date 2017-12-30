@@ -18,7 +18,7 @@ public class TavernController {
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/tavern", method = RequestMethod.GET)
-    public ModelAndView tavernWalcome(
+    public ModelAndView tavernWelcome(
             @RequestParam(value = "tavern", required = false) String city) {
         ModelAndView model = new ModelAndView();
         model.addObject("msg", "This is protected page - Only for Users!");

@@ -254,10 +254,9 @@ public class Query {
                     + " FROM attributes_value atr_v"
                     + " WHERE atr_v.OBJECT_ID in "
                     + " (SELECT cargo.OBJECT_ID FROM objects cargo WHERE PARENT_ID = "
-                    + "     (SELECT ship.OBJECT_ID "
-                    + "      FROM objects ship "
-                    + "      WHERE ship.PARENT_ID = ? AND ship.OBJECT_TYPE_ID = " 
-                    +        DatabaseObject.HOLD_OBJTYPE_ID + "))"
+                    + "     (SELECT hold.OBJECT_ID "
+                    + "      FROM objects hold "
+                    + "      WHERE hold.PARENT_ID = ? AND hold.OBJECT_TYPE_ID = ?))"
                     + " and (atr_v.ATTR_ID = " + DatabaseAttribute.GOODS_QUANTITY 
                     + " OR atr_v.ATTR_ID = " + DatabaseAttribute.AMMO_NUM + ")";
 }

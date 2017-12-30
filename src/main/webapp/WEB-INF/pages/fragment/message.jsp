@@ -1,3 +1,3 @@
 <div align="center">
-	<p class="titleText">${errorMes}</p>
+	<p class="titleText" title="${errTitle}">${errorMes}</p>
 </div>
