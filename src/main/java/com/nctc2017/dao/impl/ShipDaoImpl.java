@@ -130,8 +130,8 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public boolean deleteShip(BigInteger shipId) {
-        queryExecutor.delete(shipId, DatabaseObject.SHIP_OBJTYPE_ID);
-        return true;
+        int deleterows = queryExecutor.delete(shipId, DatabaseObject.SHIP_OBJTYPE_ID);
+        return deleterows > 0;
     }
 
     @Override
@@ -230,9 +230,9 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public boolean setMastOnShip(BigInteger mastId, BigInteger shipId) {
-        int rowsAffected = new QueryExecutor().putEntityToContainer(shipId, mastId, DatabaseObject.SHIP_OBJTYPE_ID);
+        int rowsAffected = queryExecutor.putEntityToContainer(shipId, mastId, DatabaseObject.SHIP_OBJTYPE_ID);
         if (rowsAffected == 0) {
-            log.warn("Can not put mast: " + mastId + " on the ship " + shipId);
+            log.warn("Can not set mast: " + mastId + " on the ship " + shipId);
             return false;
         }
         return true;
@@ -242,11 +242,22 @@ public class ShipDaoImpl implements ShipDao {
     public boolean setCannonOnShip(BigInteger cannonId, BigInteger shipId) {
         int rowsAffected = queryExecutor.putEntityToContainer(shipId, cannonId, DatabaseObject.SHIP_OBJTYPE_ID);
         if (rowsAffected == 0) {
-            log.warn("Can not put cannon: " + cannonId + " on the ship " + shipId);
+            log.warn("Can not set cannon: " + cannonId + " on the ship " + shipId);
             return false;
         }
         return true;
     }
+
+    @Override
+    public boolean setHoldOnShip(BigInteger holdId, BigInteger shipId) {
+        int rowsAffected = queryExecutor.putEntityToContainer(shipId, holdId, DatabaseObject.SHIP_OBJTYPE_ID);
+        if (rowsAffected == 0) {
+            log.warn("Can not set hold: " + holdId + " on the ship " + shipId);
+            return false;
+        }
+        return true;
+    }
+
 
     @Override
     public int getMaxShotDistance(BigInteger shipId) {

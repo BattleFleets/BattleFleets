@@ -104,7 +104,7 @@ public class ShipTradeServiceTest {
     @Before
     public void initMocks() {
         shipTradeService = (ShipTradeService) this.context.getBean("shipTradeService");
-        moneyService = (MoneyService) this.context.getBean("moneyServicePrototype");
+        moneyService = (MoneyService) this.context.getBean("moneyServiceSingleton");
         MockitoAnnotations.initMocks(this);
 
         doAnswer(new Answer<Void>() {

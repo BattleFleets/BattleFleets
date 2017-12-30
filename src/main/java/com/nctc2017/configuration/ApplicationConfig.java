@@ -86,7 +86,7 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         return new TravelService();
     }
 
-    @Bean(name = "moneyServicePrototype")
+    @Bean(name = "moneyServiceSingleton")
     @Scope("singleton")
     public MoneyService moneyServiceProt() {
         return new MoneyService();
