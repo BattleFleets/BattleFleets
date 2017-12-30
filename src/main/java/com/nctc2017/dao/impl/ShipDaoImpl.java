@@ -1,5 +1,7 @@
 package com.nctc2017.dao.impl;
 
+import com.nctc2017.bean.Cannon;
+import com.nctc2017.bean.Mast;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
 import com.nctc2017.bean.StartShipEquipment;
@@ -54,7 +56,8 @@ public class ShipDaoImpl implements ShipDao {
         return pickedUpShip;
     }
 
-    private Ship findShipTemplate(BigInteger shipTemplId) {
+    @Override
+    public Ship findShipTemplate(BigInteger shipTemplId) {
         Ship pickedUpShip = queryExecutor.findEntity(shipTemplId, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID,
                 new EntityExtractor<>(shipTemplId, new ShipVisitor()));
         if (pickedUpShip == null) {
@@ -127,8 +130,8 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public boolean deleteShip(BigInteger shipId) {
-        queryExecutor.delete(shipId, DatabaseObject.SHIP_OBJTYPE_ID);
-        return true;
+        int deleterows = queryExecutor.delete(shipId, DatabaseObject.SHIP_OBJTYPE_ID);
+        return deleterows > 0;
     }
 
     @Override
@@ -227,9 +230,9 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public boolean setMastOnShip(BigInteger mastId, BigInteger shipId) {
-        int rowsAffected = new QueryExecutor().putEntityToContainer(shipId, mastId, DatabaseObject.SHIP_OBJTYPE_ID);
+        int rowsAffected = queryExecutor.putEntityToContainer(shipId, mastId, DatabaseObject.SHIP_OBJTYPE_ID);
         if (rowsAffected == 0) {
-            log.warn("Can not put mast: " + mastId + " on the ship " + shipId);
+            log.warn("Can not set mast: " + mastId + " on the ship " + shipId);
             return false;
         }
         return true;
@@ -237,28 +240,54 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public boolean setCannonOnShip(BigInteger cannonId, BigInteger shipId) {
-        int rowsAffected = new QueryExecutor().putEntityToContainer(shipId, cannonId, DatabaseObject.SHIP_OBJTYPE_ID);
+        int rowsAffected = queryExecutor.putEntityToContainer(shipId, cannonId, DatabaseObject.SHIP_OBJTYPE_ID);
         if (rowsAffected == 0) {
-            log.warn("Can not put cannon: " + cannonId + " on the ship " + shipId);
+            log.warn("Can not set cannon: " + cannonId + " on the ship " + shipId);
             return false;
         }
         return true;
     }
 
     @Override
+    public boolean setHoldOnShip(BigInteger holdId, BigInteger shipId) {
+        int rowsAffected = queryExecutor.putEntityToContainer(shipId, holdId, DatabaseObject.SHIP_OBJTYPE_ID);
+        if (rowsAffected == 0) {
+            log.warn("Can not set hold: " + holdId + " on the ship " + shipId);
+            return false;
+        }
+        return true;
+    }
+
+
+    @Override
     public int getMaxShotDistance(BigInteger shipId) {
-        return 0;
+        List<Cannon> cannons = cannonDao.getAllCannonFromShip(shipId);
+        int maxDist = 0;
+        int dist;
+        for (Cannon cannon : cannons) {
+            dist = cannon.getDistance();
+            if (maxDist < dist) {
+                maxDist = dist;
+            }
+        }
+        return maxDist;
     }
 
     @Override
     public int getSpeed(BigInteger shipId) {
-        return 0;
+        int currSpeed = 0; 
+        List<Mast> steveMasts = mastDao.getShipMastsFromShip(shipId);
+        for (Mast mast : steveMasts) {
+            currSpeed += mast.getCurSpeed();
+        }
+        return currSpeed;
     }
 
     private final class ShipVisitor implements ExtractingVisitor<Ship> {
         @Override
         public Ship visit(BigInteger entityId, Map<String, String> papamMap) {
             ShipTemplate shipT = new ShipTemplate(
+                    entityId,
                     papamMap.remove(ShipTemplate.T_SHIPNAME),
                     Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_HEALTH)),
                     Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_SAILORS_QUANTITY)),
@@ -285,6 +314,7 @@ public class ShipDaoImpl implements ShipDao {
         @Override
         public ShipTemplate visit(BigInteger entityId, Map<String, String> papamMap) {
             ShipTemplate shipT = new ShipTemplate(
+                    entityId,
                     papamMap.remove(ShipTemplate.T_SHIPNAME),
                     Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_HEALTH)),
                     Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_SAILORS_QUANTITY)),

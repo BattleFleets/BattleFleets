@@ -10,6 +10,8 @@ public interface ShipDao {
 
     Ship findShip(BigInteger shipId);
 
+    ShipTemplate findShipTemplate(BigInteger shipId);
+
     BigInteger createNewShip(BigInteger shipTemplateId,BigInteger playerId);
 
     boolean deleteShip(BigInteger shipId);
@@ -45,6 +47,8 @@ public interface ShipDao {
     boolean setMastOnShip(BigInteger mastId, BigInteger shipId);
 
     boolean setCannonOnShip(BigInteger cannonId, BigInteger shipId);
+
+    boolean setHoldOnShip(BigInteger holdId, BigInteger shipId);
 
     int getMaxShotDistance(BigInteger shipId);
     

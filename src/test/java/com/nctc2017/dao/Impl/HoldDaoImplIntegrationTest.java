@@ -56,7 +56,6 @@ public class HoldDaoImplIntegrationTest {
     }
     
     @Test
-    @Ignore
     @Rollback(true)
     public void testCreateHoldForShip() {
         BigInteger shipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, null);
@@ -66,7 +65,7 @@ public class HoldDaoImplIntegrationTest {
         // Then
         assertNotNull(id);
         assertTrue(id.longValueExact() > 0L);
-        assertTrue(volume > 1);
+        assertTrue(volume == 0);
     }
     
     @Test
@@ -118,14 +117,13 @@ public class HoldDaoImplIntegrationTest {
     }
     
     @Test
-    @Ignore
     @Rollback(true)
     public void testGetOccupiedVolume() {
         // Given
         BigInteger shipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, null);
         BigInteger holdId = holdDao.createHold(shipId);
-        BigInteger cargoId1 = cannonDao.createCannon(DatabaseObject.KULEVRIN_TEMPLATE_ID, holdId);
-        BigInteger cargoId2 = cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, holdId);
+        BigInteger cargoId1 = cannonDao.createCannon(DatabaseObject.KULEVRIN_TEMPLATE_ID, null);
+        BigInteger cargoId2 = cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, null);
         
         // When
         int emptyShipVolume = holdDao.getOccupiedVolume(shipId);
@@ -138,35 +136,56 @@ public class HoldDaoImplIntegrationTest {
     
     @Test
     @Rollback(true)
+    public void testGetOccupiedVolumeAddTheSame() {
+        // Given
+        BigInteger shipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, null);
+        BigInteger holdId = holdDao.createHold(shipId);
+        //first adding
+        BigInteger cargoId1 = cannonDao.createCannon(DatabaseObject.KULEVRIN_TEMPLATE_ID, holdId);
+        BigInteger cargoId2 = cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, holdId);
+        
+        // When
+        int strtShipVolume = holdDao.getOccupiedVolume(shipId);
+        //second adding
+        holdDao.addCargo(cargoId1, holdId);
+        holdDao.addCargo(cargoId2, holdId);
+        int volume = holdDao.getOccupiedVolume(shipId);
+        // Then 
+        assertEquals(strtShipVolume, volume);
+    }
+    
+    @Test
+    @Rollback(true)
     public void testGetOccupiedVolumeInvalidShipId() {
         // Given
         BigInteger invalidShipId = BigInteger.ONE;
         // When
-        holdDao.getOccupiedVolume(invalidShipId);
-        // Then ? TODO
+        int volume = holdDao.getOccupiedVolume(invalidShipId);
+        // Then ? 
+        assertTrue(volume == 0);
     }
     
     @Test
-    @Ignore
     @Rollback(true)
     public void testFindHold() {
         // Given
-        //TODO create ship
-        BigInteger id = holdDao.createHold();
+        BigInteger shipId = shipDao
+                .createNewShip(DatabaseObject.T_FREGATA_OBJECT_ID, null);
+        BigInteger holdId = holdDao.createHold(shipId);
         // When
-        //holdDao.findHold(shipId)
-        // Then ?
+        BigInteger fondHoldId = holdDao.findHold(shipId);
+        // Then
+        assertEquals(holdId, fondHoldId);
     }
 
     @Rollback(true)
     @Test(expected = IllegalArgumentException.class)
     public void testFindHoldByInvalidShipId() {
         // Given
-        //TODO create ship
         BigInteger invalidShipId = BigInteger.ONE;
         // When
         holdDao.findHold(invalidShipId);
-        // Then ?
+        // Then 
     }
     
     @Rollback(true)

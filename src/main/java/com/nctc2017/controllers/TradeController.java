@@ -4,9 +4,25 @@ import java.util.*;
 
 import com.nctc2017.bean.Thing;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
+@Controller
 public class TradeController {
-
+    
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/market", method = RequestMethod.GET)
+    public ModelAndView marketWelcome(
+            @RequestParam(value = "market", required = false) String city) {
+        ModelAndView model = new ModelAndView();
+        model.addObject("msg", "This is protected page - Only for Users!");
+        model.addObject("city", city);
+        model.setViewName("MarketView");
+        return model;
+    }
 
     @Secured("ROLE_USER")
     public void buy(int id, int idHash, int goodsTemplateId, int quantity, int price) {
