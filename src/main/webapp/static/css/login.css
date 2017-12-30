@@ -5,10 +5,11 @@ body, html {
 body {
     
     background:url("https://dl.dropboxusercontent.com/s/ogyovdfirom9c4t/404.jpg?dl=0");
-    height: 100%;
+    height: 75%;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    background-attachment: fixed;
 }
 
 #message404 {
