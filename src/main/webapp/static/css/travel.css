@@ -1,0 +1,23 @@
+body {
+    background: url(../images/ship_long.png) repeat-x 0 100% fixed,
+             linear-gradient(to top, #5080b1, #004e8c) fixed;
+    animation: city 30s linear infinite;
+    -webkit-animation: city 60s linear infinite;
+    background-position: left;
+}
+@keyframes city {
+    from { background-position: -1300px 100%, 0 0;}
+    to { background-position: 0 100%, 0 0; }
+}
+@-webkit-keyframes city {
+    from { background-position: -1300px 100%, 0 0;}
+    to { background-position: 0 100%, 0 0; }
+}
+main {
+    width: 50%;
+    min-height: 411px;
+    display: block;
+    margin: auto;
+    background: rgba(255,255,255,0.6);
+    padding: 20px;
+}
