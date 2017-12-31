@@ -82,7 +82,7 @@ public class BattleIntegrationScenarioTest {
     private  BigInteger buckshotId;
     private  BigInteger chainId;
     
-    private final int defCount = 6;
+    private final int defCount = 2;
     private final int defCannonballCount = 1;
     private final int[] mortarsCball = new int[] {defCannonballCount, 0, 0};
     private final int[] kulevrinsCball = new int[] {defCannonballCount, 0, 0};
@@ -137,13 +137,12 @@ public class BattleIntegrationScenarioTest {
         getMoreCannons(24, steveShipId);
         assertTrue(shipDao.getCurrentShipSailors(nikShipId) > 0);
         assertTrue(shipDao.getCurrentShipSailors(steveShipId) > 0);
-        
         cannonballId = 
-                ammoDao.createAmmo(DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID, 1000);
+                ammoDao.createAmmo(DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID, 200);
         buckshotId = 
-                ammoDao.createAmmo(DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID, 1000);
+                ammoDao.createAmmo(DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID, 150);
         chainId = 
-                ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 1000);
+                ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 200);
         
         nikHoldId = holdDao.createHold(nikShipId);
         steveHoldId = holdDao.createHold(steveShipId);
@@ -157,13 +156,7 @@ public class BattleIntegrationScenarioTest {
         BigInteger goodsId_2 = 
                 goodsDao.createNewGoods(DatabaseObject.GRAIN_TEMPLATE_ID, 10, 10);
         holdDao.addCargo(goodsId_2, nikHoldId);
-
-        int steveGoods=holdDao.getOccupiedVolume(steveShipId);
-        int nickGoods=holdDao.getOccupiedVolume(nikShipId);
-
-
-
-        
+       
         BigInteger cityIdNik = playerDao.getPlayerCity(nik.getPlayerId());
         BigInteger cityIdSteve = playerDao.getPlayerCity(steve.getPlayerId());
         List<City> cities = cityDao.findAll();
@@ -213,7 +206,6 @@ public class BattleIntegrationScenarioTest {
     }
     
     @Test
-    @Ignore
     public void testBattleWithShipDestroy() throws DeadEndException, BattleEndException, SQLException {
 
         Ship steveShipBefore;
@@ -257,7 +249,6 @@ public class BattleIntegrationScenarioTest {
     }
     
     @Test
-    @Ignore
     public void testBoarding() throws BattleEndException, SQLException {
 
         Ship nikShipBefore = shipDao.findShip(nikShipId);
@@ -333,7 +324,6 @@ public class BattleIntegrationScenarioTest {
             int loserVolumeAfter = holdDao.getOccupiedVolume(loserShipId);
             int winerVolumeAfter = holdDao.getOccupiedVolume(winnerShipId);
             assertTrue(loserVolumeBefore > loserVolumeAfter);
-            assertEquals(loserVolumeAfter, 0);
             assertTrue(winerVolumeBefore < winerVolumeAfter);
             shipDao.deleteShip(loserShipId);
         }

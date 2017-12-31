@@ -48,24 +48,6 @@ public class CityActionsController {
     }
     
     @Secured("ROLE_USER")
-    public String checkSailors(int id, int idHash) {
-        // TODO implement here
-        return "";
-    }
-
-    @Secured("ROLE_USER")
-    public String checkSpeed(int id, int idHash) {
-        // TODO implement here
-        return "";
-    }
-
-    @Secured("ROLE_USER")
-    public boolean stokIsEmpty(int id, int idHash) {
-        // TODO implement here
-        return false;
-    }
-
-    @Secured("ROLE_USER")
     @RequestMapping(value = "/city**", method = RequestMethod.GET)
     public ModelAndView getCity() {
         ModelAndView model = new ModelAndView();
