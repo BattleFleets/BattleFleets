@@ -116,6 +116,12 @@ public class BattleIntegrationScenarioTest {
         }
     }
     
+    private void putNewGoodsInHold(BigInteger holdId) {
+        BigInteger goodsId_1 = 
+                goodsDao.createNewGoods(DatabaseObject.GRAIN_TEMPLATE_ID, 10, 10);
+        holdDao.addCargo(goodsId_1, holdId);
+    }
+    
     @Before
     public void setUpCombatant() {
         travelService = (TravelService)context.getBean("travelServicePrototype");
@@ -137,12 +143,14 @@ public class BattleIntegrationScenarioTest {
         getMoreCannons(24, steveShipId);
         assertTrue(shipDao.getCurrentShipSailors(nikShipId) > 0);
         assertTrue(shipDao.getCurrentShipSailors(steveShipId) > 0);
+        shipDao.updateShipHealth(nikShipId, shipDao.getCurrentShipHealth(nikShipId) / 3);
+        shipDao.updateShipHealth(steveShipId, shipDao.getCurrentShipHealth(steveShipId) / 3);
         cannonballId = 
-                ammoDao.createAmmo(DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID, 200);
+                ammoDao.createAmmo(DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID, 80);
         buckshotId = 
-                ammoDao.createAmmo(DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID, 150);
+                ammoDao.createAmmo(DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID, 100);
         chainId = 
-                ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 200);
+                ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 80);
         
         nikHoldId = holdDao.createHold(nikShipId);
         steveHoldId = holdDao.createHold(steveShipId);
@@ -150,12 +158,8 @@ public class BattleIntegrationScenarioTest {
         holdDao.addCargo(cannonballId, nikHoldId);
         holdDao.addCargo(buckshotId, steveHoldId);
         holdDao.addCargo(chainId, steveHoldId);
-        BigInteger goodsId_1 = 
-                goodsDao.createNewGoods(DatabaseObject.GRAIN_TEMPLATE_ID, 10, 10);
-        holdDao.addCargo(goodsId_1, steveHoldId);
-        BigInteger goodsId_2 = 
-                goodsDao.createNewGoods(DatabaseObject.GRAIN_TEMPLATE_ID, 10, 10);
-        holdDao.addCargo(goodsId_2, nikHoldId);
+        putNewGoodsInHold(steveHoldId);
+        putNewGoodsInHold(nikHoldId);
        
         BigInteger cityIdNik = playerDao.getPlayerCity(nik.getPlayerId());
         BigInteger cityIdSteve = playerDao.getPlayerCity(steve.getPlayerId());
@@ -256,9 +260,9 @@ public class BattleIntegrationScenarioTest {
         Ship nikShipAfter;
         Ship steveShipAfter;
         int dist;
-        int[] mortars = new int[] {0, 5, 0};
-        int[] kulevrins = new int[] {0, 5, 0};
-        int[] bombards = new int[] {0, 5, 0};
+        int[] mortars = new int[] {0, 4, 0};
+        int[] kulevrins = new int[] {0, 4, 0};
+        int[] bombards = new int[] {0, 4, 0};
 
         int[][] ammoCannons = new int [][]{mortars, kulevrins, bombards};
         int[][] ammoCannonsNik = new int [][]{{0, 0, 0},{0, 0, 0},{0, 0, 0}};
@@ -272,26 +276,39 @@ public class BattleIntegrationScenarioTest {
             battleService.calculateDamage(ammoCannonsNik, nikId, null);
             battleService.calculateDamage(ammoCannons, steveId, null);
             int currSteveSailors = shipDao.getCurrentShipSailors(steveShipId);
-            assertEquals("" + currSteveSailors + " != " + steveShipBefore.getCurSailorsQuantity(), 
-                    currSteveSailors, 
-                    steveShipBefore.getCurSailorsQuantity());
-            
+            int currNikSailors = shipDao.getCurrentShipSailors(nikShipId);
+            assertEquals("" + currSteveSailors + " = " + steveShipBefore.getCurSailorsQuantity(), 
+                    currSteveSailors, steveShipBefore.getCurSailorsQuantity());
+            assertTrue(currNikSailors < nikShipBefore.getCurSailorsQuantity());
             assertTrue(battleService.getDistance(nikId) >= 0);
             assertTrue(battleService.getDistance(nikId) < dist);
             
             if (battleService.getDistance(nikId) == 0) {
                 try {
+                    holdDao.deleteHold(nikHoldId);
+                    holdDao.deleteHold(steveHoldId);
+                    nikHoldId = holdDao.createHold(nikShipId);
+                    steveHoldId = holdDao.createHold(steveShipId);
+                    putNewGoodsInHold(steveHoldId);
+                    putNewGoodsInHold(nikHoldId);
+                    currSteveSailors = shipDao.getCurrentShipSailors(steveShipId);
+                    assertEquals(steveShipBefore.getCurSailorsQuantity(), currSteveSailors);
                     battleService.boarding(nikId, new DefaultBoardingBattleEnd());
                     break;
                 } catch (DeadEndException e) {
-                    shipDao.updateShipSailorsNumber(nikShipId, 20);
-                    shipDao.updateShipSailorsNumber(steveShipId, 20);
+                    shipDao.updateShipSailorsNumber(nikShipId, 1);
+                    shipDao.updateShipSailorsNumber(steveShipId, 12);
+                    try {
+                        battleService.boarding(nikId, new DefaultBoardingBattleEnd());
+                    } catch (DeadEndException e1) {
+                        fail("DeadEndException unexpected");
+                    }
                 }
             }
         }
         nikShipAfter = shipDao.findShip(nikShipId);
         steveShipAfter = shipDao.findShip(steveShipId);
-        assertTrue(nikShipAfter.getCurSailorsQuantity() >= 0);
+        assertEquals(nikShipAfter.getCurSailorsQuantity(), 0);
         assertTrue(nikShipAfter.getCurSailorsQuantity() < nikShipBefore.getCurSailorsQuantity());
         int steveCurSailors = steveShipAfter.getCurSailorsQuantity();
         assertTrue("steve crew after battle: " + steveCurSailors + " >= 0", steveCurSailors >= 0);
@@ -319,12 +336,19 @@ public class BattleIntegrationScenarioTest {
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
                 BigInteger winnerId, BigInteger loserId) {
             int loserVolumeBefore = holdDao.getOccupiedVolume(loserShipId);
-            int winerVolumeBefore = holdDao.getOccupiedVolume(winnerShipId);
+            int winnerVolumeBefore = holdDao.getOccupiedVolume(winnerShipId);
             battleEnd.passDestroyGoodsToWinner(winnerShipId, loserShipId);
             int loserVolumeAfter = holdDao.getOccupiedVolume(loserShipId);
-            int winerVolumeAfter = holdDao.getOccupiedVolume(winnerShipId);
-            assertTrue(loserVolumeBefore > loserVolumeAfter);
-            assertTrue(winerVolumeBefore < winerVolumeAfter);
+            int winnerVolumeAfter = holdDao.getOccupiedVolume(winnerShipId);
+            assertTrue("loser: Volume After: " 
+                    + loserVolumeAfter
+                    + " Volume Before: " 
+                    + loserVolumeBefore, 
+                    loserVolumeBefore > loserVolumeAfter);
+            assertTrue("winner: Volume After: " 
+                    + winnerVolumeAfter
+                    + " Volume Before: " 
+                    + winnerVolumeBefore, winnerVolumeBefore < winnerVolumeAfter);
             shipDao.deleteShip(loserShipId);
         }
         
@@ -335,13 +359,25 @@ public class BattleIntegrationScenarioTest {
         @Override
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
                 BigInteger winnerId, BigInteger loserId) {
+
+            int currSteveSailors = shipDao.getCurrentShipSailors(steveShipId);
+            int currNikSailors = shipDao.getCurrentShipSailors(nikShipId);
+            assertTrue(currSteveSailors > currNikSailors);
             int loserVolumeBefore = holdDao.getOccupiedVolume(loserShipId);
-            int winerVolumeBefore = holdDao.getOccupiedVolume(winnerShipId);
+            int winnerVolumeBefore = holdDao.getOccupiedVolume(winnerShipId);
             battleEnd.passCargoToWinnerAfterBoarding(winnerShipId, loserShipId);
             int loserVolumeAfter = holdDao.getOccupiedVolume(loserShipId);
-            int winerVolumeAfter = holdDao.getOccupiedVolume(winnerShipId);
-            assertTrue(loserVolumeBefore > loserVolumeAfter);
-            assertTrue(winerVolumeBefore < winerVolumeAfter);
+            int winnerVolumeAfter = holdDao.getOccupiedVolume(winnerShipId);
+            
+            assertTrue("loser: Volume After: " 
+                    + loserVolumeAfter
+                    + " Volume Before: " 
+                    + loserVolumeBefore, 
+                    loserVolumeBefore > loserVolumeAfter);
+            assertTrue("winner: Volume After: " 
+                    + winnerVolumeAfter
+                    + " Volume Before: " 
+                    + winnerVolumeBefore, winnerVolumeBefore < winnerVolumeAfter);
         }
         
     }

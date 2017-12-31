@@ -118,7 +118,7 @@ public class BattleServiceIntegrationTest {
         buckshotId = 
                 ammoDao.createAmmo(DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID, 25);
         chainId = 
-                ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 25);
+                ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 33);
         
         nikHoldId = holdDao.createHold(nikShipId);
         holdDao.addCargo(buckshotId, nikHoldId);
@@ -202,9 +202,9 @@ public class BattleServiceIntegrationTest {
     private void testAmmoWasSpend(List<Ammo> ammoInHold, BigInteger id, int spendCount) {
         for (Ammo ammoBefore : ammoInHoldBefore) {
             for (Ammo ammo : ammoInHold) {
-                if (ammo.getThingId().equals(id)) {
-                    assertEquals(ammo.getQuantity(), 
-                            ammoBefore.getQuantity() - spendCount);
+                if (ammo.getThingId().equals(id) && ammoBefore.getThingId().equals(id)) {
+                    assertEquals(ammoBefore.getQuantity() - spendCount,
+                            ammo.getQuantity());
                     break;
                 }
             }
@@ -307,12 +307,12 @@ public class BattleServiceIntegrationTest {
  
     @Test
     public void calculateDamageChains() throws SQLException {
-        calculateDamageChains(8);
+        calculateDamageChains(11);
     }
     
     @Test(expected = SQLException.class)
     public void chainsGraterThenHave() throws SQLException {
-        calculateDamageChains(9);
+        calculateDamageChains(12);
     }
     
     private void calculateDamageChains(int defCount) throws SQLException {

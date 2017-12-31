@@ -102,7 +102,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
     @Override
     public String moveCargoToWinner(BigInteger shipWinnerId, BigInteger shipLosserId) {
         SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(MOVE_CARGO_TO_WINNER_FUNCTION_NAME);
-        String result = call.executeFunction(String.class,shipWinnerId,shipLosserId);
+        String result = call.executeFunction(String.class, shipWinnerId, shipLosserId);
         return result;
     }
 
