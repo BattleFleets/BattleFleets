@@ -3,6 +3,7 @@ package com.nctc2017.controllers;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -17,6 +18,7 @@ import com.nctc2017.services.TravelService;
 
 @Controller
 public class TravelController {
+    private static final Logger LOG = Logger.getLogger(TravelController.class);
     private static final String CITY_NAME_VAR = "city_name_";
     private static final String CITY_ID = "city_id_";
         
@@ -65,6 +67,13 @@ public class TravelController {
             model.addObject("errorMes", "You already in " + currCity.getCityName() + ", Captain!");
             model.addObject("errTitle", "You drunk!");
         } else {
+            
+            try {
+                travelService.relocate(debugId, cityId);
+            } catch (IllegalAccessError e) {
+                LOG.warn("Player try to relocate to another city while is already traveling."
+                        + " Player continue his last trip.");
+            }
             model.setStatus(HttpStatus.OK);
         }
         model.setViewName("fragment/message");
@@ -77,7 +86,10 @@ public class TravelController {
     public ModelAndView travelWelcome() {
         ModelAndView model = new ModelAndView();
         BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
-        model.addObject("time", "50");
+        int relocateTime = travelService.getRelocateTime(debugId);
+        City city = travelService.getRelocationCity(debugId);
+        model.addObject("time", relocateTime);
+        model.addObject("city", city.getCityName());
         model.setStatus(HttpStatus.OK);
         model.setViewName("TravelView");
         return model;

@@ -119,6 +119,11 @@ public class TravelService {
         return stockDao.getOccupiedVolume(playerId) == 0;
     }
     
+    public City getRelocationCity(BigInteger playerId) {
+        BigInteger cityId = travelManager.getRelocationCity(playerId);
+        return cityDao.find(cityId);
+    }
+    
     private int autoDecisionTimer(BigInteger playerId) {
         Runnable decisionTask = new AutoDecisionTask(new DecisionVisitor(playerId), DELAY);
         Thread decisionThread = new Thread(decisionTask);

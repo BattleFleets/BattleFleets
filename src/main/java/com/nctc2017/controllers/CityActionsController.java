@@ -2,6 +2,7 @@ package com.nctc2017.controllers;
 
 import java.math.BigInteger;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -10,11 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.nctc2017.bean.City;
 import com.nctc2017.services.TravelService;
 
 @Controller
 public class CityActionsController {
-
+    private static final Logger LOG = Logger.getLogger(CityActionsController.class);
 
     @Autowired
     private TravelService travelService;
@@ -51,9 +53,20 @@ public class CityActionsController {
     @RequestMapping(value = "/city**", method = RequestMethod.GET)
     public ModelAndView getCity() {
         ModelAndView model = new ModelAndView();
+        BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
+        while (true) {
+            int time = travelService.getRelocateTime(debugId);
+            if (time == Integer.MIN_VALUE) break;
+            try {
+                Thread.currentThread().wait(1000);
+            } catch (InterruptedException e) {
+                LOG.error("User thread was interrupted while entering in new city", e);
+            }
+        }
+        City currCity = travelService.getCurrentCity(debugId);
         model.addObject("msg", "This is protected page - Only for Users!");
         model.setViewName("CityView");
-        model.addObject("city", "Port Royal");
+        model.addObject("city", currCity.getCityName());
         return model;
     }
 

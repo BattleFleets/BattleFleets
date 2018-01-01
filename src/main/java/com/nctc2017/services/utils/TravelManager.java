@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.nctc2017.bean.City;
 import com.nctc2017.dao.PlayerDao;
 
 @Component
@@ -27,11 +28,10 @@ public class TravelManager {
     private final int lvlDiff = 5;
     private final int maxTime = 300000;
     private final int minTime = 60000;
-    private final long managerWakeUp = 10000;
+    private final long managerWakeUp = 1000;
     
     private Map<BigInteger, TravelBook> journals = Collections.synchronizedMap(new HashMap<BigInteger, TravelBook>());
-    private GregorianCalendar clock = new GregorianCalendar();
-    private Random rand = new Random(clock.getTimeInMillis());
+    private Random rand = new Random(new GregorianCalendar().getTimeInMillis());
     private Thread manager;
     
     public TravelManager(){
@@ -78,6 +78,7 @@ public class TravelManager {
     
     public void startJourney(BigInteger playerId, int lvl, BigInteger city) {
         TravelBook cityTime = journals.get(playerId);
+        GregorianCalendar clock = new GregorianCalendar();
         long timeNow = clock.getTimeInMillis();
         long timeToArrival;
         if (cityTime != null) {
@@ -93,10 +94,11 @@ public class TravelManager {
     }
 
     public int getRelocateTime(BigInteger playerId) {
-        TravelBook cityTime = journals.get(playerId);
-        if (cityTime == null) return 0;
+        TravelBook travelBook = journals.get(playerId);
+        if (travelBook == null) return Integer.MIN_VALUE;
         
-        long timeToArrival = cityTime.getTime();
+        long timeToArrival = travelBook.getTime();
+        GregorianCalendar clock = new GregorianCalendar();
         long timeNow = clock.getTimeInMillis();
         return (int) (timeToArrival - timeNow) / 1000;
     }
@@ -126,8 +128,13 @@ public class TravelManager {
     public int continueTravel(BigInteger playerId) {
         TravelBook playerBook = journals.get(playerId);
         playerBook.resume();
+        GregorianCalendar clock = new GregorianCalendar();
         long now = clock.getTimeInMillis();
         return (int) (now - playerBook.getTime());
+    }
+
+    public BigInteger getRelocationCity(BigInteger playerId) {
+        return journals.get(playerId).getCityId();
     }
     
     private class TravelBook {
@@ -155,6 +162,7 @@ public class TravelManager {
                 return;
             }
             this.pause = true;
+            GregorianCalendar clock = new GregorianCalendar();
             pauseTime = clock.getTimeInMillis();
         }
         
@@ -163,6 +171,7 @@ public class TravelManager {
                 log.debug("Pause already off");
                 return;
             }
+            GregorianCalendar clock = new GregorianCalendar();
             long now = clock.getTimeInMillis();
             arrivalTime = now + (arrivalTime - pauseTime);
             pauseTime = 0L;
@@ -174,6 +183,7 @@ public class TravelManager {
         
         public Long getTime() {
             if (pause) {
+                GregorianCalendar clock = new GregorianCalendar();
                 long now = clock.getTimeInMillis();
                 return now + (arrivalTime - pauseTime);
             } else {
@@ -209,13 +219,14 @@ public class TravelManager {
         public void run() {
             while (true) {
                 synchronized (journals) {
+                    GregorianCalendar clock = new GregorianCalendar();
                     long now = clock.getTimeInMillis();
                     
                     for (Map.Entry<BigInteger, TravelBook> player: journals.entrySet()) {
-                        TravelBook cityTime = player.getValue();
-                        long timeToLeft = cityTime.getTime();
+                        TravelBook travelBook = player.getValue();
+                        long timeToLeft = travelBook.getTime();
                         if (now >= timeToLeft) {
-                            playerDao.movePlayerToCity(player.getKey(), cityTime.getCityId());
+                            playerDao.movePlayerToCity(player.getKey(), travelBook.getCityId());
                             journals.remove(player.getKey());
                         }
                     }

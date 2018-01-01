@@ -15,13 +15,17 @@
         };
     </script>
     <script type="text/javascript">
+        var city = '${city}';
         var seconds = '${time}';
         $(document).ready(function() {
-	        $("#timer").html("Arrival: " + seconds + " sec");
+	        $("#timer").html("Arrival in " + city + ": " + seconds + " sec");
 	        var x = setInterval(function() {
 	            seconds= seconds - 1;
 	            // Output the result in an element with id="demo"
-	            $("#timer").html("Arrival: " + seconds + " sec");
+	            $("#timer").html("Arrival in " + city + ": " + seconds + " sec");
+	            if (seconds == 0) {
+	            	window.location.href = "/city";
+	            }
 
 	        }, 1000);
         });
