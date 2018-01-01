@@ -34,27 +34,27 @@
 	</div>
 	<div class="transparent75 map" align="center">
 			<div id="city1" class="city" >
-			    <img alt="1" src="https://goo.gl/LX4v1d">
+			    <img alt="1" src="static/images/world/city_icon_1.png">
 			    <p class="cityTitle" align="center">${city_name_1}</p>
 			    <input type="hidden" value="${city_id_1}">
 			</div>
 			<div id="city2" class="city" >
-			    <img alt="1" src="https://goo.gl/43GuJY">
+			    <img alt="1" src="static/images/world/city_icon_1_mirror.png">
 			    <p class="cityTitle" align="center">${city_name_2}</p>
 			    <input type="hidden" value="${city_id_2}">
 			</div>
 			<div id="city3" class="city" >
-			    <img alt="1" src="https://goo.gl/vh2RkG">
+			    <img alt="1" src="static/images/world/city_icon_2_mirror.png">
 			    <p class="cityTitle" align="center">${city_name_3}</p>
 			    <input type="hidden" value="${city_id_3}">
 			</div>
 			<div id="city4" class="city" >
-			    <img alt="1" src="https://goo.gl/kY9gux">
+			    <img alt="1" src="static/images/world/city_icon_2.png">
 			    <p class="cityTitle" align="center">${city_name_4}</p>
 			    <input type="hidden" value="${city_id_4}">
 			</div>
 			<div id="city5" class="city">
-			    <img alt="1" src="https://goo.gl/pWq9td">
+			    <img alt="1" src="static/images/world/city_icon_3.png">
 			    <p class="cityTitle" align="center">${city_name_5}</p>
 			    <input type="hidden" value="${city_id_5}">
 			</div>

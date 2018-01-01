@@ -4,7 +4,7 @@ body, html {
 
 body {
 	position: relative;
-    background-image:url("https://goo.gl/w1MRd6");
+    background-image:url("../images/world/map_background_2.jpg");
     height: 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -20,7 +20,7 @@ body {
 	position: relative; 
 	padding: 10px; 
 	border: 1px solid #000; 
-	background-image: url("https://goo.gl/nxM5F1");
+	background-image: url("../images/world/map.png");
 	background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

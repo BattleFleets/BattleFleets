@@ -4,7 +4,7 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 .panel, .titleText, .logOutBottom {
-    background-image: url("https://goo.gl/qZmPw3");
+    background-image:url("../images/general/panel_background.jpg"); 
 }
 .titleText {
     background-position: center;
@@ -55,7 +55,7 @@ input[type=submit] {
 }
 
 .button {
-    background-image:url("https://goo.gl/ZyqXdX"); 
+    background-image:url("../images/general/button_background.jpg"); 
     display: inline-block;
     border-radius: 16px;
     background-color: #f4511e;

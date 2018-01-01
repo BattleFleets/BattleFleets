@@ -28,11 +28,11 @@
     </script>
 </head>
 <body>
+<div id="ship" class="layer">
+    <img alt="10" src="static/images/travel/ship.png">
+</div>
 <div>
     <p class="timer" id="timer"></p>
-</div>
-<div id="ship" class="layer">
-    <img alt="10" src="static/images/ship.png">
 </div>
 <audio autoplay id="myaudio" onloadeddata="setHalfVolume()">
   <source src="static/audio/piraty-karibskogo-morya--original.mp3" type="audio/mp3">
