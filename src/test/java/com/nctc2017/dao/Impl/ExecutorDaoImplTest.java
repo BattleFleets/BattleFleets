@@ -1,8 +1,6 @@
 package com.nctc2017.dao.Impl;
 
-import com.nctc2017.bean.Goods;
-import com.nctc2017.bean.Player;
-import com.nctc2017.bean.Ship;
+import com.nctc2017.bean.*;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.*;
@@ -38,6 +36,9 @@ public class ExecutorDaoImplTest {
     HoldDao holdDao;
     @Autowired
     GoodsDao goodsDao;
+    @Autowired
+    AmmoDao ammoDao;
+
 
     @Test
     @Rollback(true)
@@ -55,13 +56,23 @@ public class ExecutorDaoImplTest {
         BigInteger enemyHoldId = holdDao.createHold(enemyShipId);
         BigInteger enemyWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,10,30);
         BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,10,50);
+        BigInteger cannonballId = ammoDao.createAmmo(DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID, 10);
+        BigInteger chainId = ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 10);
+        BigInteger buckshotId = ammoDao.createAmmo(DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID, 10);
         holdDao.addCargo(enemyWoodId, enemyHoldId);
         holdDao.addCargo(enemyTeaId, enemyHoldId);
+        holdDao.addCargo(cannonballId, enemyHoldId);
+        holdDao.addCargo(buckshotId, enemyHoldId);
+        holdDao.addCargo(chainId, enemyHoldId);
         String res = executorDao.moveCargoToWinner(myShipId, enemyShipId);
         List<Goods> myGoods = goodsDao.getAllGoodsFromHold(myHoldId);
+        List<Ammo> myAmmos = ammoDao.getAllAmmoFromHold(myHoldId);
         List<Goods> enemyGoods = goodsDao.getAllGoodsFromHold(enemyHoldId);
+        List<Ammo> enemyAmmos = ammoDao.getAllAmmoFromHold(enemyHoldId);
         assertEquals(myGoods.size(),3);
+        assertEquals(myAmmos.size(), 3);
         assertEquals(enemyGoods.size(), 0);
+        assertEquals(enemyAmmos.size(), 0);
         assertEquals(res, "You received part of goods from enemy ship as a result of boarding");
     }
 
@@ -80,16 +91,26 @@ public class ExecutorDaoImplTest {
         BigInteger enemyShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, enemy.getPlayerId());
         BigInteger enemyHoldId = holdDao.createHold(enemyShipId);
         BigInteger enemyWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,10,30);
-        BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,90,50);
+        BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,30,50);
+        BigInteger cannonballId = ammoDao.createAmmo(DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID, 80);
+        BigInteger chainId = ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 80);
+        BigInteger buckshotId = ammoDao.createAmmo(DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID, 100);
         holdDao.addCargo(enemyWoodId, enemyHoldId);
         holdDao.addCargo(enemyTeaId, enemyHoldId);
+        holdDao.addCargo(cannonballId, enemyHoldId);
+        holdDao.addCargo(buckshotId, enemyHoldId);
+        holdDao.addCargo(chainId, enemyHoldId);
         String res = executorDao.moveCargoToWinner(myShipId, enemyShipId);
         List<Goods> myGoods = goodsDao.getAllGoodsFromHold(myHoldId);
+        List<Ammo> myAmmos = ammoDao.getAllAmmoFromHold(myHoldId);
         List<Goods> enemyGoods = goodsDao.getAllGoodsFromHold(enemyHoldId);
+        List<Ammo> enemyAmmos = ammoDao.getAllAmmoFromHold(enemyHoldId);
+        assertEquals(myAmmos.size(), 1);
         assertEquals(myGoods.size(),3);
-        assertEquals(enemyGoods.size(), 1);
+        assertEquals(enemyGoods.size(), 0);
+        assertEquals(enemyAmmos.size(), 3);
         assertEquals(holdDao.getOccupiedVolume(myShipId),100);
-        assertEquals(holdDao.getOccupiedVolume(enemyShipId),10);
+        assertEquals(holdDao.getOccupiedVolume(enemyShipId),210);
         assertEquals(res, "You received part of goods from enemy ship as a result of boarding");
     }
 

@@ -1073,7 +1073,6 @@ IS
           UPDATE ATTRIBUTES_VALUE SET VALUE=valGoodsQuant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=goodId.OBJECT_ID;
           quantValue:=quantValue+valGoodsQuant;
         END LOOP;
-        --DELETE FROM OBJECTS WHERE PARENT_ID=holdIdLose;
         RETURN 'You received part of goods from enemy ship as a result of destruction';
       ELSE
         FOR cargo IN cargos LOOP
@@ -1086,7 +1085,7 @@ IS
             END IF;
           ELSIF cargo.OBJECT_TYPE_ID=goodsObjTypeId
             THEN
-              SELECT VALUE INTO valGoodsQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=quantityGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND OBJECTS.OBJECT_ID=cargo.OBJECT_ID;
+              SELECT VALUE INTO valGoodsQuant FROM ATTRIBUTES_VALUE WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargo.OBJECT_ID;
               freePlace:=carrying-quantValue;
               diff:=valGoodsQuant-freePlace;
               IF diff>=0
@@ -1095,20 +1094,23 @@ IS
               ELSE
                 put:=valGoodsQuant;
               END IF;
-              IF valGoodsQuant<=freePlace
+              IF freeplace>0
               THEN
-                UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE OBJECT_ID=cargo.OBJECT_ID;
-                quantValue:=quantValue+valGoodsQuant;
-              ELSE
-                SELECT VALUE INTO goodCost FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=cargo.OBJECT_ID;
-                UPDATE ATTRIBUTES_VALUE SET VALUE=diff WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargo.OBJECT_ID;
-                INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL, holdIdWin, cargo.OBJECT_TYPE_ID, cargo.SOURCE_ID, cargo.NAME);
-                INSERT INTO ATTRIBUTES_VALUE VALUES(costGoodsAttrId, obj_sq.CURRVAL, goodCost,null);
-                INSERT INTO ATTRIBUTES_VALUE VALUES(quantityGoodsAttrId, obj_sq.CURRVAL, put,null);
-                quantValue:=quantValue+put;
+                IF valGoodsQuant<=freePlace
+                THEN
+                  UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE OBJECT_ID=cargo.OBJECT_ID;
+                  quantValue:=quantValue+valGoodsQuant;
+                ELSE
+                  SELECT VALUE INTO goodCost FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=cargo.OBJECT_ID;
+                  UPDATE ATTRIBUTES_VALUE SET VALUE=diff WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargo.OBJECT_ID;
+                  INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL, holdIdWin, cargo.OBJECT_TYPE_ID, cargo.SOURCE_ID, cargo.NAME);
+                  INSERT INTO ATTRIBUTES_VALUE VALUES(costGoodsAttrId, obj_sq.CURRVAL, goodCost,null);
+                  INSERT INTO ATTRIBUTES_VALUE VALUES(quantityGoodsAttrId, obj_sq.CURRVAL, put,null);
+                  quantValue:=quantValue+put;
+                END IF;
               END IF;
           ELSE
-            SELECT VALUE INTO ammoNum FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=ammoNumAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND OBJECTS.OBJECT_ID=cargo.OBJECT_ID;
+            SELECT VALUE INTO ammoNum FROM ATTRIBUTES_VALUE WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargo.OBJECT_ID;
             freePlace:=carrying-quantValue;
             diff:=ammoNum-freePlace;
             IF diff>=0
@@ -1117,15 +1119,18 @@ IS
             ELSE
               put:=ammoNum;
             END IF;
-            IF ammoNum<=freePlace
+            IF freePlace>0
             THEN
-              UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE OBJECT_ID=cargo.OBJECT_ID;
-              quantValue:=quantValue+ammoNum;
-            ELSE
-              UPDATE ATTRIBUTES_VALUE SET VALUE=diff WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargo.OBJECT_ID;
-              INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL, holdIdWin, cargo.OBJECT_TYPE_ID, cargo.SOURCE_ID, cargo.NAME);
-              INSERT INTO ATTRIBUTES_VALUE VALUES(ammoNumAttrId, obj_sq.CURRVAL,put,null);
-              quantValue:=quantValue+put;
+              IF ammoNum<=freePlace
+              THEN
+                UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE OBJECT_ID=cargo.OBJECT_ID;
+                quantValue:=quantValue+ammoNum;
+              ELSE
+                UPDATE ATTRIBUTES_VALUE SET VALUE=diff WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargo.OBJECT_ID;
+                INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL, holdIdWin, cargo.OBJECT_TYPE_ID, cargo.SOURCE_ID, cargo.NAME);
+                INSERT INTO ATTRIBUTES_VALUE VALUES(ammoNumAttrId, obj_sq.CURRVAL,put,null);
+                quantValue:=quantValue+put;
+              END IF;
             END IF;
           END IF;
         END LOOP;
@@ -1135,4 +1140,4 @@ IS
       RETURN 'Wrong input data';
     END IF;
   END;
-/
+  /
