@@ -1141,3 +1141,191 @@ IS
     END IF;
   END;
   /
+
+CREATE OR REPLACE FUNCTION MOVE_CARGO_TO(cargoId NUMBER, destinationId NUMBER, quantity NUMBER) RETURN VARCHAR2
+IS
+  cargoParId NUMBER;
+  cargoParObjType NUMBER;
+  destObjType NUMBER;
+  PlayerCargoId NUMBER;
+  PlayerDestId NUMBER;
+  cargoObjType NUMBER;
+  carrying NUMBER;
+  mastsAndCannons NUMBER;
+  ammoQuant NUMBER;
+  goodsStart NUMBER;
+  curLimir NUMBER;
+  goodsStock NUMBER;
+  carValue NUMBER;
+  ammoStart NUMBER;
+  canMax NUMBER;
+  mastMax NUMBER;
+  curMast NUMBER;
+  curCan NUMBER;
+  goodsQuant NUMBER;
+  mastAndCannons NUMBER;
+  freePlace NUMBER;
+  curLimit NUMBER;
+  quant NUMBER;
+  canLimitAttrId NUMBER:=3;
+  mastLimitAttrId NUMBER:=4;
+  shipObjType NUMBER:=6;
+  holdObjType NUMBER:=9;
+  stockObjType NUMBER:=12;
+  playerObjType NUMBER:=10;
+  goodsObjType NUMBER:=14;
+  ammoObjType NUMBER:=11;
+  canObjType NUMBER:=8;
+  mastObjType NUMBER:=7;
+  carLimitAttrId NUMBER:=2;
+  ammoNumAttrId NUMBER:=34;
+  quantityGoodsAttrId NUMBER:=37;
+  costGoodsAttrId NUMBER:=36;
+  BEGIN
+    SELECT PARENT_ID INTO cargoParId FROM OBJECTS WHERE OBJECT_ID=cargoId;
+    SELECT OBJECT_TYPE_ID INTO cargoParObjType FROM OBJECTS WHERE OBJECT_ID=cargoParId;
+    SELECT OBJECT_TYPE_ID INTO destObjType FROM OBJECTS WHERE OBJECT_ID=destinationId;
+    SELECT OBJECT_TYPE_ID INTO cargoObjType FROM OBJECTS WHERE OBJECT_ID=cargoId;
+    IF  cargoParObjType=stockObjType
+    THEN
+      SELECT player.OBJECT_ID INTO PlayerCargoId FROM OBJECTS player, OBJECTS dest WHERE dest.PARENT_ID=player.OBJECT_ID AND dest.OBJECT_ID=cargoParId;
+    ELSIF cargoParObjType=holdObjType
+      THEN
+        SELECT player.OBJECT_ID INTO PlayerCargoId FROM OBJECTS player, OBJECTS ship, OBJECTS hold WHERE hold.PARENT_ID=ship.OBJECT_ID AND ship.PARENT_ID=player.OBJECT_ID AND hold.OBJECT_ID=cargoParId;
+    ELSE
+      RETURN 'Wrong cargoId';
+    END IF;
+    IF  destObjType=stockObjType
+    THEN
+      SELECT player.OBJECT_ID INTO PlayerDestId FROM OBJECTS player, OBJECTS dest WHERE dest.PARENT_ID=player.OBJECT_ID AND dest.OBJECT_ID=destinationId;
+    ELSIF destObjType=holdObjType
+      THEN
+        SELECT player.OBJECT_ID INTO PlayerDestId FROM OBJECTS player, OBJECTS ship, OBJECTS hold WHERE hold.PARENT_ID=ship.OBJECT_ID AND ship.PARENT_ID=player.OBJECT_ID AND hold.OBJECT_ID=destinationId;
+    ELSE
+      RETURN 'Wrong destId';
+    END IF;
+    IF PlayerCargoId=PlayerDestId
+    THEN
+      IF destObjType=holdObjType
+      THEN
+        SELECT car.VALUE INTO carrying FROM ATTRIBUTES_VALUE car, OBJECTS t_ship ,OBJECTS ship, OBJECTS hold  WHERE car.OBJECT_ID=t_ship.OBJECT_ID AND t_ship.OBJECT_ID=ship.SOURCE_ID AND ship.OBJECT_ID=hold.PARENT_ID AND hold.OBJECT_ID=destinationId AND car.ATTR_ID=carLimitAttrId;
+        SELECT COUNT(OBJECT_ID) INTO mastsAndCannons FROM OBJECTS WHERE (OBJECT_TYPE_ID=mastObjType OR OBJECT_TYPE_ID=canObjType) AND PARENT_ID=destinationId;
+        SELECT NVL(SUM(VALUE),0) INTO ammoQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=ammoNumAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND PARENT_ID=destinationId;
+        SELECT NVL(SUM(VALUE),0) INTO goodsQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=quantityGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND PARENT_ID=destinationId;
+        curLimit:=mastsAndCannons+ammoQuant+goodsQuant;
+        freePlace:=carrying-curLimit;
+        IF cargoObjType=goodsObjType
+        THEN
+          SELECT NVL(SUM(VALUE),0) INTO goodsStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
+          IF quantity>goodsStart
+          THEN
+            quant:=goodsStart;
+          ELSE
+            quant:=quantity;
+          END IF;
+          IF quant>freePlace
+          THEN
+            quant:=freePlace;
+          END IF;
+          IF quant=goodsStart
+          THEN
+            UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+            RETURN 'Goods are transfered succesfull';
+          ELSE
+            UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
+            INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL,destinationId,cargoObjType,(SELECT SOURCE_ID FROM OBJECTS WHERE OBJECT_ID=cargoId),(SELECT NAME FROM OBJECTS WHERE OBJECT_ID=cargoId));
+            INSERT INTO ATTRIBUTES_VALUE VALUES(costGoodsAttrId, obj_sq.CURRVAL, (SELECT VALUE FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=cargoId), null);
+            INSERT INTO ATTRIBUTES_VALUE VALUES(quantityGoodsAttrId, obj_sq.CURRVAL, quant, null);
+            RETURN 'Goods are transfered succesfull';
+          END IF;
+        ELSIF cargoObjType=ammoObjType
+          THEN
+            SELECT NVL(SUM(VALUE),0) INTO ammoStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
+            IF quantity>ammoStart
+            THEN
+              quant:=ammoStart;
+            ELSE
+              quant:=quantity;
+            END IF;
+            IF quant>freePlace
+            THEN
+              quant:=freePlace;
+            END IF;
+            IF quant=ammoStart
+            THEN
+              UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+              RETURN 'Ammo are transfered succesfull';
+            ELSE
+              UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
+              INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL,destinationId,cargoObjType,(SELECT SOURCE_ID FROM OBJECTS WHERE OBJECT_ID=cargoId),(SELECT NAME FROM OBJECTS WHERE OBJECT_ID=cargoId));
+              INSERT INTO ATTRIBUTES_VALUE VALUES(ammoNumAttrId, obj_sq.CURRVAL, quant, null);
+              RETURN 'Ammo are transfered succesfull';
+            END IF;
+        ELSIF cargoObjType=mastObjType
+          THEN
+            IF curLimit+1<=freePlace
+            THEN
+              UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+              RETURN 'Mast is transfered succesfull';
+            END IF;
+        ELSIF cargoObjType=canObjType
+          THEN
+            UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+            RETURN 'Cannon is transfered succesfull';
+        END IF;
+      ELSIF destObjType=stockObjType
+        THEN
+          IF cargoObjType=goodsObjType
+          THEN
+            SELECT NVL(SUM(VALUE),0) INTO goodsStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
+            IF quantity>goodsStart
+            THEN
+              quant:=goodsStart;
+            ELSE
+              quant:=quantity;
+            END IF;
+            IF quant=goodsStart
+            THEN
+              UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+              RETURN 'Goods are transfered succesfull';
+            ELSE
+              UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
+              INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL,destinationId,cargoObjType,(SELECT SOURCE_ID FROM OBJECTS WHERE OBJECT_ID=cargoId),(SELECT NAME FROM OBJECTS WHERE OBJECT_ID=cargoId));
+              INSERT INTO ATTRIBUTES_VALUE VALUES(costGoodsAttrId, obj_sq.CURRVAL, (SELECT VALUE FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=cargoId), null);
+              INSERT INTO ATTRIBUTES_VALUE VALUES(quantityGoodsAttrId, obj_sq.CURRVAL, quant, null);
+              RETURN 'Goods are transfered succesfull';
+            END IF;
+          ELSIF cargoObjType=ammoObjType
+            THEN
+              SELECT NVL(SUM(VALUE),0) INTO ammoStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
+              IF quantity>ammoStart
+              THEN
+                quant:=ammoStart;
+              ELSE
+                quant:=quantity;
+              END IF;
+              IF quant=ammoStart
+              THEN
+                UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+                RETURN 'Ammos are transfered succesfull';
+              ELSE
+                UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
+                INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL,destinationId,cargoObjType,(SELECT SOURCE_ID FROM OBJECTS WHERE OBJECT_ID=cargoId),(SELECT NAME FROM OBJECTS WHERE OBJECT_ID=cargoId));
+                INSERT INTO ATTRIBUTES_VALUE VALUES(ammoNumAttrId, obj_sq.CURRVAL, quant, null);
+                RETURN 'Ammos are transfered succesfull';
+              END IF;
+          ELSIF cargoObjType=mastObjType
+            THEN
+              UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+              RETURN 'Mast is transfered succesfull';
+          END IF;
+      ElSIF cargoObjType=canObjType
+        THEN
+          UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+          RETURN 'Cannon is transfered succesfull';
+      END IF;
+    ELSE
+      RETURN 'Cargos can be transfered only between one player';
+    END IF;
+  END;
+/
