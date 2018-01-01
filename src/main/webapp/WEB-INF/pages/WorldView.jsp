@@ -13,9 +13,7 @@
             var cityId = $(this).find("input").attr("value");
             $.post("/relocate", {city_id: cityId})
             .done(function(response, status, xhr){
-                var newDoc = document.open("text/html", "replace");
-                newDoc.write(response);
-                newDoc.close();
+                window.location.href = "/trip";
             })
             .fail(function(xhr, status, error) {
                 if (xhr.status == 302) {

@@ -3,8 +3,8 @@ body, html {
 }
 
 body {
-
-    background-image:url("https://goo.gl/5Qt8rR");
+	position: relative;
+    background-image:url("https://goo.gl/w1MRd6");
     height: 100%;
     background-position: center;
     background-repeat: no-repeat;

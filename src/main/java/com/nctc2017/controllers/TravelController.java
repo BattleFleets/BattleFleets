@@ -64,13 +64,22 @@ public class TravelController {
             model.setStatus(HttpStatus.FOUND);
             model.addObject("errorMes", "You already in " + currCity.getCityName() + ", Captain!");
             model.addObject("errTitle", "You drunk!");
-            model.setViewName("fragment/message");
         } else {
             model.setStatus(HttpStatus.OK);
-            model.setViewName("TravelView");
         }
+        model.setViewName("fragment/message");
         
         return model;
     }
-
+    
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/trip", method = RequestMethod.GET)
+    public ModelAndView travelWelcome() {
+        ModelAndView model = new ModelAndView();
+        BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
+        model.addObject("time", "50");
+        model.setStatus(HttpStatus.OK);
+        model.setViewName("TravelView");
+        return model;
+    }
 }
