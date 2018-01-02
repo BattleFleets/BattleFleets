@@ -248,6 +248,18 @@ public class Query {
                     + " AND mast.OBJECT_TYPE_ID = ?"
                     + " AND speed_val.ATTR_ID = ?"
                     + " AND speed_val.OBJECT_ID = mast.OBJECT_ID;";
+
+    /**
+     * This query allows to get source of object by object_id.
+     * PreparedStatement args:<br>
+     * OBJECT_ID id ship <br>
+     */
+
+    public static final String GET_SOURCE_ID =
+            "SELECT entity_obj.SOURCE_ID "
+            + "FROM OBJECTS entity_obj "
+            + "WHERE entity_obj.OBJECT_ID = ? "
+            + "AND entity_obj.OBJECT_TYPE_ID = ?";
     
     public static final String GET_OCUPATED_VOLUME_GOODS_AMMO = 
             "SELECT NVL(sum(atr_v.VALUE) - count(atr_v.OBJECT_ID), 0) volume "

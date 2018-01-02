@@ -240,5 +240,30 @@ public class ShipDaoImplTest {
         assertEquals(expectedSailorNumb, createdShip.getCurSailorsQuantity());
     }
 
+    @Test
+    @Rollback
+    public void getShipsFeateresByRequest() {
+        BigInteger createdId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, null);
+        Ship findShip = shipDao.findShip(createdId);
+
+        int actualMaxSailorQuantity = shipDao.getSailorLimit(createdId);
+        int actualCurrentShipSailors = shipDao.getCurrentShipSailors(createdId);
+        int actualCurrentShipHealth = shipDao.getCurrentShipHealth(createdId);
+        int actualShipCost = shipDao.getShipCost(createdId);
+        int actualCannonLimit = shipDao.getCannonLimit(createdId);
+        int actualMastLimit = shipDao.getMastLimit(createdId);
+        String actualCurrentShipName = shipDao.getCurrentShipName(createdId);
+        int actualCarryingLimit = shipDao.getCarryingLimit(createdId);
+
+        assertEquals(findShip.getMaxSailorsQuantity(), actualMaxSailorQuantity);
+        assertEquals(findShip.getCurSailorsQuantity(), actualCurrentShipSailors);
+        assertEquals(findShip.getCurHealth(), actualCurrentShipHealth);
+        assertEquals(findShip.getCost(), actualShipCost);
+        assertEquals(findShip.getMaxCannonQuantity(), actualCannonLimit);
+        assertEquals(findShip.getMaxMastsQuantity(), actualMastLimit);
+        assertEquals(findShip.getCurName(), actualCurrentShipName);
+        assertEquals(findShip.getMaxCarryingLimit(), actualCarryingLimit);
+    }
+
 }
 

@@ -161,4 +161,11 @@ public class QueryExecutor {
                         JdbcConverter.toNumber(attrId)});
         return result;
     }
+
+    public <T> T getSource(@NotNull BigInteger objectId,BigInteger objectTypeId,  Class<T> requireType) {
+        T result = jdbcTemplate.queryForObject(Query.GET_SOURCE_ID,
+                requireType, new Object[] {JdbcConverter.toNumber(objectId),
+                        JdbcConverter.toNumber(objectTypeId)} );
+        return result;
+    }
 }
