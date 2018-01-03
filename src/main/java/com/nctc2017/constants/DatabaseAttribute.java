@@ -14,6 +14,12 @@ public class DatabaseAttribute {
     public static final BigInteger MONEY_ATR_ID = BigInteger.valueOf(29);
     public static final BigInteger PASSIVE_INCOME_ATR_ID = BigInteger.valueOf(42);
     public static final BigInteger MAX_SHIPS_ATR_ID = BigInteger.valueOf(43);
+    public static final BigInteger ATTR_SHIP_COST = BigInteger.valueOf(6);
+    public static final BigInteger ATTR_CANNON_LIMIT = BigInteger.valueOf(3);
+    public static final BigInteger ATTR_SAILOR_LIMIT = BigInteger.valueOf(5);
+    public static final BigInteger ATTR_MAST_LIMIT = BigInteger.valueOf(4);
+    public static final BigInteger ATTR_HEALTH_LIMIT = BigInteger.valueOf(7);
+    public static final BigInteger ATTR_CARRYING_LIMIT = BigInteger.valueOf(2);
 
 
     public static final BigInteger GOODS_PURCHASE_PRICE = BigInteger.valueOf(36);

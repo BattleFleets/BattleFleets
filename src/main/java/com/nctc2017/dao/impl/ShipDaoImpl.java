@@ -163,56 +163,55 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public String getCurrentShipName(BigInteger shipId) {
-        Ship s = findShip(shipId);
-        return s.getCurName();
+        return queryExecutor.getAttrValue(shipId, DatabaseAttribute.ATTR_CURR_SHIP_NAME, String.class);
     }
 
     @Override
     public int getCurrentShipHealth(BigInteger shipId) {
-        Ship s = findShip(shipId);
-        return s.getCurHealth();
+        return queryExecutor.getAttrValue(shipId, DatabaseAttribute.ATTR_CURR_SHIP_HEALTH, Integer.class);
+
     }
 
     @Override
     public int getCurrentShipSailors(BigInteger shipId) {
-        Ship s = findShip(shipId);
-        return s.getCurSailorsQuantity();
+        return queryExecutor.getAttrValue(shipId, DatabaseAttribute.ATTR_CURR_SHIP_SAILORS, Integer.class);
+
     }
 
     @Override
     public int getHealthLimit(BigInteger shipId) {
-        Ship s = findShip(shipId);
-        return s.getMaxHealth();
+        BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
+        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_HEALTH_LIMIT,Integer.class);
     }
 
     @Override
     public int getCarryingLimit(BigInteger shipId) {
-        Ship s = findShip(shipId);
-        return s.getMaxCarryingLimit();
+        BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
+        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_CARRYING_LIMIT,Integer.class);
     }
 
     @Override
     public int getCannonLimit(BigInteger shipId) {
-        Ship s = findShip(shipId);
-        return s.getMaxCannonQuantity();
+        BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
+        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_CANNON_LIMIT,Integer.class);
     }
 
     @Override
     public int getMastLimit(BigInteger shipId) {
-        Ship s = findShip(shipId);
-        return s.getMaxMastsQuantity();
+        BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
+        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_MAST_LIMIT,Integer.class);
     }
 
     @Override
     public int getSailorLimit(BigInteger shipId) {
-        Ship s = findShip(shipId);
-        return s.getMaxSailorsQuantity();
+        BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
+        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_SAILOR_LIMIT,Integer.class);
     }
 
     @Override
     public int getShipCost(BigInteger shipId) {
-        Ship s = findShip(shipId);
-        return s.getCost();
+        BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
+        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_SHIP_COST,Integer.class);
     }
 
     @Override
