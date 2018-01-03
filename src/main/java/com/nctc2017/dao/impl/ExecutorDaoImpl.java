@@ -25,6 +25,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
     private static final Logger LOG = Logger.getLogger(ExecutorDaoImpl.class);
     private static final String CREATE_CANNON_FUNCTION_NAME = "CREATE_CANNON";
     private static final String MOVE_CARGO_TO_WINNER_FUNCTION_NAME = "MOVE_CARGO_TO_WINNER";
+    private static final String MOVE_CARGO_TO_FUNCTION_NAME = "MOVE_CARGO_TO";
     private static final String CREATE_CANNON_PARAMETER_NAME = "ObjectIdTemplate";
     private static final String CALCULATE_DAMAGE_FUNCTION_NAME = "CALCULATE_DAMAGE";
     private static final String PLAYER_SHIP_ID = "playerShipId";
@@ -95,14 +96,16 @@ public class ExecutorDaoImpl implements ExecutorDao {
     }
 
     @Override
-    public void moveCargoTo(BigInteger cargoId, BigInteger destinationId, int quantity) {
-        // TODO implement here
+    public String moveCargoTo(BigInteger cargoId, BigInteger destinationId, int quantity) {
+        SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(MOVE_CARGO_TO_FUNCTION_NAME);
+        String result = call.executeFunction(String.class, cargoId, destinationId, quantity);
+        return result;
     }
 
     @Override
     public String moveCargoToWinner(BigInteger shipWinnerId, BigInteger shipLosserId) {
         SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(MOVE_CARGO_TO_WINNER_FUNCTION_NAME);
-        String result = call.executeFunction(String.class,shipWinnerId,shipLosserId);
+        String result = call.executeFunction(String.class, shipWinnerId, shipLosserId);
         return result;
     }
 

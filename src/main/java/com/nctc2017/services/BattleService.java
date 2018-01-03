@@ -174,24 +174,33 @@ public class BattleService {
             BigInteger shipWiner;
             BigInteger shipLoser;
             BigInteger enemyId = battles.getEnemyId(playerId); 
+            int winerCrew;
+            int loserCrew;
             
             if (boarding > 0) {
                 winner = playerId;
                 loser = enemyId;
                 shipWiner = plyerShipId;
                 shipLoser = enemyShipId;
+                winerCrew = playerCrew;
+                loserCrew = enemyCrew;
             }
             else if (boarding < 0) {
                 winner = enemyId;
                 loser = playerId;
                 shipWiner = enemyShipId;
                 shipLoser = plyerShipId;
+                winerCrew = enemyCrew;
+                loserCrew = playerCrew;
             } else {
                 shipDao.updateShipSailorsNumber(plyerShipId, 0);
                 shipDao.updateShipSailorsNumber(enemyShipId, 0);
                 throw new DeadEndException("No one won. Full mortality!");
             }
-            shipDao.updateShipSailorsNumber(shipWiner, Math.abs(boarding));
+            int loserCrewPrec = (loserCrew * 100) / winerCrew;
+            int crewDiff = winerCrew - loserCrew; 
+            shipDao.updateShipSailorsNumber(shipWiner, 
+                    loserCrewPrec > 100 ? 1 : random.nextInt(crewDiff));
             shipDao.updateShipSailorsNumber(shipLoser, 0);
             
             visitor.endCaseVisit(playerDao, shipDao, shipWiner, shipLoser, winner, loser);

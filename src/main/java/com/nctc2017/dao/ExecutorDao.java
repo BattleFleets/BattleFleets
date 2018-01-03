@@ -13,7 +13,7 @@ public interface ExecutorDao {
 
     BigInteger boarding(BigInteger idMyShip, BigInteger idEnemyShip);
 
-    void moveCargoTo(BigInteger cargoId, BigInteger destinationId, int quantity);
+    String moveCargoTo(BigInteger cargoId, BigInteger destinationId, int quantity);
 
     String moveCargoToWinner(BigInteger shipWinnerId, BigInteger shipLosserId);
 

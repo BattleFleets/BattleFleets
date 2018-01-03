@@ -27,8 +27,8 @@
                     $( "#warning_info" ).dialog({
                         modal: true,
                         title: errTitle,
-                        width: 450,
-                        height: 200,
+                        width: 470,
+                        height: 210,
                         buttons: [
                         {
                             id: "Delete",

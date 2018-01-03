@@ -119,7 +119,7 @@
 	cursor: default;
 }
 .ui-button {
-	background-image:url("https://lh6.googleusercontent.com/fzXpM6JIDhE4D52elp5TOodcx4YxqXMf-xEa-cqONlhigI_jDEIzlJ2eGZd1-CDIAcgR-WPcmh-Ip-U7wKtA=w1367-h607"); 
+	background-image:url("../images/general/button_background.jpg"); 
     background-position: center;
     background-position: bottom;
     transition: all 0.5s;
@@ -127,6 +127,8 @@
 	display: inline-block;
 	position: relative;
 	padding: .2em;
+	border-color: black;
+	border-width: .2em;
 	line-height: normal;
 	margin-right: .2em;
 	cursor: pointer;
@@ -855,10 +857,10 @@ body .ui-tooltip {
 	font-size: 1em;
 }
 .ui-widget-content {
-    border: 2px ridge black;
+    border: .2em ridge black;
 	/*background: #ffffff url("images/ui-bg_flat_75_ffffff_40x100.png") 50% 50% repeat-x;*/
 	color: white;
-	background-image: url("https://lh4.googleusercontent.com/Lxf-e6-Y427hylX1RyAlwICFQ4A6FV38cwCyEiiqSwCR7dd-xGDq4RXusU11OgbMyeu0CSb7gK5ZpQbcjvDh=w1367-h547");
+	background-image: url("../images/general/dialog_background.jpg");
 	background-position: bottom left;
 }
 .ui-widget-content a {

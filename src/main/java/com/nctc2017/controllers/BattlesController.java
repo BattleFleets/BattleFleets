@@ -2,9 +2,19 @@ package com.nctc2017.controllers;
 
 
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
+@Controller
 public class BattlesController {
-
+    
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/battle_preparing", method = RequestMethod.GET)
+    public ModelAndView battleWelcome() {
+        return null;
+    }
 
     @Secured("ROLE_USER")
     public boolean escape(int id, int idHash) {

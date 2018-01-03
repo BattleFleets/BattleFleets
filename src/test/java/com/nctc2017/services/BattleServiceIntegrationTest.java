@@ -35,6 +35,7 @@ import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
+import com.nctc2017.exception.PlayerNotFoundException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -89,7 +90,7 @@ public class BattleServiceIntegrationTest {
     }
     
     @Before
-    public void setUpCombatant() {
+    public void setUpCombatant() throws PlayerNotFoundException {
         travelService = (TravelService)this.context.getBean("travelServicePrototype");
         String loginNik = "Nik";
         String emailNik = "q@q.q";
@@ -118,7 +119,7 @@ public class BattleServiceIntegrationTest {
         buckshotId = 
                 ammoDao.createAmmo(DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID, 25);
         chainId = 
-                ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 25);
+                ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 33);
         
         nikHoldId = holdDao.createHold(nikShipId);
         holdDao.addCargo(buckshotId, nikHoldId);
@@ -166,7 +167,12 @@ public class BattleServiceIntegrationTest {
     }
     
     private void testIsEnemyOnHorizon(Player player) {
-        boolean ret = travelService.isEnemyOnHorizon(player.getPlayerId());
+        boolean ret = false;
+        try {
+            ret = travelService.isEnemyOnHorizon(player.getPlayerId());
+        } catch (PlayerNotFoundException e) {
+            fail("Player must be in travel");
+        }
         assertTrue(ret);
     }
     
@@ -202,9 +208,9 @@ public class BattleServiceIntegrationTest {
     private void testAmmoWasSpend(List<Ammo> ammoInHold, BigInteger id, int spendCount) {
         for (Ammo ammoBefore : ammoInHoldBefore) {
             for (Ammo ammo : ammoInHold) {
-                if (ammo.getThingId().equals(id)) {
-                    assertEquals(ammo.getQuantity(), 
-                            ammoBefore.getQuantity() - spendCount);
+                if (ammo.getThingId().equals(id) && ammoBefore.getThingId().equals(id)) {
+                    assertEquals(ammoBefore.getQuantity() - spendCount,
+                            ammo.getQuantity());
                     break;
                 }
             }
@@ -307,12 +313,12 @@ public class BattleServiceIntegrationTest {
  
     @Test
     public void calculateDamageChains() throws SQLException {
-        calculateDamageChains(8);
+        calculateDamageChains(11);
     }
     
     @Test(expected = SQLException.class)
     public void chainsGraterThenHave() throws SQLException {
-        calculateDamageChains(9);
+        calculateDamageChains(12);
     }
     
     private void calculateDamageChains(int defCount) throws SQLException {
