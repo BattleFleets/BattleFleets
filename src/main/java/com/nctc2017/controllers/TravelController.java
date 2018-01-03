@@ -11,9 +11,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.nctc2017.bean.City;
+import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.TravelService;
 
 @Controller
@@ -42,17 +45,29 @@ public class TravelController {
     }
     
     @Secured("ROLE_USER")
-    public boolean isEnemyOnHorizon(int id, int idHash) {
-        // TODO implement here
-        return false;
+    @RequestMapping(value = "/is_enemy_on_horizon", method = RequestMethod.GET, produces="text/plain")
+    @ResponseBody
+    public String isEnemyOnHorizon() throws PlayerNotFoundException {
+        BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
+        return String.valueOf(travelService.isEnemyOnHorizon(debugId));
     }
-
-    public void decision(int id, int idHash, String dec) {
-        // TODO implement here
+    
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/attack_decision", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public void decision(String decision) throws PlayerNotFoundException {
+        BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
+        
+        travelService.confirmAttack(debugId, Boolean.valueOf(decision));
     }
-
-    public void isBattleStart(int id, int idHash) {
-        // TODO implement here
+    
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/is_battle_start", method = RequestMethod.GET, produces="text/plain")
+    @ResponseBody
+    public String isBattleStart() {
+        BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
+        boolean start = travelService.isBattleStart(debugId);
+        return String.valueOf(start);
     }
     
     @Secured("ROLE_USER")
@@ -60,6 +75,7 @@ public class TravelController {
     public ModelAndView wantsToRelocate(@RequestParam(value = "city_id", required = false) String id) {
         BigInteger cityId = new BigInteger(id);
         BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
+        BigInteger debugId2 = BigInteger.valueOf(44L);
         ModelAndView model = new ModelAndView();
         City currCity = travelService.getCurrentCity(debugId);
         if (currCity.getCityId().equals(cityId)) {
@@ -70,6 +86,15 @@ public class TravelController {
             
             try {
                 travelService.relocate(debugId, cityId);
+                travelService.relocate(debugId2, cityId);//TODO delete
+                
+              //TODO delete
+                try {
+                    travelService.isEnemyOnHorizon(debugId2);
+                } catch (PlayerNotFoundException e) {
+                    LOG.error("debug player 2 not in travel", e);
+                }
+                
             } catch (IllegalAccessError e) {
                 LOG.warn("Player try to relocate to another city while is already traveling."
                         + " Player continue his last trip.");
@@ -79,6 +104,14 @@ public class TravelController {
         model.setViewName("fragment/message");
         
         return model;
+    }
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/is_auto_decision_accept", method = RequestMethod.GET, produces="text/plain")
+    @ResponseBody
+    public String isAutoDecisionAccept() {
+        BigInteger debugId = BigInteger.valueOf(43L);
+        boolean accept = travelService.isDecisionAccept(debugId);
+        return String.valueOf(accept);
     }
     
     @Secured("ROLE_USER")

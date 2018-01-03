@@ -271,5 +271,14 @@ public class Query {
                     + "      WHERE hold.PARENT_ID = ? AND hold.OBJECT_TYPE_ID = ?))"
                     + " and (atr_v.ATTR_ID = " + DatabaseAttribute.GOODS_QUANTITY 
                     + " OR atr_v.ATTR_ID = " + DatabaseAttribute.AMMO_NUM + ")";
+    
+    public static final String GET_COUNT_OF_ENTITY_FROM_CONTAINER = 
+            "SELECT entity_obj.NAME, count(entity_obj.OBJECT_ID)"
+                    + " FROM OBJECTS entity_obj"
+                    + " WHERE"
+                    + " entity_obj.OBJECT_TYPE_ID = ?"
+                    + " AND entity_obj.PARENT_ID = ?"
+                    + " GROUP BY entity_obj.NAME";
+    
 }
 

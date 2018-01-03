@@ -1,0 +1,28 @@
+body, html {
+    height: 100%;
+}
+
+body {
+
+    background:url("../images/battle/battle_background.jpg");
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+.ship_panel {
+	position:relative;
+}
+
+.ship_img {
+	width: 35%;
+}
+.ship_info {
+	font-size: 20pt;
+}
+
+p {
+    margin: 2px;
+    padding: 0;
+}

@@ -33,6 +33,7 @@ import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
 import com.nctc2017.exception.DeadEndException;
+import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.utils.BattleEndVisitor;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -123,7 +124,7 @@ public class BattleIntegrationScenarioTest {
     }
     
     @Before
-    public void setUpCombatant() {
+    public void setUpCombatant() throws PlayerNotFoundException {
         travelService = (TravelService)context.getBean("travelServicePrototype");
         String loginNik = "Nik";
         String emailNik = "q@q.q";
@@ -172,7 +173,12 @@ public class BattleIntegrationScenarioTest {
                 ? cities.get(1).getCityId() 
                 : cities.get(0).getCityId());
         
-        boolean ret = travelService.isEnemyOnHorizon(nikId);
+        boolean ret = false;
+        try {
+            ret = travelService.isEnemyOnHorizon(nikId);
+        } catch (PlayerNotFoundException e1) {
+            fail("Player must be in travel");
+        }
         assertTrue(ret);
         
         travelService.confirmAttack(nikId, true);
@@ -311,9 +317,9 @@ public class BattleIntegrationScenarioTest {
         assertEquals(nikShipAfter.getCurSailorsQuantity(), 0);
         assertTrue(nikShipAfter.getCurSailorsQuantity() < nikShipBefore.getCurSailorsQuantity());
         int steveCurSailors = steveShipAfter.getCurSailorsQuantity();
-        assertTrue("steve crew after battle: " + steveCurSailors + " >= 0", steveCurSailors >= 0);
+        assertTrue("steve crew after battle: " + steveCurSailors + " > 0", steveCurSailors > 0);
         assertTrue(steveShipAfter.getCurSailorsQuantity() < steveShipBefore.getCurSailorsQuantity());
-        assertTrue(battleService.getDistance(nikId) >= 0);
+        assertTrue(battleService.getDistance(nikId) == 0);
        
         assertTrue(battleService.isBattleFinish(nikId));
         assertTrue(battleService.isBattleFinish(steveId));
@@ -362,7 +368,7 @@ public class BattleIntegrationScenarioTest {
 
             int currSteveSailors = shipDao.getCurrentShipSailors(steveShipId);
             int currNikSailors = shipDao.getCurrentShipSailors(nikShipId);
-            assertTrue(currSteveSailors > currNikSailors);
+            assertTrue(currSteveSailors + " > " + currNikSailors, currSteveSailors > currNikSailors);
             int loserVolumeBefore = holdDao.getOccupiedVolume(loserShipId);
             int winnerVolumeBefore = holdDao.getOccupiedVolume(winnerShipId);
             battleEnd.passCargoToWinnerAfterBoarding(winnerShipId, loserShipId);

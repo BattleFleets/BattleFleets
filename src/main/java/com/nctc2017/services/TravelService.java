@@ -16,6 +16,7 @@ import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.dao.StockDao;
 import com.nctc2017.dao.impl.HoldDaoImpl;
+import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.utils.AutoDecisionTask;
 import com.nctc2017.services.utils.BattleManager;
 import com.nctc2017.services.utils.TravelManager;
@@ -51,6 +52,7 @@ public class TravelService {
                     + "to city with id = " + cityId, ex);
             throw ex;
         }
+        LOG.debug("Player_" + playerId + " starting relocation");
         travelManager.startJourney(playerId, player.getLevel(), cityId);
     }
 
@@ -69,9 +71,13 @@ public class TravelService {
         return travelManager.getRelocateTime(playerId);
     }
 
-    public boolean isEnemyOnHorizon(BigInteger playerId) {
+    public boolean isEnemyOnHorizon(BigInteger playerId) throws PlayerNotFoundException {
         if(travelManager.prepareEnemyFor(playerId)) { 
+            LOG.debug("Player_" + playerId 
+                    + " saw enemy on horizon. Two player's decision timers start if not started yet.");
             autoDecisionTimer(playerId);
+            BigInteger enemyId = travelManager.getEnemyId(playerId);
+            autoDecisionTimer(enemyId);
             return true;
         } else {
             return false;
@@ -79,25 +85,43 @@ public class TravelService {
     }
 
     public int resumeRelocateTime(BigInteger playerId) {
+        LOG.debug("Player_" + playerId + " relocation timer resume.");
         return travelManager.continueTravel(playerId);
     }
+    
+    private void stopAutoDecisionTimer(BigInteger playerId) {
+        Thread timer = playerAutoDecision.get(playerId);
+        LOG.debug("Player_" + playerId + " Auto Decision timer stoping");
+        if (timer != null) {
+            timer.interrupt();
+            playerAutoDecision.remove(playerId);
+            LOG.debug("Player_" + playerId + " Auto Decision timer stoped");
+        }
+    }
 
-    public void confirmAttack(BigInteger playerId, boolean decision) {
-        playerAutoDecision.get(playerId).interrupt();
+    public void confirmAttack(BigInteger playerId, boolean decision) throws PlayerNotFoundException {
+        LOG.debug("Player_" + playerId + " made decision. Confirm Attack - " + decision);
+        stopAutoDecisionTimer(playerId);
         if (decision) {
             BigInteger enemyId = travelManager.getEnemyId(playerId);
             battleManager.newBattleBetween(playerId, enemyId);
+            LOG.debug("Player_" + playerId + " --==created a battle!==--");
         } else {
+            LOG.debug("Player_" + playerId + " attack rejecting...");
             travelManager.friendly(playerId);
+            LOG.debug("Player_" + playerId + " attack rejected");
         }
     }
 
     public boolean isBattleStart(BigInteger playerId) {
         BigInteger enemyId = battleManager.getEnemyId(playerId);
-        if (enemyId == null)
+        if (enemyId == null) {
             return false;
-        else
+        }
+        else {
+            stopAutoDecisionTimer(playerId);
             return true;
+        }
     }
     
     public boolean isFleetSpeedOk(BigInteger playerId) {
@@ -124,16 +148,26 @@ public class TravelService {
         return cityDao.find(cityId);
     }
     
-    private int autoDecisionTimer(BigInteger playerId) {
+    public boolean isDecisionAccept(BigInteger playerId) {
+        Thread thread = playerAutoDecision.get(playerId);
+        if (thread == null || thread.isInterrupted()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public int getAutoDecisionTime() {
+        return DELAY / 1000;
+    }
+    
+    private void autoDecisionTimer(BigInteger playerId) {
+        if (playerAutoDecision.get(playerId) != null) return;
         Runnable decisionTask = new AutoDecisionTask(new DecisionVisitor(playerId), DELAY);
         Thread decisionThread = new Thread(decisionTask);
         decisionThread.start();
         playerAutoDecision.put(playerId, decisionThread);
-        return getAutoDecisionTime() / 1000;
-    }
-    
-    public int getAutoDecisionTime() {
-        return DELAY / 1000;
+        LOG.debug("Player_" + playerId + " auto decision timer started");
     }
     
     private class DecisionVisitor implements Visitor{
@@ -144,7 +178,13 @@ public class TravelService {
 
         @Override
         public void visit() {
-            confirmAttack(playerId, true);
+            LOG.debug("Player_" + playerId + " reject attack by TIMEOUT");
+            try {
+                confirmAttack(playerId, false);
+            } catch (PlayerNotFoundException e) {
+                //nothing to do
+                return;
+            }
         }
         
     }

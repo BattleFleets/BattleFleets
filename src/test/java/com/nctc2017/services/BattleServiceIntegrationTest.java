@@ -35,6 +35,7 @@ import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
+import com.nctc2017.exception.PlayerNotFoundException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -89,7 +90,7 @@ public class BattleServiceIntegrationTest {
     }
     
     @Before
-    public void setUpCombatant() {
+    public void setUpCombatant() throws PlayerNotFoundException {
         travelService = (TravelService)this.context.getBean("travelServicePrototype");
         String loginNik = "Nik";
         String emailNik = "q@q.q";
@@ -166,7 +167,12 @@ public class BattleServiceIntegrationTest {
     }
     
     private void testIsEnemyOnHorizon(Player player) {
-        boolean ret = travelService.isEnemyOnHorizon(player.getPlayerId());
+        boolean ret = false;
+        try {
+            ret = travelService.isEnemyOnHorizon(player.getPlayerId());
+        } catch (PlayerNotFoundException e) {
+            fail("Player must be in travel");
+        }
         assertTrue(ret);
     }
     
