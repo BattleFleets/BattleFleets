@@ -49,6 +49,17 @@ public class BattlePreparationService {
         return playerDao.getFleetSpeed(playerId);
     }
     
+    public List<ShipWrapper> getShipsExtraInfo(BigInteger playerId) {
+        List<BigInteger> listShipsId = playerDao.findAllShip(playerId);
+        List<ShipWrapper> shipInfo = new ArrayList<ShipWrapper>();
+        for (BigInteger shipId : listShipsId) {
+            shipInfo.add(new ShipWrapper(
+                    shipDao.findShip(shipId), 
+                    cannonDao.getCurrentQuantity(shipId)));
+        }
+        return shipInfo;
+    }
+    
     public List<Ship> getShips(BigInteger playerId) {
         List<BigInteger> listShipsId = playerDao.findAllShip(playerId);
         return shipDao.findAllShips(listShipsId);
@@ -110,6 +121,22 @@ public class BattlePreparationService {
             
             BigInteger shipId = ships.get(randomShip.nextInt(ships.size()));
             chooseShip(playerId, shipId);
+        }
+        
+    }
+    
+    public class ShipWrapper {
+        private Ship ship;
+        private Map<String, String> cannons;
+        public ShipWrapper(Ship ship, Map<String, String> cannons) {
+            this.ship = ship;
+            this.cannons = cannons;
+        }
+        public Ship getShip() {
+            return ship;
+        }
+        public Map<String, String> getCannons() {
+            return cannons;
         }
         
     }
