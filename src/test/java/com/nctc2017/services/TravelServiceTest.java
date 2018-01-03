@@ -20,6 +20,8 @@ import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.exception.PlayerNotFoundException;
+
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -126,7 +128,12 @@ public class TravelServiceTest {
     }
 
     private void testIsEnemyOnHorizon(Player player) {
-        boolean ret = travelService.isEnemyOnHorizon(player.getPlayerId());
+        boolean ret = false;
+        try {
+            ret = travelService.isEnemyOnHorizon(player.getPlayerId());
+        } catch (PlayerNotFoundException e) {
+            fail("Player must be in travel");
+        }
         assertTrue(ret);
     }
 
@@ -148,7 +155,11 @@ public class TravelServiceTest {
     private void confirmAttackNik(boolean decision) {
         relocateTwoPersons();
         testIsEnemyOnHorizon(nik);
-        travelService.confirmAttack(nik.getPlayerId(), decision);
+        try {
+            travelService.confirmAttack(nik.getPlayerId(), decision);
+        } catch (PlayerNotFoundException e) {
+            fail("Player must be found ");
+        }
     }
 
     @Test
@@ -174,7 +185,11 @@ public class TravelServiceTest {
         testConfirmAttackNikFalse();
 
         testIsEnemyOnHorizon(steve);
-        travelService.confirmAttack(steve.getPlayerId(), true);
+        try {
+            travelService.confirmAttack(steve.getPlayerId(), true);
+        } catch (PlayerNotFoundException e) {
+            fail("Player must be found ");
+        }
 
         boolean isBattleStart = travelService.isBattleStart(nik.getPlayerId());
         assertTrue(isBattleStart);

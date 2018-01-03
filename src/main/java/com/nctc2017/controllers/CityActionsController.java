@@ -58,7 +58,7 @@ public class CityActionsController {
             int time = travelService.getRelocateTime(debugId);
             if (time == Integer.MIN_VALUE) break;
             try {
-                Thread.currentThread().wait(1000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 LOG.error("User thread was interrupted while entering in new city", e);
             }
