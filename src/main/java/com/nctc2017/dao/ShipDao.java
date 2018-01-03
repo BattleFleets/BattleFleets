@@ -2,6 +2,7 @@ package com.nctc2017.dao;
 
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
+import com.nctc2017.bean.StartShipEquipment;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -53,5 +54,7 @@ public interface ShipDao {
     int getMaxShotDistance(BigInteger shipId);
     
     int getSpeed(BigInteger shipId);
+
+    StartShipEquipment findStartShipEquip(BigInteger shipTempId);
 
 }
