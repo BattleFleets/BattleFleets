@@ -87,6 +87,12 @@
 	height: 100%;
 }
 .ui-accordion .ui-accordion-header {
+    background-image: url(../images/general/accordion_header.png);
+    background-position: top;
+    background-attachment: initial;
+    background-repeat: no-repeat;
+    background-size: 101% 102%;
+    border: none;
 	display: block;
 	cursor: pointer;
 	position: relative;
@@ -108,6 +114,12 @@
 	margin-top: -8px;
 }
 .ui-accordion .ui-accordion-content {
+	background-image: url("../images/general/accordion_background.png");
+    background-position: bottom;
+    background-attachment: initial;
+    background-repeat: no-repeat;
+    background-size: 100% 150%;
+    border: none;
 	padding: 1em 2.2em;
 	border-top: 0;
 	overflow: auto;
@@ -880,7 +892,7 @@ body .ui-tooltip {
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
 	border: 1px solid #d3d3d3;
-	background: #e6e6e6 url("images/ui-bg_glass_75_e6e6e6_1x400.png") 50% 50% repeat-x;
+	/*background: #e6e6e6 url("images/ui-bg_glass_75_e6e6e6_1x400.png") 50% 50% repeat-x;*/
 	font-weight: normal;
 	color: #555555;
 }
@@ -897,9 +909,9 @@ body .ui-tooltip {
 .ui-widget-content .ui-state-focus,
 .ui-widget-header .ui-state-focus {
 	border: 1px solid #999999;
-	background: #dadada url("images/ui-bg_glass_75_dadada_1x400.png") 50% 50% repeat-x;
+	/*background: #dadada url("images/ui-bg_glass_75_dadada_1x400.png") 50% 50% repeat-x;*/
 	font-weight: normal;
-	color: #212121;
+	color: #ff8000 !Important;
 }
 .ui-state-hover a,
 .ui-state-hover a:hover,
@@ -916,7 +928,7 @@ body .ui-tooltip {
 .ui-widget-content .ui-state-active,
 .ui-widget-header .ui-state-active {
 	border: 1px solid #aaaaaa;
-	background: #ffffff url("images/ui-bg_glass_65_ffffff_1x400.png") 50% 50% repeat-x;
+	/*background: #ffffff url("images/ui-bg_glass_65_ffffff_1x400.png") 50% 50% repeat-x;*/
 	font-weight: normal;
 	color: #212121;
 }
