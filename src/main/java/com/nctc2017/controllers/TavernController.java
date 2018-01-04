@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
+import com.nctc2017.services.MoneyService;
 import com.nctc2017.services.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -19,6 +20,8 @@ import org.springframework.web.servlet.View;
 public class TavernController {
     @Autowired
     private ShipService shipService;
+    @Autowired
+    private MoneyService moneyService;
 
 
 
@@ -31,14 +34,10 @@ public class TavernController {
             @RequestParam(value = "tavern", required = false) String city) {
         ModelAndView model = new ModelAndView();
         BigInteger id=new BigInteger("41");
-        List<Ship> ships = new ArrayList<>();
-        ShipTemplate tship1=new ShipTemplate(new BigInteger("1"),"Qwerty",10,5,10,3,3,3);
-        Ship ship1=new Ship(tship1,new BigInteger("1"),"Qwerty", 3,2, 2);
-        ShipTemplate tship2=new ShipTemplate(new BigInteger("1"),"Qwerty",10,5,10,3,3,3);
-        Ship ship2=new Ship(tship1,new BigInteger("1"),"Qwerty", 3,2, 2);
-        ships.add(ship1);
-        ships.add(ship2);
+        List<Ship> ships = shipService.getAllPlayerShips(id);
+        int money = moneyService.getPlayersMoney(id);
         model.addObject("msg", "This is protected page - Only for Users!");
+        model.addObject("money", money);
         model.addObject("city", city);
         model.addObject("ships", ships);
         model.setViewName("TavernView");
