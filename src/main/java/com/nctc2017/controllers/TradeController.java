@@ -1,8 +1,11 @@
 package com.nctc2017.controllers;
 
+import java.math.BigInteger;
 import java.util.*;
 
 import com.nctc2017.bean.Thing;
+import com.nctc2017.services.MoneyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +15,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class TradeController {
-    
+
+    @Autowired
+    MoneyService moneyService;
+
     @Secured("ROLE_USER")
     @RequestMapping(value = "/market", method = RequestMethod.GET)
     public ModelAndView marketWelcome(
@@ -43,7 +49,9 @@ public class TradeController {
         return null;
     }
 
-    public String getMoney(int playerId){
+    public String getMoney(BigInteger playerId){
+        int money;
+        money = moneyService.getPlayersMoney(playerId);
         String s="sdkgjh";
         return s;
     }
