@@ -73,7 +73,7 @@ public class ShipDaoImpl implements ShipDao {
         throw e;
     }
 
-    private StartShipEquipment findStartShipEquip(BigInteger shipTempId) {
+    public StartShipEquipment findStartShipEquip(BigInteger shipTempId) {
         BigInteger startMastTemplateId = queryExecutor.findAttrByRef(DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID,
                 shipTempId,
                 DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID,

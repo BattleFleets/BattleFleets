@@ -1,10 +1,11 @@
 package com.nctc2017.controllers;
 
-import java.util.*;
-
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
+import com.nctc2017.bean.StartShipEquipment;
 import com.nctc2017.bean.Thing;
+import com.nctc2017.services.ShipService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +13,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 public class ShipyardController {
+
+    @Autowired
+    ShipService shipService;
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/shipyard", method = RequestMethod.GET)
@@ -35,9 +42,23 @@ public class ShipyardController {
         // TODO implement here
     }
 
-    public List<ShipTemplate> getAllShipTemplates() {
-        // TODO implement here
-        return null;
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/buyShip", method = RequestMethod.GET)
+    public ModelAndView getAllShipTemplates(
+            @RequestParam(value = "shipyard", required = false) String city) {
+        List<ShipTemplate> shipTemplates = shipService.getAllShipTemplates();
+        List<StartShipEquipment> shipEquipments = new ArrayList<>();
+        for (ShipTemplate sT: shipTemplates) {
+            StartShipEquipment shipEquipment = shipService.getStartShipEquipment(sT.getTemplateId());
+            shipEquipments.add(shipEquipment);
+        }
+
+        ModelAndView model = new ModelAndView();
+        model.addObject("city", city);
+        model.addObject("shipTemplates", shipTemplates);
+        model.addObject("shipEquipments",shipEquipments);
+        model.setViewName("ShipyardView");
+        return model;
     }
 
     public List<Ship> getAllPlayerShips(int playerId) {
