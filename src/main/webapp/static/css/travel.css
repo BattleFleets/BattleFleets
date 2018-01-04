@@ -10,20 +10,7 @@
 .layer, .timer {
 	position: absolute;
 }
-.timer {
-	color: rgba(0,0,0,0.8);
-	text-shadow: 2px 8px 6px rgba(0,0,0,0.8),
-                 0px -5px 35px rgba(255,255,255,0.3);
-	font: bold;
-	font-size: 32pt;
-	font-family: cursive;
-	font-style: normal;
-	font-variant: small-caps;
-	font-weight: 700;
-	line-height: 5px;
-	left: 0%;
-	bottom: 0%;
-}
+
 @keyframes city {
     from { left: -700px; }
     to { left: 1100px; }

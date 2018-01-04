@@ -20,6 +20,7 @@ import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.exception.BattleStartException;
 import com.nctc2017.exception.PlayerNotFoundException;
 
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -50,10 +51,11 @@ public class TravelServiceTest {
 
     @Mock
     private CityDao mockCityDao;
-
-    @BeforeClass
-    public static void createPlayerNik() {
-        BigInteger playerIdNik = BigInteger.ONE;
+    
+    private static int playerIdCounter = 1;
+    
+    private void createPlayerNik() {
+        BigInteger playerIdNik = BigInteger.valueOf(playerIdCounter++);
         BigInteger cityId = BigInteger.valueOf(2);
 
         String loginNik = "Nik";
@@ -66,9 +68,8 @@ public class TravelServiceTest {
         nik = new Player(playerIdNik, loginNik, emailNik, moneyNik, pointsNik, lvlNik);
     }
 
-    @BeforeClass
-    public static void createPlayerSteve() {
-        BigInteger playerIdSteve = BigInteger.TEN;
+    private static void createPlayerSteve() {
+        BigInteger playerIdSteve = BigInteger.valueOf(playerIdCounter++);
         BigInteger cityId = BigInteger.valueOf(11);
 
         String loginSteve = "Steve";
@@ -83,6 +84,8 @@ public class TravelServiceTest {
 
     @Before
     public void initMocks() {
+        createPlayerNik();
+        createPlayerSteve();
         travelService = (TravelService)this.context.getBean("travelServicePrototype");
         MockitoAnnotations.initMocks(this);
         ReflectionTestUtils.setField(travelService, "playerDao", mockPlayerDao);
@@ -159,6 +162,8 @@ public class TravelServiceTest {
             travelService.confirmAttack(nik.getPlayerId(), decision);
         } catch (PlayerNotFoundException e) {
             fail("Player must be found ");
+        } catch (BattleStartException e) {
+            fail("Player cannot have another enemy");
         }
     }
 
@@ -189,6 +194,8 @@ public class TravelServiceTest {
             travelService.confirmAttack(steve.getPlayerId(), true);
         } catch (PlayerNotFoundException e) {
             fail("Player must be found ");
+        } catch (BattleStartException e) {
+            fail("Player cannot have another enemy");
         }
 
         boolean isBattleStart = travelService.isBattleStart(nik.getPlayerId());

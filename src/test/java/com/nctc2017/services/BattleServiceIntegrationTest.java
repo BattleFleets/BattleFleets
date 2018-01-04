@@ -35,6 +35,7 @@ import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
+import com.nctc2017.exception.BattleStartException;
 import com.nctc2017.exception.PlayerNotFoundException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -90,7 +91,7 @@ public class BattleServiceIntegrationTest {
     }
     
     @Before
-    public void setUpCombatant() throws PlayerNotFoundException {
+    public void setUpCombatant() throws PlayerNotFoundException, BattleStartException {
         travelService = (TravelService)this.context.getBean("travelServicePrototype");
         String loginNik = "Nik";
         String emailNik = "q@q.q";

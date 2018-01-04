@@ -32,6 +32,7 @@ import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
+import com.nctc2017.exception.BattleStartException;
 import com.nctc2017.exception.DeadEndException;
 import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.utils.BattleEndVisitor;
@@ -124,7 +125,7 @@ public class BattleIntegrationScenarioTest {
     }
     
     @Before
-    public void setUpCombatant() throws PlayerNotFoundException {
+    public void setUpCombatant() throws PlayerNotFoundException, BattleStartException {
         travelService = (TravelService)context.getBean("travelServicePrototype");
         String loginNik = "Nik";
         String emailNik = "q@q.q";

@@ -53,6 +53,7 @@ public class TravelManager {
     }
     
     public boolean prepareEnemyFor(BigInteger playerId) throws PlayerNotFoundException {
+        LOG.debug("Find enemy for Player_" + playerId);
         boolean isEnemyOnHorisont = false;
         TravelBook playerJornal = journals.get(playerId);
         if (playerJornal == null) {
@@ -81,7 +82,7 @@ public class TravelManager {
             if (Math.abs(lvl - enemyLvl) <= lvlDiff) {
                 playerJornal.setEnemyId(enemy.getKey());
                 enemyJornal.setEnemyId(playerId);
-
+                LOG.debug("Enemy for Player_" + playerId + " found - Player_" + playerJornal.getEnemyId());
                 playerJornal.pause();
                 enemyJornal.pause();
 

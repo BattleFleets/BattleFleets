@@ -33,5 +33,12 @@ public class AuthRegController {
 
         return model;
     }
-
+    
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/error", method = RequestMethod.GET)
+    public ModelAndView appError() {
+        ModelAndView view = new ModelAndView("ErrorView");
+        return view;
+    }
+            
 }

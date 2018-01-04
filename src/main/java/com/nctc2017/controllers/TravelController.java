@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.nctc2017.bean.City;
+import com.nctc2017.exception.BattleStartException;
 import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.TravelService;
 
@@ -55,7 +56,7 @@ public class TravelController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/attack_decision", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
-    public void decision(String decision) throws PlayerNotFoundException {
+    public void decision(String decision) throws PlayerNotFoundException, BattleStartException {
         BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
         
         travelService.confirmAttack(debugId, Boolean.valueOf(decision));
@@ -106,9 +107,9 @@ public class TravelController {
         return model;
     }
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/is_auto_decision_accept", method = RequestMethod.GET, produces="text/plain")
+    @RequestMapping(value = "/is_decision_accept", method = RequestMethod.GET, produces="text/plain")
     @ResponseBody
-    public String isAutoDecisionAccept() {
+    public String isDecisionAccept() {
         BigInteger debugId = BigInteger.valueOf(43L);
         boolean accept = travelService.isDecisionAccept(debugId);
         return String.valueOf(accept);

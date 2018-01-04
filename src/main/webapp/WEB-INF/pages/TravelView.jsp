@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/travel.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -35,6 +36,7 @@
         });
     </script>
     <script type="text/javascript">
+        var battleStartId;
         function isBattleStart() {
         	$.get("/is_battle_start")
         	.done(function(response, status, xhr){
@@ -44,7 +46,7 @@
         	});
         };
         $(document).ready(function() {
-	        setInterval(function() {
+        	battleStartId = setInterval(function() {
 	        	isBattleStart();
 	        }, 1000);
         });
@@ -58,10 +60,10 @@
         function autoDecisionAccept() {
     		if (!watchDog) return;
     		watchDog = false;
-    		console.log("autoDecisionAccept");
-        	$.get("/is_auto_decision_accept")
+    		console.log("decisionAccept request");
+        	$.get("/is_decision_accept")
             .done(function(response, status, xhr) {
-        		console.log("autoDecisionAccept done");
+        		console.log("decisionAccept done");
         		watchDog = true;
             	if (response == "true") {
             		console.log("autoDecisionAccept done true");
@@ -71,6 +73,27 @@
 	            	$dialog_hint.dialog('close');
             	}
             }).fail(function(xhr, status, error) {
+            	if (xhr == 409) {
+            	    $( "#error-message" ).dialog({
+            	    	title: "Another fleet attacks enemy.",
+            	    	modal: true,
+            	        buttons: {
+            	            Ok: function() {
+            	                $( this ).dialog( "close" );
+            	            }
+            	        }
+            	      });
+            	} else if (xhr == 405) {
+            		$( "#error-message" ).dialog({
+            	    	title: "Lost the enemy out of sight.",
+            	    	modal: true,
+            	        buttons: {
+            	            Ok: function() {
+            	                $( this ).dialog( "close" );
+            	            }
+            	        }
+            	   });
+            	}
             	watchDog = true;
             });
         };
@@ -94,8 +117,17 @@
                             click: function () {
                             	$.post("/attack_decision", {decision: "true"})
                             	.done(function(response, status, xhr) {
+                            		watchDog = false;
+                            		clearInterval(autoDecisionId);
+                            		clearInterval(battleStartId);
                                     window.location.href = "/battle_preparing";
-                            	});
+                            	}).fail(function(xhr, status, error) {
+                                    if (xhr.status == 405) {
+                                    	$( "#warning_info" ).html(error + " " + xhr.responseText);
+                                	} else {
+                                        window.location.href = "/error";
+                            	    }
+                        		});
                             }
                         },
                         {
@@ -132,6 +164,10 @@
   <source src="static/audio/piraty-karibskogo-morya--original.mp3" type="audio/mp3">
 </audio>
 <div id="warning_info">
+
+</div>
+
+<div id="error_info">
 
 </div>
 </body>

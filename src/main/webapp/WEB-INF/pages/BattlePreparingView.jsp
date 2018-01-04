@@ -2,12 +2,67 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
     <link href="static/css/battle.css" rel="stylesheet" media="screen">
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script type="text/javascript">
+    var seconds = '${timer}';
+    var timerId;
+    var enemyReadyId;
+    function shipChooseTimer() {
+        seconds= seconds - 1;
+        $("#timer").html("Auto pick: " + seconds + " sec");
+        if (seconds == 0) {
+            clearInterval(timerId);
+            $( "#warning_info" ).html(response);/*wait msg*/
+      	    isEnemyReady();
+        }
+    };
+    
+    function isEnemyReady() {
+    	$.get("/is_battle_start")
+    	.done(function(response, status, xhr){
+    	    if (response == "true") {
+                window.location.href = "/battle";
+    	    } else {
+                window.location.href = "/error";
+    	    }
+    	}).fail(function(xhr, status, error) {
+    		if (xhr.status == 405) {
+                $( "#warning_info" ).html(xhr.responseText);/*wait msg*/
+        	    $('html, body').animate({
+                    scrollTop: $("#warning_info").offset().top
+                }, 1000);
+                window.location.href = "/trip";
+    		}
+    	});
+    };
+    
+    $(document).ready(function() {
+        $("#timer").html("Auto pick: " + seconds + " sec");
+        timerId = setInterval(function() {
+        	shipChooseTimer();
+        }, 1000);
+        $("button").click(function() { 
+            var ship_id = $(this).attr("value");
+        	var name = $(this).attr("name");
+        	var ship = new Object();
+        	ship[name] = ship_id;
+        	$.post("/pick_ship", ship)
+            .done(function(response, status, xhr){
+          	    $( "#warning_info" ).html(response);/*wait msg*/
+          	    isEnemyReady();
+            })
+            .fail(function(xhr, status, error) {
+                window.location.href = "/error";
+            });
+        });
+    });
+	</script>
 	<script>
     var $accordion_hint
     $(document).ready(function(){
@@ -37,23 +92,22 @@
 	                <div class="ship_img">
 						<c:choose>
 							<c:when test="${ship.getTemplateId().intValueExact() == 1} ">
-						        <img align="left" alt="3" src="static/images/battle/caravel.png">
+						        <img alt="3" src="static/images/ships/Caravela.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 2} ">
-						        <img alt="3" src="static/images/battle/karak.png">
+						        <img alt="3" src="static/images/ships/Caracca.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 3} ">
-						        <img alt="3" src="static/images/battle/galleon.png">
+						        <img alt="3" src="static/images/ships/Galion.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 4} ">
-						        <img alt="3" src="static/images/battle/clipper.png">
+						        <img alt="3" src="static/images/ships/Clipper.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 5} ">
-						        <img alt="3" src="static/images/battle/fregat.png">
+						        <img alt="3" src="static/images/ships/Fregata.png" width="100%" height="100%">
 					        </c:when>
 							<c:otherwise>
-						        <img alt="3" src="static/images/battle/caravel.png" width="100%" height="100%">
-						        
+						        <img alt="3" src="static/images/ships/Caravela.png" width="100%" height="100%">
 							</c:otherwise>
 						</c:choose>
 					</div>
@@ -66,11 +120,10 @@
 		                <p>Cannons: <c:out value="0/${ship.maxCannonQuantity}" /></p>
 		                <p>Cost: <c:out value="${ship.cost}" /></p>
 	                </div>
-	                <form action="/pick_ship" method="post">
+	                <div style="clear: left"></div>
 	                <button class="button" style="vertical-align:middle" name="ship_id" type="submit" value="${ship.shipId}">
 			            <span>Pick</span>
 			        </button>
-			        </form>
                 </div>
             </div>
 		</c:forEach>
@@ -93,23 +146,22 @@
 	                <div class="ship_img">
 						<c:choose>
 							<c:when test="${ship.getTemplateId().intValueExact() == 1} ">
-						        <img align="left" alt="3" src="static/images/battle/caravel.png">
+						        <img alt="3" src="static/images/ships/Caravela.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 2} ">
-						        <img alt="3" src="static/images/battle/karak.png">
+						        <img alt="3" src="static/images/ships/Caracca.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 3} ">
-						        <img alt="3" src="static/images/battle/galleon.png">
+						        <img alt="3" src="static/images/ships/Galion.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 4} ">
-						        <img alt="3" src="static/images/battle/clipper.png">
+						        <img alt="3" src="static/images/ships/Clipper.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 5} ">
-						        <img alt="3" src="static/images/battle/fregat.png">
+						        <img alt="3" src="static/images/ships/Fregata.png" width="100%" height="100%">
 					        </c:when>
 							<c:otherwise>
-						        <img alt="3" src="static/images/battle/caravel.png" width="100%" height="100%">
-						        
+						        <img alt="3" src="static/images/ships/Caravela.png" width="100%" height="100%">
 							</c:otherwise>
 						</c:choose>
 					</div>
@@ -126,6 +178,9 @@
 		</c:forEach>
 	</div>
 	</div>
+	<div>
+        <p class="timer" id="timer"></p>
+    </div>
 	<div id="warning_info"></div>
 </body>
 </html>
