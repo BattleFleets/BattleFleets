@@ -43,4 +43,9 @@ public class TradeController {
         return null;
     }
 
+    public String getMoney(int playerId){
+        String s="sdkgjh";
+        return s;
+    }
+
 }
