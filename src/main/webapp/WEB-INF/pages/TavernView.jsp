@@ -123,4 +123,5 @@ function show(id) {
 }
 
 </script>
+<%@include file="fragment/footer.jsp"%>
 </html>
