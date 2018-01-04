@@ -21,7 +21,7 @@ public class StartShipEquipment {
         this.startMastType = startMastType;
         this.startCannonType = startCannonType;
         this.startNumCannon = startNumCannon;
-        this.startNumMast =startNumMast;
+        this.startNumMast = startNumMast;
     }
 
     public BigInteger getStartCannonType() {
