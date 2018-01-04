@@ -1,0 +1,85 @@
+html, body { height: 100%; width: 100%; margin: 0; }
+
+body {
+
+    background:url("../images/battle/battle_background.jpg");
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+h1.up_title {
+    text-align: center;
+    background-image: url(../images/battle/title_back.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding-top: 3%;
+    padding-bottom: 2%;
+    background-position-x: 60%;
+}
+
+.ship_accordion {
+    width: 100%;
+    height: 100%;
+}
+.ship_accordion_header {
+    width: 80%;
+}
+
+.ship_accordion_content {
+    width: 80%;  
+    padding: 5% 5% 7% !important;
+    display: block; 
+}
+
+.ship_panel {
+    position:relative;
+}
+
+.ship_img {
+    width: 35%;
+    float: left;
+    margin-left: 20px;
+}
+.ship_info {
+    float:left;
+    font-size: 16pt;
+}
+
+p {
+    margin: 2px;
+    padding: 0;
+}
+h3 {
+    font-size: 20pt;
+    font-weight: bold;
+    text-align: center;
+}
+.enemy_style, .player_style {
+    line-height: 100%;
+    font-family: cursive;
+    font-size: 20px;
+    font-style: italic;
+    font-variant: small-caps;
+    font-weight: 700;
+}
+.enemy_style {
+    color: darkred;
+}
+.player_style {
+    color: darkgreen;
+}
+
+.player_side, .enemy_side {
+    width: 50%; height: 100%;
+} 
+.player_side {
+    float:right;
+}
+
+.enemy_side {
+    float:left;
+}
+    

@@ -6,8 +6,6 @@ import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigInteger;
-import java.util.List;
-import com.nctc2017.bean.Mast;
 import org.springframework.transaction.annotation.Transactional;
 
 public class ShipRepairService {
@@ -33,16 +31,20 @@ public class ShipRepairService {
     }
 
     @Transactional
-    public void updateShipHealth(BigInteger playerId, BigInteger shipId) {
+    public boolean updateShipHealth(BigInteger playerId, BigInteger shipId) {
         //updating Player money
         int updateMoney=playerDao.getPlayerMoney(playerId)-countRepairCost(shipId);
-        playerDao.updateMoney(playerId, updateMoney);
-        //updating Ship health
-        shipDao.updateShipHealth(shipId, shipDao.getHealthLimit(shipId));
-        //updating Mast speed
-        for(Mast mast : mastDao.getShipMastsFromShip(shipId)){
-            mastDao.updateCurMastSpeed(mast.getThingId(), mastDao.getMaxSpeed(mast.getThingId()));
+        if(updateMoney>=0) {
+            playerDao.updateMoney(playerId, updateMoney);
+            //updating Ship health
+            shipDao.updateShipHealth(shipId, shipDao.getHealthLimit(shipId));
+            //updating Mast speed
+            for (Mast mast : mastDao.getShipMastsFromShip(shipId)) {
+                mastDao.updateCurMastSpeed(mast.getThingId(), mastDao.getMaxSpeed(mast.getThingId()));
+            }
+            return true;
         }
+        else return false;
     }
 
 }

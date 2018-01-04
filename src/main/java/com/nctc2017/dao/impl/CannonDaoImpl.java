@@ -2,6 +2,7 @@ package com.nctc2017.dao.impl;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,14 @@ public class CannonDaoImpl implements CannonDao {
             throw ex;
         }
         return pickedUpCannon;
+    }
+    
+    @Override
+    public Map<String, String> getCurrentQuantity(BigInteger shipId) {
+        Map<String, String> cannonTypeCount = queryExecutor.findEntity(DatabaseObject.CANNON_OBJTYPE_ID,
+                shipId,
+                new EntityExtractor<>(shipId, new CannonCountVisitor()));
+        return cannonTypeCount;
     }
 
     @Override
@@ -146,6 +155,16 @@ public class CannonDaoImpl implements CannonDao {
                     Integer.valueOf(papamMap.remove(Cannon.DAMAGE)),
                     Integer.valueOf(papamMap.remove(Cannon.DISTANCE)), 
                     Integer.valueOf(papamMap.remove(Cannon.COST)));
+        }
+        
+    }
+    
+    private final class CannonCountVisitor implements ExtractingVisitor<Map<String, String>> {
+
+        @Override
+        public Map<String, String> visit(BigInteger entityId, Map<String, String> papamMap) {
+           
+            return papamMap;
         }
         
     }

@@ -2,6 +2,7 @@ package com.nctc2017.dao;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 
 import com.nctc2017.bean.Cannon;
 
@@ -28,5 +29,7 @@ public interface CannonDao {
     void deleteCannon(BigInteger id);
 
     BigInteger createCannon(BigInteger cannonTemplateId, BigInteger containerOwnerId);
+
+    Map<String, String> getCurrentQuantity(BigInteger shipId);
 
 }
