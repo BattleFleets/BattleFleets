@@ -57,6 +57,7 @@ input[type=submit] {
 }
 
 .button span {
+  font-size: 25px;
   cursor: pointer;
   display: inline-block;
   position: relative;
