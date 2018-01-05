@@ -92,7 +92,7 @@ public class TravelService {
     
     private void stopAutoDecisionTimer(BigInteger playerId) {
         Thread timer = playerAutoDecision.get(playerId);
-        LOG.debug("Player_" + playerId + " Auto Decision timer stoping");
+        LOG.debug("Player_" + playerId + " Auto Decision timer stoping. timer = null ? " + (timer == null));
         if (timer != null) {
             timer.interrupt();
             playerAutoDecision.remove(playerId);
@@ -103,6 +103,7 @@ public class TravelService {
     public void confirmAttack(BigInteger playerId, boolean decision) throws PlayerNotFoundException, BattleStartException {
         LOG.debug("Player_" + playerId + " made decision. Confirm Attack - " + decision);
         stopAutoDecisionTimer(playerId);
+        travelManager.decisionWasMade(playerId);
         if (decision) {
             BigInteger enemyId = travelManager.getEnemyId(playerId);
             battleManager.newBattleBetween(playerId, enemyId);
@@ -115,14 +116,7 @@ public class TravelService {
     }
 
     public boolean isBattleStart(BigInteger playerId) {
-        BigInteger enemyId = battleManager.getEnemyId(playerId);
-        if (enemyId == null) {
-            return false;
-        }
-        else {
-            stopAutoDecisionTimer(playerId);
-            return true;
-        }
+        return battleManager.getBattle(playerId) != null;
     }
     
     public boolean isFleetSpeedOk(BigInteger playerId) {
@@ -150,12 +144,7 @@ public class TravelService {
     }
     
     public boolean isDecisionAccept(BigInteger playerId) {
-        Thread thread = playerAutoDecision.get(playerId);
-        if (thread == null || thread.isInterrupted()) {
-            return true;
-        } else {
-            return false;
-        }
+        return travelManager.isDecisionWasMade(playerId);
     }
 
     public int getAutoDecisionTime() {

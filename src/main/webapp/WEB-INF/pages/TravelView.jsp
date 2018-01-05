@@ -17,6 +17,7 @@
         };
     </script>
     <script type="text/javascript">
+        var number = 1;
         var city = '${city}';
         var seconds = '${time}';
         var timerId;
@@ -28,52 +29,80 @@
             	window.location.href = "/city";
             }
         };
-        $(document).ready(function() {
-	        $("#timer").html("Arrival in " + city + ": " + seconds + " sec");
+        
+        function arrivalTimerTask() {
 	        timerId = setInterval(function() {
 	        	arrivalTimer();
 	        }, 1000);
+        };
+        
+        $(document).ready(function() {
+	        $("#timer").html("Arrival in " + city + ": " + seconds + " sec");
+            arrivalTimerTask();
         });
     </script>
     <script type="text/javascript">
         var battleStartId;
+        
         function isBattleStart() {
+        	clearInterval(battleStartId);
+        	
+        	var n = number++;
+        	console.log("request on /is_battle_start *" + n);
+        	
         	$.get("/is_battle_start")
         	.done(function(response, status, xhr){
+            	console.log("response from /is_battle_start " + response + " *" + n);
         	    if (response == "true") {
+        	    	console.log("request /battle_preparing *" + n);
                     window.location.href = "/battle_preparing";
+        	    } else {
+            	    battleStartTask();
         	    }
         	});
+        	
         };
-        $(document).ready(function() {
+        
+        function battleStartTask() {
+        	console.log("is battle start timer start");
         	battleStartId = setInterval(function() {
 	        	isBattleStart();
 	        }, 1000);
+        };
+        
+        $(document).ready(function() {
+        	battleStartTask();
         });
     </script>
     <script type="text/javascript">
         var $dialog_hint
-        var autoDecisionId;
+        var decisionId;
+        var acceptDecision = false;
         var lookoutId;
-        var lookoutTime = 4000;
-        var watchDog = true;
-        function autoDecisionAccept() {
-    		if (!watchDog) return;
-    		watchDog = false;
-    		console.log("decisionAccept request");
+       /* var watchDog = true;*/
+        function decisionAccept() {
+    		clearInterval(decisionId);
+    		/*if (!watchDog) return;
+    		watchDog = false;*/
+    		var n = number++;
+    		console.log("decisionAccept request *" + n);
         	$.get("/is_decision_accept")
             .done(function(response, status, xhr) {
-        		console.log("decisionAccept done");
-        		watchDog = true;
+        		console.log("decisionAccept response done " + response + " *" + n);
+        		/*watchDog = true;*/
             	if (response == "true") {
-            		console.log("autoDecisionAccept done true");
-	            	clearInterval(autoDecisionId);
-	            	timerId = setInterval(function() {arrivalTimer();}, 1000);
-	            	lookoutId = setInterval(function() {lookout();}, lookoutTime);
+            		if (!acceptDecision) {
+            		    arrivalTimerTask();
+	            	    lookoutTask();
+            		}
 	            	$dialog_hint.dialog('close');
+            	} else {
+            	    decisionAcceptTask();
             	}
             }).fail(function(xhr, status, error) {
-            	if (xhr == 409) {
+        		console.log("decisionAccept response fail " + status + " *" + n);
+            	if (xhr.status == 409) {
+            		console.log("reason: " + xhr.status + "Another fleet attacks enemy.");
             	    $( "#error-message" ).dialog({
             	    	title: "Another fleet attacks enemy.",
             	    	modal: true,
@@ -83,7 +112,8 @@
             	            }
             	        }
             	      });
-            	} else if (xhr == 405) {
+            	} else if (xhr.status == 405) {
+            		console.log("reason: " + xhr.status + "Lost the enemy out of sight.");
             		$( "#error-message" ).dialog({
             	    	title: "Lost the enemy out of sight.",
             	    	modal: true,
@@ -94,17 +124,23 @@
             	        }
             	   });
             	}
-            	watchDog = true;
+            	/*watchDog = true;*/
+            	
             });
         };
+        function decisionAcceptTask() {
+        	decisionId = setInterval(function() {decisionAccept();}, 1000);
+        };
         function lookout() {
+        	var n = number++;
+    		console.log("request /is_enemy_on_horizon *" + n);
         	clearInterval(lookoutId);
         	$.get("/is_enemy_on_horizon")
             .done(function(response, status, xhr) {
+        		console.log("response /is_enemy_on_horizon - " + response + " *" + n);
                 if (response == "true") {
-            		console.log("lookout true");
                 	clearInterval(timerId);
-                	autoDecisionId = setInterval(function() {autoDecisionAccept();}, 1000);
+                	decisionAcceptTask();
                 	$dialog_hint = $( "#warning_info" ).dialog({
                         modal: true,
                         title: "Captain! Fleet on the horizon",
@@ -115,15 +151,17 @@
                             id: "Accept",
                             text: "Attack, stupid ship rats!",
                             click: function () {
+                        		console.log("ACCEPT *" + n);
+                        		acceptDecision = true;
                             	$.post("/attack_decision", {decision: "true"})
                             	.done(function(response, status, xhr) {
-                            		watchDog = false;
-                            		clearInterval(autoDecisionId);
-                            		clearInterval(battleStartId);
-                                    window.location.href = "/battle_preparing";
+                            		/*watchDog = false;*/
+                            		/*clearInterval(decisionId);
+                            		clearInterval(battleStartId);*/
+                                    /*window.location.href = "/battle_preparing";*/
                             	}).fail(function(xhr, status, error) {
                                     if (xhr.status == 405) {
-                                    	$( "#warning_info" ).html(error + " " + xhr.responseText);
+                                    	$( "#error_info" ).html(error + " " + xhr.responseText);
                                 	} else {
                                         window.location.href = "/error";
                             	    }
@@ -140,16 +178,20 @@
                         ]
                     });
                 } else {
-                	console.log("lookout false");
-                	lookoutId = setInterval(function () {lookout();}, lookoutTime);
+                	lookoutTask();
                 }
             })
             .fail(function(xhr, status, error) {
-            	lookoutId = setInterval(function () {lookout();}, lookoutTime);/*already arrived*/
+            	lookoutTask();/*already arrived*/
             });
         }
+        
+        function lookoutTask() {
+        	lookoutId = setInterval(function () {lookout();}, 1000);
+        };
+        
         $(document).ready(function() {
-        	lookoutId = setInterval(function () {lookout();}, lookoutTime);
+        	lookoutTask();
         });
     </script>
 </head>

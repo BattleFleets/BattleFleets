@@ -67,7 +67,7 @@ public class BattlesController {
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/wait_for_enemy", method = RequestMethod.GET)
-    public String waitForEnemy(int id, int idHash) throws BattleEndException, InterruptedException {
+    public String waitForEnemy() throws BattleEndException, InterruptedException {
         BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
         boolean ready = prepService.waitForEnemyReady(debugId);
         while(!ready){

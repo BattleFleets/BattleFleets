@@ -25,6 +25,8 @@ public class TravelController {
     private static final Logger LOG = Logger.getLogger(TravelController.class);
     private static final String CITY_NAME_VAR = "city_name_";
     private static final String CITY_ID = "city_id_";
+    private static final int checkingCounter = 5; 
+    private static final int checkingInterval = 2000;
         
     @Autowired
     private TravelService travelService;
@@ -48,26 +50,43 @@ public class TravelController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/is_enemy_on_horizon", method = RequestMethod.GET, produces="text/plain")
     @ResponseBody
-    public String isEnemyOnHorizon() throws PlayerNotFoundException {
+    public String isEnemyOnHorizon() throws PlayerNotFoundException, InterruptedException {
         BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
-        return String.valueOf(travelService.isEnemyOnHorizon(debugId));
+        LOG.debug("Player_" + 43 + " request isEnemyOnHorizon()");
+        boolean appeared = false;
+        for (int i = 0; i < checkingCounter; i++) {
+            appeared = travelService.isEnemyOnHorizon(debugId);
+            if (appeared) {
+                return String.valueOf(appeared);
+            }
+            Thread.sleep(checkingInterval);
+        }
+        return String.valueOf(appeared);
     }
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/attack_decision", method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.OK)
-    public void decision(String decision) throws PlayerNotFoundException, BattleStartException {
+    public void decision(@RequestParam(value = "decision", required = false) String decision) throws PlayerNotFoundException, BattleStartException {
         BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
-        
+        LOG.debug("Player_" + 43 + " request for make decision() - " + decision);
         travelService.confirmAttack(debugId, Boolean.valueOf(decision));
     }
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/is_battle_start", method = RequestMethod.GET, produces="text/plain")
     @ResponseBody
-    public String isBattleStart() {
+    public String isBattleStart() throws InterruptedException {
         BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
-        boolean start = travelService.isBattleStart(debugId);
+        LOG.debug("Player_" + 43 + " request isBattleStart()");
+        boolean start = false;
+        for (int i = 0; i < checkingCounter; i++) {
+            start = travelService.isBattleStart(debugId);
+            if (start) {
+                return String.valueOf(start);
+            }
+            Thread.sleep(checkingInterval);
+        }
         return String.valueOf(start);
     }
     
@@ -109,9 +128,17 @@ public class TravelController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/is_decision_accept", method = RequestMethod.GET, produces="text/plain")
     @ResponseBody
-    public String isDecisionAccept() {
+    public String isDecisionAccept() throws InterruptedException {
         BigInteger debugId = BigInteger.valueOf(43L);
-        boolean accept = travelService.isDecisionAccept(debugId);
+        LOG.debug("Player_" + 43 + " request isDecisionAccept()");
+        boolean accept = false; 
+        for (int i = 0; i < checkingCounter; i++) {
+            accept = travelService.isDecisionAccept(debugId);
+            if (accept) {
+                return String.valueOf(accept);
+            }
+            Thread.sleep(checkingInterval);
+        }
         return String.valueOf(accept);
     }
     

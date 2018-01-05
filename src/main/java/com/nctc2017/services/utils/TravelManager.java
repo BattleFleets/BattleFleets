@@ -68,6 +68,11 @@ public class TravelManager {
 
         if (playerJornal.getEnemyId() != null) {
             LOG.debug("Player_" + playerId + " already have enemy");
+            if (playerJornal.isFriendly()) {
+                LOG.debug("But player_" + playerId + " friendly");
+                return false;
+            }
+            
             return true;
         }
 
@@ -86,6 +91,7 @@ public class TravelManager {
                 playerJornal.pause();
                 enemyJornal.pause();
 
+                playerJornal.setDecisionMade(false);
                 isEnemyOnHorisont = true;
                 break;
             }
@@ -126,6 +132,14 @@ public class TravelManager {
 
     public void friendly(BigInteger playerId) throws PlayerNotFoundException {
         TravelBook playerBook = journals.get(playerId);
+        if (playerBook == null) {
+            RuntimeException ex = 
+                    new IllegalStateException(".friendly() was called, but player " 
+                            + playerId + " was not in travel");
+            LOG.warn("Player_" + playerId + " not found. ", ex);
+            throw ex;
+        }
+        
         BigInteger enemyId = playerBook.getEnemyId();
         playerBook.resume();
         if (enemyId == null) {
@@ -136,7 +150,6 @@ public class TravelManager {
         }
         
         TravelBook enemyBook = journals.get(enemyId);
-        
         if (enemyBook == null) {
             PlayerNotFoundException ex = new PlayerNotFoundException("Player already left travel.");
             LOG.warn("Player_" + playerId + " enemy not found", ex);
@@ -168,6 +181,16 @@ public class TravelManager {
         return journals.get(playerId).getCityId();
     }
     
+    public void decisionWasMade(BigInteger playerId) {
+        TravelBook playerBook = journals.get(playerId);
+        playerBook.setDecisionMade(true);
+    }
+    
+    public boolean isDecisionWasMade(BigInteger playerId) {
+        TravelBook playerBook = journals.get(playerId);
+        return playerBook.isDecisionWasMade();
+    }
+    
     private class TravelBook {
         
         private BigInteger cityId;
@@ -177,6 +200,7 @@ public class TravelManager {
         private boolean pause;
         private long pauseTime;
         private boolean friendly = false;
+        private boolean decisionMade = false;
         
         public TravelBook(BigInteger cityId, Long time, int lvl) {
             this.cityId = cityId;
@@ -187,6 +211,14 @@ public class TravelManager {
             this.pauseTime = 0L;
         }
         
+        public void setDecisionMade(boolean made) {
+            decisionMade = made;
+        }
+        
+        public boolean isDecisionWasMade() {
+            return decisionMade;
+        }
+
         public void pause() {
             if (this.pause) {
                 LOG.debug("Pause already on");

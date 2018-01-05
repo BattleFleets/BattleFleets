@@ -19,12 +19,12 @@ public class BattleManager {
     public void newBattleBetween(BigInteger pl1, BigInteger pl2) throws BattleStartException {
         if (battles.get(pl1) != null) {
             BattleStartException ex = new BattleStartException("Player with id=" + pl1 + " already have a battle");
-            LOG.warn("Players " + pl1 + "and" + pl2 + " ", ex);
+            LOG.warn("Players " + pl1 + " and " + pl2 + " cannon make a battlt ", ex);
             throw ex;
         }
         if (battles.get(pl2) != null) {
             BattleStartException ex = new BattleStartException("Player with id=" + pl2 + " already have a battle");
-            LOG.warn("Players " + pl1 + "and" + pl2 + " ", ex);
+            LOG.warn("Players " + pl1 + " and " + pl2 + " cannon make a battlt ", ex);
             throw ex;
         }
         Battle newBattle = new Battle(pl1, pl2);

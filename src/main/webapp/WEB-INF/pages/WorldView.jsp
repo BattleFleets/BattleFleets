@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/world.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>

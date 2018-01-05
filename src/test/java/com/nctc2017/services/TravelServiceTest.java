@@ -107,7 +107,7 @@ public class TravelServiceTest {
         int time = travelService.getRelocateTime(player.getPlayerId());
         // Then
         // between 1minut and 5minutes
-        assertTrue("Time: " + time, time >= 60 && time<= 300);
+        assertTrue("Time: " + time, time >= 58 && time<= 300);
     }
 
     @Test
