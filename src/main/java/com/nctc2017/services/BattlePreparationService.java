@@ -111,6 +111,7 @@ public class BattlePreparationService {
         Runnable decisionTask = new AutoDecisionTask(new ShipVisitor(playerId), DELAY);
         Thread decisionThread = new Thread(decisionTask);
         decisionThread.start();
+        playerChoiceShipTimer.put(playerId, decisionThread);
         LOG.debug("Player_" + playerId + " auto choice ship timer started");
         return DELAY/1000;
     }

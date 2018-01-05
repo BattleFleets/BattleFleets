@@ -17,7 +17,9 @@
         seconds= seconds - 1;
         $("#timer").html("Auto pick: " + seconds + " sec");
         if (seconds == 0) {
+        	console.log("Timer choose stop");
             clearInterval(timerId);
+            disablePickButtons();
             $("#timer").html("Timeout!");
             $( "#warning_info" ).html("Wait...");/*wait msg*/
       	    waitEnemyReady();
@@ -25,28 +27,40 @@
     };
     
     function waitEnemyReady() {
+    	console.log("Wait enemy request");
     	$.get("/wait_for_enemy")
     	.done(function(response, status, xhr){
+        	console.log("Wait enemy response " + response);
     	    if (response == "true") {
                 window.location.href = "/battle";
     	    } else {
-                window.location.href = "/error";
+               // window.location.href = "/error";
     	    }
     	}).fail(function(xhr, status, error) {
+        	console.log("Wait enemy response fail " + xhr.status);
     		if (xhr.status == 405) {
                 $( "#warning_info" ).html(xhr.responseText);/*wait msg*/
         	    $('html, body').animate({
                     scrollTop: $("#warning_info").offset().top
                 }, 1000);
                 window.location.href = "/trip";
+    		} else {
+               // window.location.href = "/error";
     		}
     	});
     };
     function pickTimerTask() {
+    	console.log("Pick timer start ");
     	timerId = setInterval(function() {
         	shipChooseTimer();
         }, 1000);
     };
+    
+    function disablePickButtons() {
+    	$(".button_pick").off( "mouseenter mouseleave" );
+    	$(".button_pick").unbind( "click" );
+    };
+    
     $(document).ready(function() {
         $("#timer").html("Auto pick: " + seconds + " sec");
         pickTimerTask();
@@ -54,20 +68,25 @@
         	$( this ).find(".icon_pick").addClass( "icon_pick_select" );
         	$( this ).find(".icon_pick").removeClass( "icon_pick_hover" );
         	$( this ).find(".icon_pick").removeClass( "icon_pick" );
-        	$(".button_pick").off( "mouseenter mouseleave" );
+        	
             var ship_id = $(this).attr("value");
         	var name = $(this).attr("name");
         	var ship = new Object();
         	ship[name] = ship_id;
+        	console.log("Pick Timer stop ");
+            clearInterval(timerId);
+        	console.log("Pick ship - requerst ");
         	$.post("/pick_ship", ship)
             .done(function(response, status, xhr){
+            	console.log("Pick ship - response " + response);
           	    $( "#warning_info" ).html(response);
           	    waitEnemyReady();
             })
             .fail(function(xhr, status, error) {
-                window.location.href = "/error";
+            	console.log("Pick User response fail" + status);
+               // window.location.href = "/error";
             });
-        	$(".button_pick").unbind( "click" );
+        	disablePickButtons();
         });
     });
 	</script>

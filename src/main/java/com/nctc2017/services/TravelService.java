@@ -106,6 +106,7 @@ public class TravelService {
         travelManager.decisionWasMade(playerId);
         if (decision) {
             BigInteger enemyId = travelManager.getEnemyId(playerId);
+            stopAutoDecisionTimer(enemyId);
             battleManager.newBattleBetween(playerId, enemyId);
             LOG.debug("Player_" + playerId + " --==created a battle!==--");
         } else {
