@@ -27,7 +27,7 @@ public class TavernController {
     @Autowired
     private MoneyService moneyService;
 
-
+    private ModelAndView model=new ModelAndView();
 
 
     public int sailorCost;
@@ -36,7 +36,7 @@ public class TavernController {
     @RequestMapping(value = "/tavern", method = RequestMethod.GET)
     public ModelAndView tavernWelcome(
             @RequestParam(value = "tavern", required = false) String city) {
-        ModelAndView model = new ModelAndView();
+        //ModelAndView model = new ModelAndView();
         BigInteger id=new BigInteger("41");
         List<Ship> ships = shipService.getAllPlayerShips(id);
         int sailorCost = shipService.getSailorCost();
@@ -62,20 +62,38 @@ public class TavernController {
         return model;
     }*/
 
-    public int getSailorsNumber(int id, int idHash, int idShip) {
+    /*public int getSailorsNumber(int id, int idHash, int idShip) {
         // TODO implement here
         return 0;
-    }
+    }*/
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/buySailors", method = RequestMethod.POST)
-    public String buySailors(@RequestParam(value="shipId",required = false) BigInteger id) {
-           return id+"";
+    public ModelAndView buySailors(@RequestParam(value="shipId",required = false) BigInteger shipId,
+                                   @RequestParam(value="num",required = false) int newSailors) {
+        BigInteger id=new BigInteger("41");
+        int i=0;
+        Ship ship = shipService.findShip(shipId);
+        int sailorCost = shipService.getSailorCost();
+        int allCost = sailorCost*newSailors;
+        int money = moneyService.getPlayersMoney(id);
+        if(moneyService.isEnoughMoney(id, allCost)){
+            while(money<allCost){
+                allCost = sailorCost*(newSailors-i);
+                i++;
+            }
+        }
+        shipService.updateShipSailorsNumber(shipId, ship.getCurSailorsQuantity()+(newSailors-i));
+        money = moneyService.deductMoney(id, allCost);
+        List<Ship> ships = shipService.getAllPlayerShips(id);
+        model.addObject("money",money);
+        model.addObject("ships",ships);
+        return model;
     }
 
-    public int getMoney(int id, int idHash) {
+    /*public int getMoney(int id, int idHash) {
         // TODO implement here
         return 0;
-    }
+    }*/
 
 }
