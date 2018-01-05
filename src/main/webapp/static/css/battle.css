@@ -10,6 +10,7 @@ body {
     background-attachment: fixed;
 }
 .button_pick:focus {outline:0;}
+input:focus {outline:0;}
 .button_pick {
 	border: none;
     background: none;
@@ -112,4 +113,12 @@ h3 {
 .enemy_side {
     float:left;
 }
-    
+
+.ammo_cannon {
+	width: 33%;
+	height: auto;
+}
+tr th, tr td { width:25%; }
+#ammo_tab {
+    padding: 1%;
+}
