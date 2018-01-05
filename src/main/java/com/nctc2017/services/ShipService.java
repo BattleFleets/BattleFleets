@@ -36,4 +36,13 @@ public class ShipService {
     public int getSailorCost(){
         return shipDao.getSailorCost();
     }
+
+    public Ship findShip(BigInteger shipId){
+        return shipDao.findShip(shipId);
+    }
+
+    public boolean updateShipSailorsNumber(BigInteger shipId, int newSailorsNumber){
+        return shipDao.updateShipSailorsNumber(shipId, newSailorsNumber);
+    }
+
 }

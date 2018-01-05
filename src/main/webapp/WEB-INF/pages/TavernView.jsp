@@ -47,10 +47,10 @@
                         <button class="button" style="vertical-align:middle" name="shipId" type="submit" value="" formaction="/buySailors">
                             <span>Buy sailors</span>
                         </button>
+                        <input style="width:35px" type="number" class="sailorsNumber" name="num" min="" max="" value="">
                     </div>
                 </td>
                 </tr>
-
             </table>
 
             <div id="cont" class="shipContainer">
@@ -69,7 +69,7 @@
                     <th>
                   </c:if>
                 <c:if test="${nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity}">
-                    <th bgcolor="red" id="id${nextShip.shipId}" name="shipId" value="${nextShip.shipId}" style="cursor: pointer" onclick="toggle(sailors,cont,buy),show(id${nextShip.shipId},${nextShip.shipId})">
+                    <th bgcolor="red" id="id${nextShip.shipId}" name="shipId" value="${nextShip.shipId}" style="cursor: pointer;font-family: tempus sans itc;color:white" onclick="toggle(sailors,cont,buy),show(id${nextShip.shipId},${nextShip.shipId}), maxValue(${nextShip.curSailorsQuantity},${nextShip.maxSailorsQuantity})">
                 </c:if>
                 <c:choose>
                        <c:when test = "${nextShip.templateId == 1}">
@@ -131,5 +131,9 @@ function show(id,num) {
     });
 
 }
+function maxValue(min,max) {
+    $("input.sailorsNumber").attr("min",1).attr("max",max-min).val(1);
+}
+
 </script>
 </html>
