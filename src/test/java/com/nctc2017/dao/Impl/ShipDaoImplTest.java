@@ -1,10 +1,7 @@
 package com.nctc2017.dao.Impl;
 
 
-import com.nctc2017.bean.Cannon;
-import com.nctc2017.bean.Mast;
-import com.nctc2017.bean.Ship;
-import com.nctc2017.bean.ShipTemplate;
+import com.nctc2017.bean.*;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.CannonDao;
@@ -263,6 +260,16 @@ public class ShipDaoImplTest {
         assertEquals(findShip.getMaxMastsQuantity(), actualMastLimit);
         assertEquals(findShip.getCurName(), actualCurrentShipName);
         assertEquals(findShip.getMaxCarryingLimit(), actualCarryingLimit);
+    }
+    @Test
+    @Rollback(true)
+    public void findAllShips() throws Exception{
+        playerDao.addNewPlayer("Tony", "1111", "Stark@gmail.com");
+        Player tony = playerDao.findPlayerByLogin("Tony");
+        shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, tony.getPlayerId());
+        List<BigInteger> shipsId = playerDao.findAllShip(tony.getPlayerId());
+        List<Ship> ships = shipDao.findAllShips(shipsId);
+        assertEquals(ships.size(), 1);
     }
 
 }

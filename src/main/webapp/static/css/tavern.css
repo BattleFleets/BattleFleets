@@ -4,9 +4,58 @@ body, html {
 
 body {
 
-    background:url("");
+    background:url("../images/tavern/tavern.jpg");
     height: 100%;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+}
+
+th{
+    border: 1px solid #ffffff;
+}
+
+.shipContainer {
+    margin-top: 30px;
+    width:550px;
+    position: relative;
+    overflow: auto;
+}
+
+.tableClass1 {
+    background-image:url("../images/general/panel_background.jpg");
+    color: white;
+    font-size: 17px;
+    font-family: tempus sans itc;
+    font-weight: 900;
+    text-align: left;
+    border: 6px double #ffffff;
+    width: 183.33px;
+}
+
+.tableClass2 {
+    background-image:url("../images/general/panel_background.jpg");
+    color: white;
+    font-size: 17px;
+    font-family: tempus sans itc;
+    font-weight: 900;
+    text-align: left;
+    border: 6px double #ffffff;
+    width: 275px;
+}
+
+.tableClass3 {
+    background-image:url("../images/general/panel_background.jpg");
+    color: white;
+    font-size: 17px;
+    font-family: tempus sans itc;
+    font-weight: 900;
+    text-align: left;
+    border: 6px double #ffffff;
+    width: 550px;
+}
+.buySailors{
+    position: absolute;
+    top:150px;
+    left:1300px;
 }

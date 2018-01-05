@@ -25,6 +25,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -223,8 +224,11 @@ public class ShipDaoImpl implements ShipDao {
 
 
     public List<Ship> findAllShips(List<BigInteger> shipsId) {
-        // TODO
-        return null;
+        List<Ship> ships = new ArrayList<>();
+        for(int i = 0; i < shipsId.size(); i++) {
+            ships.add(queryExecutor.findEntity(shipsId.get(i),DatabaseObject.SHIP_OBJTYPE_ID, new EntityExtractor<>(shipsId.get(i),new ShipVisitor())));
+        }
+        return ships;
     }
 
     @Override
@@ -285,8 +289,23 @@ public class ShipDaoImpl implements ShipDao {
     private final class ShipVisitor implements ExtractingVisitor<Ship> {
         @Override
         public Ship visit(BigInteger entityId, Map<String, String> papamMap) {
+            BigInteger templateId = null;
+            String shipName = papamMap.get(ShipTemplate.T_SHIPNAME);
+            switch(shipName){
+                case "T_Caravela": templateId = new BigInteger("1");;
+                    break;
+                case "T_Caracca": templateId = new BigInteger("2");
+                    break;
+                case "T_Galion": templateId = new BigInteger("3");;
+                    break;
+                case "T_Clipper": templateId = new BigInteger("4");;
+                    break;
+                case "T_Fregata": templateId = new BigInteger("5");;
+                    break;
+                 default: log.error("Not exists tamplate");
+            }
             ShipTemplate shipT = new ShipTemplate(
-                    entityId,
+                    templateId,
                     papamMap.remove(ShipTemplate.T_SHIPNAME),
                     Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_HEALTH)),
                     Integer.valueOf(papamMap.remove(ShipTemplate.T_MAX_SAILORS_QUANTITY)),
