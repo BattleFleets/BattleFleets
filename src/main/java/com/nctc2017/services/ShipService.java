@@ -33,4 +33,7 @@ public class ShipService {
         return shipDao.findStartShipEquip(shipTemplateId);
     }
 
+    public int getSailorCost(){
+        return shipDao.getSailorCost();
+    }
 }

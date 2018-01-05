@@ -36,4 +36,7 @@ public class DatabaseAttribute {
     public static final BigInteger ATTR_SHIP_START_MAST_TYPE = BigInteger.valueOf(9);
     public static final BigInteger ATTR_SHIP_START_CANNON_TYPE = BigInteger.valueOf(8);
 
+    public static final BigInteger SAILOR_COST_ATTR_ID = BigInteger.valueOf(35);
+
+
 }

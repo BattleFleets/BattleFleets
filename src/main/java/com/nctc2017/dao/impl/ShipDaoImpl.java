@@ -35,6 +35,8 @@ public class ShipDaoImpl implements ShipDao {
 
     private static final Logger log = Logger.getLogger(ShipDaoImpl.class);
 
+
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
@@ -213,6 +215,11 @@ public class ShipDaoImpl implements ShipDao {
     public int getShipCost(BigInteger shipId) {
         BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
         return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_SHIP_COST,Integer.class);
+    }
+
+    @Override
+    public int getSailorCost() {
+        return queryExecutor.getAttrValue(DatabaseObject.SAILOR_OBJECT_ID, DatabaseAttribute.SAILOR_COST_ATTR_ID, Integer.class);
     }
 
     @Override

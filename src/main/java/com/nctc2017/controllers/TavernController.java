@@ -10,11 +10,15 @@ import com.nctc2017.services.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class TavernController {
@@ -35,11 +39,13 @@ public class TavernController {
         ModelAndView model = new ModelAndView();
         BigInteger id=new BigInteger("41");
         List<Ship> ships = shipService.getAllPlayerShips(id);
+        int sailorCost = shipService.getSailorCost();
         int money = moneyService.getPlayersMoney(id);
         model.addObject("msg", "This is protected page - Only for Users!");
         model.addObject("money", money);
         model.addObject("city", city);
         model.addObject("ships", ships);
+        model.addObject("sailorCost",sailorCost);
         model.setViewName("TavernView");
         return model;
     }
@@ -61,9 +67,10 @@ public class TavernController {
         return 0;
     }
 
-    public int buySailors(int id, int idHash, int idShip) {
-        // TODO implement here
-        return 0;
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/buySailors", method = RequestMethod.POST)
+    public String buySailors(@RequestParam(value="shipId",required = false) BigInteger id) {
+           return id+"";
     }
 
     public int getMoney(int id, int idHash) {
