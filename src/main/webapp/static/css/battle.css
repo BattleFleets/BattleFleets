@@ -115,10 +115,32 @@ h3 {
 }
 
 .ammo_cannon {
-	width: 33%;
+	display:block;
+	width: 100%;
 	height: auto;
 }
+
 tr th, tr td { width:25%; }
+
 #ammo_tab {
     padding: 1%;
+}
+
+.player_ship {
+	display:inline-block;
+	width: 33.3%;
+    float:left;
+}
+
+.enemy_ship {
+	display:inline-block;
+    float:right;
+	width: 33.3%;
+}
+
+.battle_info {
+	display:block;
+    float:left;
+	width: 100%;
+	
 }

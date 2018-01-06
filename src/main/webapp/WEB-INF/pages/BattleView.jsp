@@ -17,36 +17,39 @@
 </head>
 
 <body>
-
-<div class="ammo_cannon" align="center">
-    <table id="ammo_tab" class="panel" width="100%" style="table-layout: fixed;">
-        <tr>
-            <th></th>
-            <th>Mortar</th>
-            <th>Bombard</th> 
-            <th>Kulevrin</th>
-        </tr>
-        <tr>
-            <th>Cannonballs</th>
-            <td><input class = "spinner" name = "ballM"></td>
-            <td><input class = "spinner" name = "ballB"></td> 
-            <td><input class = "spinner" name = "ballK"></td>
-        </tr>
-        <tr>
-            <th>Buckshot</th>
-            <td><input class = "spinner" name = "bshotM"></td>
-            <td><input class = "spinner" name = "bshotB"></td> 
-            <td><input class = "spinner" name = "bshotK"></td>
-        </tr>
-        <tr>
-            <th>Chains</th>
-            <td><input class = "spinner" name = "chainsM"></td>
-            <td><input class = "spinner" name = "chainsB"></td> 
-            <td><input class = "spinner" name = "chainsK"></td>
-        </tr>
-    </table>
-
+<div class="player_ship" align="left"><p>content</p></div>
+<div style="display: inline-block; width: 33.3%;">
+    <div class="battle_info" align="center"><p>content</p></div>
+    <div class="ammo_cannon" align="center">
+        <table id="ammo_tab" class="panel messageText" width="100%" style="table-layout: fixed;">
+            <tr>
+                <th></th>
+                <th>Mortar</th>
+                <th>Bombard</th> 
+                <th>Kulevrin</th>
+            </tr>
+            <tr>
+                <th>Cannonballs</th>
+                <td><input class = "spinner" name = "ballM"></td>
+                <td><input class = "spinner" name = "ballB"></td> 
+                <td><input class = "spinner" name = "ballK"></td>
+            </tr>
+            <tr>
+                <th>Buckshot</th>
+                <td><input class = "spinner" name = "bshotM"></td>
+                <td><input class = "spinner" name = "bshotB"></td> 
+                <td><input class = "spinner" name = "bshotK"></td>
+            </tr>
+            <tr>
+                <th>Chains</th>
+                <td><input class = "spinner" name = "chainsM"></td>
+                <td><input class = "spinner" name = "chainsB"></td> 
+                <td><input class = "spinner" name = "chainsK"></td>
+            </tr>
+        </table>
+    
+    </div>
 </div>
-
+<div class="enemy_ship" align="right"><p>content</p></div>
 </body>
 </html>
