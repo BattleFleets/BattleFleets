@@ -70,21 +70,12 @@ public class TavernController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/buySailors", method = RequestMethod.POST)
     public ModelAndView buySailors(@RequestParam(value="shipId",required = false) BigInteger shipId,
-                                   @RequestParam(value="num",required = false) int newSailors) {
+                                   @RequestParam(value="num",required = false) int newSailors,
+                                   @RequestParam(value="toSpend",required = false) Integer cost){
         BigInteger id=new BigInteger("41");
-        int i=0;
         Ship ship = shipService.findShip(shipId);
-        int sailorCost = shipService.getSailorCost();
-        int allCost = sailorCost*newSailors;
-        int money = moneyService.getPlayersMoney(id);
-        if(moneyService.isEnoughMoney(id, allCost)){
-            while(money<allCost){
-                allCost = sailorCost*(newSailors-i);
-                i++;
-            }
-        }
-        shipService.updateShipSailorsNumber(shipId, ship.getCurSailorsQuantity()+(newSailors-i));
-        money = moneyService.deductMoney(id, allCost);
+        shipService.updateShipSailorsNumber(shipId, ship.getCurSailorsQuantity()+newSailors);
+        int money = moneyService.deductMoney(id, cost);
         List<Ship> ships = shipService.getAllPlayerShips(id);
         model.addObject("money",money);
         model.addObject("ships",ships);
