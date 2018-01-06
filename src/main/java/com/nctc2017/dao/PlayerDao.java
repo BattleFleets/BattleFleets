@@ -46,6 +46,10 @@ public interface PlayerDao {
 
     BigInteger getPlayerCity(BigInteger playerId);
 
+    boolean isAccountEnabled(BigInteger playerId);
+
+    void setAccountEnabled(BigInteger playerId);
+
     void addShip(BigInteger playerId, BigInteger shipId);
 
     void deleteShip(BigInteger playerId, BigInteger shipId);

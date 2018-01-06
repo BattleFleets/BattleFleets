@@ -273,6 +273,29 @@ public class PlayerDaoImpl implements PlayerDao{
     }
 
     @Override
+    public boolean isAccountEnabled(BigInteger playerId) {
+        try {
+            Integer isEnabled = queryExecutor.getAttrValue(playerId,
+                    DatabaseAttribute.ENABLED_USER_ACC,
+                    Integer.class);
+            return isEnabled == 1;
+        } catch (EmptyResultDataAccessException e) {
+            RuntimeException ex = new IllegalArgumentException("Invalid player id = " + playerId, e);
+            log.error("PlayerDAO Exception while getting player account status.", ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public void setAccountEnabled(BigInteger playerId){
+        findPlayerById(playerId);
+        PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(playerId)
+                .setAttribute(DatabaseAttribute.ENABLED_USER_ACC, 1)
+                .build();
+        jdbcTemplate.update(psc);
+    }
+
+    @Override
     public void addShip(@NotNull BigInteger playerId,@NotNull BigInteger shipId) {
         findPlayerById(playerId);
         shipDao.findShip(shipId);

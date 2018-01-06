@@ -21,6 +21,7 @@ public class DatabaseAttribute {
     public static final BigInteger ATTR_MAST_LIMIT = BigInteger.valueOf(4);
     public static final BigInteger ATTR_HEALTH_LIMIT = BigInteger.valueOf(7);
     public static final BigInteger ATTR_CARRYING_LIMIT = BigInteger.valueOf(2);
+    public static final BigInteger ENABLED_USER_ACC = BigInteger.valueOf(44);
 
 
     public static final BigInteger GOODS_PURCHASE_PRICE = BigInteger.valueOf(36);
@@ -39,5 +40,8 @@ public class DatabaseAttribute {
 
     public static final BigInteger SAILOR_COST_ATTR_ID = BigInteger.valueOf(35);
 
+
+    public static final BigInteger VERIFICATION_TOKEN_TOKEN = BigInteger.valueOf(45);
+    public static final BigInteger VERIFICATION_TOKEN_EXPIRE_DATE = BigInteger.valueOf(46);
 
 }

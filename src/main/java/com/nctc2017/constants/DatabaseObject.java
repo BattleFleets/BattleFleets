@@ -50,4 +50,6 @@ public class DatabaseObject {
     public static final BigInteger SAILOR_OBJECT_ID = BigInteger.valueOf(58);
 
 
+    public static final BigInteger TOKEN_OBJTYPE_ID = BigInteger.valueOf(17);
+
 }
