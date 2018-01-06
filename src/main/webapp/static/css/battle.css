@@ -9,6 +9,36 @@ body {
     background-size: cover;
     background-attachment: fixed;
 }
+.button_pick:focus {outline:0;}
+.button_pick {
+	border: none;
+    background: none;
+    cursor: pointer;
+    width: 20%;
+}
+
+.icon_pick, .icon_pick_hover, .icon_pick_select {
+    border: none;
+    background-size: cover;
+    background-repeat:no-repeat;
+    background-position: center;
+    width: 25%;
+    height: auto;
+    padding: 15% 50% 5% 5%;
+}
+
+.icon_pick_select {
+	background-image:url("../images/general/button_pick.png");
+}
+
+.icon_pick {
+	background-image:url("../images/general/button_pick_reject.png");
+	
+}
+
+.icon_pick_hover {
+	background-image:url("../images/general/button_pick_select.png");
+}
 
 h1.up_title {
     text-align: center;

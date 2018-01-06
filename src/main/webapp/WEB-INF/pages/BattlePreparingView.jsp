@@ -2,12 +2,75 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
     <link href="static/css/battle.css" rel="stylesheet" media="screen">
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script type="text/javascript">
+    var seconds = '${timer}';
+    var timerId;
+    var enemyReadyId;
+    function shipChooseTimer() {
+        seconds= seconds - 1;
+        $("#timer").html("Auto pick: " + seconds + " sec");
+        if (seconds == 0) {
+            clearInterval(timerId);
+            $("#timer").html("Timeout!");
+            $( "#warning_info" ).html("Wait...");/*wait msg*/
+      	    waitEnemyReady();
+        }
+    };
+    
+    function waitEnemyReady() {
+    	$.get("/wait_for_enemy")
+    	.done(function(response, status, xhr){
+    	    if (response == "true") {
+                window.location.href = "/battle";
+    	    } else {
+                window.location.href = "/error";
+    	    }
+    	}).fail(function(xhr, status, error) {
+    		if (xhr.status == 405) {
+                $( "#warning_info" ).html(xhr.responseText);/*wait msg*/
+        	    $('html, body').animate({
+                    scrollTop: $("#warning_info").offset().top
+                }, 1000);
+                window.location.href = "/trip";
+    		}
+    	});
+    };
+    function pickTimerTask() {
+    	timerId = setInterval(function() {
+        	shipChooseTimer();
+        }, 1000);
+    };
+    $(document).ready(function() {
+        $("#timer").html("Auto pick: " + seconds + " sec");
+        pickTimerTask();
+        $(".button_pick").click(function() { 
+        	$( this ).find(".icon_pick").addClass( "icon_pick_select" );
+        	$( this ).find(".icon_pick").removeClass( "icon_pick_hover" );
+        	$( this ).find(".icon_pick").removeClass( "icon_pick" );
+        	$(".button_pick").off( "mouseenter mouseleave" );
+            var ship_id = $(this).attr("value");
+        	var name = $(this).attr("name");
+        	var ship = new Object();
+        	ship[name] = ship_id;
+        	$.post("/pick_ship", ship)
+            .done(function(response, status, xhr){
+          	    $( "#warning_info" ).html(response);
+          	    waitEnemyReady();
+            })
+            .fail(function(xhr, status, error) {
+                window.location.href = "/error";
+            });
+        	$(".button_pick").unbind( "click" );
+        });
+    });
+	</script>
 	<script>
     var $accordion_hint
     $(document).ready(function(){
@@ -15,12 +78,23 @@
         	$(".ship_accordion").accordion({heightStyle: "content"});
         	$(".ship_accordion").accordion({ collapsible: true});
         	$(".ship_accordion").accordion({ active: false });
+        	$(".button_pick").hover(function() {
+        	    $( this ).find(".icon_pick").addClass( "icon_pick_hover" );
+        	}, function() {
+        		$( this ).find(".icon_pick").removeClass( "icon_pick_hover" );
+        	});
         });
     });
 </script>
-    <title>Trip</title>
+    <title>Battle Preparing</title>
 </head>
 <body>
+	<div align="center" >
+        <div id="warning_info" class="titleText" >
+            <p class="timer" id="timer" style="color: white;"></p>
+        </div>
+    </div>
+    <div>
     <div class="player_side">
     <h1 class="up_title player_style">Your fleet</h1>
     <div class="ship_accordion" style="float: right">
@@ -37,23 +111,22 @@
 	                <div class="ship_img">
 						<c:choose>
 							<c:when test="${ship.getTemplateId().intValueExact() == 1} ">
-						        <img align="left" alt="3" src="static/images/battle/caravel.png">
+						        <img alt="3" src="static/images/ships/Caravela.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 2} ">
-						        <img alt="3" src="static/images/battle/karak.png">
+						        <img alt="3" src="static/images/ships/Caracca.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 3} ">
-						        <img alt="3" src="static/images/battle/galleon.png">
+						        <img alt="3" src="static/images/ships/Galion.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 4} ">
-						        <img alt="3" src="static/images/battle/clipper.png">
+						        <img alt="3" src="static/images/ships/Clipper.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 5} ">
-						        <img alt="3" src="static/images/battle/fregat.png">
+						        <img alt="3" src="static/images/ships/Fregata.png" width="100%" height="100%">
 					        </c:when>
 							<c:otherwise>
-						        <img alt="3" src="static/images/battle/caravel.png" width="100%" height="100%">
-						        
+						        <img alt="3" src="static/images/ships/Caravela.png" width="100%" height="100%">
 							</c:otherwise>
 						</c:choose>
 					</div>
@@ -66,11 +139,12 @@
 		                <p>Cannons: <c:out value="0/${ship.maxCannonQuantity}" /></p>
 		                <p>Cost: <c:out value="${ship.cost}" /></p>
 	                </div>
-	                <form action="/pick_ship" method="post">
-	                <button class="button" style="vertical-align:middle" name="ship_id" type="submit" value="${ship.shipId}">
-			            <span>Pick</span>
-			        </button>
-			        </form>
+	                <div style="clear: left"></div>
+	                <div align="center">
+                        <button  class="button_pick" style="vertical-align:middle" name="ship_id" type="submit" value="${ship.shipId}">
+                            <span class="icon_pick"></span><span class="player_style ship_info" style="float: none">Pick</span>
+                        </button>
+			        </div>
                 </div>
             </div>
 		</c:forEach>
@@ -93,23 +167,22 @@
 	                <div class="ship_img">
 						<c:choose>
 							<c:when test="${ship.getTemplateId().intValueExact() == 1} ">
-						        <img align="left" alt="3" src="static/images/battle/caravel.png">
+						        <img alt="3" src="static/images/ships/Caravela.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 2} ">
-						        <img alt="3" src="static/images/battle/karak.png">
+						        <img alt="3" src="static/images/ships/Caracca.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 3} ">
-						        <img alt="3" src="static/images/battle/galleon.png">
+						        <img alt="3" src="static/images/ships/Galion.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 4} ">
-						        <img alt="3" src="static/images/battle/clipper.png">
+						        <img alt="3" src="static/images/ships/Clipper.png" width="100%" height="100%">
 					        </c:when>
 					        <c:when test="${ship.getTemplateId().intValueExact() == 5} ">
-						        <img alt="3" src="static/images/battle/fregat.png">
+						        <img alt="3" src="static/images/ships/Fregata.png" width="100%" height="100%">
 					        </c:when>
 							<c:otherwise>
-						        <img alt="3" src="static/images/battle/caravel.png" width="100%" height="100%">
-						        
+						        <img alt="3" src="static/images/ships/Caravela.png" width="100%" height="100%">
 							</c:otherwise>
 						</c:choose>
 					</div>
@@ -126,6 +199,7 @@
 		</c:forEach>
 	</div>
 	</div>
-	<div id="warning_info"></div>
+	</div>
+	<div style="clear: both;"></div>
 </body>
 </html>

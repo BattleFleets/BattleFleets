@@ -16,6 +16,7 @@ import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.dao.StockDao;
 import com.nctc2017.dao.impl.HoldDaoImpl;
+import com.nctc2017.exception.BattleStartException;
 import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.utils.AutoDecisionTask;
 import com.nctc2017.services.utils.BattleManager;
@@ -91,7 +92,7 @@ public class TravelService {
     
     private void stopAutoDecisionTimer(BigInteger playerId) {
         Thread timer = playerAutoDecision.get(playerId);
-        LOG.debug("Player_" + playerId + " Auto Decision timer stoping");
+        LOG.debug("Player_" + playerId + " Auto Decision timer stoping. timer = null ? " + (timer == null));
         if (timer != null) {
             timer.interrupt();
             playerAutoDecision.remove(playerId);
@@ -99,9 +100,10 @@ public class TravelService {
         }
     }
 
-    public void confirmAttack(BigInteger playerId, boolean decision) throws PlayerNotFoundException {
+    public void confirmAttack(BigInteger playerId, boolean decision) throws PlayerNotFoundException, BattleStartException {
         LOG.debug("Player_" + playerId + " made decision. Confirm Attack - " + decision);
         stopAutoDecisionTimer(playerId);
+        travelManager.decisionWasMade(playerId);
         if (decision) {
             BigInteger enemyId = travelManager.getEnemyId(playerId);
             battleManager.newBattleBetween(playerId, enemyId);
@@ -114,14 +116,7 @@ public class TravelService {
     }
 
     public boolean isBattleStart(BigInteger playerId) {
-        BigInteger enemyId = battleManager.getEnemyId(playerId);
-        if (enemyId == null) {
-            return false;
-        }
-        else {
-            stopAutoDecisionTimer(playerId);
-            return true;
-        }
+        return battleManager.getBattle(playerId) != null;
     }
     
     public boolean isFleetSpeedOk(BigInteger playerId) {
@@ -149,12 +144,7 @@ public class TravelService {
     }
     
     public boolean isDecisionAccept(BigInteger playerId) {
-        Thread thread = playerAutoDecision.get(playerId);
-        if (thread == null || thread.isInterrupted()) {
-            return true;
-        } else {
-            return false;
-        }
+        return travelManager.isDecisionWasMade(playerId);
     }
 
     public int getAutoDecisionTime() {
@@ -181,8 +171,8 @@ public class TravelService {
             LOG.debug("Player_" + playerId + " reject attack by TIMEOUT");
             try {
                 confirmAttack(playerId, false);
-            } catch (PlayerNotFoundException e) {
-                //nothing to do
+            } catch (PlayerNotFoundException | BattleStartException e) {
+                LOG.warn("Timer could not do rejecting attack");
                 return;
             }
         }

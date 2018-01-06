@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/market.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <script src="static/js/market.js"></script>

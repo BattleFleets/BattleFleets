@@ -2,24 +2,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
+    <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
+    <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script type="text/javascript">
+            function setHalfVolume() {
+                var audio = document.getElementById("gavan");
+                var audio1 = document.getElementById("gavan1");
+                audio.volume = 0.01;
+                audio1.volume = 0.01;
+            };
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#Buy").click(function() {
+                <c:out value="${resultOfBuing}"></c:out>
+            });
+        });
+    </script>
+    <div align="center">
+    	<h1 class="titleText">${city}</h1>
+    </div>
 </head>
-
-
-<div align="center">
-	<h1 class="titleText">${city}</h1>
-</div>
 <body>
 
+<audio autoplay id="gavan" onloadeddata="setHalfVolume()">
+  <source src="static/audio/gavan-0-4.8.mp3" type="audio/mp3">
+</audio>
+<audio autoplay id="gavan1" onloadeddata="setHalfVolume()">
+  <source src="static/audio/gavan1-17.1-21.mp3" type="audio/mp3">
+</audio>
 <a href="/logout" class="logOutBottom">Logout</a>
 <form method="get">
 <div align="left">
 	<table class="panel">
 	<tr align="center">
 			<td >
-			<button class="button" name="shipyard" type="submit" value="${city}" formaction="/buyShip" onclick="toggle(shipContainer_hidden)">
+			<button id="buy" class="button" name="shipyard" type="submit" value="${city}" formaction="/buyShip" onclick="toggle(shipContainer_hidden)">
 			<span>Buy ship</span>
 			</button>
 			</td>
@@ -48,15 +70,22 @@
 	</table>
 </div>
 </form>
+<form action="/buyShip" method="get">
 <div id="shipContainer_hidden" class="shipContainer" >
     <c:forEach items="${shipTemplates}" var="shipTemplates" varStatus="status">
         <table class ="tableClass">
         <tr>
-            <td>${shipTemplates.getTName()}</td>
-            <td>MaxCarryingLimit: ${shipTemplates.getMaxCarryingLimit()}</td>
+            <td>
+            <form action="/buyShip" method="post">
+            <button class="cap button" name="shipTemplateId" value="${shipTemplates.getTemplateId()}">
+            <span>Buy ${shipTemplates.getTName()}</span>
+            </button>
+            </form>
+            </td>
+            <td colspan="2">MaxCarryingLimit: ${shipTemplates.getMaxCarryingLimit()}</td>
         </tr>
         <tr>
-            <td rowspan="3">
+            <td rowspan="3" id = "shipimg">
             <c:choose>
                  <c:when test = "${shipTemplates.getTemplateId() == 1}">
                     <img src = "static/images/ships/Caravela.png">
@@ -97,12 +126,15 @@
         </table>
     </c:forEach>
 </div>
+</form>
 
 <script>
 function toggle(el) {
 el.style.display = (el.style.display == 'none') ? '' : 'none'
 }
 </script>
+<div>
 
+</div>
 </body>
 </html>

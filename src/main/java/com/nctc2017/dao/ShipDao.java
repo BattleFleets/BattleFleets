@@ -41,6 +41,8 @@ public interface ShipDao {
 
     int getShipCost(BigInteger shipId);
 
+    int getSailorCost();
+
     List<ShipTemplate> findAllShipTemplates();
 
     List<Ship> findAllShips(List<BigInteger> shipsId);

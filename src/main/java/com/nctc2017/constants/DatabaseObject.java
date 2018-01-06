@@ -47,4 +47,7 @@ public class DatabaseObject {
     public static final BigInteger STOCK_OBJTYPE_ID = BigInteger.valueOf(12);
     public static final BigInteger AMMO_OBJTYPE_ID = BigInteger.valueOf(11);
 
+    public static final BigInteger SAILOR_OBJECT_ID = BigInteger.valueOf(58);
+
+
 }

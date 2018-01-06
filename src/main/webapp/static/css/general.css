@@ -6,28 +6,10 @@ body{
     color: white;
     font-family: Arial, Helvetica, sans-serif;
 }
-.panel, .titleText, .logOutBottom {
+.panel, .logOutBottom {
     background-image:url("../images/general/panel_background.jpg"); 
 }
-.titleText {
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 100%;
-    
-    border: 4px ridge black; 
-    padding: 1%;
-    width: 50%;
-    
-    text-align: center;
-    color: white;
-    font-family: "Lucida Bright", Georgia, serif;
-	font-size: 48px;
-	font-style: normal;
-	font-variant: normal;
-	font-weight: 700;
-	line-height: 100%;
-	
-}
+
 
 .logOutBottom {
     background-position: center;
@@ -47,7 +29,7 @@ body{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    border: 4px ridge black; /* ��������� ������� */
+    border: 4px ridge black;
     padding: 5%;
     border-spacing: 10%;
 
@@ -74,7 +56,9 @@ input[type=submit] {
     margin: 5px;
 }
 
+
 .button span {
+  font-size: 25px;
   cursor: pointer;
   display: inline-block;
   position: relative;
@@ -105,7 +89,8 @@ input[type=submit] {
     bottom: 0;
     left: 0;
     padding: 1rem;
-    text-align: center;
+    text-align: left;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 8pt;
+    z-index: -1;
 }

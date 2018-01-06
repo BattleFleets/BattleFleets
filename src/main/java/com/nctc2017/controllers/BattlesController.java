@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.nctc2017.exception.BattleEndException;
 import com.nctc2017.services.BattlePreparationService;
 import com.nctc2017.services.BattlePreparationService.ShipWrapper;
 
@@ -36,9 +37,12 @@ public class BattlesController {
         ///fleet.add(new Ship(new ShipTemplate(null, "Caravella", 120, 100, 12000, 3, 28, 150), null, "Ferdenand", 119, 99, 149));
         //fleet.add(new Ship(new ShipTemplate(null, "Fregatta", 121, 101, 12001, 4, 29, 151), null, "Ferdenand2", 118, 98, 148));
         //LOG.debug(fleet.size());
+        int time = prepService.autoChoiceShipTimer(debugId);
+        prepService.autoChoiceShipTimer(debugId2);//TODO delete
         ModelAndView model = new ModelAndView("BattlePreparingView");
         model.addObject("fleet", fleet);
         model.addObject("enemy_fleet", enemyFleet);
+        model.addObject("timer", time);
         return model;
     }
 
@@ -50,16 +54,28 @@ public class BattlesController {
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/pick_ship", method = RequestMethod.POST)
-    @ResponseStatus(value = HttpStatus.OK)
-    public void pickShip(
-            @RequestParam(value = "ship_id", required = false) String ship_id) {
-        LOG.debug("Ship picked " + ship_id);
+    public ModelAndView pickShip(
+            @RequestParam(value = "ship_id", required = false) String shipId) {
+        BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
+        ModelAndView model = new ModelAndView("fragment/message");
+        model.addObject("errorMes","Wait...");
+        prepService.chooseShip(debugId,new BigInteger(shipId));
+        prepService.setReady(debugId);
+        LOG.debug("Ship picked " + shipId);
+        return(model);
     }
 
     @Secured("ROLE_USER")
-    public boolean waitForEnemy(int id, int idHash) {
-        // TODO implement here
-        return false;
+    @RequestMapping(value = "/wait_for_enemy", method = RequestMethod.GET)
+    public String waitForEnemy() throws BattleEndException, InterruptedException {
+        BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
+        boolean ready = prepService.waitForEnemyReady(debugId);
+        while(!ready){
+            Thread.sleep(2000);
+            ready = prepService.waitForEnemyReady(debugId);
+        }
+        
+        return String.valueOf(ready);
     }
 
     @Secured("ROLE_USER")

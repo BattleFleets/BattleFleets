@@ -4,16 +4,29 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.nctc2017.bean.Battle;
+import com.nctc2017.exception.BattleStartException;
 
 @Component
 public class BattleManager {
+    private static final Logger LOG = Logger.getLogger(BattleManager.class);
     
     private Map<BigInteger, Battle> battles = new HashMap<>();
     
-    public void newBattleBetween(BigInteger pl1, BigInteger pl2) {
+    public void newBattleBetween(BigInteger pl1, BigInteger pl2) throws BattleStartException {
+        if (battles.get(pl1) != null) {
+            BattleStartException ex = new BattleStartException("Player with id=" + pl1 + " already have a battle");
+            LOG.warn("Players " + pl1 + " and " + pl2 + " cannon make a battlt ", ex);
+            throw ex;
+        }
+        if (battles.get(pl2) != null) {
+            BattleStartException ex = new BattleStartException("Player with id=" + pl2 + " already have a battle");
+            LOG.warn("Players " + pl1 + " and " + pl2 + " cannon make a battlt ", ex);
+            throw ex;
+        }
         Battle newBattle = new Battle(pl1, pl2);
         battles.put(pl1, newBattle);
         battles.put(pl2, newBattle);

@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/tavern.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
@@ -12,35 +13,46 @@
     <h1 class="titleText">${city}</h1>
 </div>
 <body>
-<form method="get">
+<form method="post">
     <div align="center">
         <c:if test="${empty ships}">
             <table class="panel">
              <tr align="center">
               <td >
-                <p style="font-size:80px; font-family: tempus sans itc; color:white">You dont't have any ships</p>
+                <p style="font-size:40px; font-family: tempus sans itc; color:white">You dont't have any ships</p>
               </td>
              </tr>
             </table>
         </c:if>
-        <c:if test="${not empty ships and money<400}">
+        <c:if test="${not empty ships and money<sailorCost}">
             <table class="panel">
                 <tr align="center">
                     <td >
-                        <p style="font-size:80px; font-family: tempus sans itc; color:white";>You dont't enough money, You need ${400-money}</p>
+                        <p style="font-size:40px; font-family: tempus sans itc; color:white";>You dont't have enough money, You need ${sailorCost-money}</p>
                     </td>
                 </tr>
             </table>
         </c:if>
-        <c:if test="${money>=400}">
+        <c:if test="${money>=sailorCost}">
         <c:if test="${not empty ships}">
             <table class="panel">
               <tr align="center">
                <td>
-                   <p style="font-size:40px; font-family: tempus sans itc; color:white">You have ${money} money</p>
+                   <p style="font-size:40px;height:10px; font-family: tempus sans itc; color:white">You have ${money} money</p>
                 </td>
-               </tr>
+              </tr>
+                <tr>
+                <td>
+                    <div align="center" id="buy" style="display: none">
+                        <button class="button" style="vertical-align:middle" name="shipId" type="submit" value="" formaction="/buySailors">
+                            <span>Buy sailors</span>
+                        </button>
+                        <input style="width:35px" type="number" class="sailorsNumber" name="num" min="" max="" value="">
+                    </div>
+                </td>
+                </tr>
             </table>
+
             <div id="cont" class="shipContainer">
                <c:if test="${ships.size()==1}">
                 <table class="tableClass1">
@@ -57,7 +69,7 @@
                     <th>
                   </c:if>
                 <c:if test="${nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity}">
-                    <th bgcolor="red" id="id${nextShip.shipId}" style="cursor: pointer" onclick="toggle(sailors,cont,prtImg),show(id${nextShip.shipId})">
+                    <th bgcolor="red" id="id${nextShip.shipId}" name="shipId" value="${nextShip.shipId}" style="cursor: pointer;font-family: tempus sans itc;color:white" onclick="toggle(sailors,cont,buy),show(id${nextShip.shipId},${nextShip.shipId}), maxValue(${nextShip.curSailorsQuantity},${nextShip.maxSailorsQuantity})">
                 </c:if>
                 <c:choose>
                        <c:when test = "${nextShip.templateId == 1}">
@@ -92,28 +104,26 @@
 
     </div>
 </form>
-<div id="prtImg" class="buySailors" style="display: none">
-<img style="width: 100px;" src="static/images/tavern/pirate.png">
-</div>
 <div align="center" id="sailors"  style="display: none">
-    <button class="button" style="vertical-align:middle; margin-top:10px " id="btnShow" name="showShips" value="showShips" type="submit" onclick="toggle(sailors,cont,prtImg)">
+    <button class="button" style="vertical-align:middle; margin-top:10px " id="btnShow" name="showShips" value="showShips" type="submit" onclick="toggle(sailors,cont,buy)">
         <span>show ships</span>
     </button>
 </div>
 </body>
 <a href="/city" class="logOutBottom">Return to city</a>
-
+<%@include file="fragment/footer.jsp"%>
 <script>
     function toggle(el1,el2,el3) {
         el1.style.display = (el1.style.display == 'none') ? '' : 'none';
         el2.style.display = (el2.style.display == 'none') ? '' : 'none';
         el3.style.display = (el3.style.display == 'none') ? '' : 'none';
     }
-function show(id) {
+function show(id,num) {
     var $shipFromList = $(id).clone();
         $shipFromList.css('cursor','default');
         $shipFromList.removeAttr('onclick');
-        $('#oneShip').append($shipFromList);
+        $("button:first").attr("value",num)
+    $('#oneShip').append($shipFromList);
     $(document).ready(function () {
         $('#btnShow').click(function () {
             $shipFromList.remove();
@@ -121,7 +131,9 @@ function show(id) {
     });
 
 }
+function maxValue(min,max) {
+    $("input.sailorsNumber").attr("min",1).attr("max",max-min).val(1);
+}
 
 </script>
-<%@include file="fragment/footer.jsp"%>
 </html>
