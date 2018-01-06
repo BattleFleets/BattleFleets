@@ -7,6 +7,7 @@ import com.nctc2017.bean.ShipTemplate;
 import com.nctc2017.bean.StartShipEquipment;
 import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
+import com.nctc2017.constants.Query;
 import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.HoldDao;
 import com.nctc2017.dao.MastDao;
@@ -34,6 +35,8 @@ import java.util.Map;
 public class ShipDaoImpl implements ShipDao {
 
     private static final Logger log = Logger.getLogger(ShipDaoImpl.class);
+
+
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -216,6 +219,11 @@ public class ShipDaoImpl implements ShipDao {
     }
 
     @Override
+    public int getSailorCost() {
+        return queryExecutor.getAttrValue(DatabaseObject.SAILOR_OBJECT_ID, DatabaseAttribute.SAILOR_COST_ATTR_ID, Integer.class);
+    }
+
+    @Override
     public List<ShipTemplate> findAllShipTemplates() {
         List<ShipTemplate> result= queryExecutor.getAllEntitiesByType(DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID,
                 new EntityListExtractor<>(new ShipTemplateVisitor()));
@@ -276,7 +284,7 @@ public class ShipDaoImpl implements ShipDao {
         return maxDist;
     }
 
-    @Override
+    /*@Override
     public int getSpeed(BigInteger shipId) {
         int currSpeed = 0; 
         List<Mast> steveMasts = mastDao.getShipMastsFromShip(shipId);
@@ -284,7 +292,25 @@ public class ShipDaoImpl implements ShipDao {
             currSpeed += mast.getCurSpeed();
         }
         return currSpeed;
+    }*/
+
+    @Override
+    public int getSpeed(BigInteger shipId) {
+        return jdbcTemplate.queryForObject(Query.GET_CURRENT_SPEED,
+                new Object[] { JdbcConverter.toNumber(shipId),
+                        JdbcConverter.toNumber(DatabaseObject.SHIP_OBJTYPE_ID),
+                        JdbcConverter.toNumber(DatabaseObject.MAST_OBJTYPE_ID),
+                        JdbcConverter.toNumber(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID)},Integer.class);
     }
+
+    @Override
+    public int getShipDamage(BigInteger shipId) {
+        return jdbcTemplate.queryForObject(Query.GET_SHIP_DAMAGE,
+                new Object[] { JdbcConverter.toNumber(DatabaseAttribute.CANNON_DAMAGE),
+                        JdbcConverter.toNumber(DatabaseObject.SHIP_OBJTYPE_ID),
+                        JdbcConverter.toNumber(shipId)},Integer.class);
+    }
+
 
     private final class ShipVisitor implements ExtractingVisitor<Ship> {
         @Override

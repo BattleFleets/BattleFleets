@@ -41,6 +41,8 @@ public interface ShipDao {
 
     int getShipCost(BigInteger shipId);
 
+    int getSailorCost();
+
     List<ShipTemplate> findAllShipTemplates();
 
     List<Ship> findAllShips(List<BigInteger> shipsId);
@@ -54,6 +56,8 @@ public interface ShipDao {
     int getMaxShotDistance(BigInteger shipId);
     
     int getSpeed(BigInteger shipId);
+
+    int getShipDamage(BigInteger shipId);
 
     StartShipEquipment findStartShipEquip(BigInteger shipTempId);
 
