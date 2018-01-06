@@ -55,6 +55,8 @@ public interface ShipDao {
     
     int getSpeed(BigInteger shipId);
 
+    int getShipDamage(BigInteger shipId);
+
     StartShipEquipment findStartShipEquip(BigInteger shipTempId);
 
 }
