@@ -29,7 +29,7 @@ body{
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    border: 4px ridge black; /* ��������� ������� */
+    border: 4px ridge black;
     padding: 5%;
     border-spacing: 10%;
 
@@ -58,6 +58,7 @@ input[type=submit] {
 
 
 .button span {
+  font-size: 25px;
   cursor: pointer;
   display: inline-block;
   position: relative;
