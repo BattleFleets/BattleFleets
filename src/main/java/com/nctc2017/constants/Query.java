@@ -248,7 +248,7 @@ public class Query {
                     + " AND mast.PARENT_ID = ship.OBJECT_ID"
                     + " AND mast.OBJECT_TYPE_ID = ?"
                     + " AND speed_val.ATTR_ID = ?"
-                    + " AND speed_val.OBJECT_ID = mast.OBJECT_ID;";
+                    + " AND speed_val.OBJECT_ID = mast.OBJECT_ID";
 
     public static final String GET_SHIP_DAMAGE =
             "SELECT SUM(damage.VALUE) damage"
@@ -259,7 +259,7 @@ public class Query {
                 +"AND damage_value.OBJECT_ID = cannon.SOURCE_ID"
                 +"AND cannon.PARENT_ID = ship.OBJECT_ID"
                 +"AND ship.OBJECT_TYPE_ID = ?"
-                +"AND ship.OBJECT_ID = ?;";
+                +"AND ship.OBJECT_ID = ?";
 
     /**
      * This query allows to get source of object by object_id.
