@@ -118,9 +118,8 @@
 		<c:forEach var="shipInfo" items="${fleet}" varStatus="status">
 		    <c:set var = "ship" scope = "session" value = "${shipInfo.ship}"/>
 			<h3 class="player_style ship_accordion_header" style="float: right;">
-				<c:out value="${status.index + 1}." />
-				<c:out value="${ship.getTName()} : ${ship.getCurName()}" />
-				${ship.getTemplateId().intValueExact()}
+				<c:out value="${status.index + 1}."/>
+				<c:out value="${ship.getTName()} : ${ship.getCurName()}"/>
 			</h3>
 			
             <div class="player_style ship_accordion_content" style="float: right;">
@@ -174,28 +173,27 @@
 		<c:forEach var="shipInfo" items="${enemy_fleet}" varStatus="status">
 		    <c:set var = "ship" scope = "session" value = "${shipInfo.ship}"/>
 			<h3 class="enemy_style ship_accordion_header" style="float: left;">
-				<c:out value="${status.index + 1}." />
-				<c:out value="${ship.getTName()} : ${ship.getCurName()}" />
-				${ship.getTemplateId().intValueExact()}
+				<c:out value="${status.index + 1}."/>
+				<c:out value="${ship.getTName()} : ${ship.getCurName()}"/>
 			</h3>
 			
             <div class="enemy_style ship_accordion_content" style="float: left">
 	            <div>
 	                <div class="ship_img">
 						<c:choose>
-							<c:when test="${ship.getTemplateId().intValueExact() == 1} ">
+							<c:when test="${ship.getTemplateId().intValueExact() == 1}">
 						        <img alt="3" src="static/images/ships/Caravela.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 2} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 2}">
 						        <img alt="3" src="static/images/ships/Caracca.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 3} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 3}">
 						        <img alt="3" src="static/images/ships/Galion.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 4} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 4}">
 						        <img alt="3" src="static/images/ships/Clipper.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 5} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 5}">
 						        <img alt="3" src="static/images/ships/Fregata.png" width="100%" height="100%">
 					        </c:when>
 							<c:otherwise>

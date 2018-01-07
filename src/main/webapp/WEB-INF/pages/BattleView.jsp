@@ -35,6 +35,31 @@
         hover_conveyor(act);
         act = "surrender";
         hover_conveyor(act);
+        $.get("/fire_results")
+        .done(function(response, status, xhr){
+        	console.log("get start ship info " + response);
+        	var ships = JSON.parse(response);
+        	$("#info_tab").find("#P_health")
+        	.html(ships.player_ship.curHealth +"/" + ships.player_ship.maxHealth)
+        	$("#info_tab").find("#E_health")
+        	.html(ships.enemy_ship.curHealth +"/" + ships.enemy_ship.maxHealth)
+        	$("#info_tab").find("#P_crew")
+        	.html(ships.player_ship.curSailorsQuantity +"/" + ships.player_ship.maxSailorsQuantity)
+        	$("#info_tab").find("#E_crew")
+        	.html(ships.enemy_ship.curSailorsQuantity +"/" + ships.enemy_ship.maxSailorsQuantity)
+        	$("#info_tab").find("#P_speed")
+        	.html(ships.player_ship.curHealth +"/" + ships.player_ship.maxHealth)
+        	$("#info_tab").find("#E_speed")
+        	.html(ships.enemy_ship.curHealth +"/" + ships.enemy_ship.maxHealth)
+        	$("#info_tab").find("#P_damage")
+        	.html(ships.player_ship.curHealth +"/" + ships.player_ship.maxHealth)
+        	$("#info_tab").find("#E_damage")
+        	.html(ships.enemy_ship.curHealth +"/" + ships.enemy_ship.maxHealth)
+        	
+        })
+        .fail(function(xhr, status, error) {
+        	
+        });
     });
 
     </script>

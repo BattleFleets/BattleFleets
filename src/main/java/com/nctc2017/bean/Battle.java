@@ -140,6 +140,11 @@ public class Battle {
         return eneny.wasMadeStep();
     }
     
+    public boolean wasPlayerMadeStep(BigInteger playerId) {
+        Participant palyer = playerMap.get(playerId);
+        return palyer.wasMadeStep();
+    }
+    
     public BigInteger getEnemyId(BigInteger playerId) {
         Participant prtn = playerMap.get(playerId);
         if (prtn != null)

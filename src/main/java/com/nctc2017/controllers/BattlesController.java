@@ -3,11 +3,14 @@ package com.nctc2017.controllers;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,15 +20,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nctc2017.bean.Ship;
 import com.nctc2017.exception.BattleEndException;
 import com.nctc2017.services.BattlePreparationService;
 import com.nctc2017.services.BattlePreparationService.ShipWrapper;
+import com.nctc2017.services.BattleService;
 
 @Controller
 public class BattlesController {
     private static final Logger LOG = Logger.getLogger(BattlesController.class);
     @Autowired
     private BattlePreparationService prepService;
+    @Autowired
+    private BattleService battleService;
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/battle_preparing", method = RequestMethod.GET)
@@ -63,7 +72,7 @@ public class BattlesController {
         LOG.debug("Player_" + 43 + " Ship picked request Ship: " + shipId);
         prepService.chooseShip(debugId, new BigInteger(shipId));
         prepService.setReady(debugId);
-        return "Wait...";
+        return "Wait for enemy pick...";
     }
 
     @Secured("ROLE_USER")
@@ -91,13 +100,33 @@ public class BattlesController {
         model.setStatus(HttpStatus.OK);
         return model;
     }
-
-    public void fire(int id, int idHash, int[][] cannonMatrix, boolean convergence) {
-        // TODO implement here
+    
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/battle", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    public void fire(int[][] cannonMatrix)  {
+        
     }
 
-    public void fireResults(int id, int idHash) {
-        // TODO implement here
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/fire_results", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<String> fireResults() throws JsonProcessingException {
+        BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
+        if (battleService.isStepResultAvalible(debugId)) {
+            Ship playerShip = battleService.getShipInBattle(debugId);
+            Ship enemyShip = battleService.getEnemyShipInBattle(debugId);
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Ship> shipMap = new HashMap<>();
+            shipMap.put("enemy_ship", enemyShip);
+            shipMap.put("player_ship", playerShip);
+            String jsonShips = mapper.writeValueAsString(shipMap);
+            return ResponseEntity.ok(jsonShips);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+        }
     }
 
     public void bording(int id, int idHash) {
