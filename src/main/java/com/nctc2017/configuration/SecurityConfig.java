@@ -1,12 +1,17 @@
 package com.nctc2017.configuration;
 
 
+import com.nctc2017.services.AuthRegService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.sql.DataSource;
 
@@ -18,11 +23,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     DataSource dataSource;
 
     @Autowired
+    private AuthRegService authRegService;
+
+   /* @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		/*auth.jdbcAuthentication().dataSource(dataSource)
+		auth.jdbcAuthentication().dataSource(dataSource)
 		.usersByUsernameQuery(PersonPass)
-        .authoritiesByUsernameQuery(PersonRole);*/
+        .authoritiesByUsernameQuery(PersonRole);
         auth.inMemoryAuthentication().withUser("user").password("user").roles("USER");
+    }*/
+
+    @Override
+    protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authProvider());
     }
 
     @Override
@@ -34,6 +47,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // по которым будет определятся доступ к ресурсам и остальным данным
                 .authorizeRequests()
                 .antMatchers("/static/**").permitAll()
+                .antMatchers("/registration").permitAll()
+                .antMatchers("/registrationConfirm").permitAll()
                 .antMatchers("/**").access("hasRole('ROLE_USER')")
                 .and();
 
@@ -65,5 +80,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true);
 
         http.sessionManagement().maximumSessions(1);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(authRegService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
     }
 }

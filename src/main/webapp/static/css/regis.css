@@ -1,0 +1,92 @@
+:root {
+    --font-family: "Roboto";
+    --color-primary: #338b8c;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: 14px;
+    background-size: 100%;
+    background: url(../images/splach_screen/splash_screen.jpg) no-repeat center;
+    background-size: cover;
+    height: 100vh
+}
+
+/* Tabs */
+#tabs {
+    width: 90%;
+    margin: 10vh auto ;
+    max-width: 400px;
+    list-style:none;
+    padding:0;
+    border-radius: 8px;
+}
+#tabs .tabs {overflow: hidden; background:  var(--color-primary); border: 1px solid  var(--color-primary); border-radius: 8px}
+#tabs .tabs li {float: left; list-style:none;}
+#tabs .tabs li + li { border-left: 1px solid white;
+}
+#tabs .tabs li a {
+    display: block;
+    font-size: 21px;
+    color: white;
+    text-decoration:none;
+    padding-bottom:15px;
+    padding-top:15px;
+    float: left;
+    width:195px;
+    text-align:center;
+    cursor:pointer;
+    transition:.5s ease;}
+#tabs .tabs li a.active{}
+#tabs .tabs li a:hover {color: #99eeef;}
+
+#tabs .tabs-content {
+    padding: 20px;
+    font-size: 16px;
+    line-height: 21px;
+    border-radius: 8px}
+
+.form__input {
+    display: block;
+    width: 100%;
+    padding: 20px;
+    font-family: var(--font-family);
+    -webkit-appearance: none;
+    border: 0;
+    outline: 0;
+    transition: 0.3s;
+
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 20px;
+    font-family: var(--font-family);
+    font-size: 20px;
+    -webkit-appearance: none;
+    outline: 0;
+    border: 0;
+    color: white;
+    background:  var(--color-primary);
+    transition: 0.3s;
+}
+.btn:hover {
+    color: #99eeef;
+}
+
+.error{
+    font-size: 14px;
+    color: #a00000;
+}
+
+.success {
+    font-size: 14px;
+    color: #337700;
+}

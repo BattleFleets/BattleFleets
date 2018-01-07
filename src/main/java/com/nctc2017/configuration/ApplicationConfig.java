@@ -1,7 +1,9 @@
 package com.nctc2017.configuration;
 
 import java.util.Locale;
+import java.util.Properties;
 
+import javax.mail.Session;
 import javax.sql.DataSource;
 
 import com.nctc2017.services.LevelUpService;
@@ -18,6 +20,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -78,6 +83,24 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     public PlatformTransactionManager transactionManager(DataSource dataSource) {
         final PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
         return transactionManager;
+    }
+
+    @Bean (name = "mailSender")
+    public JavaMailSenderImpl mailSender() {
+        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+
+        javaMailSender.setProtocol("smtp");
+        javaMailSender.setHost("smtp.gmail.com");
+        //javaMailSender.setPort(587);
+        javaMailSender.setUsername("boottle.of.rum@gmail.com");
+        javaMailSender.setPassword("ux73ffhw");
+        Properties prop = new Properties();
+        prop.put("mail.smtp.ssl.enable", "true");
+        //prop.put("mail.smtp.starttls.enable", "true");
+        Session session = Session.getInstance(prop);
+        javaMailSender.setSession(session);
+
+        return javaMailSender;
     }
     
     @Bean(name = "travelServicePrototype")

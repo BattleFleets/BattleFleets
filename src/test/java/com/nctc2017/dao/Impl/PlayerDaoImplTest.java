@@ -7,6 +7,7 @@ import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -40,7 +42,7 @@ public class PlayerDaoImplTest {
     @Rollback(true)
     public void addNewPlayer() throws Exception {
         String succesResult = playerDao.addNewPlayer("qwe","1111","@FWF");
-        assertEquals("Registration is successfull", succesResult);
+        assertNull(succesResult);
         String existingLogin = playerDao.addNewPlayer("qwe","1111","fghj");
         assertEquals("Login exists, enter another login", existingLogin);
         String existingEmail = playerDao.addNewPlayer("asfdf","1111","@FWF");
@@ -258,6 +260,7 @@ public class PlayerDaoImplTest {
 
     @Test
     @Rollback(true)
+    @Ignore
     public void getCountPlayers() throws Exception{
         assertEquals(playerDao.getPlayersCount(),5);
 

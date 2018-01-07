@@ -3,12 +3,16 @@ package com.nctc2017.controllers;
 import java.math.BigInteger;
 import java.util.*;
 
+import com.nctc2017.bean.Player;
+import com.nctc2017.bean.PlayerUserDetails;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
+import com.nctc2017.services.AuthRegService;
 import com.nctc2017.services.MoneyService;
 import com.nctc2017.services.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +30,8 @@ public class TavernController {
     private ShipService shipService;
     @Autowired
     private MoneyService moneyService;
+    @Autowired
+    private AuthRegService authRegService;
 
     private ModelAndView model=new ModelAndView();
 
@@ -35,12 +41,12 @@ public class TavernController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/tavern", method = RequestMethod.GET)
     public ModelAndView tavernWelcome(
-            @RequestParam(value = "tavern", required = false) String city) {
+            @RequestParam(value = "tavern", required = false) String city,
+            @AuthenticationPrincipal PlayerUserDetails userDetails) {
         //ModelAndView model = new ModelAndView();
-        BigInteger id=new BigInteger("41");
-        List<Ship> ships = shipService.getAllPlayerShips(id);
+        List<Ship> ships = shipService.getAllPlayerShips(userDetails.getPlayerId());
         int sailorCost = shipService.getSailorCost();
-        int money = moneyService.getPlayersMoney(id);
+        int money = moneyService.getPlayersMoney(userDetails.getPlayerId());
         model.addObject("msg", "This is protected page - Only for Users!");
         model.addObject("money", money);
         model.addObject("city", city);
@@ -71,12 +77,12 @@ public class TavernController {
     @RequestMapping(value = "/buySailors", method = RequestMethod.POST)
     public ModelAndView buySailors(@RequestParam(value="shipId",required = false) BigInteger shipId,
                                    @RequestParam(value="num",required = false) int newSailors,
-                                   @RequestParam(value="toSpend",required = false) Integer cost){
-        BigInteger id=new BigInteger("41");
+                                   @RequestParam(value="toSpend",required = false) Integer cost,
+                                   @AuthenticationPrincipal PlayerUserDetails userDetails){
         Ship ship = shipService.findShip(shipId);
         shipService.updateShipSailorsNumber(shipId, ship.getCurSailorsQuantity()+newSailors);
-        int money = moneyService.deductMoney(id, cost);
-        List<Ship> ships = shipService.getAllPlayerShips(id);
+        int money = moneyService.deductMoney(userDetails.getPlayerId(), cost);
+        List<Ship> ships = shipService.getAllPlayerShips(userDetails.getPlayerId());
         model.addObject("money",money);
         model.addObject("ships",ships);
         return model;
