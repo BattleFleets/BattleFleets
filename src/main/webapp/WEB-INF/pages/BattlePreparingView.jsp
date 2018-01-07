@@ -93,15 +93,13 @@
 	<script>
     var $accordion_hint
     $(document).ready(function(){
-        $(function() {
-        	$(".ship_accordion").accordion({heightStyle: "content"});
-        	$(".ship_accordion").accordion({ collapsible: true});
-        	$(".ship_accordion").accordion({ active: false });
-        	$(".button_pick").hover(function() {
-        	    $( this ).find(".icon_pick").addClass( "icon_pick_hover" );
-        	}, function() {
-        		$( this ).find(".icon_pick").removeClass( "icon_pick_hover" );
-        	});
+        $(".ship_accordion").accordion({heightStyle: "content"});
+        $(".ship_accordion").accordion({ collapsible: true});
+        $(".ship_accordion").accordion({ active: false });
+        $(".button_pick").hover(function() {
+            $( this ).find(".icon_pick").addClass( "icon_pick_hover" );
+        }, function() {
+        	$( this ).find(".icon_pick").removeClass( "icon_pick_hover" );
         });
     });
 </script>
@@ -129,19 +127,19 @@
 	            <div>
 	                <div class="ship_img">
 						<c:choose>
-							<c:when test="${ship.getTemplateId().intValueExact() == 1} ">
+							<c:when test="${ship.getTemplateId().intValueExact() == 1}">
 						        <img alt="3" src="static/images/ships/Caravela.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 2} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 2}">
 						        <img alt="3" src="static/images/ships/Caracca.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 3} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 3}">
 						        <img alt="3" src="static/images/ships/Galion.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 4} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 4}">
 						        <img alt="3" src="static/images/ships/Clipper.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 5} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 5}">
 						        <img alt="3" src="static/images/ships/Fregata.png" width="100%" height="100%">
 					        </c:when>
 							<c:otherwise>

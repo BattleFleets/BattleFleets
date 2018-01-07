@@ -1,5 +1,15 @@
 html, body { height: 100%; width: 100%; margin: 0; }
 
+body.battle_view {
+	background:url("../images/travel/fog_sea.jpg");
+    height: 100%;
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    position: relative;
+}
+
 body {
 
     background:url("../images/battle/battle_background.jpg");
@@ -9,6 +19,20 @@ body {
     background-size: cover;
     background-attachment: fixed;
 }
+
+td > button.button_pick {
+    width: 100%;
+}
+table#button_tab tr:nth-child(odd) > td {
+	padding-bottom: 5%
+}
+table#button_tab tr:nth-child(even) > td {
+	padding-top: 5%
+}
+button {
+    color: white;
+    font-weight: bold;
+}
 .button_pick:focus {outline:0;}
 input:focus {outline:0;}
 .button_pick {
@@ -16,16 +40,22 @@ input:focus {outline:0;}
     background: none;
     cursor: pointer;
     width: 20%;
+    margin-top: 2%;
+    margin-bottom: 2%;
 }
 
-.icon_pick, .icon_pick_hover, .icon_pick_select {
+.icon_pick, .icon_pick_hover, .icon_pick_select, 
+.icon_fire, .icon_fire_select, .icon_leave,
+.icon_leave_select, .icon_surrender, .icon_surrender_select,
+.icon_boarding, .icon_boarding_select, .icon_payoff,
+.icon_payoff_select{
     border: none;
-    background-size: cover;
+    background-size: contain;
     background-repeat:no-repeat;
     background-position: center;
     width: 25%;
     height: auto;
-    padding: 15% 50% 5% 5%;
+    padding: 30%;
 }
 
 .icon_pick_select {
@@ -34,12 +64,43 @@ input:focus {outline:0;}
 
 .icon_pick {
 	background-image:url("../images/general/button_pick_reject.png");
-	
 }
 
 .icon_pick_hover {
 	background-image:url("../images/general/button_pick_select.png");
 }
+
+.icon_fire {
+	background-image:url("../images/battle/icon_fire_reject.png");
+}
+.icon_fire_select {
+	background-image:url("../images/battle/icon_fire_select.png");
+}
+.icon_leave {
+	background-image:url("../images/battle/icon_leave_reject.png");
+}
+.icon_leave_select {
+	background-image:url("../images/battle/icon_leave_select.png");
+}
+.icon_surrender {
+	background-image:url("../images/battle/icon_surrender_reject.png");
+}
+.icon_surrender_select {
+	background-image:url("../images/battle/icon_surrender_select.png");
+}
+.icon_boarding {
+	background-image:url("../images/battle/icon_boarding_reject.png");
+}
+.icon_boarding_select {
+	background-image:url("../images/battle/icon_boarding_select.png");
+}
+.icon_payoff {
+	background-image:url("../images/battle/icon_payoff_reject.png");
+}
+.icon_payoff_select {
+	background-image:url("../images/battle/icon_payoff_select.png");
+}
+
 
 h1.up_title {
     text-align: center;
@@ -118,6 +179,9 @@ h3 {
 	display:block;
 	width: 100%;
 	height: auto;
+	float: left;
+    margin-bottom: 1%;
+    margin-top: 1%;
 }
 
 tr th, tr td { width:25%; }
@@ -125,22 +189,29 @@ tr th, tr td { width:25%; }
 #ammo_tab {
     padding: 1%;
 }
+#info_tab {
+    padding: 1%;
+}
 
-.player_ship {
+.player_ship, .enemy_ship {
+	
 	display:inline-block;
 	width: 33.3%;
+	position: fixed;
+}
+
+.player_ship {
     float:left;
+    margin-left: 33%;
 }
 
 .enemy_ship {
-	display:inline-block;
     float:right;
-	width: 33.3%;
+    margin-left: 33%;
 }
 
 .battle_info {
 	display:block;
     float:left;
 	width: 100%;
-	
 }
