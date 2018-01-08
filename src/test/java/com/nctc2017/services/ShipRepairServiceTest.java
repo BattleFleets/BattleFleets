@@ -76,7 +76,7 @@ public class ShipRepairServiceTest {
         int money = 11000;
         int points = 13;
         int lvl = 10;
-        steve = new Player(playerId, login, email, money, points, lvl);
+        steve = new Player(playerId, login, email, money, points, lvl,5);
     }
 
     @BeforeClass

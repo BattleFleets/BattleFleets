@@ -71,7 +71,7 @@
                     <input type="password" name="password" placeholder="Password" class="form__input"/>
                 </div>
 
-                <input class="btn" name="submit" type="submit" value="Login"/>
+                <input class="btn" name="submit" type="submit" style="cursor: pointer" value="Login"/>
 
             </form>
         </div>
@@ -104,7 +104,7 @@
                         <input id = "passwordConfirm" type="password" name="passwordConfirm" placeholder="Confirm password" class="form__input" />
                     </div>
 
-                    <input class="btn" name="button" type="button" value="Register" onclick="register()"/>
+                    <input class="btn" name="button" style="cursor: pointer" type="button" value="Register" onclick="register()"/>
             </form>
         </div>
     </div>

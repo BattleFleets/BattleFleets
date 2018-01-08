@@ -23,6 +23,7 @@ body{
     font-size: 18px;
     font-family: "Lucida Bright", Georgia, serif;
     padding: 5px 20px;
+    text-decoration: none;
 }
 
 .panel {

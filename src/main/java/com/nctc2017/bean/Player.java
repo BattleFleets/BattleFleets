@@ -8,6 +8,8 @@ public class Player {
     public static final String MONEY = "Money";
     public static final String POINTS = "Points";
     public static final String LEVEL = "Level";
+    public static final String NEXT_LEVEL = "NextLevel";
+
 
     protected BigInteger playerId;
 
@@ -21,13 +23,16 @@ public class Player {
 
     protected int level;
 
-    public Player(BigInteger playerId, String login, String email, int money, int points, int level) {
+    protected int nextLevel;
+
+    public Player(BigInteger playerId, String login, String email, int money, int points, int level, int nextLevel) {
         this.playerId = playerId;
         this.login = login;
         this.email = email;
         this.money = money;
         this.points = points;
         this.level = level;
+        this.nextLevel=nextLevel;
     }
 
     public BigInteger getPlayerId() {
@@ -78,4 +83,11 @@ public class Player {
         this.level = level;
     }
 
+    public int getNextLevel() {
+        return nextLevel;
+    }
+
+    public void setNextLevel(int nextLevel) {
+        this.nextLevel = nextLevel;
+    }
 }
