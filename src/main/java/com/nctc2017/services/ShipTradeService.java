@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service("shipTradeService")
 public class ShipTradeService {
@@ -32,10 +34,22 @@ public class ShipTradeService {
         }
     }
 
+    public List<Integer> getShipCosts(List<Ship> ships) {
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < ships.size(); i++)
+            result.add(costOfShip(ships.get(i)));
+        return result;
+    }
+
+    public int costOfShip(Ship shipForSelling) {
+        int costOfShip = shipForSelling.getCost() - shipRepairService.countRepairCost(shipForSelling.getShipId());
+        return costOfShip;
+    }
+
     public boolean sellShip(BigInteger playerId, BigInteger shipId) {
         try {
-            Ship shipFroSelling = shipDao.findShip(shipId);
-            int costOfShip = shipFroSelling.getCost() - shipRepairService.countRepairCost(shipId);
+            Ship ship = shipDao.findShip(shipId);
+            int costOfShip = ship.getCost()-shipRepairService.countRepairCost(shipId);
             moneyService.addMoney(playerId, costOfShip);
             return true;
         } catch (RuntimeException e) {

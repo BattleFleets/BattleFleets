@@ -1,10 +1,6 @@
 package com.nctc2017.dao.impl;
 
-import com.nctc2017.bean.Cannon;
-import com.nctc2017.bean.Mast;
-import com.nctc2017.bean.Ship;
-import com.nctc2017.bean.ShipTemplate;
-import com.nctc2017.bean.StartShipEquipment;
+import com.nctc2017.bean.*;
 import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
@@ -35,7 +31,6 @@ import java.util.Map;
 public class ShipDaoImpl implements ShipDao {
 
     private static final Logger log = Logger.getLogger(ShipDaoImpl.class);
-
 
 
     @Autowired
@@ -75,6 +70,28 @@ public class ShipDaoImpl implements ShipDao {
                 new IllegalArgumentException(message + unknownId);
         log.error("Exception: ", e);
         throw e;
+    }
+
+    public List<StartShipEquipment> findStartShipsEqup() {
+        List<StartShipEquipment> result = queryExecutor.getAllEntitiesByType(DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID,
+                new EntityListExtractor<>(new StartShipEquipmentVisitor()));
+        return result;
+    }
+
+    public List<StartTypeOfShipEquip> findStartShipsEqupMastType() {
+        List<StartTypeOfShipEquip> result = queryExecutor.getAttrsByRef(DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID,
+                DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID,
+                DatabaseAttribute.ATTR_SHIP_START_MAST_TYPE,
+                new EntityListExtractor<>(new StartTypeShipEquipmentVisitor()));
+        return result;
+    }
+
+    public List<StartTypeOfShipEquip> findStartShipsEqupCannonType() {
+        List<StartTypeOfShipEquip> result = queryExecutor.getAttrsByRef(DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID,
+                DatabaseObject.CANNON_TEMPLATE_TYPE_ID,
+                DatabaseAttribute.ATTR_SHIP_START_CANNON_TYPE,
+                new EntityListExtractor<>(new StartTypeShipEquipmentVisitor()));
+        return result;
     }
 
     public StartShipEquipment findStartShipEquip(BigInteger shipTempId) {
@@ -184,38 +201,38 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public int getHealthLimit(BigInteger shipId) {
-        BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
-        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_HEALTH_LIMIT,Integer.class);
+        BigInteger templateId = queryExecutor.getSource(shipId, DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
+        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_HEALTH_LIMIT, Integer.class);
     }
 
     @Override
     public int getCarryingLimit(BigInteger shipId) {
-        BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
-        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_CARRYING_LIMIT,Integer.class);
+        BigInteger templateId = queryExecutor.getSource(shipId, DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
+        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_CARRYING_LIMIT, Integer.class);
     }
 
     @Override
     public int getCannonLimit(BigInteger shipId) {
-        BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
-        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_CANNON_LIMIT,Integer.class);
+        BigInteger templateId = queryExecutor.getSource(shipId, DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
+        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_CANNON_LIMIT, Integer.class);
     }
 
     @Override
     public int getMastLimit(BigInteger shipId) {
-        BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
-        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_MAST_LIMIT,Integer.class);
+        BigInteger templateId = queryExecutor.getSource(shipId, DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
+        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_MAST_LIMIT, Integer.class);
     }
 
     @Override
     public int getSailorLimit(BigInteger shipId) {
-        BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
-        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_SAILOR_LIMIT,Integer.class);
+        BigInteger templateId = queryExecutor.getSource(shipId, DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
+        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_SAILOR_LIMIT, Integer.class);
     }
 
     @Override
     public int getShipCost(BigInteger shipId) {
-        BigInteger templateId = queryExecutor.getSource(shipId,DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
-        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_SHIP_COST,Integer.class);
+        BigInteger templateId = queryExecutor.getSource(shipId, DatabaseObject.SHIP_OBJTYPE_ID, BigInteger.class);
+        return queryExecutor.getAttrValue(templateId, DatabaseAttribute.ATTR_SHIP_COST, Integer.class);
     }
 
     @Override
@@ -225,7 +242,7 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public List<ShipTemplate> findAllShipTemplates() {
-        List<ShipTemplate> result= queryExecutor.getAllEntitiesByType(DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID,
+        List<ShipTemplate> result = queryExecutor.getAllEntitiesByType(DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID,
                 new EntityListExtractor<>(new ShipTemplateVisitor()));
         return result;
     }
@@ -233,8 +250,8 @@ public class ShipDaoImpl implements ShipDao {
 
     public List<Ship> findAllShips(List<BigInteger> shipsId) {
         List<Ship> ships = new ArrayList<>();
-        for(int i = 0; i < shipsId.size(); i++) {
-            ships.add(queryExecutor.findEntity(shipsId.get(i),DatabaseObject.SHIP_OBJTYPE_ID, new EntityExtractor<>(shipsId.get(i),new ShipVisitor())));
+        for (int i = 0; i < shipsId.size(); i++) {
+            ships.add(queryExecutor.findEntity(shipsId.get(i), DatabaseObject.SHIP_OBJTYPE_ID, new EntityExtractor<>(shipsId.get(i), new ShipVisitor())));
         }
         return ships;
     }
@@ -297,18 +314,18 @@ public class ShipDaoImpl implements ShipDao {
     @Override
     public int getSpeed(BigInteger shipId) {
         return jdbcTemplate.queryForObject(Query.GET_CURRENT_SPEED,
-                new Object[] { JdbcConverter.toNumber(shipId),
+                new Object[]{JdbcConverter.toNumber(shipId),
                         JdbcConverter.toNumber(DatabaseObject.SHIP_OBJTYPE_ID),
                         JdbcConverter.toNumber(DatabaseObject.MAST_OBJTYPE_ID),
-                        JdbcConverter.toNumber(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID)},Integer.class);
+                        JdbcConverter.toNumber(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID)}, Integer.class);
     }
 
     @Override
     public int getShipDamage(BigInteger shipId) {
         return jdbcTemplate.queryForObject(Query.GET_SHIP_DAMAGE,
-                new Object[] { JdbcConverter.toNumber(DatabaseAttribute.CANNON_DAMAGE),
+                new Object[]{JdbcConverter.toNumber(DatabaseAttribute.CANNON_DAMAGE),
                         JdbcConverter.toNumber(DatabaseObject.SHIP_OBJTYPE_ID),
-                        JdbcConverter.toNumber(shipId)},Integer.class);
+                        JdbcConverter.toNumber(shipId)}, Integer.class);
     }
 
 
@@ -317,18 +334,28 @@ public class ShipDaoImpl implements ShipDao {
         public Ship visit(BigInteger entityId, Map<String, String> papamMap) {
             BigInteger templateId = null;
             String shipName = papamMap.get(ShipTemplate.T_SHIPNAME);
-            switch(shipName){
-                case "T_Caravela": templateId = new BigInteger("1");;
+            switch (shipName) {
+                case "T_Caravela":
+                    templateId = new BigInteger("1");
+                    ;
                     break;
-                case "T_Caracca": templateId = new BigInteger("2");
+                case "T_Caracca":
+                    templateId = new BigInteger("2");
                     break;
-                case "T_Galion": templateId = new BigInteger("3");;
+                case "T_Galion":
+                    templateId = new BigInteger("3");
+                    ;
                     break;
-                case "T_Clipper": templateId = new BigInteger("4");;
+                case "T_Clipper":
+                    templateId = new BigInteger("4");
+                    ;
                     break;
-                case "T_Fregata": templateId = new BigInteger("5");;
+                case "T_Fregata":
+                    templateId = new BigInteger("5");
+                    ;
                     break;
-                 default: log.error("Not exists tamplate");
+                default:
+                    log.error("Not exists tamplate");
             }
             ShipTemplate shipT = new ShipTemplate(
                     templateId,
@@ -376,10 +403,21 @@ public class ShipDaoImpl implements ShipDao {
         public StartShipEquipment visit(BigInteger entityId, Map<String, String> papamMap) {
             return new StartShipEquipment(
                     entityId,
-                    null,
-                    null,
-                    Integer.valueOf(papamMap.remove(StartShipEquipment.START_NUM_CANNON)),
-                    Integer.valueOf(papamMap.remove(StartShipEquipment.START_NUM_MAST))
+                    JdbcConverter.parseBigIneger(papamMap.get(StartShipEquipment.START_CANNON_TYPE)),
+                    JdbcConverter.parseBigIneger(papamMap.get(StartShipEquipment.START_MAST_TYPE)),
+                    JdbcConverter.parseInt(papamMap.get(StartShipEquipment.START_NUM_CANNON)),
+                    JdbcConverter.parseInt(papamMap.get(StartShipEquipment.START_NUM_MAST))
+            );
+        }
+    }
+
+    private final class StartTypeShipEquipmentVisitor implements ExtractingVisitor<StartTypeOfShipEquip> {
+        @Override
+        public StartTypeOfShipEquip visit(BigInteger entityId, Map<String, String> papamMap) {
+            return new StartTypeOfShipEquip(
+                    entityId,
+                    papamMap.get(StartTypeOfShipEquip.START_MAST_TYPE),
+                    papamMap.get(StartTypeOfShipEquip.START_CANNON_TYPE)
             );
         }
     }

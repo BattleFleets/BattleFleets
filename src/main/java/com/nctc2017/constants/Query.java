@@ -193,6 +193,22 @@ public class Query {
                     "AND table_ref.object_id = obj.object_id " +
                     "AND table_ref.reference = obj_ref.object_id ";
 
+
+    public static final String FIND_ATTRS_BY_ATTR_ID =
+            "SELECT obj.object_id shipObject_id,attr.name, obj_ref.name  " +
+                    "FROM objects obj, objtype obj_type, " +
+                    "attributes attr, " +
+                    "objects obj_ref, objtype obj_ref_type, " +
+                    "objreference table_ref " +
+                    "WHERE " +
+                    "obj_type.object_type_id = ? " +
+                    "AND obj.object_type_id  = obj_type.object_type_id " +
+                    "AND obj_ref_type.object_type_id = ? " +
+                    "AND obj_ref.object_type_id = obj_ref_type.object_type_id " +
+                    "AND attr.attr_id = ? " +
+                    "AND table_ref.object_id = obj.object_id " +
+                    "AND table_ref.reference = obj_ref.object_id";
+
     /**
      * This query allows to get fleet speed of player by his id.
      * PreparedStatement args:<br>
@@ -292,6 +308,6 @@ public class Query {
                     + " AND entity_obj.PARENT_ID = ?"
                     + " GROUP BY entity_obj.NAME";
 
-    
+
 }
 

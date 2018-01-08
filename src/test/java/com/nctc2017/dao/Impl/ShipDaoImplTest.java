@@ -75,9 +75,9 @@ public class ShipDaoImplTest {
         assertTrue(s.getMaxCarryingLimit() == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
-        assertEquals(typeOfMast,mastsInCreatedId.get(0).getTemplateName());
+        assertEquals(typeOfMast, mastsInCreatedId.get(0).getTemplateName());
         assertEquals(expectedNumberOfMastInCaravella, mastsInCreatedId.size());
-        assertEquals(typeOfCannon,cannonsInCreatedId.get(0).getName());
+        assertEquals(typeOfCannon, cannonsInCreatedId.get(0).getName());
         assertEquals(expectedNumberOfCannonInCaravella, cannonsInCreatedId.size());
         assertEquals(SHIP_TEMPALTE_CARAVELA_NAME, s.getTName());
     }
@@ -100,9 +100,9 @@ public class ShipDaoImplTest {
         assertTrue(s.getMaxCarryingLimit() == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
-        assertEquals(typeOfMast,mastsInCreatedId.get(0).getTemplateName());
+        assertEquals(typeOfMast, mastsInCreatedId.get(0).getTemplateName());
         assertEquals(expectedNumberOfMastInCaravella, mastsInCreatedId.size());
-        assertEquals(typeOfCannon,cannonsInCreatedId.get(0).getName());
+        assertEquals(typeOfCannon, cannonsInCreatedId.get(0).getName());
         assertEquals(expectedNumberOfCannonInCaravella, cannonsInCreatedId.size());
         assertEquals(SHIP_TEMPALTE_CARRACA_NAME, s.getTName());
     }
@@ -125,9 +125,9 @@ public class ShipDaoImplTest {
         assertTrue(s.getMaxCarryingLimit() == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
-        assertEquals(typeOfMast,mastsInCreatedId.get(0).getTemplateName());
+        assertEquals(typeOfMast, mastsInCreatedId.get(0).getTemplateName());
         assertEquals(expectedNumberOfMastInCaravella, mastsInCreatedId.size());
-        assertEquals(typeOfCannon,cannonsInCreatedId.get(0).getName());
+        assertEquals(typeOfCannon, cannonsInCreatedId.get(0).getName());
         assertEquals(expectedNumberOfCannonInCaravella, cannonsInCreatedId.size());
         assertEquals(SHIP_TEMPALTE_GALION_NAME, s.getTName());
     }
@@ -150,9 +150,9 @@ public class ShipDaoImplTest {
         assertTrue(s.getMaxCarryingLimit() == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
-        assertEquals(typeOfMast,mastsInCreatedId.get(0).getTemplateName());
+        assertEquals(typeOfMast, mastsInCreatedId.get(0).getTemplateName());
         assertEquals(expectedNumberOfMastInCaravella, mastsInCreatedId.size());
-        assertEquals(typeOfCannon,cannonsInCreatedId.get(0).getName());
+        assertEquals(typeOfCannon, cannonsInCreatedId.get(0).getName());
         assertEquals(expectedNumberOfCannonInCaravella, cannonsInCreatedId.size());
         assertEquals(SHIP_TEMPALTE_CLIPPER_NAME, s.getTName());
     }
@@ -175,9 +175,9 @@ public class ShipDaoImplTest {
         assertTrue(s.getMaxCarryingLimit() == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
-        assertEquals(typeOfMast,mastsInCreatedId.get(0).getTemplateName());
+        assertEquals(typeOfMast, mastsInCreatedId.get(0).getTemplateName());
         assertEquals(expectedNumberOfMastInCaravella, mastsInCreatedId.size());
-        assertEquals(typeOfCannon,cannonsInCreatedId.get(0).getName());
+        assertEquals(typeOfCannon, cannonsInCreatedId.get(0).getName());
         assertEquals(expectedNumberOfCannonInCaravella, cannonsInCreatedId.size());
         assertEquals(SHIP_TEMPALTE_FREGATA_NAME, s.getTName());
     }
@@ -261,15 +261,23 @@ public class ShipDaoImplTest {
         assertEquals(findShip.getCurName(), actualCurrentShipName);
         assertEquals(findShip.getMaxCarryingLimit(), actualCarryingLimit);
     }
+
     @Test
     @Rollback(true)
-    public void findAllShips() throws Exception{
+    public void findAllShips() {
         playerDao.addNewPlayer("Tony", "1111", "Stark@gmail.com");
         Player tony = playerDao.findPlayerByLogin("Tony");
         shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, tony.getPlayerId());
         List<BigInteger> shipsId = playerDao.findAllShip(tony.getPlayerId());
         List<Ship> ships = shipDao.findAllShips(shipsId);
         assertEquals(ships.size(), 1);
+    }
+
+    @Test
+    @Rollback(true)
+    public void findStartShipsEqupTest() {
+        List<StartShipEquipment> ssE = shipDao.findStartShipsEqup();
+        assertEquals(5, ssE.size());
     }
 
 }

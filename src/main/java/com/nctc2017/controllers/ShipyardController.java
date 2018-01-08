@@ -1,23 +1,19 @@
 package com.nctc2017.controllers;
 
-import com.nctc2017.bean.Ship;
-import com.nctc2017.bean.ShipTemplate;
-import com.nctc2017.bean.StartShipEquipment;
-import com.nctc2017.bean.Thing;
+import com.nctc2017.bean.*;
 import com.nctc2017.services.ShipService;
 import com.nctc2017.services.ShipTradeService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -42,23 +38,14 @@ public class ShipyardController {
         return model;
     }
 
-    /*@Secured("ROLE_USER")
-    @RequestMapping(value = "/buyShip", method = RequestMethod.POST)
-    public String buyShip(@RequestParam(value = "shipTemplateId", required = false)
-                                    BigInteger shipTemplateId, Model model) {
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/buy", method = RequestMethod.GET)
+    @ResponseBody
+    public boolean buyShip(@RequestParam(value = "shipTemplateId") BigInteger shipTemplateId) {
         //Update TODO
-        BigInteger debugPlayerId = new BigInteger("45");
-
-        String resultOfBuing = null;
-        if (shipTradeService.buyShip(debugPlayerId,shipTemplateId))
-            resultOfBuing = "Congratulations! New ship is already armed.";
-        else {
-            resultOfBuing = "Sorry, you can not buy it";
-            LOG.info("can not buy ship");
-        }
-        model.addAttribute("resultOfBuing",resultOfBuing);
-        return "ShipyardView";
-    }*/
+        BigInteger debugPlayerId = new BigInteger("42");
+        return  (shipTradeService.buyShip(debugPlayerId,shipTemplateId));
+    }
 
     public void isEnoughMoneyForShip(int shipTemplateId) {
         // TODO implement here
@@ -66,29 +53,34 @@ public class ShipyardController {
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/buyShip", method = RequestMethod.GET)
-    public String getAllShipTemplates(
-            @RequestParam(value = "shipyard", required = false) String city,
-            @RequestParam(value = "shipTemplateId", required = false) BigInteger shipTemplateId, Model model) {
+    @ResponseBody
+    public ModelAndView getAllShipTemplates() {
 
         List<ShipTemplate> shipTemplates = shipService.getAllShipTemplates();
-        List<StartShipEquipment> shipEquipments = new ArrayList<>();
-
-        //Update cyclic queries.TODO
-        for (ShipTemplate sT: shipTemplates) {
-            StartShipEquipment shipEquipment = shipService.getStartShipEquipment(sT.getTemplateId());
-            shipEquipments.add(shipEquipment);
-        }
-
-        model.addAttribute("city", city);
-        model.addAttribute("shipTemplates", shipTemplates);
-        model.addAttribute("shipEquipments",shipEquipments);
-
-        return "ShipyardView";
+        List<StartShipEquipment> shipEquipments = shipService.getStartShipEquipment();
+        List<StartTypeOfShipEquip> startTypeOfShipEquips = shipService.getTypeOfShipEquipment();
+        ModelAndView model = new ModelAndView();
+        model.addObject("startTypeOfShipEquips",startTypeOfShipEquips);
+        model.addObject("shipTemplates", shipTemplates);
+        model.addObject("shipEquipments",shipEquipments);
+        model.setViewName("fragment/shiptable");
+        return model;
     }
 
-    public List<Ship> getAllPlayerShips(int playerId) {
-        // TODO implement here
-        return null;
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/sellShip", method = RequestMethod.GET)
+    @ResponseBody
+    public ModelAndView getAllPlayerShips() {
+        //TODO debugID
+        BigInteger playerId = new BigInteger("42");
+        List<Ship> playerShips = shipService.getAllPlayerShips(playerId);
+        //List<Integer> shipCosts = shipTradeService.getShipCosts(playerShips);
+
+        ModelAndView model = new ModelAndView();
+        //model.addObject("shipCosts",shipCosts);
+        model.addObject("playerShips",playerShips);
+        model.setViewName("fragment/playerships");
+        return model;
     }
 
     public void sellShip(int shipId, int playerId) {
