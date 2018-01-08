@@ -296,11 +296,12 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public int getSpeed(BigInteger shipId) {
-        return jdbcTemplate.queryForObject(Query.GET_CURRENT_SPEED,
+        Integer speed = jdbcTemplate.queryForObject(Query.GET_CURRENT_SPEED,
                 new Object[] { JdbcConverter.toNumber(shipId),
                         JdbcConverter.toNumber(DatabaseObject.SHIP_OBJTYPE_ID),
                         JdbcConverter.toNumber(DatabaseObject.MAST_OBJTYPE_ID),
-                        JdbcConverter.toNumber(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID)},Integer.class);
+                        JdbcConverter.toNumber(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID)}, Integer.class);
+        return speed == null ? 0 : speed;
     }
 
     @Override
