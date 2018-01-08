@@ -70,5 +70,9 @@ public interface PlayerDao {
 
     void updateMaxShips(BigInteger playerId, int addShips);
 
+    int getNextPlayerLevel(BigInteger playerId);
+
+    void updateNxtLvl(BigInteger playerId, int lvl);
+
 
 }

@@ -10,8 +10,9 @@ public class LevelUpService {
     @Autowired
     PlayerDao playerDao;
 
-    private static final int upPassiveIncome=50;
-    private static final int upMaxShips=1;
+    private static final int upPassiveIncome = 50;
+    private static final int upMaxShips = 1;
+    private static final int upNxtLvl = 5;
 
     public int getCurrentLevel(BigInteger playerId) {
         return playerDao.getPlayerLevel(playerId);
@@ -49,6 +50,14 @@ public class LevelUpService {
         int curMaxShips = playerDao.getCurrentMaxShips(playerId);
         playerDao.updateMaxShips(playerId,curMaxShips+upMaxShips);
         return playerDao.getCurrentMaxShips(playerId);
+    }
+
+    public int getNextLevel(BigInteger playerId){
+        return playerDao.getNextPlayerLevel(playerId);
+    }
+
+    public void updateNxtLvl(BigInteger playerId){
+        playerDao.updateNxtLvl(playerId,getNextLevel(playerId)+upNxtLvl);
     }
 
 }

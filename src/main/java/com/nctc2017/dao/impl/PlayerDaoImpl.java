@@ -22,6 +22,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -37,7 +38,6 @@ import static java.lang.Integer.parseInt;
 public class PlayerDaoImpl implements PlayerDao{
     public static final String createPlayerFunctionName = "CREATE_PLAYER";
     public static final String queryForPlayerAttributesByLogin ="SELECT OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=? AND NAME=?";
-    public static final String queryForPlayerIdByLogin = "SELECT OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=? AND NAME=?";
     public static final String queryForPasswordByEmail = "SELECT pass.VALUE FROM ATTRIBUTES_VALUE pass, ATTRIBUTES_VALUE email " +
             "WHERE email.VALUE=? " +
             "AND pass.ATTR_ID=? " +
@@ -130,36 +130,22 @@ public class PlayerDaoImpl implements PlayerDao{
 
     @Override
     public void updatePassiveIncome(@NotNull BigInteger playerId,@NotNull int passiveIncome) {
-        findPlayerById(playerId);
-        int lvl=getPlayerLevel(playerId);
-        if(lvl%5 == 0) {
             PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(playerId)
                     .setAttribute(DatabaseAttribute.PASSIVE_INCOME_ATR_ID, passiveIncome)
                     .build();
             jdbcTemplate.update(psc);
-        }
-        else{
-            RuntimeException ex= new IllegalArgumentException("Inappropriate level"+lvl);
-            log.error("PlayerDAO Exception while update passive income.", ex);
-            throw ex;
-        }
+
+
+
     }
 
     @Override
     public void updateMaxShips(@NotNull BigInteger playerId,@NotNull int maxShips) {
-        findPlayerById(playerId);
-        int lvl=getPlayerLevel(playerId);
-        if(lvl%5 == 0) {
             PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(playerId)
                     .setAttribute(DatabaseAttribute.MAX_SHIPS_ATR_ID, maxShips)
                     .build();
             jdbcTemplate.update(psc);
-        }
-        else{
-             RuntimeException ex= new IllegalArgumentException("Inappropriate level"+lvl);
-             log.error("PlayerDAO Exception while update max ships.", ex);
-             throw ex;
-        }
+
     }
 
     @Override
@@ -377,6 +363,26 @@ public class PlayerDaoImpl implements PlayerDao{
         }
     }
 
+    @Override
+    public int getNextPlayerLevel(BigInteger playerId){
+        try {
+            return queryExecutor.getAttrValue(playerId, DatabaseAttribute.NEXT_LVL_ATTR_ID, Integer.class);
+        } catch (EmptyResultDataAccessException e) {
+            RuntimeException ex = new IllegalArgumentException("Invalid playerId = " + playerId, e);
+            log.error("PlayerDAO Exception while getting player nextLevel.", ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public void updateNxtLvl(BigInteger playerId, int lvl) {
+        findPlayerById(playerId);
+        PreparedStatementCreator psc = QueryBuilder.updateAttributeValue(playerId)
+                .setAttribute(DatabaseAttribute.NEXT_LVL_ATTR_ID, lvl)
+                .build();
+        jdbcTemplate.update(psc);
+    }
+
     private final class PlayerVisitor implements ExtractingVisitor<Player> {
 
         @Override
@@ -386,7 +392,8 @@ public class PlayerDaoImpl implements PlayerDao{
                     papamMap.get(Player.EMAIL),
                     Integer.valueOf(papamMap.get(Player.MONEY)),
                     Integer.valueOf(papamMap.get(Player.POINTS)),
-                    Integer.valueOf(papamMap.get(Player.LEVEL)));
+                    Integer.valueOf(papamMap.get(Player.LEVEL)),
+                    Integer.valueOf(papamMap.get(Player.NEXT_LEVEL)));
         }
     }
 }

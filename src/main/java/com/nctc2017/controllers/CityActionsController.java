@@ -2,6 +2,7 @@ package com.nctc2017.controllers;
 
 import java.math.BigInteger;
 
+import com.nctc2017.services.LevelUpService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,10 @@ public class CityActionsController {
 
     @Autowired
     private TravelService travelService;
-    
+
+    @Autowired
+    private LevelUpService lvlUpService;
+
     @Secured("ROLE_USER")
     @RequestMapping(value = "/travel", method = RequestMethod.GET)
     public ModelAndView travelWelcome(@AuthenticationPrincipal PlayerUserDetails userDetails) {
@@ -68,8 +72,32 @@ public class CityActionsController {
         City currCity = travelService.getCurrentCity(playerId);
         model.addObject("msg", "This is protected page - Only for Users!");
         model.setViewName("CityView");
+        model.addObject("level", lvlUpService.getCurrentLevel(playerId));
+        model.addObject("nextLevel", lvlUpService.getNextLevel(playerId));
         model.addObject("city", currCity.getCityName());
         return model;
     }
 
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/update", method = RequestMethod.GET)
+    public ModelAndView update(){
+        ModelAndView model = new ModelAndView();
+        model.setViewName("UpdateView");
+        return model;
+    }
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/icomeUp", method = RequestMethod.GET)
+    public ModelAndView incomeUp(@AuthenticationPrincipal PlayerUserDetails userDetails){
+        lvlUpService.incomeUp(userDetails.getPlayerId());
+        lvlUpService.updateNxtLvl(userDetails.getPlayerId());
+        return getCity(userDetails);
+    }
+
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/shipUp", method = RequestMethod.GET)
+    public ModelAndView shipUp(@AuthenticationPrincipal PlayerUserDetails userDetails){
+        lvlUpService.shipUp(userDetails.getPlayerId());
+        lvlUpService.updateNxtLvl(userDetails.getPlayerId());
+        return getCity(userDetails);
+    }
 }
