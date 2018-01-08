@@ -7,7 +7,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript">
-    function hover_button(b_id, rej, hov) {
+    function hoverButton(b_id, rej, hov) {
         $("#" + b_id).hover(function() {
             $( this ).find("." + rej).addClass( hov );
         }, function() {
@@ -15,51 +15,106 @@
         });
     }
     
-    function hover_conveyor(act_name) {
+    function hoverConveyor(act_name) {
         var icon = "icon_";
         var select = "_select";
-        hover_button(act_name, icon + act_name, icon + act_name + select);
+        hoverButton(act_name, icon + act_name, icon + act_name + select);
     }
     
+    function tabResultFilling (ships) {
+    	var tab = $("#info_tab");
+    	tab.find("#P_health")
+    	.html(ships.player_ship.curHealth +"/" + ships.player_ship.maxHealth)
+    	tab.find("#E_health")
+    	.html(ships.enemy_ship.curHealth +"/" + ships.enemy_ship.maxHealth)
+    	tab.find("#P_crew")
+    	.html(ships.player_ship.curSailorsQuantity + "/" + ships.player_ship.maxSailorsQuantity)
+    	tab.find("#E_crew")
+    	.html(ships.enemy_ship.curSailorsQuantity + "/" + ships.enemy_ship.maxSailorsQuantity)
+    	tab.find("#P_speed")
+    	.html(ships.player_ship.curSpeed)
+    	tab.find("#E_speed")
+    	.html(ships.enemy_ship.curSpeed)
+    	tab.find("#P_damage")
+    	.html(ships.player_ship.curDamage)
+    	tab.find("#E_damage")
+    	.html(ships.enemy_ship.curDamage)
+    	tab.find("#distance")
+    	.html(ships.distance);
+    }
+    
+    function hoverInit() {
+        var act = "fire";
+        hoverConveyor(act);
+        act = "boarding";
+        hoverConveyor(act);
+        act = "leave";
+        hoverConveyor(act);
+        act = "payoff";
+        hoverConveyor(act);
+        act = "surrender";
+        hoverConveyor(act);
+    }
+    
+    function animateWait() {
+		var wait = $(".wait")
+		wait.attr("hidden", "false");
+		wait.animate({opacity: '0.1'},"slow");
+		wait.animate({opacity: '1.0'},"slow");
+    }
+    
+    function animateTask(animFunction) {
+    	console.log("Animating timer start ");
+    	var anId = setInterval(function() {
+    		animFunction();
+        }, 1000);
+    	return anId;
+    }
+    
+    function infoTabUpdate() {
+    	$.get("/fire_results")
+        .done(function(response, status, xhr) {
+        	console.log("start get result - ship info " + response);
+        	var json_obj = JSON.parse(response);
+        	tabResultFilling(json_obj);
+        })
+        .fail(function(xhr, status, error) {
+        	console.log("getting result ship info FAIL" + response);
+        }).always(function(){
+        	clearInterval(waitId);
+        	$(".wait").attr("hidden", "true");
+        });
+    }
+    
+    var waitId;
     $(document).ready(function() {
         var spinner = $( ".spinner" ).spinner();
         spinner.spinner( "value", 0 );
         spinner.spinner('option', 'min', 0);
-        var act = "fire";
-        hover_conveyor(act);
-        act = "boarding";
-        hover_conveyor(act);
-        act = "leave";
-        hover_conveyor(act);
-        act = "payoff";
-        hover_conveyor(act);
-        act = "surrender";
-        hover_conveyor(act);
-        $.get("/fire_results")
-        .done(function(response, status, xhr){
-        	console.log("get start ship info " + response);
-        	var ships = JSON.parse(response);
-        	$("#info_tab").find("#P_health")
-        	.html(ships.player_ship.curHealth +"/" + ships.player_ship.maxHealth)
-        	$("#info_tab").find("#E_health")
-        	.html(ships.enemy_ship.curHealth +"/" + ships.enemy_ship.maxHealth)
-        	$("#info_tab").find("#P_crew")
-        	.html(ships.player_ship.curSailorsQuantity +"/" + ships.player_ship.maxSailorsQuantity)
-        	$("#info_tab").find("#E_crew")
-        	.html(ships.enemy_ship.curSailorsQuantity +"/" + ships.enemy_ship.maxSailorsQuantity)
-        	$("#info_tab").find("#P_speed")
-        	.html(ships.player_ship.curHealth +"/" + ships.player_ship.maxHealth)
-        	$("#info_tab").find("#E_speed")
-        	.html(ships.enemy_ship.curHealth +"/" + ships.enemy_ship.maxHealth)
-        	$("#info_tab").find("#P_damage")
-        	.html(ships.player_ship.curHealth +"/" + ships.player_ship.maxHealth)
-        	$("#info_tab").find("#E_damage")
-        	.html(ships.enemy_ship.curHealth +"/" + ships.enemy_ship.maxHealth)
-        	
-        })
-        .fail(function(xhr, status, error) {
-        	
+        hoverInit();
+        $("#fire").click(function() {
+        	console.log("fire start");
+        	waitId = animateTask(animateWait);
+        	var spinner = $( ".spinner" );
+        	var dimensional = $("#ammo_tab tr").length - 1;
+            var ammoCannon = new Array(spinner.length);
+            for(i=0; i < spinner.length; i++) {
+            	ammoCannon[i]=spinner[i].value
+                console.log(ammoCannon[i]);
+            }
+        	console.log("Data ammoCannon: " + ammoCannon);
+        	$.post("/fire",{"ammoCannon" : ammoCannon, "dim" : dimensional})
+        	.done(function(response, status, xhr) {
+        		infoTabUpdate();
+        	})
+            .fail(function(xhr, status, error) {
+            	console.log("fire FAIL" + error + " " + xhr.status);
+        		clearInterval(waitId);
+        		$(".wait").attr("hidden", "true");
+            });
         });
+    	waitId = animateTask(animateWait);
+		infoTabUpdate();
     });
 
     </script>
@@ -103,6 +158,12 @@
             <tr>
                 <td id="P_damage">Player_damage</td>
                 <td id="E_damage">Enemy_damage</td> 
+            </tr>
+            <tr>
+                <th colspan="2">Distance</th>
+            </tr>
+            <tr>
+                <td colspan="2" id="distance">distance</td>
             </tr>
             
         </table>
@@ -173,5 +234,6 @@
 <div class="enemy_ship" align="right">
     <img alt="5" src="static/images/ships/enemy_ship2.png" height="100%">
 </div>
+<div class="wait" hidden="true">Wait...</div>
 </body>
 </html>

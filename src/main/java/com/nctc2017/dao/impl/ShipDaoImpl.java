@@ -305,10 +305,11 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public int getShipDamage(BigInteger shipId) {
-        return jdbcTemplate.queryForObject(Query.GET_SHIP_DAMAGE,
+        Integer damage = jdbcTemplate.queryForObject(Query.GET_SHIP_DAMAGE,
                 new Object[] { JdbcConverter.toNumber(DatabaseAttribute.CANNON_DAMAGE),
                         JdbcConverter.toNumber(DatabaseObject.SHIP_OBJTYPE_ID),
-                        JdbcConverter.toNumber(shipId)},Integer.class);
+                        JdbcConverter.toNumber(shipId)}, Integer.class);
+        return damage == null ? 0 : damage;
     }
 
 
@@ -349,7 +350,9 @@ public class ShipDaoImpl implements ShipDao {
                     papamMap.remove(Ship.NAME),
                     JdbcConverter.parseInt(papamMap.remove(Ship.CUR_HEALTH)),
                     JdbcConverter.parseInt(papamMap.remove(Ship.CUR_SAILORS_QUANTITY)),
-                    curCarryLimit
+                    curCarryLimit, 
+                    getShipDamage(entityId), 
+                    getSpeed(entityId)
             );
         }
     }

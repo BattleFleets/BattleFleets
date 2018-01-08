@@ -53,7 +53,7 @@ public class CannonDaoImpl implements CannonDao {
     
     @Override
     public Map<String, String> getCurrentQuantity(BigInteger shipId) {
-        Map<String, String> cannonTypeCount = queryExecutor.findEntity(DatabaseObject.CANNON_OBJTYPE_ID,
+        Map<String, String> cannonTypeCount = queryExecutor.getCountEntitiesByType(DatabaseObject.CANNON_OBJTYPE_ID,
                 shipId,
                 new EntityExtractor<>(shipId, new CannonCountVisitor()));
         return cannonTypeCount;
@@ -163,7 +163,7 @@ public class CannonDaoImpl implements CannonDao {
 
         @Override
         public Map<String, String> visit(BigInteger entityId, Map<String, String> papamMap) {
-           
+            log.debug(papamMap);
             return papamMap;
         }
         

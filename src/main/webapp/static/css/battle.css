@@ -134,10 +134,12 @@ h1.up_title {
     width: 35%;
     float: left;
     margin-left: 20px;
+    max-width: 50%;
 }
 .ship_info {
     float:left;
     font-size: 16pt;
+    max-width: 50%;
 }
 
 p {
@@ -214,4 +216,11 @@ tr th, tr td { width:25%; }
 	display:block;
     float:left;
 	width: 100%;
+}
+
+.wait {
+	position: absolute;
+    left: 50%;
+    top: 50%;
+    font-size: 70pt;
 }

@@ -80,6 +80,9 @@
             .done(function(response, status, xhr){
             	console.log("Pick ship - response " + response);
           	    $( "#warning_info" ).html(response);
+          	    $('html, body').animate({
+                    scrollTop: $("#warning_info").offset().top
+                }, 1000);
           	    waitEnemyReady();
             })
             .fail(function(xhr, status, error) {
@@ -148,12 +151,21 @@
 					</div>
 					
 					<div class="ship_info">
-						<p>Health: <c:out value="${ship.curHealth}/${ship.maxHealth}" /></p>
-		                <p>Carrying: <c:out value="${ship.curCarryingLimit}/${ship.maxCarryingLimit}" /></p>
-		                <p>Crew: <c:out value="${ship.curSailorsQuantity}/${ship.maxSailorsQuantity}" /></p>
-		                <p>Mast: <c:out value="0/${ship.maxMastsQuantity}" /></p>
-		                <p>Cannons: <c:out value="0/${ship.maxCannonQuantity}" /></p>
-		                <p>Cost: <c:out value="${ship.cost}" /></p>
+					<table style="width: 100%">
+						<tr><td>Health:</td><td>${ship.curHealth}/${ship.maxHealth}</td></tr>
+		                <tr><td>Crew:</td><td>${ship.curSailorsQuantity}/${ship.maxSailorsQuantity}</td></tr>
+		                <%-- c:forEach var="cannon" items="${shipInfo.cannons}">
+                            <p>${cannon.key}: ${cannon.value}</p>
+                        </c:forEach--%>
+		                <tr><td>Damage:</td><td>${ship.curDamage}</td></tr>
+		                <%-- c:forEach var="mast" items="${shipInfo.masts}">
+                            <p>${mast.templateName}: ${mast.curSpeed}/${mast.maxSpeed}</p>
+                        </c:forEach--%>
+		                <tr><td>Speed:</td><td>${ship.curSpeed}</td></tr>
+		                <tr><td>Max dist:</td><td>${shipInfo.maxShotDistance}</td></tr>
+		                <tr><td>Carrying:</td><td>${ship.curCarryingLimit}/${ship.maxCarryingLimit}</td></tr>
+		                <tr><td>Cost:</td><td>${ship.cost}</td></tr>
+		            </table>
 	                </div>
 	                <div style="clear: left"></div>
 	                <div align="center">
@@ -202,12 +214,11 @@
 						</c:choose>
 					</div>
 					<div class="ship_info" style="float:left;">
-						<p>Health: <c:out value="${ship.curHealth}/${ship.maxHealth}" /></p>
-		                <p>Carrying: <c:out value="${ship.curCarryingLimit}/${ship.maxCarryingLimit}" /></p>
-		                <p>Crew: <c:out value="${ship.curSailorsQuantity}/${ship.maxSailorsQuantity}" /></p>
-		                <p>Mast: <c:out value="0/${ship.maxMastsQuantity}" /></p>
-		                <p>Cannons: <c:out value="0/${ship.maxCannonQuantity}" /></p>
-		                <p>Cost: <c:out value="${ship.cost}" /></p>
+                        <p>Health: ${ship.curHealth}/${ship.maxHealth}</p>
+		                <p>Crew: ${ship.curSailorsQuantity}/${ship.maxSailorsQuantity}</p>
+		                <p>Damage: ${ship.curDamage}</p>
+		                <p>Speed: ${ship.curSpeed}</p>
+		                <p>Carrying: ${ship.curCarryingLimit}/${ship.maxCarryingLimit}</p>
 	                </div>
                 </div>
             </div>

@@ -60,6 +60,7 @@ public class TravelManager {
             throw new PlayerNotFoundException("Player left a trip or has not yet begun");
         }
         int lvl = playerJornal.getPlayerLevel();
+        LOG.debug("Player_" + playerId + "lvl = " + lvl);
 
         if (playerJornal.isFriendly()) {
             LOG.debug("Player_" + playerId + " is friendly (prepareEnemy) ");

@@ -49,8 +49,8 @@ public class TravelService {
         BigInteger curCityId = playerDao.getPlayerCity(playerId);
         if (curCityId.equals(cityId)) {
             RuntimeException ex = new IllegalArgumentException("You cannot move to the same city.");
-            LOG.warn("Exception while relocating from city with id = " + curCityId 
-                    + "to city with id = " + cityId, ex);
+            LOG.warn("Exception while player " + playerId + " relocating from city with id = " + curCityId 
+                    + " to city with id = " + cityId, ex);
             throw ex;
         }
         LOG.debug("Player_" + playerId + " starting relocation");

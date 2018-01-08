@@ -346,11 +346,13 @@ public class PlayerDaoImpl implements PlayerDao{
     
     @Override
     public int getFleetSpeed(BigInteger playerId) {
-        return jdbcTemplate.queryForObject(Query.GET_FLEET_SPEED,
+        Integer speed = jdbcTemplate.queryForObject(Query.GET_FLEET_SPEED,
                 new Object[]{JdbcConverter.toNumber(playerId),
                         JdbcConverter.toNumber(DatabaseObject.MAST_OBJTYPE_ID),
                         JdbcConverter.toNumber(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID)},
                 Integer.class);
+        if (speed == null) return 0;
+        return speed;
     }
 
     @Override

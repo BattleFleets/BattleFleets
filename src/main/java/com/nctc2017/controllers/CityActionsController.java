@@ -6,12 +6,14 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.nctc2017.bean.City;
+import com.nctc2017.bean.PlayerUserDetails;
 import com.nctc2017.services.TravelService;
 
 @Controller
@@ -23,13 +25,13 @@ public class CityActionsController {
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/travel", method = RequestMethod.GET)
-    public ModelAndView travelWelcome() {
+    public ModelAndView travelWelcome(@AuthenticationPrincipal PlayerUserDetails userDetails) {
        // travelService
         ModelAndView model = new ModelAndView();
-        BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
-        boolean fleetSpeedOk = travelService.isFleetSpeedOk(debugId);
-        boolean sailorsEnough = travelService.isSailorsEnough(debugId);
-        boolean emptyStock = travelService.isEmptyStock(debugId);
+        BigInteger playerId = userDetails.getPlayerId();
+        boolean fleetSpeedOk = travelService.isFleetSpeedOk(playerId);
+        boolean sailorsEnough = travelService.isSailorsEnough(playerId);
+        boolean emptyStock = travelService.isEmptyStock(playerId);
         model.setViewName("fragment/message");
         if (fleetSpeedOk && sailorsEnough && emptyStock) {
             model.setStatus(HttpStatus.OK);
@@ -51,11 +53,11 @@ public class CityActionsController {
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/city**", method = RequestMethod.GET)
-    public ModelAndView getCity() {
+    public ModelAndView getCity(@AuthenticationPrincipal PlayerUserDetails userDetails) {
         ModelAndView model = new ModelAndView();
-        BigInteger debugId = BigInteger.valueOf(43L);//TODO replace after AughRegController will completed
+        BigInteger playerId =userDetails.getPlayerId();
         while (true) {
-            int time = travelService.getRelocateTime(debugId);
+            int time = travelService.getRelocateTime(playerId);
             if (time == Integer.MIN_VALUE) break;
             try {
                 Thread.sleep(1000);
@@ -63,7 +65,7 @@ public class CityActionsController {
                 LOG.error("User thread was interrupted while entering in new city", e);
             }
         }
-        City currCity = travelService.getCurrentCity(debugId);
+        City currCity = travelService.getCurrentCity(playerId);
         model.addObject("msg", "This is protected page - Only for Users!");
         model.setViewName("CityView");
         model.addObject("city", currCity.getCityName());
