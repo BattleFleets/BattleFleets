@@ -1,24 +1,18 @@
 package com.nctc2017.controllers;
 
-import java.math.BigInteger;
-import java.util.*;
-
 import com.nctc2017.bean.Ship;
-import com.nctc2017.bean.ShipTemplate;
 import com.nctc2017.services.MoneyService;
 import com.nctc2017.services.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.math.BigInteger;
+import java.util.List;
 
 @Controller
 public class TavernController {
