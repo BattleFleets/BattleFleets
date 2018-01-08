@@ -183,7 +183,7 @@
 	<h1 class="up_title enemy_style">Enemy fleet</h1>
     <div class="ship_accordion" style="float: left">
 		<c:forEach var="shipInfo" items="${enemy_fleet}" varStatus="status">
-		    <c:set var = "ship" scope = "session" value = "${shipInfo.ship}"/>
+		    <c:set var = "ship" scope = "session" value = "${shipInfo}"/>
 			<h3 class="enemy_style ship_accordion_header" style="float: left;">
 				<c:out value="${status.index + 1}."/>
 				<c:out value="${ship.getTName()} : ${ship.getCurName()}"/>
