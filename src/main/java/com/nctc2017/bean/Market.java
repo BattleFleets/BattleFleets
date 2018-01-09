@@ -65,4 +65,6 @@ public class Market {
         return bar.keySet();
     }
 
+    public List<GoodsForSale> getAllGoodsValues() {return new ArrayList<>(bar.values());}
+
 }

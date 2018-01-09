@@ -6,7 +6,7 @@
 <body>
 <footer class="footer">
     <p>Copyright 2018
-    <address>db74c9@gmail.com</address>
+    <address>boottle.of.rum@gmail.com</address>
     </p>
 </footer>
 </body>
