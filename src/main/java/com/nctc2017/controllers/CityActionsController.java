@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.nctc2017.bean.City;
@@ -80,24 +81,39 @@ public class CityActionsController {
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/update", method = RequestMethod.GET)
-    public ModelAndView update(){
+    public ModelAndView update( @RequestParam(value="diff",required = false) int diff){
         ModelAndView model = new ModelAndView();
         model.setViewName("UpdateView");
+        model.addObject("diff", diff);
         return model;
     }
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/icomeUp", method = RequestMethod.GET)
-    public ModelAndView incomeUp(@AuthenticationPrincipal PlayerUserDetails userDetails){
-        lvlUpService.incomeUp(userDetails.getPlayerId());
-        lvlUpService.updateNxtLvl(userDetails.getPlayerId());
-        return getCity(userDetails);
+    @RequestMapping(value = "/incomeUp", method = RequestMethod.GET)
+    public ModelAndView incomeUp(@AuthenticationPrincipal PlayerUserDetails userDetails,
+                                 @RequestParam(value="diffIncome",required = false) int diff){
+       if(diff>=0) {
+           lvlUpService.incomeUp(userDetails.getPlayerId());
+           lvlUpService.updateNxtLvl(userDetails.getPlayerId());
+           diff-=5;
+           return update(diff);
+       }
+       else {
+           return getCity(userDetails);
+       }
     }
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/shipUp", method = RequestMethod.GET)
-    public ModelAndView shipUp(@AuthenticationPrincipal PlayerUserDetails userDetails){
-        lvlUpService.shipUp(userDetails.getPlayerId());
-        lvlUpService.updateNxtLvl(userDetails.getPlayerId());
-        return getCity(userDetails);
+    public ModelAndView shipUp(@AuthenticationPrincipal PlayerUserDetails userDetails,
+                               @RequestParam(value="diffShip",required = false) int diff){
+        if(diff>=0) {
+            lvlUpService.shipUp(userDetails.getPlayerId());
+            lvlUpService.updateNxtLvl(userDetails.getPlayerId());
+            diff-=5;
+            return update(diff);
+        }
+        else {
+            return getCity(userDetails);
+        }
     }
 }
