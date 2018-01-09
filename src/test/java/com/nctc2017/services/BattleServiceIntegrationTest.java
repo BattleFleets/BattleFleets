@@ -109,11 +109,15 @@ public class BattleServiceIntegrationTest {
             BigInteger id = 
                     cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, nikShipId);
             shipDao.setCannonOnShip(id, nikShipId);
+            id = cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, steveShipId);
+            shipDao.setCannonOnShip(id, steveShipId);
         }
         for (int i = 0; i < 12; i++) {
             BigInteger id = 
                     cannonDao.createCannon(DatabaseObject.KULEVRIN_TEMPLATE_ID, nikShipId);
             shipDao.setCannonOnShip(id, nikShipId);
+            id = cannonDao.createCannon(DatabaseObject.KULEVRIN_TEMPLATE_ID, steveShipId);
+            shipDao.setCannonOnShip(id, steveShipId);
         }
         cannonballId = 
                 ammoDao.createAmmo(DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID, 25);
@@ -126,6 +130,18 @@ public class BattleServiceIntegrationTest {
         holdDao.addCargo(buckshotId, nikHoldId);
         holdDao.addCargo(cannonballId, nikHoldId);
         holdDao.addCargo(chainId, nikHoldId);
+        
+        BigInteger cannonballId = 
+                ammoDao.createAmmo(DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID, 25);
+        BigInteger buckshotId = 
+                ammoDao.createAmmo(DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID, 25);
+        BigInteger chainId = 
+                ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 33);
+        
+        BigInteger steveHoldId = holdDao.createHold(steveShipId);
+        holdDao.addCargo(buckshotId, steveHoldId);
+        holdDao.addCargo(cannonballId, steveHoldId);
+        holdDao.addCargo(chainId, steveHoldId);
         
         BigInteger cityIdNik = playerDao.getPlayerCity(nik.getPlayerId());
         BigInteger cityIdSteve = playerDao.getPlayerCity(steve.getPlayerId());
@@ -180,6 +196,9 @@ public class BattleServiceIntegrationTest {
     public void calculateDamage(int[][] cannonAmmo) throws SQLException {
         // When
         battleService.calculateDamage(cannonAmmo, nikId, null);
+        battleService.calculateDamage(new int[][]{{0,0,0},
+                                                  {0,0,0},
+                                                  {0,0,0}}, steveId, null);
         // Then
     }
     
