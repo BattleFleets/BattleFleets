@@ -160,9 +160,9 @@ public class ShipServiceTest {
     @Test
     public void getAllShipTemplates() throws Exception {
         List<ShipTemplate> shipTemplates = shipService.getAllShipTemplates();
-        assertEquals(shipTemplates.get(0), blackPerlTemp);
+        assertEquals(shipTemplates.get(2), blackPerlTemp);
         assertEquals(shipTemplates.get(1), queenAnneRevengeTemp);
-        assertEquals(shipTemplates.get(2), flyingDutchmanTemp);
+        assertEquals(shipTemplates.get(0), flyingDutchmanTemp);
     }
 
     @Test

@@ -23,14 +23,19 @@
     var username = $("#username_reg").val();
     var email = $("#email").val();
     var password = $("#password_reg").val();
-    var passwordConfirm = $("#passwordConfirm").val();
+    var passwordConfirm = $("#password_confirm").val();
+
 
     $.ajax({
         url:'/registration',
         method:"GET",
-        data: { 'username_reg' : username , 'email' : email, 'password_reg' : password, 'passwordConfirm': passwordConfirm },
+        data: { 'username_reg' : username , 'email' : email, 'password_reg' : password, 'password_confirm': passwordConfirm },
         success: function(data) {
                      $('#results').html(data);
+                     if($('#results').children(".success").length != 0){
+                        $("#registration_form")[0].reset();
+                     }
+
                      }
         } );
     }
@@ -39,7 +44,7 @@
     </script>
 </head>
 
-<body onload='document.loginForm.username.focus();'>
+<body onload='document.login_form.username.focus();'>
 
 <div id="tabs">
 
@@ -59,7 +64,7 @@
         <div class="success">${msg}</div>
         </c:if>
 
-        <form name='loginForm'
+        <form name='login_form'
             action="<c:url value="/login" />" method="POST">
 
                 <div class="form__group">
@@ -77,7 +82,7 @@
         </div>
 
             <div id="registration">
-                <form name='registrationForm' action="/registration" method = "GET">
+                <form id = 'registration_form' action="/registration" method = "GET">
 
                     <div class="form__group">
                         <c:if test="${not empty reg_error}">
@@ -101,7 +106,7 @@
                     </div>
 
                     <div class="form__group">
-                        <input id = "passwordConfirm" type="password" name="passwordConfirm" placeholder="Confirm password" class="form__input" />
+                        <input id = "password_confirm" type="password" name="password_confirm" placeholder="Confirm password" class="form__input" />
                     </div>
 
                     <input class="btn" name="button" style="cursor: pointer" type="button" value="Register" onclick="register()"/>

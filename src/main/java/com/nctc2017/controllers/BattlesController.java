@@ -49,14 +49,11 @@ public class BattlesController {
     @RequestMapping(value = "/battle_preparing", method = RequestMethod.GET)
     public ModelAndView battleWelcome(@AuthenticationPrincipal PlayerUserDetails userDetails) {
         BigInteger playerId = userDetails.getPlayerId();
-        BigInteger debugId2 = BigInteger.valueOf(44L);//TODO delete after debug complete
         List<ShipWrapper> fleet = prepService.getShipsExtraInfo(playerId);
-        List<ShipWrapper> enemyFleet = prepService.getShipsExtraInfo(debugId2);
+        List<Ship> enemyFleet = prepService.getEnemyShips(playerId);
         int time = prepService.autoChoiceShipTimer(playerId);
-        prepService.autoChoiceShipTimer(debugId2);//TODO delete
         ModelAndView model = new ModelAndView("BattlePreparingView");
         model.addObject("fleet", fleet);
-        LOG.debug(fleet.get(0).getCannons());
         model.addObject("enemy_fleet", enemyFleet);
         model.addObject("timer", time);
         return model;
@@ -118,7 +115,8 @@ public class BattlesController {
     public void fire(
             @AuthenticationPrincipal PlayerUserDetails userDetails,
             @RequestParam(value = "ammoCannon[]") int[] ammoCannon,
-            @RequestParam(value = "dim") int dim) throws SQLException  {
+            @RequestParam(value = "dim") int dim,
+            @RequestParam(value = "decrease") boolean decrease) throws SQLException  {
         int[][] ammoCannon2 = new int[dim][];
         int k = 0;
         for (int i = 0; i < ammoCannon2.length; i++) {
@@ -128,15 +126,12 @@ public class BattlesController {
                 ammoCannon2[i][j] = ammoCannon[k++];
             }
         }
-        for (int[] i : ammoCannon2) {
-            for (int j : i) {
-                LOG.debug(j);
-            }
-            LOG.debug(" ");
-        }
-        LOG.debug(dim);
-       // BigInteger plaerId  = userDetails.getPlayerId();
-       // battleService.calculateDamage(ammoCannon, plaerId, new DefaultDestroyBattleEnd());
+
+        BigInteger playerId  = userDetails.getPlayerId();
+        LOG.debug("Player_" + playerId + " fire request");
+        LOG.debug("Player_" + playerId + " Convergace dist: " + decrease);
+        battleService.setConvergaceOfDist(playerId, decrease);
+        battleService.calculateDamage(ammoCannon2, playerId, new DefaultDestroyBattleEnd());
     }
 
     @Secured("ROLE_USER")
@@ -144,12 +139,17 @@ public class BattlesController {
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<String> fireResults(
-            @AuthenticationPrincipal PlayerUserDetails userDetails) 
+            @AuthenticationPrincipal PlayerUserDetails userDetails,
+            @RequestParam(value = "forcibly", required = false) Boolean forcibly) 
                     throws JsonProcessingException, InterruptedException {
         BigInteger playerId = userDetails.getPlayerId();
+        LOG.debug("Player_" + playerId + " request for getting fire result");
+        if (forcibly == null) forcibly = false;
         while(true) {
-            if (battleService.isStepResultAvalible(playerId)) {
-                Ship playerShip = battleService.getShipInBattle(playerId);
+            boolean avaliable = battleService.isStepResultAvalible(playerId);
+            LOG.debug("Player_" + playerId + " step result avaliable: " + avaliable);
+            if (battleService.isStepResultAvalible(playerId) || forcibly) {
+                BattleService.ShipWrapper playerShip = battleService.getShipInBattle(playerId);
                 Ship enemyShip = battleService.getEnemyShipInBattle(playerId);
                 
                 Map<String, Object> shipMap = new HashMap<>();
@@ -179,9 +179,15 @@ public class BattlesController {
     public void getMoney(int id, int idHash) {
         // TODO implement here 
     }
-
-    public void endBattle(int id, int idHash) {
-        // TODO implement here
+    
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/is_battle_end", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    public String isBattleEnd(@AuthenticationPrincipal PlayerUserDetails userDetails) {
+        BigInteger playerId = userDetails.getPlayerId();
+        boolean finish = battleService.isBattleFinish(playerId);
+        return String.valueOf(finish);
     }
 
     public void payoff(int id, int idHash) {

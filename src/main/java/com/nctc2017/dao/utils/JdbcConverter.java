@@ -28,4 +28,12 @@ public final class JdbcConverter {
             return 0;
         }
     }
+
+    public static BigInteger parseBigIneger(String value) {
+        try {
+            return new BigInteger(value);
+        } catch(Exception e) {
+            return null;
+        }
+    }
 }

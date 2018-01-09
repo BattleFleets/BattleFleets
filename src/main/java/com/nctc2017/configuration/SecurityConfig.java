@@ -25,14 +25,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthRegService authRegService;
 
-   /* @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.jdbcAuthentication().dataSource(dataSource)
-		.usersByUsernameQuery(PersonPass)
-        .authoritiesByUsernameQuery(PersonRole);
-        auth.inMemoryAuthentication().withUser("user").password("user").roles("USER");
-    }*/
-
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authProvider());
@@ -63,8 +55,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // Указываем параметры логина и пароля с формы логина
                 .usernameParameter("username")
                 .passwordParameter("password")
-                // устанавливаем success handler для маппинга админа/юзера
-                //.successHandler(new UrlAuthenticationSuccessHandler(userDAO))
                 // даем доступ к форме логина всем
                 .permitAll();
 

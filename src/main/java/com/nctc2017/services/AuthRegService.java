@@ -6,22 +6,19 @@ import com.nctc2017.bean.VerificationToken;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
+import com.nctc2017.dao.StockDao;
 import com.nctc2017.dao.TokenDao;
 import com.nctc2017.exception.PlayerValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Email;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
@@ -41,7 +38,7 @@ public class AuthRegService implements UserDetailsService {
     private TokenDao tokenDao;
 
     @Autowired
-    private ShipDao shipDao;
+    private StockDao stockDao;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -64,8 +61,7 @@ public class AuthRegService implements UserDetailsService {
         if (playerRegistrationResult != null) {
             throw new PlayerValidationException(playerRegistrationResult);
         }
-        shipDao.createNewShip(DatabaseObject.T_CARАССА_OBJECT_ID,
-                playerDao.findPlayerByLogin(login).getPlayerId());
+        stockDao.createStock(playerDao.findPlayerByLogin(login).getPlayerId());
         return playerDao.findPlayerByLogin(login);
     }
 

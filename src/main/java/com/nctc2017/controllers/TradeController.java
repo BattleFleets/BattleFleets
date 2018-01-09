@@ -52,10 +52,12 @@ public class TradeController {
         // TODO implement here
     }
 
+    @Secured("ROLE_USER")
     public void sale(int id, int idHash, int goodsTemplateId, int buyingCost, int quantity, int price) {
         // TODO implement here
     }
 
+    @Secured("ROLE_USER")
     @RequestMapping(value = "/market/buy", method = RequestMethod.GET)
     @ResponseBody
     public String getAllGoodsForBuying(@AuthenticationPrincipal PlayerUserDetails userDetails)
@@ -69,7 +71,9 @@ public class TradeController {
                                     .getAllGoodsValues());
     }
 
-    public List<Thing> getAllGoodsForSelling(int playerId) {
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/market/sell", method = RequestMethod.GET)
+    public String getAllGoodsForSelling(@AuthenticationPrincipal PlayerUserDetails userDetails) {
         // TODO implement here
         return null;
     }

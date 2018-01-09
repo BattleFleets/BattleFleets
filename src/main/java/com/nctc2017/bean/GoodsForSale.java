@@ -41,6 +41,10 @@ public class GoodsForSale {
 
     public GoodsForSale(GoodsForSale origin){
         this(origin.templateId, origin.name, origin.goodsDescription, origin.type);
+        goodsRarity = origin.getGoodsRarity();
+        buyingPrice = origin.getBuyingPrice();
+        salePrice = origin.getSalePrice();
+        quantity = origin.getQuantity();
     }
 
     public String getName() {
@@ -89,5 +93,19 @@ public class GoodsForSale {
 
     public GoodsType getType() {
         return type;
+    }
+
+    @Override
+    public String toString() {
+        return "GoodsForSale{" +
+                "templateId=" + templateId +
+                ", name='" + name + '\'' +
+                ", goodsDescription='" + goodsDescription + '\'' +
+                ", type=" + type +
+                ", goodsRarity=" + goodsRarity +
+                ", buyingPrice=" + buyingPrice +
+                ", quantity=" + quantity +
+                ", salePrice=" + salePrice +
+                '}';
     }
 }

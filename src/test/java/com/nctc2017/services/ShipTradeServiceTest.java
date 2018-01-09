@@ -58,6 +58,8 @@ public class ShipTradeServiceTest {
     private MoneyService moneyService;
     @Mock
     private ShipRepairService shipRepairService;
+    @Mock
+    private LevelUpService levelUpService;
 
     private static Player steve;
     private static ShipTemplate t_BlackPerl;
@@ -115,11 +117,13 @@ public class ShipTradeServiceTest {
             }
         }).when(playerDao).updateMoney(any(), anyInt());
 
+        when(levelUpService.getMaxShips(steve.getPlayerId())).thenReturn(10);
         when(shipRepairService.countRepairCost(any())).thenReturn(0);
         when(shipDao.createNewShip(any(), any())).thenReturn(any());
         when(shipDao.findShipTemplate(t_BlackPerl.getTemplateId())).thenReturn(t_BlackPerl);
         when(shipDao.findShip(blackPerl.getShipId())).thenReturn(blackPerl);
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(steve.getMoney());
+        when(playerDao.findAllShip(steve.getPlayerId())).thenReturn(null);
     }
 
     @Test
@@ -127,7 +131,8 @@ public class ShipTradeServiceTest {
         money = steve.getMoney();
         BigInteger shipTempId = t_BlackPerl.getTemplateId();
 
-        assertTrue(shipTradeService.buyShip(steve.getPlayerId(), shipTempId));
+        assertEquals("Congratulations! One more ship is already armed.",
+                shipTradeService.buyShip(steve.getPlayerId(), shipTempId));
         assertEquals(money - t_BlackPerl.getCost(), steve.getMoney());
     }
 
