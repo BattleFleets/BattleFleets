@@ -104,7 +104,6 @@ public class TravelController {
             @RequestParam(value = "city_id", required = false) String id) {
         BigInteger cityId = new BigInteger(id);
         BigInteger playerId = userDetails.getPlayerId();
-        BigInteger debugId2 = BigInteger.valueOf(44L);
         ModelAndView model = new ModelAndView();
         City currCity = travelService.getCurrentCity(playerId);
         if (currCity.getCityId().equals(cityId)) {
@@ -115,14 +114,6 @@ public class TravelController {
             
             try {
                 travelService.relocate(playerId, cityId);
-                travelService.relocate(debugId2, cityId);//TODO delete
-                
-              //TODO delete
-                try {
-                    travelService.isEnemyOnHorizon(debugId2);
-                } catch (PlayerNotFoundException e) {
-                    LOG.error("debug player 2 not in travel", e);
-                }
                 
             } catch (IllegalAccessError e) {
                 LOG.warn("Player try to relocate to another city while is already traveling."

@@ -174,6 +174,56 @@ public class Battle {
             element.setShipId(null);
         }
     }
+
+    public void setWinner(BigInteger playerId) {
+        Participant prtn = playerMap.get(playerId);
+        if (prtn != null) {
+            Participant enemy = playerMap.get(prtn.getEnemyId());
+            prtn.setWinner(true);
+            enemy.setWinner(false);
+            return;
+        }
+        RuntimeException ex = 
+                new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+        log.error("Error when setting winner in Battle, " 
+                + errorDescription, ex);
+        throw ex;
+    }
+    
+    public boolean isWinner(BigInteger playerId) {
+        Participant prtn = playerMap.get(playerId);
+        if (prtn != null)
+            return prtn.isWinner();
+        RuntimeException ex = 
+                new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+        log.error("Error when getting winner of Battle, " 
+                + errorDescription, ex);
+        throw ex;
+    }
+
+    public void setAmmoCannon(BigInteger playerId, int[][] ammoCannon) {
+        Participant prtn = playerMap.get(playerId);
+        if (prtn != null) {
+            prtn.setAmmoCannon(ammoCannon);
+            return;
+        }
+        RuntimeException ex = 
+                new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+        log.error("Error when ammo-cannon table setting in Battle, " 
+                + errorDescription, ex);
+        throw ex; 
+    }
+    
+    public int[][] getAmmoCannon(BigInteger playerId) {
+        Participant prtn = playerMap.get(playerId);
+        if (prtn != null)
+            return prtn.getAmmoCannon();
+        RuntimeException ex = 
+                new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+        log.error("Error when ammo-cannon table getting from Battle, " 
+                + errorDescription, ex);
+        throw ex; 
+    }
     
     private class Participant {
 
@@ -184,6 +234,8 @@ public class Battle {
         private boolean ready;
         private boolean convergence;
         private boolean madeStep;
+        private boolean winner;
+        private int[][] ammoCannon;
 
         public Participant(BigInteger playerId, BigInteger enemyId) {
             this.playerId = playerId;
@@ -191,6 +243,22 @@ public class Battle {
             madeStep = false;
             this.ready = false;
             this.convergence = false;
+        }
+
+        public void setAmmoCannon(int[][] ammoCannon) {
+            this.ammoCannon = ammoCannon;
+        }
+
+        public int[][] getAmmoCannon() {
+            return ammoCannon;
+        }
+
+        public boolean isWinner() {
+            return winner;
+        }
+
+        public void setWinner(boolean winner) {
+            this.winner = winner;
         }
 
         public boolean wasMadeStep() {

@@ -1,14 +1,11 @@
 package com.nctc2017.dao.impl;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -163,7 +160,6 @@ public class CannonDaoImpl implements CannonDao {
 
         @Override
         public Map<String, String> visit(BigInteger entityId, Map<String, String> papamMap) {
-            log.debug(papamMap);
             return papamMap;
         }
         

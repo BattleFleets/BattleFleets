@@ -14,14 +14,14 @@
 <table class="panel">
     <tr align="center">
         <td>
-            <button class="button"  style="vertical-align:middle"  type="submit" formaction="/incomeUp">
+            <button class="button"  style="vertical-align:middle" name="diffShip" value="${diff}"  type="submit" formaction="/shipUp">
                 <span style="font-size:21px">Update max number of ships</span>
             </button>
         </td>
     </tr>
     <tr align="center">
         <td>
-            <button class="button" style="vertical-align:middle" type="submit" formaction="/shipUp">
+            <button class="button" style="vertical-align:middle" name="diffIncome" value="${diff}" type="submit" formaction="/incomeUp">
                 <span style="font-size:22px">Update passive income</span>
             </button>
         </td>
