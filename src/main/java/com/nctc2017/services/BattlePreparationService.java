@@ -1,18 +1,8 @@
 package com.nctc2017.services;
 
-import java.math.BigInteger;
-import java.util.*;
-
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.nctc2017.bean.Battle;
-import com.nctc2017.bean.Cannon;
 import com.nctc2017.bean.Mast;
 import com.nctc2017.bean.Ship;
-import com.nctc2017.controllers.BattlesController;
 import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.PlayerDao;
@@ -21,6 +11,13 @@ import com.nctc2017.exception.BattleEndException;
 import com.nctc2017.services.utils.AutoDecisionTask;
 import com.nctc2017.services.utils.BattleManager;
 import com.nctc2017.services.utils.Visitor;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
+import java.util.*;
 
 @Service
 @Transactional

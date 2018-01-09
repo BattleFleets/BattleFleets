@@ -24,6 +24,10 @@ public class StartShipEquipment {
         this.startNumMast = startNumMast;
     }
 
+    public BigInteger getShipTId() {
+        return shipTId;
+    }
+
     public BigInteger getStartCannonType() {
         return startCannonType;
     }

@@ -1,10 +1,13 @@
 package com.nctc2017.services;
 
-import java.math.BigInteger;
-
-
+import com.nctc2017.bean.City;
+import com.nctc2017.bean.Player;
+import com.nctc2017.configuration.ApplicationConfig;
+import com.nctc2017.dao.CityDao;
+import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.exception.BattleStartException;
+import com.nctc2017.exception.PlayerNotFoundException;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -14,17 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.nctc2017.bean.City;
-import com.nctc2017.bean.Player;
-import com.nctc2017.configuration.ApplicationConfig;
-import com.nctc2017.dao.CityDao;
-import com.nctc2017.dao.PlayerDao;
-import com.nctc2017.exception.BattleStartException;
-import com.nctc2017.exception.PlayerNotFoundException;
-
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.math.BigInteger;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;

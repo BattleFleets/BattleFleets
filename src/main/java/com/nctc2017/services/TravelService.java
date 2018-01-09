@@ -1,13 +1,5 @@
 package com.nctc2017.services;
 
-import java.math.BigInteger;
-import java.util.*;
-
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.nctc2017.bean.City;
 import com.nctc2017.bean.Player;
 import com.nctc2017.bean.Ship;
@@ -15,13 +7,21 @@ import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.dao.StockDao;
-import com.nctc2017.dao.impl.HoldDaoImpl;
 import com.nctc2017.exception.BattleStartException;
 import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.utils.AutoDecisionTask;
 import com.nctc2017.services.utils.BattleManager;
 import com.nctc2017.services.utils.TravelManager;
 import com.nctc2017.services.utils.Visitor;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
