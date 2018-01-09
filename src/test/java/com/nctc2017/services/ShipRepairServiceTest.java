@@ -6,7 +6,6 @@ import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.dao.MastDao;
-import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -26,7 +25,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
