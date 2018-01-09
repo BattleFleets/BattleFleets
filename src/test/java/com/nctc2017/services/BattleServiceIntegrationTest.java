@@ -86,7 +86,6 @@ public class BattleServiceIntegrationTest {
     private Player newCombatant(String login, String email) {
         playerDao.addNewPlayer(login, "123", email);
         Player player = playerDao.findPlayerByLogin(login);
-        
         return player;
     }
     
@@ -238,6 +237,7 @@ public class BattleServiceIntegrationTest {
     }
     
     @Test
+    @Ignore
     public void calculateDamageCannonballs() throws SQLException {
         calculateDamageCannonballs(8);
     }
@@ -285,6 +285,7 @@ public class BattleServiceIntegrationTest {
     }
     
     @Test
+    @Ignore
     public void calculateDamageBuckshot() throws SQLException {
         calculateDamageBuckshot(8);
     }
@@ -332,6 +333,7 @@ public class BattleServiceIntegrationTest {
     }
  
     @Test
+    @Ignore
     public void calculateDamageChains() throws SQLException {
         calculateDamageChains(11);
     }

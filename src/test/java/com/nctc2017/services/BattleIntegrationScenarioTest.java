@@ -43,6 +43,7 @@ import com.nctc2017.services.utils.BattleEndVisitor;
 @Transactional
 @Rollback(true)
 @FixMethodOrder
+@Ignore
 public class BattleIntegrationScenarioTest {
     @Autowired
     private ApplicationContext context;
