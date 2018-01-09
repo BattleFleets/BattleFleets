@@ -61,11 +61,15 @@
 <body>
 
 <a href="/logout" class="logOutBottom">Logout</a>
+<div class="level">
+	<span>Level ${level}</span>
+</div>
+
 <form method="get">
-<div align="center">
+<div align="center" id="mainMenu">
 	<table class="panel">
 	<tr align="center">
-			<td > 
+			<td>
 			<button class="button"  style="vertical-align:middle" name="market" type="submit" value="Market ${city}" formaction="/market">
 			<span>Market</span>
 			</button>
@@ -92,11 +96,21 @@
 			</button>
 			</td>
 		</tr>
+		<c:if test="${(level==nextLevel) || (level-nextLevel>=5)}">
+		<tr align="center">
+			<td>
+				<button class="button" style="vertical-align:middle" type="submit" formaction="/update">
+					<span>Update</span>
+				</button>
+			</td>
+		</tr>
+		</c:if>
 	</table>
 </div>
 </form>
 <div id="warning_info">
 
 </div>
+
 </body>
 </html>

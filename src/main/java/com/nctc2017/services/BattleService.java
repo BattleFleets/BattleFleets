@@ -49,7 +49,7 @@ public class BattleService {
         Battle battle = battles.getBattle(playerId);
         if (battle == null) {
             RuntimeException ex = new IllegalArgumentException("Wrong playerId = " + playerId);
-            LOG.error("Exception while calculation damage.", ex);
+            LOG.error("Exception while calculation damage. Battle not found.", ex);
             throw ex;
         }
         synchronized (battle) {
@@ -91,6 +91,17 @@ public class BattleService {
         }
     }
     
+    public boolean isStepResultAvalible(BigInteger playerId) {       
+        Battle battle = battles.getBattle(playerId);
+        if (battle == null) {
+            RuntimeException ex = new IllegalArgumentException("Wrong playerId = " + playerId);
+            LOG.error("Exception while checking step result avalible. Battle not found.", ex);
+            throw ex;
+        }
+        boolean shotWas = battle.wasEnemyMadeStep(playerId) || battle.wasPlayerMadeStep(playerId);
+        return !shotWas;
+    }
+    
     public boolean isBattleFinish(BigInteger playerId) {
         return battles.getBattle(playerId).getShipId(playerId) == null;
     }
@@ -98,7 +109,7 @@ public class BattleService {
     public boolean isLeaveBattleFieldAvailable(BigInteger playerId) throws BattleEndException {
         Battle battle = battles.getBattle(playerId);
         if (battle == null) {
-            throw new BattleEndException("Battle already end. You automatically left.");
+            throw new BattleEndException("Battle already ended. You automatically left.");
         }
         List<BigInteger> playerShipsLeft = battle.getShipsLeftBattle(playerId);
         BigInteger enemyId = battle.getEnemyId(playerId);

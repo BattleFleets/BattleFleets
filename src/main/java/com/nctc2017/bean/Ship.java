@@ -9,14 +9,21 @@ public class Ship extends ShipTemplate {
 	protected int curHealth;
 	protected int curSailorsQuantity;
 	protected int curCarryingLimit;
+        protected int curDamage;
+        protected int curSpeed;
 
 	public static final String NAME = "CurShipName";
 	public static final String CUR_HEALTH = "CurShipHealth";
 	public static final String CUR_SAILORS_QUANTITY = "CurShipSailors";
-
-
-
-	public Ship(ShipTemplate shipT, BigInteger shipId, String cur_name, int curHealth, int curSailorsQuantity, int curCarryingLimit) {
+    
+	public Ship(ShipTemplate shipT, BigInteger shipId, String cur_name, 
+	            int curHealth, int curSailorsQuantity, int curCarryingLimit) {
+	    this(shipT, shipId, cur_name, curHealth, curSailorsQuantity, curCarryingLimit, 0, 0);
+	}
+	
+        public Ship(ShipTemplate shipT, BigInteger shipId, String cur_name, 
+            int curHealth, int curSailorsQuantity, int curCarryingLimit, 
+            int curDamage, int curSpeed) {
 		super(shipT.templateId,shipT.t_name, shipT.maxHealth, shipT.maxSailorsQuantity, shipT.cost, shipT.maxMastsQuantity,
 				shipT.maxCannonQuantity, shipT.maxCarryingLimit);
 		this.shipId = shipId;
@@ -24,14 +31,13 @@ public class Ship extends ShipTemplate {
 		this.curHealth = curHealth;
 		this.curSailorsQuantity = curSailorsQuantity;
 		this.curCarryingLimit = curCarryingLimit;
+		this.curDamage = curDamage;
+		this.curSpeed = curSpeed;
 	}
-
 
 	public Ship(ShipTemplate shipT, BigInteger shipId, String cur_name) {
-		this(shipT,shipId, cur_name, shipT.maxHealth, shipT.maxSailorsQuantity, shipT.maxCarryingLimit);
+		this(shipT, shipId, cur_name, shipT.maxHealth, shipT.maxSailorsQuantity, shipT.maxCarryingLimit, 0, 0);
 	}
-
-
 
 	public BigInteger getShipId() {
 		return shipId;
@@ -72,5 +78,21 @@ public class Ship extends ShipTemplate {
 	public void setCurCarryingLimit(int curCarryingLimit) {
 		this.curCarryingLimit = curCarryingLimit;
 	}
+
+    public int getCurDamage() {
+        return curDamage;
+    }
+
+    public void setCurDamage(int curDamage) {
+        this.curDamage = curDamage;
+    }
+
+    public int getCurSpeed() {
+        return curSpeed;
+    }
+
+    public void setCurSpeed(int curSpeed) {
+        this.curSpeed = curSpeed;
+    }
 
 }

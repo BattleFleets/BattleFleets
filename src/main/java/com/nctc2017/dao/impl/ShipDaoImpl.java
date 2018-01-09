@@ -313,19 +313,21 @@ public class ShipDaoImpl implements ShipDao {
 
     @Override
     public int getSpeed(BigInteger shipId) {
-        return jdbcTemplate.queryForObject(Query.GET_CURRENT_SPEED,
-                new Object[]{JdbcConverter.toNumber(shipId),
+        Integer speed = jdbcTemplate.queryForObject(Query.GET_CURRENT_SPEED,
+                new Object[] { JdbcConverter.toNumber(shipId),
                         JdbcConverter.toNumber(DatabaseObject.SHIP_OBJTYPE_ID),
                         JdbcConverter.toNumber(DatabaseObject.MAST_OBJTYPE_ID),
                         JdbcConverter.toNumber(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID)}, Integer.class);
+        return speed == null ? 0 : speed;
     }
 
     @Override
     public int getShipDamage(BigInteger shipId) {
-        return jdbcTemplate.queryForObject(Query.GET_SHIP_DAMAGE,
-                new Object[]{JdbcConverter.toNumber(DatabaseAttribute.CANNON_DAMAGE),
+        Integer damage = jdbcTemplate.queryForObject(Query.GET_SHIP_DAMAGE,
+                new Object[] { JdbcConverter.toNumber(DatabaseAttribute.CANNON_DAMAGE),
                         JdbcConverter.toNumber(DatabaseObject.SHIP_OBJTYPE_ID),
                         JdbcConverter.toNumber(shipId)}, Integer.class);
+        return damage == null ? 0 : damage;
     }
 
 
@@ -376,7 +378,9 @@ public class ShipDaoImpl implements ShipDao {
                     papamMap.remove(Ship.NAME),
                     JdbcConverter.parseInt(papamMap.remove(Ship.CUR_HEALTH)),
                     JdbcConverter.parseInt(papamMap.remove(Ship.CUR_SAILORS_QUANTITY)),
-                    curCarryLimit
+                    curCarryLimit, 
+                    getShipDamage(entityId), 
+                    getSpeed(entityId)
             );
         }
     }

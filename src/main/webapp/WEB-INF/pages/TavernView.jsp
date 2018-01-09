@@ -24,16 +24,6 @@
              </tr>
             </table>
         </c:if>
-        <c:if test="${not empty ships and money<sailorCost}">
-            <table class="panel">
-                <tr align="center">
-                    <td >
-                        <p style="font-size:40px; font-family: tempus sans itc; color:white";>You dont't have enough money, You need ${sailorCost-money}</p>
-                    </td>
-                </tr>
-            </table>
-        </c:if>
-        <c:if test="${money>=sailorCost}">
         <c:if test="${not empty ships}">
             <table class="panel">
               <tr align="center">
@@ -70,7 +60,7 @@
                     <th>
                   </c:if>
                 <c:if test="${nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity}">
-                    <th bgcolor="red" id="id${nextShip.shipId}" name="shipId" value="${nextShip.shipId}" style="cursor: pointer;font-family: tempus sans itc;color:white" onclick="toggle(sailors,cont,buy),show(id${nextShip.shipId},${nextShip.shipId}), maxValue(${nextShip.curSailorsQuantity},${nextShip.maxSailorsQuantity},${sailorCost},${money}), defaultValue()">
+                    <th bgcolor="red" id="id${nextShip.shipId}" name="shipId" value="${nextShip.shipId}" style="cursor: pointer;font-family: tempus sans itc;color:white" onclick="toggle(sailors,cont,buy,${sailorCost},${money}),show(id${nextShip.shipId},${nextShip.shipId}), maxValue(${nextShip.curSailorsQuantity},${nextShip.maxSailorsQuantity},${sailorCost},${money}), defaultValue()">
                 </c:if>
                 <c:choose>
                        <c:when test = "${nextShip.templateId == 1}">
@@ -99,7 +89,6 @@
             </table>
             </div>
         </c:if>
-        </c:if>
     </div>
     <div align="center" style="margin-top: 30px" id="oneShip">
 
@@ -114,10 +103,12 @@
 <a href="/city" class="logOutBottom">Return to city</a>
 <%@include file="fragment/footer.jsp"%>
 <script>
-    function toggle(el1,el2,el3) {
+    function toggle(el1,el2,el3,cost,money) {
         el1.style.display = (el1.style.display == 'none') ? '' : 'none';
         el2.style.display = (el2.style.display == 'none') ? '' : 'none';
-        el3.style.display = (el3.style.display == 'none') ? '' : 'none';
+        if(money>=cost) {
+            el3.style.display = (el3.style.display == 'none') ? '' : 'none';
+        }
     }
 function show(id,num) {
     var $shipFromList = $(id).clone();

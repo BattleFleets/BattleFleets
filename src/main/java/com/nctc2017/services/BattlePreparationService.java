@@ -10,9 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nctc2017.bean.Battle;
 import com.nctc2017.bean.Cannon;
+import com.nctc2017.bean.Mast;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.controllers.BattlesController;
 import com.nctc2017.dao.CannonDao;
+import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
@@ -33,6 +35,8 @@ public class BattlePreparationService {
     private PlayerDao playerDao;
     @Autowired
     private ShipDao shipDao;
+    @Autowired
+    private MastDao mastDao;
     @Autowired
     private CannonDao cannonDao;
     
@@ -58,7 +62,9 @@ public class BattlePreparationService {
         for (BigInteger shipId : listShipsId) {
             shipInfo.add(new ShipWrapper(
                     shipDao.findShip(shipId), 
-                    cannonDao.getCurrentQuantity(shipId)));
+                    cannonDao.getCurrentQuantity(shipId),
+                    mastDao.getShipMastsFromShip(shipId),
+                    shipDao.getMaxShotDistance(shipId)));
         }
         return shipInfo;
     }
@@ -145,15 +151,29 @@ public class BattlePreparationService {
     public class ShipWrapper {
         private Ship ship;
         private Map<String, String> cannons;
-        public ShipWrapper(Ship ship, Map<String, String> cannons) {
+        private List<Mast> masts;
+        private int maxShotDistance;
+        public ShipWrapper(Ship ship, Map<String, String> cannons, List<Mast> curMasts, int dist) {
             this.ship = ship;
             this.cannons = cannons;
+            this.masts = curMasts;
+            this.maxShotDistance = dist;
         }
+        
         public Ship getShip() {
             return ship;
         }
+        
         public Map<String, String> getCannons() {
             return cannons;
+        }
+
+        public List<Mast> getMasts() {
+            return masts;
+        }
+
+        public int getMaxShotDistance() {
+            return maxShotDistance;
         }
         
     }

@@ -80,6 +80,9 @@
             .done(function(response, status, xhr){
             	console.log("Pick ship - response " + response);
           	    $( "#warning_info" ).html(response);
+          	    $('html, body').animate({
+                    scrollTop: $("#warning_info").offset().top
+                }, 1000);
           	    waitEnemyReady();
             })
             .fail(function(xhr, status, error) {
@@ -93,15 +96,13 @@
 	<script>
     var $accordion_hint
     $(document).ready(function(){
-        $(function() {
-        	$(".ship_accordion").accordion({heightStyle: "content"});
-        	$(".ship_accordion").accordion({ collapsible: true});
-        	$(".ship_accordion").accordion({ active: false });
-        	$(".button_pick").hover(function() {
-        	    $( this ).find(".icon_pick").addClass( "icon_pick_hover" );
-        	}, function() {
-        		$( this ).find(".icon_pick").removeClass( "icon_pick_hover" );
-        	});
+        $(".ship_accordion").accordion({heightStyle: "content"});
+        $(".ship_accordion").accordion({ collapsible: true});
+        $(".ship_accordion").accordion({ active: false });
+        $(".button_pick").hover(function() {
+            $( this ).find(".icon_pick").addClass( "icon_pick_hover" );
+        }, function() {
+        	$( this ).find(".icon_pick").removeClass( "icon_pick_hover" );
         });
     });
 </script>
@@ -120,28 +121,27 @@
 		<c:forEach var="shipInfo" items="${fleet}" varStatus="status">
 		    <c:set var = "ship" scope = "session" value = "${shipInfo.ship}"/>
 			<h3 class="player_style ship_accordion_header" style="float: right;">
-				<c:out value="${status.index + 1}." />
-				<c:out value="${ship.getTName()} : ${ship.getCurName()}" />
-				${ship.getTemplateId().intValueExact()}
+				<c:out value="${status.index + 1}."/>
+				<c:out value="${ship.getTName()} : ${ship.getCurName()}"/>
 			</h3>
 			
             <div class="player_style ship_accordion_content" style="float: right;">
 	            <div>
 	                <div class="ship_img">
 						<c:choose>
-							<c:when test="${ship.getTemplateId().intValueExact() == 1} ">
+							<c:when test="${ship.getTemplateId().intValueExact() == 1}">
 						        <img alt="3" src="static/images/ships/Caravela.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 2} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 2}">
 						        <img alt="3" src="static/images/ships/Caracca.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 3} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 3}">
 						        <img alt="3" src="static/images/ships/Galion.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 4} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 4}">
 						        <img alt="3" src="static/images/ships/Clipper.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 5} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 5}">
 						        <img alt="3" src="static/images/ships/Fregata.png" width="100%" height="100%">
 					        </c:when>
 							<c:otherwise>
@@ -151,12 +151,21 @@
 					</div>
 					
 					<div class="ship_info">
-						<p>Health: <c:out value="${ship.curHealth}/${ship.maxHealth}" /></p>
-		                <p>Carrying: <c:out value="${ship.curCarryingLimit}/${ship.maxCarryingLimit}" /></p>
-		                <p>Crew: <c:out value="${ship.curSailorsQuantity}/${ship.maxSailorsQuantity}" /></p>
-		                <p>Mast: <c:out value="0/${ship.maxMastsQuantity}" /></p>
-		                <p>Cannons: <c:out value="0/${ship.maxCannonQuantity}" /></p>
-		                <p>Cost: <c:out value="${ship.cost}" /></p>
+					<table style="width: 100%">
+						<tr><td>Health:</td><td>${ship.curHealth}/${ship.maxHealth}</td></tr>
+		                <tr><td>Crew:</td><td>${ship.curSailorsQuantity}/${ship.maxSailorsQuantity}</td></tr>
+		                <%-- c:forEach var="cannon" items="${shipInfo.cannons}">
+                            <p>${cannon.key}: ${cannon.value}</p>
+                        </c:forEach--%>
+		                <tr><td>Damage:</td><td>${ship.curDamage}</td></tr>
+		                <%-- c:forEach var="mast" items="${shipInfo.masts}">
+                            <p>${mast.templateName}: ${mast.curSpeed}/${mast.maxSpeed}</p>
+                        </c:forEach--%>
+		                <tr><td>Speed:</td><td>${ship.curSpeed}</td></tr>
+		                <tr><td>Max dist:</td><td>${shipInfo.maxShotDistance}</td></tr>
+		                <tr><td>Carrying:</td><td>${ship.curCarryingLimit}/${ship.maxCarryingLimit}</td></tr>
+		                <tr><td>Cost:</td><td>${ship.cost}</td></tr>
+		            </table>
 	                </div>
 	                <div style="clear: left"></div>
 	                <div align="center">
@@ -176,28 +185,27 @@
 		<c:forEach var="shipInfo" items="${enemy_fleet}" varStatus="status">
 		    <c:set var = "ship" scope = "session" value = "${shipInfo.ship}"/>
 			<h3 class="enemy_style ship_accordion_header" style="float: left;">
-				<c:out value="${status.index + 1}." />
-				<c:out value="${ship.getTName()} : ${ship.getCurName()}" />
-				${ship.getTemplateId().intValueExact()}
+				<c:out value="${status.index + 1}."/>
+				<c:out value="${ship.getTName()} : ${ship.getCurName()}"/>
 			</h3>
 			
             <div class="enemy_style ship_accordion_content" style="float: left">
 	            <div>
 	                <div class="ship_img">
 						<c:choose>
-							<c:when test="${ship.getTemplateId().intValueExact() == 1} ">
+							<c:when test="${ship.getTemplateId().intValueExact() == 1}">
 						        <img alt="3" src="static/images/ships/Caravela.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 2} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 2}">
 						        <img alt="3" src="static/images/ships/Caracca.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 3} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 3}">
 						        <img alt="3" src="static/images/ships/Galion.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 4} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 4}">
 						        <img alt="3" src="static/images/ships/Clipper.png" width="100%" height="100%">
 					        </c:when>
-					        <c:when test="${ship.getTemplateId().intValueExact() == 5} ">
+					        <c:when test="${ship.getTemplateId().intValueExact() == 5}">
 						        <img alt="3" src="static/images/ships/Fregata.png" width="100%" height="100%">
 					        </c:when>
 							<c:otherwise>
@@ -206,12 +214,11 @@
 						</c:choose>
 					</div>
 					<div class="ship_info" style="float:left;">
-						<p>Health: <c:out value="${ship.curHealth}/${ship.maxHealth}" /></p>
-		                <p>Carrying: <c:out value="${ship.curCarryingLimit}/${ship.maxCarryingLimit}" /></p>
-		                <p>Crew: <c:out value="${ship.curSailorsQuantity}/${ship.maxSailorsQuantity}" /></p>
-		                <p>Mast: <c:out value="0/${ship.maxMastsQuantity}" /></p>
-		                <p>Cannons: <c:out value="0/${ship.maxCannonQuantity}" /></p>
-		                <p>Cost: <c:out value="${ship.cost}" /></p>
+                        <p>Health: ${ship.curHealth}/${ship.maxHealth}</p>
+		                <p>Crew: ${ship.curSailorsQuantity}/${ship.maxSailorsQuantity}</p>
+		                <p>Damage: ${ship.curDamage}</p>
+		                <p>Speed: ${ship.curSpeed}</p>
+		                <p>Carrying: ${ship.curCarryingLimit}/${ship.maxCarryingLimit}</p>
 	                </div>
                 </div>
             </div>
