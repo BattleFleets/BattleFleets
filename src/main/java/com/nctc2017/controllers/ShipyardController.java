@@ -41,10 +41,10 @@ public class ShipyardController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/buy", method = RequestMethod.GET)
     @ResponseBody
-    public boolean buyShip(@RequestParam(value = "shipTemplateId") BigInteger shipTemplateId) {
+    public String buyShip(@RequestParam(value = "shipTemplateId") BigInteger shipTemplateId) {
         //Update TODO
         BigInteger debugPlayerId = new BigInteger("42");
-        return  (shipTradeService.buyShip(debugPlayerId,shipTemplateId));
+        return shipTradeService.buyShip(debugPlayerId,shipTemplateId);
     }
 
     public void isEnoughMoneyForShip(int shipTemplateId) {

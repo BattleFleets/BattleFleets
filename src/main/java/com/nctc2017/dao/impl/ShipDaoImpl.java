@@ -301,16 +301,6 @@ public class ShipDaoImpl implements ShipDao {
         return maxDist;
     }
 
-    /*@Override
-    public int getSpeed(BigInteger shipId) {
-        int currSpeed = 0; 
-        List<Mast> steveMasts = mastDao.getShipMastsFromShip(shipId);
-        for (Mast mast : steveMasts) {
-            currSpeed += mast.getCurSpeed();
-        }
-        return currSpeed;
-    }*/
-
     @Override
     public int getSpeed(BigInteger shipId) {
         Integer speed = jdbcTemplate.queryForObject(Query.GET_CURRENT_SPEED,

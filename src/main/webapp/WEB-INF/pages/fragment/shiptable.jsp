@@ -84,10 +84,7 @@ $(function(){
             data: { 'shipTemplateId' : shipTemplateId },
             success: function(data) {
                          console.log("SUCCESS: ",data);
-                         if (data)
-                             text.innerHTML='Congratulations! One more ship is already armed.';
-                         else
-                             text.innerHTML='You can not buy that ship.You havent enough money or you have complete fleet';
+                         text.innerHTML=data;
                          modal.style.display = "block";
                          },
                          error : function(e) {

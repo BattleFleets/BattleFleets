@@ -2,6 +2,7 @@ package com.nctc2017.services;
 
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
+import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +19,26 @@ public class ShipTradeService {
     @Autowired
     MoneyService moneyService;
     @Autowired
+    LevelUpService levelUpService;
+    @Autowired
     ShipRepairService shipRepairService;
     @Autowired
     ShipDao shipDao;
+    @Autowired
+    PlayerDao playerDao;
 
 
-    public boolean buyShip(BigInteger playerId, BigInteger shipTemplateId) {
+    public String buyShip(BigInteger playerId, BigInteger shipTemplateId) {
         try {
             ShipTemplate shipTemplate = shipDao.findShipTemplate(shipTemplateId);
+            int numberOfShips = playerDao.findAllShip(playerId) == null ? 0 : playerDao.findAllShip(playerId).size();
+            if (levelUpService.getMaxShips(playerId) <= numberOfShips)
+                return "You have complete fleet for your level!";
             moneyService.deductMoney(playerId, shipTemplate.getCost());
             shipDao.createNewShip(shipTemplateId, playerId);
-            return true;
+            return "Congratulations! One more ship is already armed.";
         } catch (RuntimeException e) {
-            return false;
+            return "Money is not enough to buy that ship";
         }
     }
 
@@ -57,7 +65,6 @@ public class ShipTradeService {
             log.error("ShipTradeService Exception while selling a ship", ex);
             return false;
         }
-
     }
 
 }
