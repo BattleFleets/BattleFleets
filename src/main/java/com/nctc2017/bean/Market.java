@@ -65,4 +65,8 @@ public class Market {
         return bar.keySet();
     }
 
+    public Map<BigInteger, GoodsForSale> getAllGoods(){
+        return bar;
+    }
+
 }

@@ -97,7 +97,7 @@ public class GoodsForSaleDaoImpl implements GoodsForSaleDao {
                     break;
 
                 case CANNON:
-                    name = papamMap.get("CannonName");
+                    name = papamMap.get("CanonName");
                     description = "Damage: " + papamMap.get("Damage") +
                             ", distance: " + papamMap.get("Distance");
                     goods = new GoodsForSale(entityId, name, description, type);

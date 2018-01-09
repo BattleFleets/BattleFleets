@@ -7,6 +7,7 @@ public class DatabaseAttribute {
     public static final BigInteger CANNON_DAMAGE = BigInteger.valueOf(15);
     public static final BigInteger CANNON_DISTANCE = BigInteger.valueOf(16);
     public static final BigInteger ATTR_CURR_MAST_SPEED_ID = BigInteger.valueOf(26);
+    public static final BigInteger ATTR_MAX_MAST_SPEED_ID = BigInteger.valueOf(12);
     public static final BigInteger PASSWORD_ATR_ID = BigInteger.valueOf(28);
     public static final BigInteger LOGIN_ATR_ID = BigInteger.valueOf(27);
     public static final BigInteger LEVEL_ATR_ID = BigInteger.valueOf(30);
