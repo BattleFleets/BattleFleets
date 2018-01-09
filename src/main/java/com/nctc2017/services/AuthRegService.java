@@ -6,6 +6,7 @@ import com.nctc2017.bean.VerificationToken;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
+import com.nctc2017.dao.StockDao;
 import com.nctc2017.dao.TokenDao;
 import com.nctc2017.exception.PlayerValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class AuthRegService implements UserDetailsService {
     private TokenDao tokenDao;
 
     @Autowired
-    private ShipDao shipDao;
+    private StockDao stockDao;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -64,8 +65,7 @@ public class AuthRegService implements UserDetailsService {
         if (playerRegistrationResult != null) {
             throw new PlayerValidationException(playerRegistrationResult);
         }
-        shipDao.createNewShip(DatabaseObject.T_CARАССА_OBJECT_ID,
-                playerDao.findPlayerByLogin(login).getPlayerId());
+        stockDao.createStock(playerDao.findPlayerByLogin(login).getPlayerId());
         return playerDao.findPlayerByLogin(login);
     }
 

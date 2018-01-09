@@ -107,7 +107,6 @@ public class ShipDaoImpl implements ShipDao {
     public BigInteger createNewShip(BigInteger shipTemplateId, BigInteger playerID) {
         BigInteger newId = queryExecutor.getNextval();
         Ship shipT = findShipTemplate(shipTemplateId);
-        StartShipEquipment shipEquipment = findStartShipEquip(shipTemplateId);
 
         PreparedStatementCreator psc = QueryBuilder
                 .insert(DatabaseObject.SHIP_OBJTYPE_ID, newId)
@@ -122,12 +121,6 @@ public class ShipDaoImpl implements ShipDao {
                 .build();
 
         jdbcTemplate.update(psc);
-
-        //While methods of multiCreating are not implemented TODO
-        for (int i = 0; i < shipEquipment.getStartNumMast(); i++)
-            mastDao.createNewMast(shipEquipment.getStartMastType(), newId);
-        for (int i = 0; i < shipEquipment.getStartNumCannon(); i++)
-            cannonDao.createCannon(shipEquipment.getStartCannonType(), newId);
 
         return newId;
     }

@@ -1,12 +1,10 @@
 package com.nctc2017.dao.Impl;
 
-import com.nctc2017.bean.City;
-import com.nctc2017.bean.Player;
+import com.nctc2017.bean.*;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
-import com.nctc2017.dao.CityDao;
-import com.nctc2017.dao.PlayerDao;
-import com.nctc2017.dao.ShipDao;
+import com.nctc2017.dao.*;
+import com.nctc2017.services.ShipService;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +22,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -37,16 +36,37 @@ public class PlayerDaoImplTest {
     CityDao cityDao;
     @Autowired
     ShipDao shipDao;
+    @Autowired
+    ShipService shipService;
+    @Autowired
+    HoldDao holdDao;
+    @Autowired
+    MastDao mastDao;
+    @Autowired
+    CannonDao cannonDao;
 
     @Test
     @Rollback(true)
     public void addNewPlayer() throws Exception {
         String succesResult = playerDao.addNewPlayer("qwe","1111","@FWF");
+        Player player = playerDao.findPlayerByLogin("qwe");
+        List<BigInteger> shipIds = playerDao.findAllShip(player.getPlayerId());
+        List<Ship> ships = shipDao.findAllShips(shipIds);
+        BigInteger holdId = holdDao.findHold(ships.get(0).getShipId());
+        List<Mast> masts = mastDao.getShipMastsFromShip(ships.get(0).getShipId());
+        List<Cannon> cannons = cannonDao.getAllCannonFromShip(ships.get(0).getShipId());
+        assertEquals(ships.size(), 1);
+        assertEquals(ships.get(0).getCurName(), ships.get(0).getCurName());
+        assertEquals(ships.get(0).getCurSailorsQuantity(), ships.get(0).getMaxSailorsQuantity());
+        assertEquals(ships.get(0).getCurHealth(), ships.get(0).getMaxHealth());
+        assertEquals(ships.get(0).getCurCarryingLimit(), ships.get(0).getMaxCarryingLimit());
+        assertTrue(holdId!=null);
+        assertEquals("T_Mast1", masts.get(0).getTemplateName());
+        assertEquals(3, masts.size());
+        assertEquals("Mortar", cannons.get(0).getName());
+        assertEquals(20, cannons.size());
         assertNull(succesResult);
-        String existingLogin = playerDao.addNewPlayer("qwe","1111","fghj");
-        assertEquals("Login exists, enter another login", existingLogin);
-        String existingEmail = playerDao.addNewPlayer("asfdf","1111","@FWF");
-        assertEquals("Email exists, enter another email", existingEmail);
+
     }
 
     @Test
@@ -372,7 +392,7 @@ public class PlayerDaoImplTest {
         BigInteger shipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID,null);
         playerDao.addShip(player.getPlayerId(), shipId);
         List<BigInteger> ships = playerDao.findAllShip(player.getPlayerId());
-        assertEquals(ships.get(0), shipId);
+        assertEquals(ships.get(1), shipId);
 
     }
 
@@ -400,7 +420,7 @@ public class PlayerDaoImplTest {
         playerDao.addShip(player.getPlayerId(), shipId);
         playerDao.deleteShip(player.getPlayerId(), shipId);
         List<BigInteger> ships = playerDao.findAllShip(player.getPlayerId());
-        assertEquals(ships.size(),0);
+        assertEquals(ships.size(),1);
 
     }
 
@@ -424,8 +444,12 @@ public class PlayerDaoImplTest {
     @Test
     @Rollback(true)
     public void findAllShips() throws Exception{
-        playerDao.findAllShip(new BigInteger("41"));
-
+        playerDao.addNewPlayer("Steve", "1111", "Rogers@gmail.com");
+        Player player = playerDao.findPlayerByLogin("Steve");
+        shipDao.createNewShip(DatabaseObject.T_CARАССА_OBJECT_ID, player.getPlayerId());
+        shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());
+        List<BigInteger> shipids = playerDao.findAllShip(player.getPlayerId());
+        assertEquals(shipids.size(), 3);
     }
 
     @Test(expected = IllegalArgumentException.class)
