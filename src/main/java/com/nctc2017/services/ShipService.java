@@ -3,8 +3,9 @@ package com.nctc2017.services;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
 import com.nctc2017.bean.StartShipEquipment;
-import com.nctc2017.dao.PlayerDao;
-import com.nctc2017.dao.ShipDao;
+import com.nctc2017.bean.StartTypeOfShipEquip;
+import com.nctc2017.dao.*;
+import com.nctc2017.services.utils.CompBeans;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigInteger;
@@ -16,12 +17,19 @@ public class ShipService {
     ShipDao shipDao;
     @Autowired
     PlayerDao playerDao;
-
-
+    @Autowired
+    CannonDao cannonDao;
+    @Autowired
+    MastDao mastDao;
+    @Autowired
+    HoldDao holdDao;
 
     public List<ShipTemplate> getAllShipTemplates() {
-        return shipDao.findAllShipTemplates();
+        List<ShipTemplate> result = shipDao.findAllShipTemplates();
+        result.sort(new CompBeans().new ShipTemplateCompare());
+        return result;
     }
+
 
     public List<Ship> getAllPlayerShips(BigInteger playerId) {
          List<BigInteger> shipsId=playerDao.findAllShip(playerId);
@@ -29,9 +37,17 @@ public class ShipService {
          return ships;
     }
 
-    public StartShipEquipment getStartShipEquipment(BigInteger shipTemplateId) {
-        return shipDao.findStartShipEquip(shipTemplateId);
-    }
+        public List<StartTypeOfShipEquip> getTypeOfShipEquipment() {
+            List<StartTypeOfShipEquip> result = shipDao.findStartShipsEqupMastType();
+            result.sort(new CompBeans().new StartTypeCompare());
+            List<StartTypeOfShipEquip> cannon = shipDao.findStartShipsEqupCannonType();
+            cannon.sort(new CompBeans().new StartTypeCompare());
+            for (int i = 0; i < result.size(); i++) {
+                result.get(i).setTypeCannonName(cannon.get(i).getTypeCannonName());
+            }
+            return result;
+        }
+
 
     public int getSailorCost(){
         return shipDao.getSailorCost();
@@ -44,5 +60,28 @@ public class ShipService {
     public boolean updateShipSailorsNumber(BigInteger shipId, int newSailorsNumber){
         return shipDao.updateShipSailorsNumber(shipId, newSailorsNumber);
     }
+
+    public List<StartShipEquipment> getStartShipEquipment() {
+        List<StartShipEquipment> result = shipDao.findStartShipsEqup();
+        result.sort(new CompBeans().new StartShipEquipCompare());
+        return result;
+    }
+
+
+    public Ship createNewShip(BigInteger templateId, BigInteger playerId){
+        BigInteger shipId = shipDao.createNewShip(templateId, playerId);
+        StartShipEquipment startShipEquipment = shipDao.findStartShipEquip(templateId);
+        for(int i = 0; i < startShipEquipment.getStartNumCannon(); i++){
+            cannonDao.createCannon(startShipEquipment.getStartCannonType(), shipId);
+        }
+        for(int i = 0; i < startShipEquipment.getStartNumMast(); i++){
+            mastDao.createNewMast(startShipEquipment.getStartMastType(), shipId);
+        }
+        holdDao.createHold(shipId);
+        Ship ship = shipDao.findShip(shipId);
+        return ship;
+    }
+
+
 
 }

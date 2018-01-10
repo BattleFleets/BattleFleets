@@ -176,4 +176,14 @@ public class QueryExecutor {
                         JdbcConverter.toNumber(objectTypeId)} );
         return result;
     }
+
+    public <T> T getAttrsByRef(@NotNull BigInteger objectTypeId, @NotNull BigInteger objectTypeIdRef,
+                               @NotNull BigInteger attrId,
+                               @NotNull ResultSetExtractor<T> extractor) {
+        return  jdbcTemplate.query(Query.FIND_ATTRS_BY_ATTR_ID,
+                new Object[] {JdbcConverter.toNumber(objectTypeId),
+                        JdbcConverter.toNumber(objectTypeIdRef),
+                        JdbcConverter.toNumber(attrId)},
+                extractor);
+    }
 }

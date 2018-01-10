@@ -285,6 +285,7 @@ public class BattleServiceIntegrationTest {
     }
     
     @Test
+    @Ignore
     public void calculateDamageBuckshot() throws SQLException, BattleEndException {
         calculateDamageBuckshot(8);
     }

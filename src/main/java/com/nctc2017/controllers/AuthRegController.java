@@ -37,7 +37,7 @@ public class AuthRegController {
     public String registration(@RequestParam(value = "username_reg") String login,
                                @RequestParam(value = "email") String email,
                                @RequestParam(value = "password_reg") String password,
-                               @RequestParam(value = "passwordConfirm") String passwordConfirm,
+                               @RequestParam(value = "password_confirm") String passwordConfirm,
                                final HttpServletRequest request) {
         try {
             Player player = authRegService.registration(login, password, passwordConfirm, email);

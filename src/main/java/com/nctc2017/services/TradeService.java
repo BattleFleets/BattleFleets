@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Transactional
@@ -29,6 +31,8 @@ public class TradeService {
     private MoneyService moneyService;
     @Autowired
     private MarketManager marketManager;
+    @Autowired
+    private CargoMovementService cargoMovementService;
 
     @Autowired
     private PlayerDao playerDao;
@@ -44,6 +48,38 @@ public class TradeService {
     @Autowired
     private MastDao mastDao;
 
+    /**
+     * Gets goods which player can sell (goods that lays in his stock)
+     * @param playerId player whose goods we are getting
+     * @return
+     */
+    public List<PlayerGoodsForSale> getPlayersGoodsForSale(BigInteger playerId){
+        Map<BigInteger, PlayerGoodsForSale> goods = stockDao.getAllPlayersGoodsForSale(playerId);
+
+        BigInteger cityId = playerDao.getPlayerCity(playerId);
+        Market market = marketManager.findMarketByCityId(cityId);
+
+        for(Map.Entry<BigInteger, PlayerGoodsForSale> entry : goods.entrySet()){
+            BigInteger templateId = entry.getKey();
+            GoodsForSale templateObj = market.getGoods(templateId);
+            entry.getValue().appendDescription(templateObj.getGoodsDescription());
+            entry.getValue().setName(templateObj.getName());
+            entry.getValue().setSalePrice(templateObj.getSalePrice());
+        }
+
+        return new ArrayList<PlayerGoodsForSale>(goods.values());
+    }
+
+    /**
+     * Gets market goods for player by getting city in which player is now.
+     * @param playerId - player id, for whom is market getting
+     * @return list of goods in market for current player's city
+     */
+    public List<GoodsForSale> getMarketGoodsByPlayerId(BigInteger playerId){
+        BigInteger cityId = playerDao.getPlayerCity(playerId);
+        Map<BigInteger, GoodsForSale> market = marketManager.findMarketByCityId(cityId).getAllGoods();
+        return new ArrayList<GoodsForSale>(market.values());
+    }
 
     public String buy(BigInteger playerId, BigInteger goodsTemplateId, int price, int quantity) {
         int totalCost = price * quantity;

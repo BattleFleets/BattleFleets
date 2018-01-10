@@ -66,7 +66,7 @@
 </div>
 
 <form method="get">
-<div align="center" id="mainMenu">
+<div align="center">
 	<table class="panel">
 	<tr align="center">
 			<td>
@@ -96,10 +96,10 @@
 			</button>
 			</td>
 		</tr>
-		<c:if test="${(level==nextLevel) || (level-nextLevel>=5)}">
+		<c:if test="${level>=nextLevel}">
 		<tr align="center">
 			<td>
-				<button class="button" style="vertical-align:middle" type="submit" formaction="/update">
+				<button class="button" style="vertical-align:middle" name="diff" value="${level-nextLevel}" type="submit" formaction="/update">
 					<span>Update</span>
 				</button>
 			</td>

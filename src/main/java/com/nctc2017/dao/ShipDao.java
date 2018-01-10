@@ -3,6 +3,7 @@ package com.nctc2017.dao;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.bean.ShipTemplate;
 import com.nctc2017.bean.StartShipEquipment;
+import com.nctc2017.bean.StartTypeOfShipEquip;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -60,5 +61,11 @@ public interface ShipDao {
     int getShipDamage(BigInteger shipId);
 
     StartShipEquipment findStartShipEquip(BigInteger shipTempId);
+
+    List<StartShipEquipment> findStartShipsEqup();
+
+    List<StartTypeOfShipEquip> findStartShipsEqupCannonType();
+
+    List<StartTypeOfShipEquip> findStartShipsEqupMastType();
 
 }
