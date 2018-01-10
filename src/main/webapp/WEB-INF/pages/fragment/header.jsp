@@ -8,7 +8,9 @@
     <p>${login}</p>
     <p>Level ${level}</p>
     <p>Points ${points}</p>
-    <p id="money">Money ${money}</p>
+    <p>Money ${money}</p>
+    <p>MaxShips ${maxShips}</p>
+    <p>Income ${income}/day</p>
 </header>
 </body>
 </html>

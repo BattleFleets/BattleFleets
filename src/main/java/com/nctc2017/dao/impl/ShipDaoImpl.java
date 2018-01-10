@@ -321,23 +321,19 @@ public class ShipDaoImpl implements ShipDao {
             String shipName = papamMap.get(ShipTemplate.T_SHIPNAME);
             switch (shipName) {
                 case "T_Caravela":
-                    templateId = new BigInteger("1");
-                    ;
+                    templateId = DatabaseObject.T_CARAVELLA_OBJECT_ID;
                     break;
                 case "T_Caracca":
-                    templateId = new BigInteger("2");
+                    templateId = DatabaseObject.T_CARАССА_OBJECT_ID;
                     break;
                 case "T_Galion":
-                    templateId = new BigInteger("3");
-                    ;
+                    templateId = DatabaseObject.T_GALION_OBJECT_ID;
                     break;
                 case "T_Clipper":
-                    templateId = new BigInteger("4");
-                    ;
+                    templateId = DatabaseObject.T_CLIPPER_OBJECT_ID;
                     break;
                 case "T_Fregata":
-                    templateId = new BigInteger("5");
-                    ;
+                    templateId = DatabaseObject.T_FREGATA_OBJECT_ID;
                     break;
                 default:
                     log.error("Not exists tamplate");

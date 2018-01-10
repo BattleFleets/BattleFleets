@@ -61,10 +61,7 @@
 </div>
 
 <a href="/logout" class="logOutBottom">Logout</a>
-<div class="level">
-	<span>Level ${level}</span>
-</div>
-
+<%@include file="fragment/header.jsp"%>
 <form method="get">
 <div align="center">
 	<table class="panel">
@@ -113,4 +110,6 @@
 </div>
 
 </body>
+<%@include file="fragment/footer.jsp"%>
+
 </html>

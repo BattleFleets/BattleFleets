@@ -3,8 +3,8 @@
 <link href="static/css/text.css" rel="stylesheet" media="screen">
 <link href="static/css/general.css" rel="stylesheet" media="screen">
 <link href="static/css/update.css" rel="stylesheet" media="screen">
-
 <html>
+<%@include file="fragment/header.jsp"%>
 <div align="center">
     <h1 class="titleText">Select what you want to improve</h1>
 </div>
@@ -30,4 +30,5 @@
 </div>
 </form>
 </body>
+<%@include file="fragment/footer.jsp"%>
 </html>

@@ -3,6 +3,7 @@ package com.nctc2017.controllers;
 import java.math.BigInteger;
 
 import com.nctc2017.services.LevelUpService;
+import com.nctc2017.services.MoneyService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,9 @@ public class CityActionsController {
 
     @Autowired
     private LevelUpService lvlUpService;
+
+    @Autowired
+    private MoneyService moneyService;
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/travel", method = RequestMethod.GET)
@@ -71,10 +75,22 @@ public class CityActionsController {
             }
         }
         City currCity = travelService.getCurrentCity(playerId);
+        String login = lvlUpService.getLogin(playerId);
+        int money = moneyService.getPlayersMoney(playerId);
+        int level = lvlUpService.getCurrentLevel(playerId);
+        int points = lvlUpService.getCurrentPoints(playerId);
+        int nextLevel = lvlUpService.getNextLevel(playerId);
+        int maxShips = lvlUpService.getMaxShips(playerId);
+        int income = lvlUpService.getPassiveIncome(playerId);
         model.addObject("msg", "This is protected page - Only for Users!");
         model.setViewName("CityView");
-        model.addObject("level", lvlUpService.getCurrentLevel(playerId));
-        model.addObject("nextLevel", lvlUpService.getNextLevel(playerId));
+        model.addObject("login", login);
+        model.addObject("money", money);
+        model.addObject("points", points);
+        model.addObject("level", level);
+        model.addObject("nextLevel", nextLevel);
+        model.addObject("maxShips", maxShips);
+        model.addObject("income", income);
         model.addObject("city", currCity.getCityName());
         return model;
     }

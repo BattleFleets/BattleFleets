@@ -1,6 +1,7 @@
 package com.nctc2017.services;
 
 import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.exception.MoneyLackException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.log4j.Logger;
 
@@ -23,7 +24,7 @@ public class MoneyService {
              return addMoney(playerId, -moneyDeduct);
          }
          else{
-             RuntimeException ex = new IllegalArgumentException("not enough money");
+             MoneyLackException ex = new MoneyLackException("Not enough money");
              log.error("MoneyService Exception while deduct money.", ex);
              throw ex;
          }
