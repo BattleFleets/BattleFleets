@@ -68,6 +68,8 @@ public class BattleServiceIntegrationTest {
     private BattlePreparationService prepService;
     @Autowired
     private BattleService battleService;
+    @Autowired
+    private ShipService shipService;
     
     private BigInteger nikId;
     private BigInteger steveId;
@@ -86,11 +88,30 @@ public class BattleServiceIntegrationTest {
     private Player newCombatant(String login, String email) {
         playerDao.addNewPlayer(login, "123", email);
         Player player = playerDao.findPlayerByLogin(login);
+        
         return player;
     }
     
+    private  void getMoreCannons(BigInteger shipId) {
+        for (int i = 0; i < 11; i++) {
+            BigInteger id = 
+                    cannonDao.createCannon(DatabaseObject.MORTAR_TEMPLATE_ID, shipId);
+            shipDao.setCannonOnShip(id, shipId);
+        }
+        for (int i = 0; i < 12; i++) {
+            BigInteger id = 
+                    cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, shipId);
+            shipDao.setCannonOnShip(id, shipId);
+        }
+        for (int i = 0; i < 12; i++) {
+            BigInteger id = 
+                    cannonDao.createCannon(DatabaseObject.KULEVRIN_TEMPLATE_ID, shipId);
+            shipDao.setCannonOnShip(id, shipId);
+        }
+    }
+    
     @Before
-    public void setUpCombatant() throws PlayerNotFoundException, BattleStartException {
+    public void setUpCombatant() throws PlayerNotFoundException, BattleStartException, BattleEndException {
         travelService = (TravelService)this.context.getBean("travelServicePrototype");
         String loginNik = "Nik";
         String emailNik = "q@q.q";
@@ -102,22 +123,11 @@ public class BattleServiceIntegrationTest {
         nikId = nik.getPlayerId();
         steveId = steve.getPlayerId();
         
-        nikShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, nikId);
-        steveShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, steveId);
-        for (int i = 0; i < 12; i++) {
-            BigInteger id = 
-                    cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, nikShipId);
-            shipDao.setCannonOnShip(id, nikShipId);
-            id = cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, steveShipId);
-            shipDao.setCannonOnShip(id, steveShipId);
-        }
-        for (int i = 0; i < 12; i++) {
-            BigInteger id = 
-                    cannonDao.createCannon(DatabaseObject.KULEVRIN_TEMPLATE_ID, nikShipId);
-            shipDao.setCannonOnShip(id, nikShipId);
-            id = cannonDao.createCannon(DatabaseObject.KULEVRIN_TEMPLATE_ID, steveShipId);
-            shipDao.setCannonOnShip(id, steveShipId);
-        }
+        nikShipId = shipService.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, nikId);
+        steveShipId = shipService.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, steveId);
+        getMoreCannons(nikShipId);
+        getMoreCannons(steveShipId);
+        
         cannonballId = 
                 ammoDao.createAmmo(DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID, 25);
         buckshotId = 
@@ -125,7 +135,7 @@ public class BattleServiceIntegrationTest {
         chainId = 
                 ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 33);
         
-        nikHoldId = holdDao.createHold(nikShipId);
+        nikHoldId = holdDao.findHold(nikShipId);
         holdDao.addCargo(buckshotId, nikHoldId);
         holdDao.addCargo(cannonballId, nikHoldId);
         holdDao.addCargo(chainId, nikHoldId);
@@ -137,7 +147,7 @@ public class BattleServiceIntegrationTest {
         BigInteger chainId = 
                 ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 33);
         
-        BigInteger steveHoldId = holdDao.createHold(steveShipId);
+        BigInteger steveHoldId = holdDao.findHold(steveShipId);
         holdDao.addCargo(buckshotId, steveHoldId);
         holdDao.addCargo(cannonballId, steveHoldId);
         holdDao.addCargo(chainId, steveHoldId);
@@ -192,12 +202,12 @@ public class BattleServiceIntegrationTest {
         assertTrue(ret);
     }
     
-    public void calculateDamage(int[][] cannonAmmo) throws SQLException {
+    public void calculateDamage(int[][] cannonAmmo) throws SQLException, BattleEndException {
         // When
-        battleService.calculateDamage(cannonAmmo, nikId, null);
-        battleService.calculateDamage(new int[][]{{0,0,0},
-                                                  {0,0,0},
-                                                  {0,0,0}}, steveId, null);
+            battleService.calculateDamage(cannonAmmo, nikId, null);
+            battleService.calculateDamage(new int[][]{{0,0,0},
+                                                      {0,0,0},
+                                                      {0,0,0}}, steveId, null);
         // Then
     }
     
@@ -237,17 +247,16 @@ public class BattleServiceIntegrationTest {
     }
     
     @Test
-    @Ignore
-    public void calculateDamageCannonballs() throws SQLException {
+    public void calculateDamageCannonballs() throws SQLException, BattleEndException {
         calculateDamageCannonballs(8);
     }
     
     @Test(expected = SQLException.class)
-    public void cannonballsGraterThenHave() throws SQLException {
+    public void cannonballsGraterThenHave() throws SQLException, BattleEndException {
         calculateDamageCannonballs(9);
     }
     
-    private void calculateDamageCannonballs(int defCount) throws SQLException {
+    private void calculateDamageCannonballs(int defCount) throws SQLException, BattleEndException {
         // Given
         int[][] cannonAmmo = new int [3][];
         int[] mortars = new int[] {defCount, 0, 0};
@@ -285,17 +294,16 @@ public class BattleServiceIntegrationTest {
     }
     
     @Test
-    @Ignore
-    public void calculateDamageBuckshot() throws SQLException {
+    public void calculateDamageBuckshot() throws SQLException, BattleEndException {
         calculateDamageBuckshot(8);
     }
     
     @Test(expected = SQLException.class)
-    public void buckshotGraterThenHave() throws SQLException {
+    public void buckshotGraterThenHave() throws SQLException, BattleEndException {
         calculateDamageBuckshot(9);
     }
     
-    private void calculateDamageBuckshot(int defCount) throws SQLException {
+    private void calculateDamageBuckshot(int defCount) throws SQLException, BattleEndException {
         // Given
         int[][] cannonAmmo = new int [3][];
         int[] mortars = new int[] {0, defCount, 0};
@@ -333,17 +341,16 @@ public class BattleServiceIntegrationTest {
     }
  
     @Test
-    @Ignore
-    public void calculateDamageChains() throws SQLException {
+    public void calculateDamageChains() throws SQLException, BattleEndException {
         calculateDamageChains(11);
     }
     
     @Test(expected = SQLException.class)
-    public void chainsGraterThenHave() throws SQLException {
+    public void chainsGraterThenHave() throws SQLException, BattleEndException {
         calculateDamageChains(12);
     }
     
-    private void calculateDamageChains(int defCount) throws SQLException {
+    private void calculateDamageChains(int defCount) throws SQLException, BattleEndException {
         // Given
         int[][] cannonAmmo = new int [3][];
         int[] mortars = new int[] {0, 0, defCount};

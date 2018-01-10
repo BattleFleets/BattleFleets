@@ -64,7 +64,8 @@
         };
         
         function battleStartTask() {
-        	console.log("is battle start timer start");
+        	console.log(" isBattleStart task run");
+        	clearInterval(battleStartId);
         	battleStartId = setInterval(function() {
 	        	isBattleStart();
 	        }, 1000);
@@ -114,7 +115,7 @@
             	      });
             	} else if (xhr.status == 405) {
             		console.log("reason: " + xhr.status + "Lost the enemy out of sight.");
-            		$( "#error-message" ).dialog({
+            		$( "#error_info" ).dialog({
             	    	title: "Lost the enemy out of sight.",
             	    	modal: true,
             	        buttons: {
@@ -128,9 +129,12 @@
             	
             });
         };
+        
         function decisionAcceptTask() {
+    		clearInterval(decisionId);
         	decisionId = setInterval(function() {decisionAccept();}, 1000);
         };
+        
         function lookout() {
         	var n = number++;
     		console.log("request /is_enemy_on_horizon *" + n);
@@ -162,6 +166,7 @@
                             	}).fail(function(xhr, status, error) {
                                     if (xhr.status == 405) {
                                     	$( "#error_info" ).html(error + " " + xhr.responseText);
+                                        window.location.href = "/city";
                                 	} else {
                                         window.location.href = "/error";
                             	    }
@@ -172,6 +177,7 @@
                             id: "Cancel",
                             text: "Shut up! I hope they are blind.",
                             click: function () {
+                        		console.log("REJECT *" + n);
                             	$.post("/attack_decision", {decision: "false"});
                             }
                         }
@@ -187,6 +193,7 @@
         }
         
         function lookoutTask() {
+    		clearInterval(lookoutId);
         	lookoutId = setInterval(function () {lookout();}, 1000);
         };
         

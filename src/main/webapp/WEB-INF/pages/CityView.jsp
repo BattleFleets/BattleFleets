@@ -55,10 +55,10 @@
 </head>
 
     
+<body>
 <div align="center">
 	<h1 class="titleText">${city}</h1>
 </div>
-<body>
 
 <a href="/logout" class="logOutBottom">Logout</a>
 <div class="level">

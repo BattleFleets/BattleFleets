@@ -36,9 +36,11 @@ public class BattlePreparationService {
     private MastDao mastDao;
     @Autowired
     private CannonDao cannonDao;
+    @Autowired
+    private BattleEndingService battleEnd;
     
     private Random randomShip = new Random(System.currentTimeMillis());
-    private Map<BigInteger, Thread> playerChoiceShipTimer = new HashMap<>();
+    private Map<BigInteger, ThreadStorage> playerChoiceShipTimer = new HashMap<>();
     
     public boolean escape(BigInteger playerId) {
         BigInteger enemyId = battles.getEnemyId(playerId);
@@ -71,19 +73,32 @@ public class BattlePreparationService {
         return shipDao.findAllShips(listShipsId);
     }
 
-    public List<Ship> getEnemyShips(BigInteger playerId) {
+    public List<Ship> getEnemyShips(BigInteger playerId) throws BattleEndException {
         BigInteger enemyId = battles.getEnemyId(playerId);
+        if (enemyId == null) {
+            stopAutoChooseTimer(playerId);
+            BattleEndException ex = new BattleEndException("Enemy of Player_" + playerId + " run away.");
+            LOG.warn("Battle not found! ", ex);
+            throw ex;
+        }
         return getShips(enemyId);
     }
-
-    public void chooseShip(BigInteger playerId, BigInteger shipId) {
-        Thread timer = playerChoiceShipTimer.get(playerId);
-        if (timer != null && timer.isAlive()) {
-            timer.interrupt();
+    
+    public void stopAutoChooseTimer(BigInteger playerId) {
+        ThreadStorage timer = playerChoiceShipTimer.get(playerId);
+        if (timer != null && timer.decisionThread.isAlive()) {
+            timer.decisionThread.interrupt();
             LOG.debug("Player_" + playerId + " auto ship timer stoped. ");
         }
+        playerChoiceShipTimer.remove(playerId);
+    }
+
+    public void chooseShip(BigInteger playerId, BigInteger shipId) throws BattleEndException {
+        stopAutoChooseTimer(playerId);
+        
         Battle battle = battles.getBattle(playerId);
         battle.setShipId(playerId, shipId);
+        
         int maxDist = shipDao.getMaxShotDistance(shipId);
         if (battle.getDistance() < maxDist) {
             battle.setDistance(maxDist);
@@ -92,7 +107,7 @@ public class BattlePreparationService {
         LOG.debug("Player_" + playerId + " chose ship " + shipId);
     }
 
-    public void setReady(BigInteger playerId) {
+    public void setReady(BigInteger playerId) throws BattleEndException {
         Battle battle = battles.getBattle(playerId);
         battle.setReady(playerId, true);
         LOG.debug("Player_" + playerId + " Ready to fight!");
@@ -100,27 +115,37 @@ public class BattlePreparationService {
     
     public boolean waitForEnemyReady(BigInteger playerId) throws BattleEndException {
         Battle battle = battles.getBattle(playerId);
-        if (battle == null) {
-            BattleEndException ex = new BattleEndException("Your enemy run away.");
-                LOG.warn("Battle not found! ", ex);
-            throw ex;
-        }
         boolean ready = battle.isEnemyReady(playerId);
         LOG.debug("Player_" + playerId + " ask for enemy ready. Ready: " + ready);
         return ready;
     }
 
     public int autoChoiceShipTimer(BigInteger playerId) {
-        Runnable decisionTask = new AutoDecisionTask(new ShipVisitor(playerId), DELAY);
+        ThreadStorage existing = playerChoiceShipTimer.get(playerId);
+        if (existing != null) {
+            return (int)existing.decisionTask.getTimeLeft()/1000;
+        }
+        AutoDecisionTask decisionTask = new AutoDecisionTask(new ShipVisitor(playerId), DELAY);
         Thread decisionThread = new Thread(decisionTask);
+        ThreadStorage storage = new ThreadStorage(decisionTask, decisionThread);
         decisionThread.start();
-        playerChoiceShipTimer.put(playerId, decisionThread);
+        playerChoiceShipTimer.put(playerId, storage);
         LOG.debug("Player_" + playerId + " auto choice ship timer started");
         return DELAY/1000;
     }
     
-    public List<BigInteger> getShipsLeftBattle(BigInteger playerId) {
+    public List<BigInteger> getShipsLeftBattle(BigInteger playerId) throws BattleEndException {
         return battles.getBattle(playerId).getShipsLeftBattle(playerId);
+    }
+    
+    private class ThreadStorage {
+        public final AutoDecisionTask decisionTask;
+        public final Thread decisionThread;
+        
+        public ThreadStorage(AutoDecisionTask decisionTask, Thread decisionThread) {
+            this.decisionTask = decisionTask;
+            this.decisionThread = decisionThread;
+        }
     }
     
     private class ShipVisitor implements Visitor{
@@ -133,14 +158,26 @@ public class BattlePreparationService {
 
         @Override
         public void visit() {
-            LOG.debug("Ship choosing TIMEOUT for Player_" + playerId);
-            List<BigInteger> ships = playerDao.findAllShip(playerId);
-            ships.removeAll(getShipsLeftBattle(playerId));
-            LOG.debug("Player_" + playerId + "has ships: " + ships.size());
-            BigInteger shipId = ships.get(randomShip.nextInt(ships.size()));
-            LOG.debug("Player_" + playerId + " choose ship with id=" + shipId);
-            chooseShip(playerId, shipId);
-            setReady(playerId);
+            try {
+                LOG.debug("Ship choosing TIMEOUT for Player_" + playerId);
+                List<BigInteger> ships = playerDao.findAllShip(playerId);
+                
+                ships.removeAll(getShipsLeftBattle(playerId));
+    
+                LOG.debug("Player_" + playerId + "has ships: " + ships.size());
+                if (ships.size() == 0) {
+                    LOG.debug("Player_" + playerId + " has no ships");
+                    battleEnd.leaveBattleField(playerId);
+                    return;
+                } 
+                
+                BigInteger shipId = ships.get(randomShip.nextInt(ships.size()));
+                LOG.debug("Player_" + playerId + " choose ship with id=" + shipId);
+                chooseShip(playerId, shipId);
+                setReady(playerId);
+            } catch (BattleEndException e) {
+                LOG.debug("Player_" + playerId + " enemy already leave", e);
+            }
         }
         
     }

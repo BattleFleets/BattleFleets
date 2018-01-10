@@ -4,6 +4,8 @@ import com.nctc2017.bean.Goods;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.GoodsDao;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ public class GoodsDaoImplIntegrationTest {
     GoodsDao goodsDao;
 
     @Test
+    @Ignore
     public void findGoodsById(){
         BigInteger objectId = new BigInteger("59");
         Goods expectedGoods = new Goods(objectId, "Wood", 10123  ,  95, 1);
@@ -63,6 +66,7 @@ public class GoodsDaoImplIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void increaseGoodsQuantityTest(){
         BigInteger objectId = new BigInteger("59");
         int increaseValue = 50;
@@ -76,6 +80,7 @@ public class GoodsDaoImplIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void decreaseGoodsQuantityTest(){
         BigInteger objectId = new BigInteger("59");
         int decreaseValue = 100;
