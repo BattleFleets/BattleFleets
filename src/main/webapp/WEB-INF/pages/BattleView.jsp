@@ -4,21 +4,17 @@
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/battle.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
+    <script src="static/js/hover_button.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript">
-    function hoverButton(b_id, rej, hov) {
-        $("#" + b_id).hover(function() {
-            $( this ).find("." + rej).addClass( hov );
-        }, function() {
-            $( this ).find("." + rej).removeClass( hov );
-        });
-    }
     
-    function hoverConveyor(act_name) {
-        var icon = "icon_";
-        var select = "_select";
-        hoverButton(act_name, icon + act_name, icon + act_name + select);
+    function hoverConveyor() {
+        hoverInit("fire");
+        hoverInit("boarding");
+        hoverInit("leave");
+        hoverInit("payoff");
+        hoverInit("surrender");
     }
     
     function tabResultFilling (ships) {
@@ -130,19 +126,6 @@
     	$(".ammo_cannon").slideDown("slow");
     }
     
-    function hoverInit() {
-        var act = "fire";
-        hoverConveyor(act);
-        act = "boarding";
-        hoverConveyor(act);
-        act = "leave";
-        hoverConveyor(act);
-        act = "payoff";
-        hoverConveyor(act);
-        act = "surrender";
-        hoverConveyor(act);
-    }
-    
     function animateWait() {
 		var wait = $(".wait")
 		wait.removeAttr("hidden");
@@ -163,15 +146,35 @@
 		$(".wait").attr("hidden", "true");
     }
     
+    function dialogBattleEnd(msg) {
+    	var dialog = $( "#dialog" );
+		dialog.html(msg);
+		dialog.dialog({
+	    	title: "Battle end",
+	    	modal: true,
+	        buttons: {
+	            Ok: function() {
+	                $( this ).dialog( "close" );
+	            	window.location.href = "/battle_preparing";
+	            }
+	        }
+	      });
+    }
+    
     function infoTabUpdate(forcibly_) {
     	$.get("/fire_results", {forcibly : forcibly_})
         .done(function(response, status, xhr) {
-        	console.log("start get result - ship info " + response);
+        	console.log("start get result - ship info " + response + " status " + xhr.status);
         	var json_obj = JSON.parse(response);
         	tabResultFilling(json_obj);
         })
         .fail(function(xhr, status, error) {
-        	console.log("getting result ship info FAIL" + response);
+        	console.log("getting result ship info FAIL" + xhr.status + " " + status);
+        	if (xhr.status == 417) {
+        		dialogBattleEnd(xhr.responseText);
+        	} else if (xhr.status == 405){
+            	window.location.href = "/battle_preparing";
+        	}
         }).always(function(){
         	waitReset();
         });
@@ -187,12 +190,61 @@
     function isBattleEnd() {
     	$.get("/is_battle_end")
     	.done(function(response, status, xhr) {
-    		if (response == "true") {
-            	window.location.href = "/battle_preparing";
+    		var json_obj = JSON.parse(response);
+    		if (json_obj.end == "true") {
+        		dialogBattleEnd(json_obj.wonText);
     		}
     	})
         .fail(function(xhr, status, error) {
         	console.log("is_battle_end checking FAIL" + error + " " + xhr.status);
+        	if (xhr.status == 405) {
+            	window.location.href = "/battle_preparing";
+        	}
+            //window.location.href = "/error";
+        });
+    }
+    
+    function fire() {
+    	$( "#warning_info" ).attr("hidden", "true");
+    	console.log("fire start");
+    	waitReset();
+    	waitId = animateTask(animateWait);
+    	var spinner = $( ".spinner" );
+    	var dimensional = $("#ammo_tab tr").length - 2;
+        var ammoCannon = new Array(spinner.length);
+        for(i=0; i < spinner.length; i++) {
+        	ammoCannon[i] = parseInt(spinner[i].value);
+        	if (isNaN(ammoCannon[i]) || ammoCannon[i] < 0) {
+        		var warn = spinner[i].value + " is not allowed value";
+        		warningMsg(warn);
+            	waitReset();
+            	return;
+        	}
+            console.log(ammoCannon[i]);
+        }
+        if (! isCorrectAmmoCannon(ammoCannon, dimensional)) {
+        	waitReset();
+        	return;
+        }
+        var convergence = checkBox.prop("checked");
+    	console.log("Convergence: " + convergence);
+    	console.log("Data ammoCannon: " + ammoCannon);
+    	$.post("/fire", {"ammoCannon" : ammoCannon, 
+    		             "dim" : dimensional,
+    		             "decrease" : convergence
+    	})
+    	.done(function(response, status, xhr) {
+    		infoTabUpdate();
+    		isBattleEnd();
+    	})
+        .fail(function(xhr, status, error) {
+        	console.log("fire FAIL" + error + " " + xhr.status);
+        	if (xhr.status == 405) {
+        		//not true decision because battle ended normaly and won message expect.
+        		//isBattleEnd(); 
+        	} else {
+                //window.location.href = "/error";
+        	}
         	waitReset();
         });
     }
@@ -211,43 +263,9 @@
             icon: false
         });
         
-        hoverInit();
+        hoverConveyor();
         $("#fire").click(function() {
-        	$( "#warning_info" ).attr("hidden", "true");
-        	console.log("fire start");
-        	waitId = animateTask(animateWait);
-        	var spinner = $( ".spinner" );
-        	var dimensional = $("#ammo_tab tr").length - 2;
-            var ammoCannon = new Array(spinner.length);
-            for(i=0; i < spinner.length; i++) {
-            	ammoCannon[i] = parseInt(spinner[i].value);
-            	if (isNaN(ammoCannon[i]) || ammoCannon[i] < 0) {
-            		var warn = spinner[i].value + " is not allowed value";
-            		warningMsg(warn);
-                	waitReset();
-                	return;
-            	}
-                console.log(ammoCannon[i]);
-            }
-            if (! isCorrectAmmoCannon(ammoCannon, dimensional)) {
-            	waitReset();
-            	return;
-            }
-            var convergence = checkBox.prop("checked");
-        	console.log("Convergence: " + convergence);
-        	console.log("Data ammoCannon: " + ammoCannon);
-        	$.post("/fire", {"ammoCannon" : ammoCannon, 
-        		             "dim" : dimensional,
-        		             "decrease" : convergence
-        	})
-        	.done(function(response, status, xhr) {
-        		infoTabUpdate();
-        		isBattleEnd();
-        	})
-            .fail(function(xhr, status, error) {
-            	console.log("fire FAIL" + error + " " + xhr.status);
-            	waitReset();
-            });
+        	fire();
         });
     	waitId = animateTask(animateWait);
 		infoTabUpdate(true);
@@ -366,5 +384,8 @@
     <img alt="5" src="static/images/ships/enemy_ship2.png" height="100%">
 </div>
 <div class="wait" hidden="true">Wait...</div>
+
+<div id="dialog"></div>
+
 </body>
 </html>

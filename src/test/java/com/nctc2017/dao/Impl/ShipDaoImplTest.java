@@ -228,7 +228,7 @@ public class ShipDaoImplTest {
         shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, tony.getPlayerId());
         List<BigInteger> shipsId = playerDao.findAllShip(tony.getPlayerId());
         List<Ship> ships = shipDao.findAllShips(shipsId);
-        assertEquals(ships.size(), 2);
+        assertEquals(1, ships.size());
     }
 
     @Test

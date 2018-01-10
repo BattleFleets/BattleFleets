@@ -125,6 +125,7 @@ public class TravelController {
         
         return model;
     }
+    
     @Secured("ROLE_USER")
     @RequestMapping(value = "/is_decision_accept", method = RequestMethod.GET, produces="text/plain")
     @ResponseBody
@@ -149,9 +150,14 @@ public class TravelController {
         ModelAndView model = new ModelAndView();
         BigInteger playerId = userDetails.getPlayerId();
         int relocateTime = travelService.getRelocateTime(playerId);
-        City city = travelService.getRelocationCity(playerId);
+        City city;
+        try {
+            city = travelService.getRelocationCity(playerId);
+            model.addObject("city", city.getCityName());
+        } catch (PlayerNotFoundException e) {
+            model.addObject("city", " ");
+        }
         model.addObject("time", relocateTime);
-        model.addObject("city", city.getCityName());
         model.setStatus(HttpStatus.OK);
         model.setViewName("TravelView");
         return model;
