@@ -7,22 +7,23 @@ import com.nctc2017.bean.StartTypeOfShipEquip;
 import com.nctc2017.dao.*;
 import com.nctc2017.services.utils.CompBeans;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.List;
 
-
+@Service
 public class ShipService {
     @Autowired
-    ShipDao shipDao;
+    private ShipDao shipDao;
     @Autowired
-    PlayerDao playerDao;
+    private PlayerDao playerDao;
     @Autowired
-    CannonDao cannonDao;
+    private CannonDao cannonDao;
     @Autowired
-    MastDao mastDao;
+    private MastDao mastDao;
     @Autowired
-    HoldDao holdDao;
+    private HoldDao holdDao;
 
     public List<ShipTemplate> getAllShipTemplates() {
         List<ShipTemplate> result = shipDao.findAllShipTemplates();
@@ -68,7 +69,7 @@ public class ShipService {
     }
 
 
-    public Ship createNewShip(BigInteger templateId, BigInteger playerId){
+    public BigInteger createNewShip(BigInteger templateId, BigInteger playerId){
         BigInteger shipId = shipDao.createNewShip(templateId, playerId);
         StartShipEquipment startShipEquipment = shipDao.findStartShipEquip(templateId);
         for(int i = 0; i < startShipEquipment.getStartNumCannon(); i++){
@@ -78,8 +79,7 @@ public class ShipService {
             mastDao.createNewMast(startShipEquipment.getStartMastType(), shipId);
         }
         holdDao.createHold(shipId);
-        Ship ship = shipDao.findShip(shipId);
-        return ship;
+        return shipId;
     }
 
 

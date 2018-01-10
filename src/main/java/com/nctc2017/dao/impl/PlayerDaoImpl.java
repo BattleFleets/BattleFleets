@@ -50,14 +50,11 @@ public class PlayerDaoImpl implements PlayerDao{
     private QueryExecutor queryExecutor;
     @Autowired
     private ShipDao shipDao;
-    @Autowired
-    ShipService shipService;
 
     @Override
     public String addNewPlayer(@NotNull String login,@NotNull String password,@NotNull String email) {
         SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(createPlayerFunctionName);
         String result = call.executeFunction(String.class,login,password,email);
-        shipService.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, findPlayerByLogin(login).getPlayerId());
         return result;
     }
 

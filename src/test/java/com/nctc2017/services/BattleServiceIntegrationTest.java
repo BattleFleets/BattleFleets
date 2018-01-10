@@ -68,6 +68,8 @@ public class BattleServiceIntegrationTest {
     private BattlePreparationService prepService;
     @Autowired
     private BattleService battleService;
+    @Autowired
+    private ShipService shipService;
     
     private BigInteger nikId;
     private BigInteger steveId;
@@ -90,6 +92,24 @@ public class BattleServiceIntegrationTest {
         return player;
     }
     
+    private  void getMoreCannons(BigInteger shipId) {
+        for (int i = 0; i < 11; i++) {
+            BigInteger id = 
+                    cannonDao.createCannon(DatabaseObject.MORTAR_TEMPLATE_ID, shipId);
+            shipDao.setCannonOnShip(id, shipId);
+        }
+        for (int i = 0; i < 12; i++) {
+            BigInteger id = 
+                    cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, shipId);
+            shipDao.setCannonOnShip(id, shipId);
+        }
+        for (int i = 0; i < 12; i++) {
+            BigInteger id = 
+                    cannonDao.createCannon(DatabaseObject.KULEVRIN_TEMPLATE_ID, shipId);
+            shipDao.setCannonOnShip(id, shipId);
+        }
+    }
+    
     @Before
     public void setUpCombatant() throws PlayerNotFoundException, BattleStartException, BattleEndException {
         travelService = (TravelService)this.context.getBean("travelServicePrototype");
@@ -103,22 +123,11 @@ public class BattleServiceIntegrationTest {
         nikId = nik.getPlayerId();
         steveId = steve.getPlayerId();
         
-        nikShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, nikId);
-        steveShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, steveId);
-        for (int i = 0; i < 12; i++) {
-            BigInteger id = 
-                    cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, nikShipId);
-            shipDao.setCannonOnShip(id, nikShipId);
-            id = cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, steveShipId);
-            shipDao.setCannonOnShip(id, steveShipId);
-        }
-        for (int i = 0; i < 12; i++) {
-            BigInteger id = 
-                    cannonDao.createCannon(DatabaseObject.KULEVRIN_TEMPLATE_ID, nikShipId);
-            shipDao.setCannonOnShip(id, nikShipId);
-            id = cannonDao.createCannon(DatabaseObject.KULEVRIN_TEMPLATE_ID, steveShipId);
-            shipDao.setCannonOnShip(id, steveShipId);
-        }
+        nikShipId = shipService.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, nikId);
+        steveShipId = shipService.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, steveId);
+        getMoreCannons(nikShipId);
+        getMoreCannons(steveShipId);
+        
         cannonballId = 
                 ammoDao.createAmmo(DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID, 25);
         buckshotId = 
@@ -126,7 +135,7 @@ public class BattleServiceIntegrationTest {
         chainId = 
                 ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 33);
         
-        nikHoldId = holdDao.createHold(nikShipId);
+        nikHoldId = holdDao.findHold(nikShipId);
         holdDao.addCargo(buckshotId, nikHoldId);
         holdDao.addCargo(cannonballId, nikHoldId);
         holdDao.addCargo(chainId, nikHoldId);
@@ -138,7 +147,7 @@ public class BattleServiceIntegrationTest {
         BigInteger chainId = 
                 ammoDao.createAmmo(DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID, 33);
         
-        BigInteger steveHoldId = holdDao.createHold(steveShipId);
+        BigInteger steveHoldId = holdDao.findHold(steveShipId);
         holdDao.addCargo(buckshotId, steveHoldId);
         holdDao.addCargo(cannonballId, steveHoldId);
         holdDao.addCargo(chainId, steveHoldId);
@@ -285,7 +294,6 @@ public class BattleServiceIntegrationTest {
     }
     
     @Test
-    @Ignore
     public void calculateDamageBuckshot() throws SQLException, BattleEndException {
         calculateDamageBuckshot(8);
     }

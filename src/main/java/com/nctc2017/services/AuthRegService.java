@@ -42,6 +42,9 @@ public class AuthRegService implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private ShipService shipService;
 
     public Player registration(String login, String password, String passwordConfirm, String email) throws PlayerValidationException {
         if (!isLoginValid(login)) {
@@ -61,8 +64,11 @@ public class AuthRegService implements UserDetailsService {
         if (playerRegistrationResult != null) {
             throw new PlayerValidationException(playerRegistrationResult);
         }
-        stockDao.createStock(playerDao.findPlayerByLogin(login).getPlayerId());
-        return playerDao.findPlayerByLogin(login);
+        
+        Player player = playerDao.findPlayerByLogin(login);
+        stockDao.createStock(player.getPlayerId());
+        shipService.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());
+        return player;
     }
 
     public void confirmRegistration(BigInteger playerId) {
