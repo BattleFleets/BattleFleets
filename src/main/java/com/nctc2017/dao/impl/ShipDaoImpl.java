@@ -44,6 +44,7 @@ public class ShipDaoImpl implements ShipDao {
     @Autowired
     HoldDao holdDao;
 
+    private static final String queryForObjectIdByNMame = "SELECT OBJECT_ID FROM OBJECTS WHERE NAME=? AND OBJECT_TYPE_ID=?";
 
     @Override
     public Ship findShip(BigInteger shipId) {
@@ -321,19 +322,19 @@ public class ShipDaoImpl implements ShipDao {
             String shipName = papamMap.get(ShipTemplate.T_SHIPNAME);
             switch (shipName) {
                 case "T_Caravela":
-                    templateId = DatabaseObject.T_CARAVELLA_OBJECT_ID;
+                    templateId = jdbcTemplate.queryForObject(queryForObjectIdByNMame, BigInteger.class, shipName, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID.longValueExact());
                     break;
                 case "T_Caracca":
-                    templateId = DatabaseObject.T_CARАССА_OBJECT_ID;
+                    templateId = jdbcTemplate.queryForObject(queryForObjectIdByNMame, BigInteger.class, shipName, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID.longValueExact());
                     break;
                 case "T_Galion":
-                    templateId = DatabaseObject.T_GALION_OBJECT_ID;
+                    templateId = jdbcTemplate.queryForObject(queryForObjectIdByNMame, BigInteger.class, shipName, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID.longValueExact());
                     break;
                 case "T_Clipper":
-                    templateId = DatabaseObject.T_CLIPPER_OBJECT_ID;
+                    templateId = jdbcTemplate.queryForObject(queryForObjectIdByNMame, BigInteger.class, shipName, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID.longValueExact());
                     break;
                 case "T_Fregata":
-                    templateId = DatabaseObject.T_FREGATA_OBJECT_ID;
+                    templateId = jdbcTemplate.queryForObject(queryForObjectIdByNMame, BigInteger.class, shipName, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID.longValueExact());
                     break;
                 default:
                     log.error("Not exists tamplate");
