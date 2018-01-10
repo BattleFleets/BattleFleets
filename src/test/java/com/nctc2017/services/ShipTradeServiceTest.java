@@ -144,4 +144,13 @@ public class ShipTradeServiceTest {
         assertTrue(shipTradeService.sellShip(steve.getPlayerId(), blackPerl.getShipId()));
         assertEquals(money + t_BlackPerl.getCost(), steve.getMoney());
     }
+
+    @Test
+    public void getShipCosts() throws Exception {
+        shipTradeService.getShipsCost(null);
+        playerDao.addShip(steve.getPlayerId(), blackPerl.getShipId());
+
+        assertTrue(shipTradeService.sellShip(steve.getPlayerId(), blackPerl.getShipId()));
+        assertEquals(money + t_BlackPerl.getCost(), steve.getMoney());
+    }
 }

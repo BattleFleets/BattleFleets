@@ -1,6 +1,7 @@
 body{
     background-attachment: fixed;
 }
+
 .messageText {
     text-align: center;
     color: white;
@@ -41,7 +42,7 @@ input[type=submit] {
 }
 
 .button {
-    background-image:url("../images/general/button_background.jpg"); 
+    background-image:url("../images/general/button_background.jpg");
     display: inline-block;
     border-radius: 16px;
     background-color: #f4511e;
@@ -59,7 +60,7 @@ input[type=submit] {
 
 
 .button span {
-  font-size: 25px;
+  font-size: 70%;
   cursor: pointer;
   display: inline-block;
   position: relative;

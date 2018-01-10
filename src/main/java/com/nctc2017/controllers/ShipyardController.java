@@ -43,7 +43,7 @@ public class ShipyardController {
     @ResponseBody
     public String buyShip(@RequestParam(value = "shipTemplateId") BigInteger shipTemplateId) {
         //Update TODO
-        BigInteger debugPlayerId = new BigInteger("42");
+        BigInteger debugPlayerId = new BigInteger("45");
         return shipTradeService.buyShip(debugPlayerId,shipTemplateId);
     }
 
@@ -72,19 +72,23 @@ public class ShipyardController {
     @ResponseBody
     public ModelAndView getAllPlayerShips() {
         //TODO debugID
-        BigInteger playerId = new BigInteger("42");
+        BigInteger playerId = new BigInteger("45");
         List<Ship> playerShips = shipService.getAllPlayerShips(playerId);
-        //List<Integer> shipCosts = shipTradeService.getShipCosts(playerShips);
+        List<Integer> shipCosts = shipTradeService.getShipsCost(playerShips);
 
         ModelAndView model = new ModelAndView();
-        //model.addObject("shipCosts",shipCosts);
+        model.addObject("shipCosts",shipCosts);
         model.addObject("playerShips",playerShips);
         model.setViewName("fragment/playerships");
         return model;
     }
 
-    public void sellShip(int shipId, int playerId) {
-        // TODO implement here
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/sell", method = RequestMethod.GET)
+    @ResponseBody
+    public boolean sellShip(@RequestParam(value = "shipId") BigInteger shipId) {
+        BigInteger playerId = new BigInteger("45");
+        return shipTradeService.sellShip(playerId, shipId);
     }
 
     public List<Thing> getCargoFromHold(int playerId, int shipId) {

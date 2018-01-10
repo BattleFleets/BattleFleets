@@ -42,7 +42,9 @@ public class ShipTradeService {
         }
     }
 
-    public List<Integer> getShipCosts(List<Ship> ships) {
+    public List<Integer> getShipsCost(List<Ship> ships) {
+        if (ships == null)
+            return null;
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < ships.size(); i++)
             result.add(costOfShip(ships.get(i)));
@@ -50,15 +52,20 @@ public class ShipTradeService {
     }
 
     public int costOfShip(Ship shipForSelling) {
-        int costOfShip = shipForSelling.getCost() - shipRepairService.countRepairCost(shipForSelling.getShipId());
+        int halfOfCost = shipForSelling.getCost()/2;
+        if (shipForSelling == null)
+            return 0;
+        int costOfShip = halfOfCost - shipRepairService.countRepairCost(shipForSelling.getShipId());
         return costOfShip;
     }
 
     public boolean sellShip(BigInteger playerId, BigInteger shipId) {
         try {
             Ship ship = shipDao.findShip(shipId);
-            int costOfShip = ship.getCost()-shipRepairService.countRepairCost(shipId);
+            int halfOfCost = ship.getCost()/2;
+            int costOfShip = halfOfCost-shipRepairService.countRepairCost(shipId);
             moneyService.addMoney(playerId, costOfShip);
+            shipDao.deleteShip(shipId);
             return true;
         } catch (RuntimeException e) {
             RuntimeException ex = new IllegalArgumentException("Can not sell ship with that id: " + shipId);
