@@ -1,18 +1,33 @@
 package com.nctc2017.bean;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import java.math.BigInteger;
 
 public class GoodsForSale {
 
+    @JsonView(View.No.class)
     protected final BigInteger templateId;
+
     protected final String name;
+
+    @JsonView(View.No.class)
     protected final String goodsDescription;
+
     protected final GoodsType type;
+
+    @JsonView(View.No.class)
     protected int goodsRarity;
+
+    @JsonView(View.Buy.class)
     protected volatile int buyingPrice;
+
     protected volatile int quantity;
+
+    @JsonView(View.Sell.class)
     protected volatile int salePrice;
 
+    @JsonView(View.No.class)
     public enum GoodsType{
         GOODS, AMMO, MAST, CANNON
     }
