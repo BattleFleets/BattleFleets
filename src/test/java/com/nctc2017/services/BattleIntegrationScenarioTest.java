@@ -8,12 +8,14 @@ import java.util.List;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nctc2017.bean.Ammo;
@@ -125,8 +127,9 @@ public class BattleIntegrationScenarioTest {
     }
     
     @Before
-    public void setUpCombatant() throws PlayerNotFoundException, BattleStartException {
+    public void setUpCombatant() throws PlayerNotFoundException, BattleStartException, BattleEndException {
         travelService = (TravelService)context.getBean("travelServicePrototype");
+        ReflectionTestUtils.setField(battleEnd, "travelService", travelService);
         String loginNik = "Nik";
         String emailNik = "q@q.q";
         String loginSteve = "Steve";
@@ -244,13 +247,13 @@ public class BattleIntegrationScenarioTest {
             
             assertTrue(battleService.getDistance(nikId) >= 0);
         }
-        assertTrue(battleService.isBattleFinish(nikId));
-        assertTrue(battleService.isBattleFinish(steveId));
-        assertTrue(battleService.isLeaveBattleFieldAvailable(steveId));
-        assertTrue(battleService.isLeaveBattleFieldAvailable(nikId));
-        assertTrue(battleService.leaveBattleField(nikId));
+        assertTrue(battleEnd.isBattleFinish(nikId));
+        assertTrue(battleEnd.isBattleFinish(steveId));
+        assertTrue(battleEnd.isLeaveBattleFieldAvailable(steveId));
+        assertTrue(battleEnd.isLeaveBattleFieldAvailable(nikId));
+        assertTrue(battleEnd.leaveBattleField(nikId));
         try {
-            battleService.leaveBattleField(steveId);
+            battleEnd.leaveBattleField(steveId);
         } catch (BattleEndException e1) {
             return;
         }
@@ -322,13 +325,13 @@ public class BattleIntegrationScenarioTest {
         assertTrue(steveShipAfter.getCurSailorsQuantity() < steveShipBefore.getCurSailorsQuantity());
         assertTrue(battleService.getDistance(nikId) == 0);
        
-        assertTrue(battleService.isBattleFinish(nikId));
-        assertTrue(battleService.isBattleFinish(steveId));
-        assertTrue(battleService.isLeaveBattleFieldAvailable(steveId));
-        assertTrue(battleService.isLeaveBattleFieldAvailable(nikId));
-        assertTrue(battleService.leaveBattleField(nikId));
+        assertTrue(battleEnd.isBattleFinish(nikId));
+        assertTrue(battleEnd.isBattleFinish(steveId));
+        assertTrue(battleEnd.isLeaveBattleFieldAvailable(steveId));
+        assertTrue(battleEnd.isLeaveBattleFieldAvailable(nikId));
+        assertTrue(battleEnd.leaveBattleField(nikId));
         try {
-            battleService.leaveBattleField(steveId);
+            battleEnd.leaveBattleField(steveId);
         } catch (BattleEndException e1) {
             return;
         }

@@ -6,6 +6,7 @@
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
     <link href="static/css/battle.css" rel="stylesheet" media="screen">
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <script src="static/js/hover_button.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -43,12 +44,13 @@
         	    $('html, body').animate({
                     scrollTop: $("#warning_info").offset().top
                 }, 1000);
-                window.location.href = "/trip";
+        	    battleExit();
     		} else {
                // window.location.href = "/error";
     		}
     	});
     };
+    
     function pickTimerTask() {
     	console.log("Pick timer start ");
     	timerId = setInterval(function() {
@@ -60,6 +62,30 @@
     	$(".button_pick").off( "mouseenter mouseleave" );
     	$(".button_pick").unbind( "click" );
     };
+    
+    var isEnemyLeaveTaskId;
+    
+    function isEnemyLeave() {
+		clearInterval(isEnemyLeaveTaskId);
+    	console.log("check is Enemy Leave request");
+		
+		$.get("/is_enemy_leave_battlefield")
+        .done(function(response, status, xhr) {
+        	if (response == "true") {
+        		battleExit();
+        	} else {
+        		enemyLeaveCheckTask();
+        	}
+        }).fail(function(xhr, status, error) {
+        	
+        }).always(function(response, status, xhr) {
+        	console.log(" check is Enemy Leave response: " + response);
+        });
+    }
+    
+    function enemyLeaveCheckTask() {
+    	isEnemyLeaveTaskId = setInterval(function() {isEnemyLeave();}, 2000);
+    }
     
     $(document).ready(function() {
         $("#timer").html("Auto pick: " + seconds + " sec");
@@ -87,6 +113,9 @@
             })
             .fail(function(xhr, status, error) {
             	console.log("Pick User response fail" + status);
+            	if (xhr.status ==405) {
+            		battleExit();
+            	}
                // window.location.href = "/error";
             });
         	disablePickButtons();
@@ -94,21 +123,65 @@
     });
 	</script>
 	<script>
-    var $accordion_hint
+	function battleExit() {
+        clearInterval(timerId);
+    	console.log("request for battlefield exit");
+    	$.get("/battlefield_exit")
+    	.done(function(response, status, xhr){
+        	console.log("response for battlefield exit: " + response);
+        	window.location.href = "/trip";
+    	}).fail(function(xhr, status, error) {
+        	console.log("response for battlefield exit FAIL " + xhr.status);
+        	window.location.href = "/trip";
+    	});
+	};
+	
+	function isExitAvailable() {
+		$.get("/is_exit_available")
+    	.done(function(response, status, xhr){
+        	console.log("response for exit available: " + response);
+    		if (response == "true") {
+    			enemyLeaveCheckTask();
+    			var exit = $("#exit");
+    			exit.removeAttr("disabled");
+    			var exit_icon = exit.find(".icon_exit_disable");
+    			exit_icon.removeClass("icon_exit_disable");
+    			exit_icon.addClass("icon_exit");
+    	        hoverInit("exit");
+    	        $(".button_exit").click(function() { 
+    	        	battleExit();
+    	        });
+    		} 
+    	}).fail(function(xhr, status, error) {
+        	console.log("response for exit available FAIL " + xhr.status);
+        	if (xhr.status == 405) {
+                battleExit();
+        	}
+    	});
+	};
+	
     $(document).ready(function(){
-        $(".ship_accordion").accordion({heightStyle: "content"});
-        $(".ship_accordion").accordion({ collapsible: true});
-        $(".ship_accordion").accordion({ active: false });
-        $(".button_pick").hover(function() {
+    	var block = $(".ship_accordion");
+    	block.accordion({heightStyle: "content"});
+    	block.accordion({ collapsible: true});
+    	block.accordion({ active: false });
+    	block.hover(function() {
             $( this ).find(".icon_pick").addClass( "icon_pick_hover" );
         }, function() {
         	$( this ).find(".icon_pick").removeClass( "icon_pick_hover" );
         });
+    	console.log("request for exit available");
+    	isExitAvailable();
     });
 </script>
     <title>Battle Preparing</title>
 </head>
 <body>
+    <div align="right" class="exit_button_block">
+        <button id="exit" disabled="disabled" class="button_exit" style="/* vertical-align:middle; */width: 100%;height: 100%;" name="exit" type="submit">
+            <span class="icon_exit_disable"></span><span>Exit</span>
+        </button>
+    </div>
 	<div align="center" >
         <div id="warning_info" class="titleText" >
             <p class="timer" id="timer" style="color: white;"></p>

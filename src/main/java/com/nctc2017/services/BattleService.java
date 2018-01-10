@@ -22,7 +22,6 @@ import com.nctc2017.dao.ShipDao;
 import com.nctc2017.dao.impl.ShipDaoImpl;
 import com.nctc2017.exception.BattleEndException;
 import com.nctc2017.exception.DeadEndException;
-import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.utils.BattleEndVisitor;
 import com.nctc2017.services.utils.BattleManager;
 
@@ -52,17 +51,16 @@ public class BattleService {
     
     private Random random = new Random(System.currentTimeMillis());
 
-    public void calculateDamage(int[][] ammoCannon, BigInteger playerId, BattleEndVisitor visitor) throws SQLException {
+    public void calculateDamage(int[][] ammoCannon, BigInteger playerId, BattleEndVisitor visitor) 
+            throws SQLException, BattleEndException {
+        
         Battle battle = battles.getBattle(playerId);
-        if (battle == null) {
-            RuntimeException ex = new IllegalArgumentException("Wrong playerId = " + playerId);
-            LOG.error("Exception while calculation damage. Battle not found.", ex);
-            throw ex;
-        }
+
         synchronized (battle) {
             battle.setAmmoCannon(playerId, ammoCannon);
             battle.makeStep(playerId);
             LOG.debug("Player_" + playerId + " Made step");
+            
             if (battle.wasEnemyMadeStep(playerId)) {
                 LOG.debug("Player_" + playerId + " Enemy made step too");
                 
@@ -100,6 +98,7 @@ public class BattleService {
                     }
                     return;
                 }
+                
                 if (enemyHp <= 0) {
                     visitor.endCaseVisit(playerDao, shipDao, plyerShipId, enemyShipId, playerId, enemyId);
                     battle.setWinner(playerId);
@@ -111,6 +110,7 @@ public class BattleService {
                     LOG.debug("Player_" + playerId + " reset steps ");
                     return;
                 }
+                
                 LOG.debug("Player_" + playerId + " reset battle ");
                 battles.resetBattle(playerId);
             }
@@ -118,53 +118,11 @@ public class BattleService {
         }
     }
     
-    public boolean isPlayerWinner(BigInteger playerId) {
+    public boolean isStepResultAvalible(BigInteger playerId) throws BattleEndException {       
         Battle battle = battles.getBattle(playerId);
-        if (battle == null) {
-            RuntimeException ex = new IllegalArgumentException("Wrong playerId = " + playerId + "or battle end");
-            LOG.error("Exception while winner checking. Battle not found.", ex);
-            throw ex;
-        }
-        return battle.isWinner(playerId);
-    }
-    
-    public boolean isStepResultAvalible(BigInteger playerId) {       
-        Battle battle = battles.getBattle(playerId);
-        if (battle == null) {
-            RuntimeException ex = new IllegalArgumentException("Wrong playerId = " + playerId);
-            LOG.error("Exception while checking step result avalible. Battle not found.", ex);
-            throw ex;
-        }
+
         boolean shotWas = battle.wasEnemyMadeStep(playerId) || battle.wasPlayerMadeStep(playerId);
         return !shotWas;
-    }
-    
-    public boolean isBattleFinish(BigInteger playerId) {
-        return battles.getBattle(playerId).getShipId(playerId) == null;
-    }
-    
-    public boolean isLeaveBattleFieldAvailable(BigInteger playerId) throws BattleEndException {
-        Battle battle = battles.getBattle(playerId);
-        if (battle == null) {
-            throw new BattleEndException("Battle already ended. You automatically left.");
-        }
-        List<BigInteger> playerShipsLeft = battle.getShipsLeftBattle(playerId);
-        BigInteger enemyId = battle.getEnemyId(playerId);
-        List<BigInteger> enemyShipsLeft = battle.getShipsLeftBattle(enemyId);
-        List<BigInteger> playerFactShips = playerDao.findAllShip(playerId);
-        List<BigInteger> enemyFactShips = playerDao.findAllShip(enemyId);
-        return playerShipsLeft.size() >= playerFactShips.size() 
-                || enemyShipsLeft.size() >= enemyFactShips.size();
-    }
-    
-    public boolean leaveBattleField (BigInteger playerId) throws BattleEndException {
-        if ( ! isLeaveBattleFieldAvailable(playerId)) return false;
-        synchronized (battles) {
-            BigInteger enemyId = battles.getEnemyId(playerId);
-            if (! battles.endBattle(enemyId) || ! battles.endBattle(playerId))
-                throw new BattleEndException("Battle already end. You automatically left.");
-        }
-        return true;
     }
     
     private void defineWinner(Battle battle, BigInteger winnerShipId, BigInteger loserShipId, 
@@ -174,19 +132,14 @@ public class BattleService {
         battle.setWinner(winnerId);
     }
     
-    public void setConvergaceOfDist(BigInteger playerId, boolean decision) {
+    public void setConvergaceOfDist(BigInteger playerId, boolean decision) throws BattleEndException {
         Battle battle = battles.getBattle(playerId); 
         battle.setConvergence(playerId, decision);
     }
 
-    public void decreaseOfDistance(BigInteger playerId) {
-        Battle battle =battles.getBattle(playerId); 
+    public void decreaseOfDistance(BigInteger playerId) throws BattleEndException {
+        Battle battle = battles.getBattle(playerId); 
         LOG.debug("Player_" + playerId + " Start decrease of distance");
-        if (battle == null) {
-            RuntimeException ex = new IllegalArgumentException("Wrong playerId = " + playerId);
-            LOG.error("Exception while decrease of distance . Battle not found.", ex);
-            throw ex;
-        }
         
         synchronized (battle) {
             if (battle.isConvergence(playerId)) {
@@ -207,7 +160,7 @@ public class BattleService {
         }
     }
 
-    public int getDistance(BigInteger playerId) {
+    public int getDistance(BigInteger playerId) throws BattleEndException {
         Battle battle =battles.getBattle(playerId); 
         return battle.getDistance();
     }
@@ -277,9 +230,14 @@ public class BattleService {
         return playerDao.findPlayerById(enemyId);
     }
 
-    public ShipWrapper getShipInBattle(BigInteger playerId) {
-        Battle battle =battles.getBattle(playerId); 
+    public ShipWrapper getShipInBattle(BigInteger playerId) throws BattleEndException {
+        Battle battle = battles.getBattle(playerId); 
         BigInteger shipId = battle.getShipId(playerId);
+        if (shipId == null) {
+            BattleEndException ex = new BattleEndException("Battle already end");
+            LOG.warn("Player " + playerId + " try getting info about his ship, but id not found in battle", ex);
+            throw ex;
+        }
         Ship ship = shipDao.findShip(shipId);
         Map<String, String> cannons = cannonDao.getCurrentQuantity(shipId);
         BigInteger holdId = holdDao.findHold(shipId);
@@ -291,8 +249,8 @@ public class BattleService {
         return new ShipWrapper(ship, cannons, ammoQuantity);
     }
 
-    public Ship getEnemyShipInBattle(BigInteger playerId) {
-        Battle battle =battles.getBattle(playerId); 
+    public Ship getEnemyShipInBattle(BigInteger playerId) throws BattleEndException {
+        Battle battle = battles.getBattle(playerId); 
         BigInteger enemyShipId = battle.getEnemyShipId(playerId);
         return shipDao.findShip(enemyShipId);
     }

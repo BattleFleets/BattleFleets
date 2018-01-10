@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.nctc2017.bean.Battle;
+import com.nctc2017.exception.BattleEndException;
 import com.nctc2017.exception.BattleStartException;
 
 @Component
@@ -39,8 +40,19 @@ public class BattleManager {
         return enemyId;
     }
     
-    public Battle getBattle(BigInteger playerId) {
-        return battles.get(playerId);
+    public Battle getBattle(BigInteger playerId) throws BattleEndException {
+        Battle battle = battles.get(playerId);
+        if (battle == null) {
+            BattleEndException ex = new BattleEndException("Battle already end or wrong player id = " + playerId);
+            LOG.warn("Player " + playerId + " not found his battle", ex);
+            throw ex;
+        }
+        return battle;
+    }
+    
+    public boolean isBattleStart(BigInteger playerId) {
+        Battle battle = battles.get(playerId);
+        return battle != null;
     }
 
     public boolean endBattle(BigInteger playerId) {

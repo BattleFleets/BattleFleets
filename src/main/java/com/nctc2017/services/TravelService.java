@@ -108,6 +108,8 @@ public class TravelService {
             BigInteger enemyId = travelManager.getEnemyId(playerId);
             stopAutoDecisionTimer(enemyId);
             battleManager.newBattleBetween(playerId, enemyId);
+            travelManager.setParticipated(playerId);
+            travelManager.setParticipated(enemyId);
             LOG.debug("Player_" + playerId + " --==created a battle!==--");
         } else {
             LOG.debug("Player_" + playerId + " attack rejecting...");
@@ -117,7 +119,7 @@ public class TravelService {
     }
 
     public boolean isBattleStart(BigInteger playerId) {
-        return battleManager.getBattle(playerId) != null;
+        return battleManager.isBattleStart(playerId);
     }
     
     public boolean isFleetSpeedOk(BigInteger playerId) {
@@ -139,7 +141,7 @@ public class TravelService {
         return stockDao.getOccupiedVolume(playerId) == 0;
     }
     
-    public City getRelocationCity(BigInteger playerId) {
+    public City getRelocationCity(BigInteger playerId) throws PlayerNotFoundException {
         BigInteger cityId = travelManager.getRelocationCity(playerId);
         return cityDao.find(cityId);
     }

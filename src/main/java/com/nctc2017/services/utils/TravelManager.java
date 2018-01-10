@@ -59,8 +59,13 @@ public class TravelManager {
         if (playerJornal == null) {
             throw new PlayerNotFoundException("Player left a trip or has not yet begun");
         }
+
+        if (playerJornal.isParticipated()) {
+            LOG.debug("Player_" + playerId + " is participated, no enemy needed");
+            return false;
+        }
         int lvl = playerJornal.getPlayerLevel();
-        LOG.debug("Player_" + playerId + "lvl = " + lvl);
+        LOG.debug("Player_" + playerId + " lvl = " + lvl);
 
         if (playerJornal.isFriendly()) {
             LOG.debug("Player_" + playerId + " is friendly (prepareEnemy) ");
@@ -82,6 +87,8 @@ public class TravelManager {
             if (enemyJornal.getEnemyId() != null)
                 continue;
             if (enemyJornal == playerJornal)
+                continue;
+            if (enemyJornal.isParticipated())
                 continue;
             int enemyLvl = enemyJornal.getPlayerLevel();
 
@@ -152,7 +159,7 @@ public class TravelManager {
         
         TravelBook enemyBook = journals.get(enemyId);
         if (enemyBook == null) {
-            PlayerNotFoundException ex = new PlayerNotFoundException("Player already left travel.");
+            PlayerNotFoundException ex = new PlayerNotFoundException("Player_" + enemyId + " already left travel.");
             LOG.warn("Player_" + playerId + " enemy not found", ex);
             throw ex;
         }
@@ -161,9 +168,11 @@ public class TravelManager {
             LOG.debug("Player_" + playerId + " and Player_" + enemyId + " - Both Friendly");
             playerBook.setEnemyId(null);
             playerBook.setFriendly(false);
+            playerBook.setDecisionMade(false);
             
             enemyBook.setEnemyId(null);
             enemyBook.setFriendly(false);
+            enemyBook.setDecisionMade(false);
         } else {
             playerBook.setFriendly(true);
             LOG.debug("Player_" + playerId + " is friendly now.");
@@ -178,7 +187,13 @@ public class TravelManager {
         return (int) (now - playerBook.getTime());
     }
 
-    public BigInteger getRelocationCity(BigInteger playerId) {
+    public BigInteger getRelocationCity(BigInteger playerId) throws PlayerNotFoundException {
+        LOG.debug("Player_" + playerId + " getting his relocation city ");
+        if (journals.get(playerId) == null) {
+            PlayerNotFoundException ex = new PlayerNotFoundException("May be player alrady arrived");
+            LOG.warn("Player_" + playerId + " not found in trip", ex);
+            throw ex;
+        }
         return journals.get(playerId).getCityId();
     }
     
@@ -191,6 +206,11 @@ public class TravelManager {
         TravelBook playerBook = journals.get(playerId);
         return playerBook.isDecisionWasMade();
     }
+
+    public void setParticipated(BigInteger playerId) {
+        TravelBook playerBook = journals.get(playerId);
+        playerBook.setParticipated(true);
+    }
     
     private class TravelBook {
         
@@ -202,6 +222,7 @@ public class TravelManager {
         private long pauseTime;
         private boolean friendly = false;
         private boolean decisionMade = false;
+        private boolean participated = false;
         
         public TravelBook(BigInteger cityId, Long time, int lvl) {
             this.cityId = cityId;
@@ -212,6 +233,16 @@ public class TravelManager {
             this.pauseTime = 0L;
         }
         
+        public boolean isParticipated() {
+            return participated;
+        }
+
+        public void setParticipated(boolean participated) {
+            this.enemyId = null;
+            this.decisionMade = false;
+            this.participated = participated;
+        }
+
         public void setDecisionMade(boolean made) {
             decisionMade = made;
         }

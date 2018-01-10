@@ -91,7 +91,7 @@ public class BattleServiceIntegrationTest {
     }
     
     @Before
-    public void setUpCombatant() throws PlayerNotFoundException, BattleStartException {
+    public void setUpCombatant() throws PlayerNotFoundException, BattleStartException, BattleEndException {
         travelService = (TravelService)this.context.getBean("travelServicePrototype");
         String loginNik = "Nik";
         String emailNik = "q@q.q";
@@ -193,12 +193,12 @@ public class BattleServiceIntegrationTest {
         assertTrue(ret);
     }
     
-    public void calculateDamage(int[][] cannonAmmo) throws SQLException {
+    public void calculateDamage(int[][] cannonAmmo) throws SQLException, BattleEndException {
         // When
-        battleService.calculateDamage(cannonAmmo, nikId, null);
-        battleService.calculateDamage(new int[][]{{0,0,0},
-                                                  {0,0,0},
-                                                  {0,0,0}}, steveId, null);
+            battleService.calculateDamage(cannonAmmo, nikId, null);
+            battleService.calculateDamage(new int[][]{{0,0,0},
+                                                      {0,0,0},
+                                                      {0,0,0}}, steveId, null);
         // Then
     }
     
@@ -238,16 +238,16 @@ public class BattleServiceIntegrationTest {
     }
     
     @Test
-    public void calculateDamageCannonballs() throws SQLException {
+    public void calculateDamageCannonballs() throws SQLException, BattleEndException {
         calculateDamageCannonballs(8);
     }
     
     @Test(expected = SQLException.class)
-    public void cannonballsGraterThenHave() throws SQLException {
+    public void cannonballsGraterThenHave() throws SQLException, BattleEndException {
         calculateDamageCannonballs(9);
     }
     
-    private void calculateDamageCannonballs(int defCount) throws SQLException {
+    private void calculateDamageCannonballs(int defCount) throws SQLException, BattleEndException {
         // Given
         int[][] cannonAmmo = new int [3][];
         int[] mortars = new int[] {defCount, 0, 0};
@@ -285,16 +285,16 @@ public class BattleServiceIntegrationTest {
     }
     
     @Test
-    public void calculateDamageBuckshot() throws SQLException {
+    public void calculateDamageBuckshot() throws SQLException, BattleEndException {
         calculateDamageBuckshot(8);
     }
     
     @Test(expected = SQLException.class)
-    public void buckshotGraterThenHave() throws SQLException {
+    public void buckshotGraterThenHave() throws SQLException, BattleEndException {
         calculateDamageBuckshot(9);
     }
     
-    private void calculateDamageBuckshot(int defCount) throws SQLException {
+    private void calculateDamageBuckshot(int defCount) throws SQLException, BattleEndException {
         // Given
         int[][] cannonAmmo = new int [3][];
         int[] mortars = new int[] {0, defCount, 0};
@@ -332,16 +332,16 @@ public class BattleServiceIntegrationTest {
     }
  
     @Test
-    public void calculateDamageChains() throws SQLException {
+    public void calculateDamageChains() throws SQLException, BattleEndException {
         calculateDamageChains(11);
     }
     
     @Test(expected = SQLException.class)
-    public void chainsGraterThenHave() throws SQLException {
+    public void chainsGraterThenHave() throws SQLException, BattleEndException {
         calculateDamageChains(12);
     }
     
-    private void calculateDamageChains(int defCount) throws SQLException {
+    private void calculateDamageChains(int defCount) throws SQLException, BattleEndException {
         // Given
         int[][] cannonAmmo = new int [3][];
         int[] mortars = new int[] {0, 0, defCount};
