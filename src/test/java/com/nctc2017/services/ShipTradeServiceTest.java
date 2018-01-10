@@ -60,6 +60,8 @@ public class ShipTradeServiceTest {
     private ShipRepairService shipRepairService;
     @Mock
     private LevelUpService levelUpService;
+    @Mock
+    private ShipService shipService;
 
     private static Player steve;
     private static ShipTemplate t_BlackPerl;
@@ -119,7 +121,7 @@ public class ShipTradeServiceTest {
 
         when(levelUpService.getMaxShips(steve.getPlayerId())).thenReturn(10);
         when(shipRepairService.countRepairCost(any())).thenReturn(0);
-        when(shipDao.createNewShip(any(), any())).thenReturn(any());
+        when(shipService.createNewShip(any(), any())).thenReturn(any());
         when(shipDao.findShipTemplate(t_BlackPerl.getTemplateId())).thenReturn(t_BlackPerl);
         when(shipDao.findShip(blackPerl.getShipId())).thenReturn(blackPerl);
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(steve.getMoney());

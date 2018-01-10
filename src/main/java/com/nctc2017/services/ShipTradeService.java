@@ -23,6 +23,8 @@ public class ShipTradeService {
     @Autowired
     ShipRepairService shipRepairService;
     @Autowired
+    ShipService shipService;
+    @Autowired
     ShipDao shipDao;
     @Autowired
     PlayerDao playerDao;
@@ -35,7 +37,7 @@ public class ShipTradeService {
             if (levelUpService.getMaxShips(playerId) <= numberOfShips)
                 return "You have complete fleet for your level!";
             moneyService.deductMoney(playerId, shipTemplate.getCost());
-            shipDao.createNewShip(shipTemplateId, playerId);
+            shipService.createNewShip(shipTemplateId,playerId);
             return "Congratulations! One more ship is already armed.";
         } catch (RuntimeException e) {
             return "Money is not enough to buy that ship";

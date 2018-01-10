@@ -34,7 +34,6 @@ body{
     border: 4px ridge black;
     padding: 5%;
     border-spacing: 10%;
-
 }
 
 input[type=submit] {
@@ -60,7 +59,7 @@ input[type=submit] {
 
 
 .button span {
-  font-size: 70%;
+  font-size: 80%;
   cursor: pointer;
   display: inline-block;
   position: relative;
