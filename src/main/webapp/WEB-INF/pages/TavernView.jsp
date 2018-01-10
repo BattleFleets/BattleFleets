@@ -90,8 +90,7 @@
                                     </c:choose>
                                     <p>name ${nextShip.curName}</p>
                                     <p>health ${nextShip.curHealth}</p>
-                                    <p>curSailors ${nextShip.curSailorsQuantity}</p>
-                                    <p>maxSailors ${nextShip.maxSailorsQuantity}</p>
+                                    <p>crew ${nextShip.curSailorsQuantity}/${nextShip.maxSailorsQuantity}</p>
                                     </th>
                                 </c:forEach>
                             </tr>
