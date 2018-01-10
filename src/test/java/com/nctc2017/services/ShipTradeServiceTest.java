@@ -144,7 +144,7 @@ public class ShipTradeServiceTest {
         playerDao.addShip(steve.getPlayerId(), blackPerl.getShipId());
 
         assertTrue(shipTradeService.sellShip(steve.getPlayerId(), blackPerl.getShipId()));
-        assertEquals(money + t_BlackPerl.getCost(), steve.getMoney());
+        assertEquals(money + t_BlackPerl.getCost()/2, steve.getMoney());
     }
 
     @Test
