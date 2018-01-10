@@ -4,9 +4,9 @@
     <link href="static/css/general.css" rel="stylesheet" media="screen">
 </head>
 <body>
-<footer>
+<footer class="footer">
     <p>Copyright 2018
-    <address>bootle.of.rum@gmail.com</address>
+    <address>boottle.of.rum@gmail.com</address>
     </p>
 </footer>
 </body>
