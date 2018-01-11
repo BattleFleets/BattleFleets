@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nctc2017.bean.Battle;
-import com.nctc2017.bean.Goods;
 import com.nctc2017.dao.ExecutorDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
+import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.utils.BattleManager;
 
 @Service
@@ -96,10 +96,22 @@ public class BattleEndingService {
             if (! battles.endBattle(enemyId) || ! battles.endBattle(playerId))
                 throw new BattleEndException("Battle already end. You automatically left.");
             prepService.stopAutoChooseTimer(enemyId);
-            travelService.resumeRelocateTime(enemyId);
+            try {
+                int time = travelService.resumeRelocateTime(enemyId);
+                LOG.debug("Player_" + playerId + " continue travel for enemy player_" + enemyId
+                        + ". Time left: " + time);
+            } catch (PlayerNotFoundException e) {
+                LOG.warn("try resume relocate time for enemy fail when leaving battle field", e);
+            }
         }
         prepService.stopAutoChooseTimer(playerId);
-        travelService.resumeRelocateTime(playerId);
+        try {
+            int time = travelService.resumeRelocateTime(playerId);
+            LOG.debug("Player_" + playerId + " continue travel"
+                    + ". Time left: " + time);
+        } catch (PlayerNotFoundException e) {
+            return true;
+        }
         return true;
     }
     
@@ -107,6 +119,12 @@ public class BattleEndingService {
         Battle battle = battles.getBattle(playerId);
 
         return battle.isWinner(playerId);
+    }
+    
+    public String getWinnerMessage(BigInteger playerId) throws BattleEndException {
+        Battle battle = battles.getBattle(playerId);
+
+        return battle.getWinMessage(playerId);
     }
     
     public boolean isEnemyLeaveBattlefield(BigInteger playerId) {

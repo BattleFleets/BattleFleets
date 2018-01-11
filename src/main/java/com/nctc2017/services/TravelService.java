@@ -85,7 +85,7 @@ public class TravelService {
         }
     }
 
-    public int resumeRelocateTime(BigInteger playerId) {
+    public int resumeRelocateTime(BigInteger playerId) throws PlayerNotFoundException {
         LOG.debug("Player_" + playerId + " relocation timer resume.");
         return travelManager.continueTravel(playerId);
     }
@@ -146,8 +146,16 @@ public class TravelService {
         return cityDao.find(cityId);
     }
     
-    public boolean isDecisionAccept(BigInteger playerId) {
+    public boolean isDecisionAccept(BigInteger playerId) throws PlayerNotFoundException {
         return travelManager.isDecisionWasMade(playerId);
+    }
+    
+    public boolean isPlayerInTravel(BigInteger playerId) {
+        return travelManager.isPlayerInTravel(playerId);
+    }
+
+    public boolean isParticipated(BigInteger playerId) throws PlayerNotFoundException {
+        return travelManager.isParticipated(playerId);
     }
 
     public int getAutoDecisionTime() {
