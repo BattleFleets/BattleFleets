@@ -30,8 +30,8 @@ import com.nctc2017.services.utils.BattleManager;
 public class BattleService {
     private static final Logger LOG = Logger.getLogger(ShipDaoImpl.class);
     private static final int RAPAIR_BONUS = 1;
-    private static final String LOSE_MESSAGE_DESTROY = "Your ship destroy, your crew is feeding the fish";
-    private static final String WIN_MESSAGE_DESTROY = "Enemy ship destroy, you found some useful cargo among the wreckage.";
+    private static final String LOSE_MESSAGE_DESTROY = "Your ship destroyed, your crew is feeding the fish";
+    private static final String WIN_MESSAGE_DESTROY = "Enemy ship destroyed, you found some useful cargo among the wreckage.";
     private static final String WIN_BOARDING_MESSAGE = "Good boarding Captain!";
     private static final String LOSE_BOARDING_MESSAGE = "All who were alive were thrown overboard, and you lost your cargo.";
     @Autowired

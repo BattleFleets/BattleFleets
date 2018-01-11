@@ -82,9 +82,9 @@ public class ExecutorDaoImpl implements ExecutorDao {
         try {
             call.execute(in);
         } catch (UncategorizedSQLException e) {
-            LOG.warn("Mistake on client side, may be incorrect ratio of ammunition to cannons "
-                    + "or ammunition to quantity in hold");
-            throw new SQLDataException("Incorrect placement of ammo ", e);
+            LOG.error("Mistake on client side, may be incorrect ratio of ammunition to cannons "
+                    + "or ammunition to quantity in hold", e);
+            throw e.getSQLException();
         }
         
     }

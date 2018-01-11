@@ -56,11 +56,12 @@ input:focus {outline:0;}
     height: 100%;
 }
 .icon_pick, .icon_pick_hover, .icon_pick_select, 
-.icon_fire, .icon_fire_select, .icon_leave,
-.icon_leave_select, .icon_surrender, .icon_surrender_select,
+.icon_fire, .icon_fire_select, .icon_escape,
+.icon_escape_select, .icon_surrender, .icon_surrender_select,
 .icon_boarding, .icon_boarding_select, .icon_payoff,
 .icon_payoff_select, .icon_exit, .icon_exit_select, 
-.icon_exit_disable, .icon_boarding_disable, .icon_fire_disable{
+.icon_exit_disable, .icon_boarding_disable, .icon_fire_disable,
+.icon_payoff_disable, .icon_escape_disable, .icon_surrender_disable{
     border: none;
     background-size: contain;
     background-repeat:no-repeat;
@@ -91,17 +92,23 @@ input:focus {outline:0;}
 .icon_fire_disable {
 	background-image:url("../images/battle/icon_fire_disable.png");
 }
-.icon_leave {
+.icon_escape {
 	background-image:url("../images/battle/icon_leave_reject.png");
 }
-.icon_leave_select {
+.icon_escape_select {
 	background-image:url("../images/battle/icon_leave_select.png");
+}
+.icon_escape_disable {
+	background-image:url("../images/battle/icon_leave_disable.png");
 }
 .icon_surrender {
 	background-image:url("../images/battle/icon_surrender_reject.png");
 }
 .icon_surrender_select {
 	background-image:url("../images/battle/icon_surrender_select.png");
+}
+.icon_surrender_disable {
+	background-image:url("../images/battle/icon_surrender_disable.png");
 }
 .icon_boarding {
 	background-image:url("../images/battle/icon_boarding_reject.png");
@@ -117,6 +124,9 @@ input:focus {outline:0;}
 }
 .icon_payoff_select {
 	background-image:url("../images/battle/icon_payoff_select.png");
+}
+.icon_payoff_disable {
+	background-image:url("../images/battle/icon_payoff_disable.png");
 }
 .icon_exit {
 	background-image:url("../images/battle/icon_exit_reject.png");
