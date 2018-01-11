@@ -12,7 +12,7 @@
             <table class ="tableClass">
             <tr>
                 <td>
-                <button class="cap button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getTemplateId()}" onclick="buyShip(this)">
+                <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getTemplateId()}" onclick="buyShip(this)">
                 <span>Buy ${shipTemplates.getTName()}</span>
                 </button>
                 </td>

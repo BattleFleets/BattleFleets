@@ -17,16 +17,16 @@
             };
 
             function conf(){
-                var shipTemplateId = $("#shipTemplateId").val();
-                $.ajax({
-                    url:'/buy',
-                    method:"GET",
-                    data: { 'shipTemplateId' : shipTemplateId },
-                    success: function(data) {
-                                 $('#results').html(data);
-                                 }
-                    } );
-                }
+            var shipTemplateId = $("#shipTemplateId").val();
+            $.ajax({
+                url:'/buy',
+                method:"GET",
+                data: { 'shipTemplateId' : shipTemplateId },
+                success: function(data) {
+                             $('#results').html(data);
+                             }
+                } );
+            }
 
             function showTemplates() {
             $.ajax({
@@ -43,18 +43,32 @@
             }
 
             function showPlayerShips() {
-                        $.ajax({
-                        			method:"GET",
-                        			url:'/sellShip',
-                        			success : function(response) {
-                        				console.log("SUCCESS: ");
-                        				$('.shipContainer').html(response);
-                        			},
-                                    error : function(e) {
-                                        console.log("ERROR: ", e);
-                                    }
-                        		});
+            $.ajax({
+                        method:"GET",
+                        url:'/sellShip',
+                        success : function(response) {
+                            console.log("SUCCESS: ");
+                            $('.shipContainer').html(response);
+                        },
+                        error : function(e) {
+                            console.log("ERROR: ", e);
                         }
+                    });
+            }
+
+            function repairShips() {
+            $.ajax({
+                        method:"GET",
+                        url:'/repairShip',
+                        success : function(response) {
+                            console.log("SUCCESS: ");
+                            $('.shipContainer').html(response);
+                        },
+                        error : function(e) {
+                            console.log("ERROR: ", e);
+                        }
+                    });
+            }
     </script>
     <div align="center">
     	<h1 class="titleText">${city}</h1>
@@ -88,7 +102,7 @@
 		</tr>
 		<tr align="center">
 			<td>
-			<button class="button" style="vertical-align:middle" name="tavern" type="submit" value="Tavern ${city}" formaction="/tavern">
+			<button class="button" onclick="repairShips()">
 			<span>Repair ship</span>
 			</button>
 			</td>

@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <head>
+    <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
@@ -20,11 +21,12 @@
     <c:forEach items="${playerShips}" var="shipTemplates" varStatus="status">
             <table class ="tableClass">
             <tr>
-                <td colspan="2">
-                <button class="cap button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getShipId()}" onclick="sellship(this)">
-                <span>Sell ${shipTemplates.getTName()}</span>
+                <td>
+                <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getShipId()}" onclick="chooseOfAction(this,'${action}')">
+                <span>${action} ${shipTemplates.getTName()}</span>
                 </button>
                 </td>
+                <td class="price">SellingCost:  <b class="values">${shipCosts.get(status.index)}</b></td>
             </tr>
             <tr>
                 <td rowspan="3" id = "shipimg">
@@ -55,10 +57,12 @@
                 <td>Health:  <b class="values">${shipTemplates.getMaxHealth()}/${shipTemplates.getCurHealth()}</b></td>
             </tr>
             <tr>
-                <td>Sailors:  <b class="values">${shipTemplates.getMaxSailorsQuantity()}/${shipTemplates.getCurSailorsQuantity()}</b></td>
-            </tr>
-            <tr>
-                <td colspan="2">MaxCost/SellingCost:  <b class="values">${shipTemplates.getCost()}/${shipCosts.get(status.index)}</b></td>
+                <c:if test = "${action == 'Sell'}">
+                    <td>Crew:  <b class="values">${shipTemplates.getMaxSailorsQuantity()}/${shipTemplates.getCurSailorsQuantity()} </b></td>
+                </c:if>
+                <c:if test = "${action == 'Repair'}">
+                    <td>Speed:  <b class="values">${shipsSpeed.get(status.index).maxSpeed}/${shipsSpeed.get(status.index).curSpeed} </b></td>
+                </c:if>
             </tr>
             </table>
         </c:forEach>
@@ -78,6 +82,16 @@ var btn = document.getElementById("shipTemplateId");
 
 var span = document.getElementsByClassName("close")[0];
 
+function chooseOfAction(elem, action) {
+    alert('ku');
+    if (action == 'Sell')
+        sellship(elem);
+    else if (action == 'Repair')
+        repairShip(elem);
+    else
+        console.log('Unnkown action');
+}
+
 function sellship(elem) {
 var shipId = elem.value;
     $(function(){
@@ -91,6 +105,28 @@ var shipId = elem.value;
                             text.innerHTML="You sold your ship";
                          else
                             text.innerHTML="This ship is not ours, captain!";
+                         modal.style.display = "block";
+                         },
+                         error : function(e) {
+                             console.log("ERROR: ", e);
+                         }
+            } );
+    });
+}
+
+function repairShip(elem) {
+var shipId = elem.value;
+    $(function(){
+        $.ajax({
+            url:'/repair',
+            method:"GET",
+            data: { 'shipId' : shipId },
+            success: function(data) {
+                         console.log("SUCCESS: ",data);
+                         if (data)
+                            text.innerHTML="Ship repaired";
+                         else
+                            text.innerHTML="We need more money, captain!";
                          modal.style.display = "block";
                          },
                          error : function(e) {
