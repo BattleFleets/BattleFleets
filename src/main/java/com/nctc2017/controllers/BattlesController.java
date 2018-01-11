@@ -3,7 +3,6 @@ package com.nctc2017.controllers;
 
 import java.math.BigInteger;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,12 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,14 +31,18 @@ import com.nctc2017.bean.Ship;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
+import com.nctc2017.exception.DeadEndException;
 import com.nctc2017.services.BattleEndingService;
 import com.nctc2017.services.BattlePreparationService;
 import com.nctc2017.services.BattlePreparationService.ShipWrapper;
 import com.nctc2017.services.BattleService;
+import com.nctc2017.services.LevelUpService;
 import com.nctc2017.services.utils.BattleEndVisitor;
 
 @Controller
 public class BattlesController {
+    private static final int checkingCounter = 5; 
+    private static final int checkingInterval = 3000;
     private static final Logger LOG = Logger.getLogger(BattlesController.class);
     @Autowired
     private BattlePreparationService prepService;
@@ -45,19 +50,29 @@ public class BattlesController {
     private BattleService battleService;
     @Autowired
     private BattleEndingService battleEndServ;
+    @Autowired
+    private LevelUpService levelUp;
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/battle_preparing", method = RequestMethod.GET)
     public ModelAndView battleWelcome(@AuthenticationPrincipal PlayerUserDetails userDetails) {
         BigInteger playerId = userDetails.getPlayerId();
-        List<ShipWrapper> fleet = prepService.getShipsExtraInfo(playerId);
+        LOG.debug("Player_" + playerId + " battle preparing request");
+
         List<Ship> enemyFleet;
+        int time;
+        
         try {
+            if (battleService.isBattleStart(playerId)) {
+                return new ModelAndView("redirect:/battle");
+            }
             enemyFleet = prepService.getEnemyShips(playerId);
+            time = prepService.autoChoiceShipTimer(playerId);
         } catch (BattleEndException e) {
-            enemyFleet = new ArrayList<>();
+            return new ModelAndView("redirect:/trip");
         }
-        int time = prepService.autoChoiceShipTimer(playerId);
+        List<ShipWrapper> fleet = prepService.getShipsExtraInfo(playerId);
+        
         ModelAndView model = new ModelAndView("BattlePreparingView");
         model.addObject("fleet", fleet);
         model.addObject("enemy_fleet", enemyFleet);
@@ -95,9 +110,10 @@ public class BattlesController {
         BigInteger playerId = userDetails.getPlayerId();
         LOG.debug("Player_" + playerId + " wait for enemy ready request");
         boolean ready = prepService.waitForEnemyReady(playerId);
-        while(!ready){
-            Thread.sleep(2000);
+        for (int i = 0; i < checkingCounter; i++) {
+            Thread.sleep(checkingInterval);
             ready = prepService.waitForEnemyReady(playerId);
+            if (ready) break;
         }
         
         return String.valueOf(ready);
@@ -108,7 +124,7 @@ public class BattlesController {
     public ModelAndView getBattle(
             @AuthenticationPrincipal PlayerUserDetails userDetails) {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " battle request");
+        LOG.debug("Player_" + playerId + " get battle request");
         ModelAndView model = new ModelAndView("BattleView");
         model.setStatus(HttpStatus.OK);
         return model;
@@ -134,8 +150,7 @@ public class BattlesController {
         }
 
         BigInteger playerId  = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " fire request");
-        LOG.debug("Player_" + playerId + " Convergace dist: " + decrease);
+        LOG.debug("Player_" + playerId + " fire request with convergace dist: " + decrease);
         battleService.setConvergaceOfDist(playerId, decrease);
         battleService.calculateDamage(ammoCannon2, playerId, new DefaultDestroyBattleEnd());
     }
@@ -151,7 +166,7 @@ public class BattlesController {
         BigInteger playerId = userDetails.getPlayerId();
         LOG.debug("Player_" + playerId + " request for getting fire result");
         if (forcibly == null) forcibly = false;
-        while(true) {
+        for (int i = 0; i < checkingCounter; i++) {
             boolean avaliable = battleService.isStepResultAvalible(playerId);
             LOG.debug("Player_" + playerId + " step result avaliable: " + avaliable);
 
@@ -167,7 +182,7 @@ public class BattlesController {
                             .body("You Lose :(");
             }
             
-            if (battleService.isStepResultAvalible(playerId) || forcibly) {
+            if (avaliable || forcibly) {
                 
                 BattleService.ShipWrapper playerShip = battleService.getShipInBattle(playerId);
                 Ship enemyShip = battleService.getEnemyShipInBattle(playerId);
@@ -177,20 +192,36 @@ public class BattlesController {
                 shipMap.put("player_ship", playerShip);
                 int distance = battleService.getDistance(playerId);
                 shipMap.put("distance", distance);
-    
+                    
+                shipMap.put("madeStep", battleService.wasPalayerMadeStep(playerId));
+                
+                shipMap.put("try_later", false);
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonShips = mapper.writeValueAsString(shipMap);
                 LOG.debug("Player_" + playerId + " ship info will return");
                 
                 return ResponseEntity.ok(jsonShips);
             } else {
-                Thread.sleep(2000);
+                Thread.sleep(checkingInterval);
             }
         }
+        
+        Map<String, Object> shipMap = new HashMap<>();
+        shipMap.put("try_later", true);
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonShips = mapper.writeValueAsString(shipMap);
+        return ResponseEntity.ok(jsonShips);
     }
 
-    public void bording(int id, int idHash) {
-        // TODO implement here
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/boarding", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    public void boarding(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException {
+        BigInteger playerId  = userDetails.getPlayerId();
+        LOG.debug("Player_" + playerId + " boarding request ");
+        BigInteger winnerId = battleService.boarding(playerId, new DefaultBoardingBattleEnd());
+
     }
 
     public void getResource(int id, int idHash) {
@@ -247,10 +278,13 @@ public class BattlesController {
         Map<String, String> resp = new HashMap<>();
         resp.put("end", String.valueOf(finish));
         if (finish) {
-            if (battleEndServ.isPlayerWinner(playerId))
-                resp.put("wonText", String.valueOf("You Won!!!"));
-            else
-                resp.put("wonText", String.valueOf("You Lose :("));
+            if (battleEndServ.isPlayerWinner(playerId)) {
+                resp.put("title", String.valueOf("You Won!!!"));
+                resp.put("wonText", String.valueOf(battleEndServ.getWinnerMessage(playerId)));
+            } else {
+                resp.put("title", String.valueOf("You Lose :("));
+                resp.put("wonText", String.valueOf(battleEndServ.getWinnerMessage(playerId)));
+            }
         }
         ObjectMapper mapper = new ObjectMapper();
         String jsonShips = mapper.writeValueAsString(resp);
@@ -266,12 +300,31 @@ public class BattlesController {
         // TODO implement here
     }
     
+    @ExceptionHandler(RuntimeException.class)
+    public ModelAndView handleCustomException(RuntimeException ex) {
+        LOG.error("Intternal unexpected exception. ", ex);
+        ModelAndView model = new ModelAndView("/error");
+        model.addObject("reason", ex.getMessage());
+
+        return model;
+    }
+    
     private class DefaultDestroyBattleEnd implements BattleEndVisitor {
 
         @Override
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
                 BigInteger winnerId, BigInteger loserId) {
             battleEndServ.passDestroyGoodsToWinner(winnerShipId, loserShipId);
+            battleEndServ.destroyShip(loserShipId);
+        }
+    }
+    
+    private class DefaultBoardingBattleEnd implements BattleEndVisitor {
+
+        @Override
+        public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
+                BigInteger winnerId, BigInteger loserId) {
+            battleEndServ.passCargoToWinnerAfterBoarding(winnerShipId, loserShipId);
         }
     }
 

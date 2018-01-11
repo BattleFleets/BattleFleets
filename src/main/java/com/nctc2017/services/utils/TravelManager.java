@@ -139,14 +139,8 @@ public class TravelManager {
     }
 
     public void friendly(BigInteger playerId) throws PlayerNotFoundException {
-        TravelBook playerBook = journals.get(playerId);
-        if (playerBook == null) {
-            RuntimeException ex = 
-                    new IllegalStateException(".friendly() was called, but player " 
-                            + playerId + " was not in travel");
-            LOG.warn("Player_" + playerId + " not found. ", ex);
-            throw ex;
-        }
+        LOG.debug("Player_" + playerId + " .friendly() ");
+        TravelBook playerBook = getPlayersJournal(playerId);
         
         BigInteger enemyId = playerBook.getEnemyId();
         playerBook.resume();
@@ -179,8 +173,8 @@ public class TravelManager {
         }
     }
     
-    public int continueTravel(BigInteger playerId) {
-        TravelBook playerBook = journals.get(playerId);
+    public int continueTravel(BigInteger playerId) throws PlayerNotFoundException {
+        TravelBook playerBook = getPlayersJournal(playerId);
         playerBook.resume();
         GregorianCalendar clock = new GregorianCalendar();
         long now = clock.getTimeInMillis();
@@ -189,27 +183,39 @@ public class TravelManager {
 
     public BigInteger getRelocationCity(BigInteger playerId) throws PlayerNotFoundException {
         LOG.debug("Player_" + playerId + " getting his relocation city ");
-        if (journals.get(playerId) == null) {
-            PlayerNotFoundException ex = new PlayerNotFoundException("May be player alrady arrived");
-            LOG.warn("Player_" + playerId + " not found in trip", ex);
-            throw ex;
-        }
-        return journals.get(playerId).getCityId();
+        return getPlayersJournal(playerId).getCityId();
     }
     
-    public void decisionWasMade(BigInteger playerId) {
-        TravelBook playerBook = journals.get(playerId);
+    public void decisionWasMade(BigInteger playerId) throws PlayerNotFoundException {
+        TravelBook playerBook = getPlayersJournal(playerId);
         playerBook.setDecisionMade(true);
     }
     
-    public boolean isDecisionWasMade(BigInteger playerId) {
-        TravelBook playerBook = journals.get(playerId);
+    public boolean isDecisionWasMade(BigInteger playerId) throws PlayerNotFoundException {
+        TravelBook playerBook = getPlayersJournal(playerId);
         return playerBook.isDecisionWasMade();
     }
 
-    public void setParticipated(BigInteger playerId) {
-        TravelBook playerBook = journals.get(playerId);
+    public void setParticipated(BigInteger playerId) throws PlayerNotFoundException {
+        TravelBook playerBook = getPlayersJournal(playerId);
         playerBook.setParticipated(true);
+    }
+    
+    public boolean isPlayerInTravel(BigInteger playerId) {
+        return journals.get(playerId) != null;
+    }
+
+    public boolean isParticipated(BigInteger playerId) throws PlayerNotFoundException {
+        return getPlayersJournal(playerId).isParticipated();
+    }
+    
+    private TravelBook getPlayersJournal(BigInteger playerId) throws PlayerNotFoundException {
+        if (journals.get(playerId) == null) {
+            PlayerNotFoundException ex = new PlayerNotFoundException("May be player already arrived");
+            LOG.warn("Player_" + playerId + " not found in trip", ex);
+            throw ex;
+        }
+        return journals.get(playerId);
     }
     
     private class TravelBook {
@@ -325,6 +331,10 @@ public class TravelManager {
                     long timeToLeft = travelBook.getTime();
                     if (now >= timeToLeft) {
                         playerDao.movePlayerToCity(player.getKey(), travelBook.getCityId());
+                        BigInteger enemyId = travelBook.getEnemyId();
+                        if (enemyId != null) {
+                            new Thread(new EnemyJournalFixTask(enemyId, player.getKey())).start();
+                        }
                         mapInerator.remove();
                     }
                 }
@@ -339,4 +349,28 @@ public class TravelManager {
         }
     }
     
+    private class EnemyJournalFixTask implements Runnable{
+        private BigInteger enemyId;
+        private BigInteger playerId;
+        
+        public EnemyJournalFixTask(BigInteger enemyId, BigInteger playerId) {
+            this.enemyId = enemyId;
+            this.playerId = playerId;
+        }
+
+        @Override
+        public void run() {
+            TravelBook travelBook = journals.get(enemyId);
+            if (travelBook == null) return;
+            synchronized (travelBook) {
+                if (playerId.equals(travelBook.getEnemyId())) {
+                    travelBook.setEnemyId(null);
+                    travelBook.setFriendly(false);
+                    travelBook.setDecisionMade(false);
+                }
+            }
+        }
+        
+    }
+
 }
