@@ -82,6 +82,8 @@ public class CityActionsController {
         int nextLevel = lvlUpService.getNextLevel(playerId);
         int maxShips = lvlUpService.getMaxShips(playerId);
         int income = lvlUpService.getPassiveIncome(playerId);
+        int pointsToNxtLvl =lvlUpService.getPointsToNxtLevel(playerId);
+        int nextImprove = lvlUpService.getNextLevel(playerId);
         model.addObject("msg", "This is protected page - Only for Users!");
         model.setViewName("CityView");
         model.addObject("login", login);
@@ -91,45 +93,10 @@ public class CityActionsController {
         model.addObject("nextLevel", nextLevel);
         model.addObject("maxShips", maxShips);
         model.addObject("income", income);
+        model.addObject("toNxt", pointsToNxtLvl);
         model.addObject("city", currCity.getCityName());
+        model.addObject("nextImprove",nextImprove);
         return model;
     }
 
-    @Secured("ROLE_USER")
-    @RequestMapping(value = "/update", method = RequestMethod.GET)
-    public ModelAndView update( @RequestParam(value="diff",required = false) int diff){
-        ModelAndView model = new ModelAndView();
-        model.setViewName("UpdateView");
-        model.addObject("diff", diff);
-        return model;
-    }
-    @Secured("ROLE_USER")
-    @RequestMapping(value = "/incomeUp", method = RequestMethod.GET)
-    public ModelAndView incomeUp(@AuthenticationPrincipal PlayerUserDetails userDetails,
-                                 @RequestParam(value="diffIncome",required = false) int diff){
-       if(diff>=0) {
-           lvlUpService.incomeUp(userDetails.getPlayerId());
-           lvlUpService.updateNxtLvl(userDetails.getPlayerId());
-           diff-=5;
-           return update(diff);
-       }
-       else {
-           return getCity(userDetails);
-       }
-    }
-
-    @Secured("ROLE_USER")
-    @RequestMapping(value = "/shipUp", method = RequestMethod.GET)
-    public ModelAndView shipUp(@AuthenticationPrincipal PlayerUserDetails userDetails,
-                               @RequestParam(value="diffShip",required = false) int diff){
-        if(diff>=0) {
-            lvlUpService.shipUp(userDetails.getPlayerId());
-            lvlUpService.updateNxtLvl(userDetails.getPlayerId());
-            diff-=5;
-            return update(diff);
-        }
-        else {
-            return getCity(userDetails);
-        }
-    }
 }

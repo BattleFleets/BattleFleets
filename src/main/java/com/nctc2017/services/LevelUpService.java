@@ -30,6 +30,13 @@ public class LevelUpService {
         return playerDao.getPlayerPoints(playerId);
     }
 
+    public int getPointsToNxtLevel(BigInteger playerId){
+        int curLvl = getCurrentLevel(playerId);
+        int curPoints = getCurrentPoints(playerId);
+        double maxCurPoints = Math.ceil(factor*Math.pow(ratio, curLvl));
+        return (int)(maxCurPoints-curPoints);
+    }
+
     public void pointsUp(BigInteger playerId, int points) {
        double diff = 0;
        int curLvl = getCurrentLevel(playerId);

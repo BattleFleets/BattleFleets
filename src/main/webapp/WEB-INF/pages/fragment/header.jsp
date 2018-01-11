@@ -5,12 +5,14 @@
 </head>
 <body>
 <header>
-    <p>${login}</p>
-    <p>Level ${level}</p>
-    <p>Points ${points}</p>
-    <p>Money ${money}</p>
-    <p>MaxShips ${maxShips}</p>
-    <p>Income ${income}/day</p>
+        <p>${login}</p>
+        <p>Level ${level}</p>
+        <p>Points ${points}</p>
+        <p>To next Level ${toNxt}</p>
+        <p>Money ${money}</p>
+        <p id="maxShips">MaxShips ${maxShips}</p>
+        <p id="income">Income ${income}/day</p>
+        <p id="improve">Improve ${nextImprove} lvl</p>
 </header>
 </body>
 </html>

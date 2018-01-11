@@ -48,6 +48,8 @@ public class TavernController {
         int points = lvlUpService.getCurrentPoints(playerId);
         int maxShips = lvlUpService.getMaxShips(playerId);
         int income = lvlUpService.getPassiveIncome(playerId);
+        int pointsToNxtLvl =lvlUpService.getPointsToNxtLevel(playerId);
+        int nextImprove = lvlUpService.getNextLevel(playerId);
         model.addObject("msg", "This is protected page - Only for Users!");
         model.addObject("login", login);
         model.addObject("money", money);
@@ -57,7 +59,9 @@ public class TavernController {
         model.addObject("ships", ships);
         model.addObject("maxShips", maxShips);
         model.addObject("income", income);
+        model.addObject("toNxt", pointsToNxtLvl);
         model.addObject("sailorCost",sailorCost);
+        model.addObject("nextImprove",nextImprove);
         model.setViewName("TavernView");
         return model;
     }
