@@ -35,7 +35,7 @@ public class StockDaoImpl implements StockDao {
     private static final String CHECK_EXISTENCE_QUERY = "SELECT count(*) FROM objects " +
             "WHERE object_id = ? " +
             "AND source_id = ? " +
-            "AND parent_id = ?;";
+            "AND parent_id = ?";
 
     private static final String GET_GOODS_FOR_SALE =
             "SELECT obj.object_id, obj.source_id, quantity.value, price.value " +
@@ -45,7 +45,7 @@ public class StockDaoImpl implements StockDao {
                     " AND obj.object_id = quantity.object_id " +
                     " AND obj.object_id = price.object_id " +
                     " AND quantity.attr_id = ? " +
-                    " AND price.attr_id = ?; ";
+                    " AND price.attr_id = ?";
 
     private static final String GET_AMMO_FOR_SALE =
             "SELECT obj.object_id, obj.source_id, quantity.value " +
@@ -53,13 +53,13 @@ public class StockDaoImpl implements StockDao {
                     " WHERE obj.object_type_id = ? " +
                     " AND obj.parent_id = ?" +
                     " AND obj.object_id = quantity.object_id " +
-                    " AND quantity.attr_id = ?; ";
+                    " AND quantity.attr_id = ?";
 
     private static final String GET_CANNON_FOR_SALE =
             "SELECT obj.object_id, obj.source_id" +
                     " FROM objects obj " +
                     " WHERE obj.object_type_id = ? " +
-                    " AND obj.parent_id = ?;";
+                    " AND obj.parent_id = ?";
 
     private static final String GET_MAST_FOR_SALE =
             "SELECT obj.object_id, obj.source_id" +
@@ -72,7 +72,7 @@ public class StockDaoImpl implements StockDao {
                     " AND obj.source_id = obj_temp.object_id " +
                     " AND obj_temp.object_type_id = ? " +
                     " AND obj_temp.object_id = max_speed.object_id " +
-                    " AND max_speed.attr_id = ?; ";
+                    " AND max_speed.attr_id = ?";
 
 
     @Autowired

@@ -69,7 +69,7 @@
   <source src="static/audio/gavan1-17.1-21.mp3" type="audio/mp3">
 </audio>
 
-<a href="/city" class="logOutBottom">Back</a>
+<a href="/city" class="logOutBottom">Return to city</a>
 <div align="left">
 	<table class="panel">
 	<tr align="center">

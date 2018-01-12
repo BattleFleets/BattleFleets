@@ -13,6 +13,14 @@ body {
 
 .panels{
     background:url("../images/general/panel_background.jpg");
+    height: 75%;
+    overflow: auto;
+}
+
+td, th{
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    color: black;
 }
 
 ul>li>a{
@@ -22,9 +30,7 @@ ul>li>a{
     font-family: Arial, Helvetica, sans-serif;
 }
 
-
-#money {
-    position: absolute;
-    bottom: 20px;
-    left: 30px;
+.nav-tabs > li > a:hover,
+.nav-tabs > li > a:focus{
+    color: #d18a4d;
 }
