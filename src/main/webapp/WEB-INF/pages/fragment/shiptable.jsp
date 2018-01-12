@@ -12,11 +12,11 @@
             <table class ="tableClass">
             <tr>
                 <td>
-                <button class="cap button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getTemplateId()}">
+                <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getTemplateId()}" onclick="buyShip(this)">
                 <span>Buy ${shipTemplates.getTName()}</span>
                 </button>
                 </td>
-                <td colspan="2">MaxCarryingLimit: ${shipTemplates.getMaxCarryingLimit()}</td>
+                <td colspan="2">MaxCarryingLimit: <b class="values">${shipTemplates.getMaxCarryingLimit()}</b></td>
             </tr>
             <tr>
                 <td rowspan="3" id = "shipimg">
@@ -41,21 +41,21 @@
                     </c:otherwise>
                 </c:choose>
                 </td>
-                <td>MaxCannonQuantity: ${shipTemplates.getMaxCannonQuantity()}</td>
-                <td>StartNumCannon: ${shipEquipments.get(status.index).getStartNumCannon()}</td>
+                <td>MaxCannonQuantity:  <b class="values">${shipTemplates.getMaxCannonQuantity()}</b></td>
+                <td>StartNumCannon:  <b class="values">${shipEquipments.get(status.index).getStartNumCannon()}</b></td>
             </tr>
             <tr>
-                <td>MaxMastsQuantity: ${shipTemplates.getMaxMastsQuantity()}</td>
-                <td>StartCannonType: ${startTypeOfShipEquips.get(status.index).getTypeCannonName()}</td>
+                <td>MaxMastsQuantity:  <b class="values">${shipTemplates.getMaxMastsQuantity()}</b></td>
+                <td>StartCannonType:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeCannonName()}</b></td>
             </tr>
             <tr>
-                <td>MaxSailorsQuantity: ${shipTemplates.getMaxSailorsQuantity()}</td>
-                <td>StartNumMast: ${shipEquipments.get(status.index).getStartNumMast()}</td>
+                <td>MaxSailorsQuantity:  <b class="values">${shipTemplates.getMaxSailorsQuantity()}</b></td>
+                <td>StartNumMast:  <b class="values">${shipEquipments.get(status.index).getStartNumMast()}</b></td>
             </tr>
             <tr>
-                <td>Cost: ${shipTemplates.getCost()}</td>
-                <td>MaxHealth: ${shipTemplates.getMaxHealth()}</td>
-                <td>StartMastType: ${startTypeOfShipEquips.get(status.index).getTypeMastName()}</td>
+                <td>Cost:  <b class="values">${shipTemplates.getCost()}</b></td>
+                <td>MaxHealth:  <b class="values">${shipTemplates.getMaxHealth()}</b></td>
+                <td>StartMastType:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeMastName()}</b></td>
             </tr>
             </table>
         </c:forEach>
@@ -75,9 +75,9 @@ var btn = document.getElementById("shipTemplateId");
 
 var span = document.getElementsByClassName("close")[0];
 
-$(function(){
-    $(".shipTemplateId").click(function(){
-        var shipTemplateId = $(".shipTemplateId").val();
+function buyShip(elem) {
+var shipTemplateId = elem.value;
+    $(function(){
         $.ajax({
             url:'/buy',
             method:"GET",
@@ -91,9 +91,8 @@ $(function(){
                              console.log("ERROR: ", e);
                          }
             } );
-
     });
-});
+}
 
 span.onclick = function() {
     modal.style.display = "none";

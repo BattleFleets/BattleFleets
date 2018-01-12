@@ -1,6 +1,7 @@
 body{
     background-attachment: fixed;
 }
+
 .messageText {
     text-align: center;
     color: white;
@@ -33,7 +34,6 @@ body{
     border: 4px ridge black;
     padding: 5%;
     border-spacing: 10%;
-
 }
 
 input[type=submit] {
@@ -41,7 +41,7 @@ input[type=submit] {
 }
 
 .button {
-    background-image:url("../images/general/button_background.jpg"); 
+    background-image:url("../images/general/button_background.jpg");
     display: inline-block;
     border-radius: 16px;
     background-color: #f4511e;
@@ -59,7 +59,7 @@ input[type=submit] {
 
 
 .button span {
-  font-size: 25px;
+  font-size: 80%;
   cursor: pointer;
   display: inline-block;
   position: relative;
@@ -84,7 +84,7 @@ input[type=submit] {
   right: 0;
 }
 
-.footer {
+footer {
     position: fixed;
     right: 0;
     bottom: 0;
@@ -94,4 +94,20 @@ input[type=submit] {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 8pt;
     z-index: -1;
+}
+
+header{
+    background-image: url(../images/general/panel_background.jpg);
+    background-position: center;
+    background-size: 100%;
+    position: absolute;
+    border: 2px solid black;
+    top: 8px;
+    left: 16px;
+    color: white;
+    font-size: 18px;
+    font-family: "Lucida Bright", Georgia, serif;
+    padding: 5px 20px;
+    text-decoration: none;
+
 }

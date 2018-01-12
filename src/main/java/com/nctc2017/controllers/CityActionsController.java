@@ -3,6 +3,7 @@ package com.nctc2017.controllers;
 import java.math.BigInteger;
 
 import com.nctc2017.services.LevelUpService;
+import com.nctc2017.services.MoneyService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,9 @@ public class CityActionsController {
 
     @Autowired
     private LevelUpService lvlUpService;
+
+    @Autowired
+    private MoneyService moneyService;
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/travel", method = RequestMethod.GET)
@@ -72,49 +76,27 @@ public class CityActionsController {
             }
         }
         City currCity = travelService.getCurrentCity(playerId);
+        String login = lvlUpService.getLogin(playerId);
+        int money = moneyService.getPlayersMoney(playerId);
+        int level = lvlUpService.getCurrentLevel(playerId);
+        int points = lvlUpService.getCurrentPoints(playerId);
+        int nextLevel = lvlUpService.getNextLevel(playerId);
+        int maxShips = lvlUpService.getMaxShips(playerId);
+        int income = lvlUpService.getPassiveIncome(playerId);
+        int pointsToNxtLvl =lvlUpService.getPointsToNxtLevel(playerId);
+        int nextImprove = lvlUpService.getNextLevel(playerId);
         model.setViewName("CityView");
-        model.addObject("level", lvlUpService.getCurrentLevel(playerId));
-        model.addObject("nextLevel", lvlUpService.getNextLevel(playerId));
+        model.addObject("login", login);
+        model.addObject("money", money);
+        model.addObject("points", points);
+        model.addObject("level", level);
+        model.addObject("nextLevel", nextLevel);
+        model.addObject("maxShips", maxShips);
+        model.addObject("income", income);
+        model.addObject("toNxt", pointsToNxtLvl);
         model.addObject("city", currCity.getCityName());
+        model.addObject("nextImprove",nextImprove);
         return model;
     }
 
-    @Secured("ROLE_USER")
-    @RequestMapping(value = "/update", method = RequestMethod.GET)
-    public ModelAndView update( @RequestParam(value="diff",required = false) int diff){
-        ModelAndView model = new ModelAndView();
-        model.setViewName("UpdateView");
-        model.addObject("diff", diff);
-        return model;
-    }
-    
-    @Secured("ROLE_USER")
-    @RequestMapping(value = "/incomeUp", method = RequestMethod.GET)
-    public ModelAndView incomeUp(@AuthenticationPrincipal PlayerUserDetails userDetails,
-                                 @RequestParam(value="diffIncome",required = false) int diff){
-       if(diff>=0) {
-           lvlUpService.incomeUp(userDetails.getPlayerId());
-           lvlUpService.updateNxtLvl(userDetails.getPlayerId());
-           diff-=5;
-           return update(diff);
-       }
-       else {
-           return getCity(userDetails);
-       }
-    }
-
-    @Secured("ROLE_USER")
-    @RequestMapping(value = "/shipUp", method = RequestMethod.GET)
-    public ModelAndView shipUp(@AuthenticationPrincipal PlayerUserDetails userDetails,
-                               @RequestParam(value="diffShip",required = false) int diff){
-        if(diff>=0) {
-            lvlUpService.shipUp(userDetails.getPlayerId());
-            lvlUpService.updateNxtLvl(userDetails.getPlayerId());
-            diff-=5;
-            return update(diff);
-        }
-        else {
-            return getCity(userDetails);
-        }
-    }
-}
+   }

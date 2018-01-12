@@ -43,7 +43,7 @@ public class LevelUpServiceTest {
         String login = "Steve";
         String email = "Rogers@gmail.com";
         int money = 150;
-        int points = 13;
+        int points = 200;
         int lvl = 10;
         steve = new Player(playerId, login, email, money, points, lvl,5);
     }
@@ -53,13 +53,13 @@ public class LevelUpServiceTest {
         levelUpService = (LevelUpService)this.context.getBean("levelUpServicePrototype");
         MockitoAnnotations.initMocks(this);
 
-        when(playerDao.getPlayerLevel(steve.getPlayerId())).thenReturn(10).thenReturn(12);
-        when(playerDao.getPlayerPoints(steve.getPlayerId())).thenReturn(13).thenReturn(20);
+        when(playerDao.getPlayerLevel(steve.getPlayerId())).thenReturn(10).thenReturn(10).thenReturn(11);
+        when(playerDao.getPlayerPoints(steve.getPlayerId())).thenReturn(200).thenReturn(61);
         when(playerDao.getCurrentPassiveIncome(steve.getPlayerId())).thenReturn(100).thenReturn(150);
         when(playerDao.getCurrentMaxShips(steve.getPlayerId())).thenReturn(3).thenReturn(4);
 
         doNothing().when(playerDao).updatePoints(steve.getPlayerId(),200);
-        doNothing().when(playerDao).updateLevel(steve.getPlayerId(),12);
+        doNothing().when(playerDao).updateLevel(steve.getPlayerId(),10);
         doNothing().when(playerDao).updatePassiveIncome(steve.getPlayerId(),200);
         doNothing().when(playerDao).updateMaxShips(steve.getPlayerId(),200);
     }
@@ -73,8 +73,8 @@ public class LevelUpServiceTest {
 
     @Test
     public void levelUp() throws Exception {
-        levelUpService.levelUp(steve.getPlayerId(),12);
-        assertEquals(12,levelUpService.getCurrentLevel(steve.getPlayerId()));
+        levelUpService.levelUp(steve.getPlayerId(),10);
+        assertEquals(10,levelUpService.getCurrentLevel(steve.getPlayerId()));
     }
 
     @Test
@@ -85,8 +85,8 @@ public class LevelUpServiceTest {
 
     @Test
     public void PointsUp() throws Exception {
-        levelUpService.PointsUp(steve.getPlayerId(),20);
-        assertEquals(20,levelUpService.getCurrentPoints(steve.getPlayerId()));
+        levelUpService.pointsUp(steve.getPlayerId(),120);
+        assertEquals(61,levelUpService.getCurrentPoints(steve.getPlayerId()));
     }
 
     @Test
