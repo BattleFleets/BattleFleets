@@ -9,10 +9,10 @@
         <p>Level ${level}</p>
         <p>Points ${points}</p>
         <p>To next Level ${toNxt}</p>
-        <p>Money ${money}</p>
-        <p id="maxShips">MaxShips ${maxShips}</p>
-        <p id="income">Income ${income}/day</p>
-        <p id="improve">Improve ${nextImprove} lvl</p>
+        <p>Money <span id="money">${money}</span></p>
+        <p>MaxShips <span id="maxShips">${maxShips}</span></p>
+        <p>Income <span id="income">${income}</span>/day</p>
+        <p>Improve <span  id="improve">${nextImprove}</span> lvl</p>
 </header>
 </body>
 </html>

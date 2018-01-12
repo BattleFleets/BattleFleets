@@ -44,8 +44,8 @@
                     $('#btnShip').val($('#btnShip').val()-nxt);
                     $('#btnIncome').val( $('#btnIncome').val()-nxt);
                     $('#congratulate').html("<h1 class='titleText'>"+data[0]+"</h1>");
-                    $('#maxShips').html("MaxShips "+data[1]);
-                    $('#improve').html("Improve "+data[2]);
+                    $('#maxShips').html(data[1]);
+                    $('#improve').html(data[2]);
                     if($('#btnShip').val()<nxt){
                         $('#btnShip').attr('disabled',true);
                         $('#btnIncome').attr('disabled',true);
@@ -66,8 +66,8 @@
                     $('#btnShip').val($('#btnShip').val()-nxt);
                     $('#btnIncome').val( $('#btnIncome').val()-nxt);
                     $('#congratulate').html("<h1 class='titleText'>"+data[0]+"</h1>");
-                    $('#income').html("Income "+data[1]);
-                    $('#improve').html("Improve "+data[2]);
+                    $('#income').html(data[1]);
+                    $('#improve').html(data[2]);
                     if($('#btnIncome').val()<nxt){
                         $('#btnShip').attr('disabled',true);
                         $('#btnIncome').attr('disabled',true);

@@ -9,6 +9,7 @@ import com.nctc2017.bean.Ship;
 import com.nctc2017.services.LevelUpService;
 import com.nctc2017.services.MoneyService;
 import com.nctc2017.services.ShipService;
+import com.sun.javafx.scene.shape.LineHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -68,17 +70,32 @@ public class TavernController {
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/buySailors", method = RequestMethod.GET)
-    public ModelAndView buySailors(@RequestParam(value="shipId",required = false) BigInteger shipId,
-                                   @RequestParam(value="num",required = false) int newSailors,
-                                   @RequestParam(value="toSpend",required = false) int cost,
-                                   @AuthenticationPrincipal PlayerUserDetails userDetails){
+    @ResponseBody
+    public String[] buySailors(@RequestParam(value="shipId",required = false) BigInteger shipId,
+                               @RequestParam(value="num",required = false) String newSailors,
+                               @RequestParam(value="toSpend",required = false) String cost,
+                               @AuthenticationPrincipal PlayerUserDetails userDetails){
         Ship ship = shipService.findShip(shipId);
-        int money = moneyService.deductMoney(userDetails.getPlayerId(), cost);
-        shipService.updateShipSailorsNumber(shipId, ship.getCurSailorsQuantity()+newSailors);
-        List<Ship> ships = shipService.getAllPlayerShips(userDetails.getPlayerId());
-        model.addObject("money",money);
-        model.addObject("ships",ships);
-        return model;
+        int oldNumSailors = shipService.getSailorsNumber(shipId);
+        int costForSailors;
+        int sailors;
+        if((oldNumSailors+Integer.valueOf(newSailors))>ship.getMaxSailorsQuantity()){
+            costForSailors=Integer.valueOf(cost)-
+                    ((oldNumSailors+Integer.valueOf(newSailors))-ship.getMaxSailorsQuantity())*shipService.getSailorCost();
+            sailors=ship.getMaxSailorsQuantity();
+        }
+        else
+        {
+            costForSailors=Integer.valueOf(cost);
+            sailors=oldNumSailors+Integer.valueOf(newSailors);
+        }
+        int money = moneyService.deductMoney(userDetails.getPlayerId(), costForSailors);
+        shipService.updateShipSailorsNumber(shipId, sailors);
+        int curSailors = shipService.getSailorsNumber(shipId);
+        String[] results = new String[2];
+        results[0] = String.valueOf(money);
+        results[1] = String .valueOf(curSailors);
+        return results;
     }
 
 }

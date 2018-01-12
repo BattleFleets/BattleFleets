@@ -11,8 +11,8 @@ body {
     background-size: cover;
 }
 
-th{
-    border: 1px solid #ffffff;
+td.listOfShips{
+    border: 1px solid black;
 }
 img{
     width:175px;
@@ -32,7 +32,7 @@ img{
     font-family: tempus sans itc;
     font-weight: 900;
     text-align: left;
-    border: 6px double #ffffff;
+    border: 6px double black;
     width: 183.33px;
 }
 
@@ -43,7 +43,7 @@ img{
     font-family: tempus sans itc;
     font-weight: 900;
     text-align: left;
-    border: 6px double #ffffff;
+    border: 6px double black;
     width: 275px;
 }
 
@@ -54,6 +54,11 @@ img{
     font-family: tempus sans itc;
     font-weight: 900;
     text-align: left;
-    border: 6px double #ffffff;
+    border: 6px double black;
     width: 550px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button{
+    -webkit-appearance: none;
 }
