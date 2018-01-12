@@ -34,3 +34,7 @@ ul>li>a{
 .nav-tabs > li > a:focus{
     color: #d18a4d;
 }
+
+footer{
+    text-align: center !important;
+}

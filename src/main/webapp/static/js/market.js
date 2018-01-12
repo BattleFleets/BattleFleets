@@ -17,6 +17,7 @@ var cannonballLink="/static/images/market/cannonball.jpg";
 var chainLink="/static/images/market/chain.png";
 var mast1Link="/static/images/market/mast1.jpg";
 $(document).ready(function() {
+    updateMoney();
     $.ajax({
         type: "GET",
         url: "/market/getBuyGoods",
@@ -117,3 +118,16 @@ $(document).ready(function() {
         $("#buyTable").append(trHTML);
     });
 });
+
+function updateMoney() {
+    $.ajax({
+        type: "GET",
+        url: "/market/myMoney",
+        dataType: "text",
+        success: function(data){
+            $("#money").empty();
+            $("#money").append(data);
+        }
+    });
+    return;
+}

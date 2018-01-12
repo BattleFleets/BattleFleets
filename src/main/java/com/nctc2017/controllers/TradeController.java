@@ -1,12 +1,7 @@
 package com.nctc2017.controllers;
 
-import java.math.BigInteger;
-import java.util.*;
-
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nctc2017.bean.Market;
 import com.nctc2017.bean.PlayerUserDetails;
 import com.nctc2017.bean.View;
 import com.nctc2017.constants.DatabaseObject;
@@ -57,8 +52,8 @@ public class TradeController {
     @ResponseBody
     public String getAllGoodsForBuying(@AuthenticationPrincipal PlayerUserDetails userDetails)
             throws JsonProcessingException {
-        moneyService.addMoney(userDetails.getPlayerId(),30000000);
-        tradeService.buy(userDetails.getPlayerId(), DatabaseObject.RUM_TEMPLATE_ID, tradeService.getMarketGoodsByPlayerId(userDetails.getPlayerId()).get(19).getBuyingPrice(), 11);
+        //moneyService.addMoney(userDetails.getPlayerId(),30000000);
+        //tradeService.buy(userDetails.getPlayerId(), DatabaseObject.RUM_TEMPLATE_ID, tradeService.getMarketGoodsByPlayerId(userDetails.getPlayerId()).get(19).getBuyingPrice(), 11);
         return new ObjectMapper().writerWithView(View.Buy.class)
                     .writeValueAsString(tradeService.getMarketGoodsByPlayerId(userDetails.getPlayerId()));
     }
@@ -72,11 +67,12 @@ public class TradeController {
                 .writeValueAsString(tradeService.getPlayersGoodsForSale(userDetails.getPlayerId()));
     }
 
-    public String getMoney(BigInteger playerId){
-        int money;
-        money = moneyService.getPlayersMoney(playerId);
-        String s="sdkgjh";
-        return s;
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/market/myMoney", method = RequestMethod.GET)
+    @ResponseBody
+    public String getMoney(@AuthenticationPrincipal PlayerUserDetails userDetails){
+        int money = moneyService.getPlayersMoney(userDetails.getPlayerId());
+        return String.valueOf(money);
     }
 
 }
