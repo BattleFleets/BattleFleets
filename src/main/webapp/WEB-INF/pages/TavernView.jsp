@@ -12,29 +12,24 @@
 <div align="center" id="res">
     <h1 class="titleText">${city}</h1>
 </div>
-<%@include file="fragment/header.jsp"%>
+<jsp:include  page="/addHeader"/>
 <body>
 <form method="get">
     <div align="center">
         <c:if test="${empty ships}">
-            <table class="panel">
+            <table class="panelTavern">
                 <tr align="center">
                     <td >
-                        <p style="font-size:40px; font-family: tempus sans itc; color:white">You don't have any ships</p>
+                        <p style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You don't have any ships</p>
                     </td>
                 </tr>
             </table>
         </c:if>
         <c:if test="${not empty ships}">
-            <table class="panel">
+            <table class="panelTavern">
                 <tr align="center">
                     <td>
-                        <c:if test="${money>=sailorCost}">
-                            <p style="font-size:40px;height:10px; font-family: tempus sans itc; color:white">You can buy sailors on your ships</p>
-                        </c:if>
-                        <c:if test="${money<sailorCost}">
-                            <p style="font-size:25px;height:10px; font-family: tempus sans itc;color:white">you need ${sailorCost-money} more</p>
-                        </c:if>
+                          <p style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You can hire sailors on your ships</p>
                     </td>
                 </tr>
                 <tr>

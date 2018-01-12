@@ -16,6 +16,7 @@ public class LevelUpService {
     private static final int factor = 100;
     private static final double ratio = 1.1;
     private static final int updatelvl = 1;
+    private static final int zero = 0;
 
 
     public int getCurrentLevel(BigInteger playerId) {
@@ -32,23 +33,25 @@ public class LevelUpService {
 
     public int getPointsToNxtLevel(BigInteger playerId){
         int curLvl = getCurrentLevel(playerId);
-        int curPoints = getCurrentPoints(playerId);
-        double maxCurPoints = Math.ceil(factor*Math.pow(ratio, curLvl));
-        return (int)(maxCurPoints-curPoints);
+        double points = Math.ceil(factor*Math.pow(ratio, curLvl));
+        return (int)(points);
     }
 
     public void pointsUp(BigInteger playerId, int points) {
-       double diff = 0;
+       double diff;
        int curLvl = getCurrentLevel(playerId);
        int newPoints = points + getCurrentPoints(playerId);
        double maxCurPoints = Math.ceil(factor*Math.pow(ratio, curLvl));
        if(newPoints<maxCurPoints){
-           playerDao.updatePoints(playerId, points);
+           playerDao.updatePoints(playerId, newPoints);
        }
        else{
          diff = newPoints-maxCurPoints;
-         levelUp(playerId,curLvl+updatelvl);
-         pointsUp(playerId, (int)diff);
+         levelUp(playerId, curLvl + updatelvl);
+         playerDao.updatePoints(playerId, zero);
+         if(diff!=0) {
+             pointsUp(playerId, (int) diff);
+         }
        }
     }
 
