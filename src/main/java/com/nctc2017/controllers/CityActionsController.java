@@ -72,7 +72,6 @@ public class CityActionsController {
             }
         }
         City currCity = travelService.getCurrentCity(playerId);
-        model.addObject("msg", "This is protected page - Only for Users!");
         model.setViewName("CityView");
         model.addObject("level", lvlUpService.getCurrentLevel(playerId));
         model.addObject("nextLevel", lvlUpService.getNextLevel(playerId));
@@ -88,6 +87,7 @@ public class CityActionsController {
         model.addObject("diff", diff);
         return model;
     }
+    
     @Secured("ROLE_USER")
     @RequestMapping(value = "/incomeUp", method = RequestMethod.GET)
     public ModelAndView incomeUp(@AuthenticationPrincipal PlayerUserDetails userDetails,

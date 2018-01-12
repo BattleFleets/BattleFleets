@@ -28,8 +28,6 @@ import com.nctc2017.services.TravelService;
 @Controller
 public class TravelController {
     private static final Logger LOG = Logger.getLogger(TravelController.class);
-    private static final String CITY_NAME_VAR = "city_name_";
-    private static final String CITY_ID = "city_id_";
     private static final int checkingCounter = 5; 
     private static final int checkingInterval = 2000;
         
@@ -48,11 +46,7 @@ public class TravelController {
         
         ModelAndView model = new ModelAndView();
         List<City> cities = travelService.getCities();
-        for (int i = 0; i < cities.size(); i++) {
-            City nextCity = cities.get(i);
-            model.addObject(CITY_NAME_VAR + (i + 1), nextCity.getCityName());
-            model.addObject(CITY_ID + (i + 1), nextCity.getCityId());
-        }
+        model.addObject("cities", cities);
         model.addObject("info", info);
         model.setViewName("WorldView");
         return model;
@@ -119,7 +113,7 @@ public class TravelController {
         ModelAndView model = new ModelAndView();
         City currCity = travelService.getCurrentCity(playerId);
         if (currCity.getCityId().equals(cityId)) {
-            model.setStatus(HttpStatus.FOUND);
+            model.setStatus(HttpStatus.LOCKED);
             model.addObject("errorMes", "You already in " + currCity.getCityName() + ", Captain!");
             model.addObject("errTitle", "You drunk!");
         } else {

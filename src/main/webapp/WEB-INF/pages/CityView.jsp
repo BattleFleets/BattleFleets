@@ -91,7 +91,7 @@
 		</tr>
 		<tr align="center">
 			<td>
-			<button id="B_travel" class="button" style="vertical-align:middle" name="travel" type="button" value="World Map" >
+			<button id="B_travel" class="button" style="vertical-align:middle" name="travel" type="button" value="${city}" >
 			<span>Travel</span>
 			</button>
 			</td>
