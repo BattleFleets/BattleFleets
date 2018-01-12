@@ -42,6 +42,7 @@ input:focus {outline:0;}
     width: 20%;
     margin-top: 2%;
     margin-bottom: 2%;
+    overflow: visible;
 }
 .exit_button_block {
 	position: absolute;
@@ -58,7 +59,8 @@ input:focus {outline:0;}
 .icon_fire, .icon_fire_select, .icon_leave,
 .icon_leave_select, .icon_surrender, .icon_surrender_select,
 .icon_boarding, .icon_boarding_select, .icon_payoff,
-.icon_payoff_select, .icon_exit, .icon_exit_select, .icon_exit_disable{
+.icon_payoff_select, .icon_exit, .icon_exit_select, 
+.icon_exit_disable, .icon_boarding_disable, .icon_fire_disable{
     border: none;
     background-size: contain;
     background-repeat:no-repeat;
@@ -86,6 +88,9 @@ input:focus {outline:0;}
 .icon_fire_select {
 	background-image:url("../images/battle/icon_fire_select.png");
 }
+.icon_fire_disable {
+	background-image:url("../images/battle/icon_fire_disable.png");
+}
 .icon_leave {
 	background-image:url("../images/battle/icon_leave_reject.png");
 }
@@ -103,6 +108,9 @@ input:focus {outline:0;}
 }
 .icon_boarding_select {
 	background-image:url("../images/battle/icon_boarding_select.png");
+}
+.icon_boarding_disable {
+	background-image:url("../images/battle/icon_boarding_disable.png");
 }
 .icon_payoff {
 	background-image:url("../images/battle/icon_payoff_reject.png");

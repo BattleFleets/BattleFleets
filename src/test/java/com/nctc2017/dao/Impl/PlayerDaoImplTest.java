@@ -238,6 +238,7 @@ public class PlayerDaoImplTest {
 
     @Test
     @Rollback(true)
+    @Ignore
     public void findAllPlayer() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         int j = 0;

@@ -1,15 +1,13 @@
 package com.nctc2017.services;
 
-import com.nctc2017.bean.Ship;
-import com.nctc2017.bean.ShipTemplate;
-import com.nctc2017.bean.StartShipEquipment;
-import com.nctc2017.bean.StartTypeOfShipEquip;
+import com.nctc2017.bean.*;
 import com.nctc2017.dao.*;
 import com.nctc2017.services.utils.CompBeans;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -54,6 +52,20 @@ public class ShipService {
         return shipDao.getSailorCost();
     }
 
+    public List<ShipSpeed> getSpeedShips(List<Ship> ships) {
+        List<ShipSpeed> result = new ArrayList<>();
+        for (Ship ship:ships) {
+            int maxShipSpeed = 0;
+            int curShipSpeed = 0;
+            for (Mast mast : mastDao.getShipMastsFromShip(ship.getShipId())) {
+                maxShipSpeed += mast.getMaxSpeed();
+                curShipSpeed += mast.getCurSpeed();
+            }
+            result.add(new ShipSpeed(maxShipSpeed,curShipSpeed));
+        }
+        return result;
+    }
+
     public Ship findShip(BigInteger shipId){
         return shipDao.findShip(shipId);
     }
@@ -86,6 +98,22 @@ public class ShipService {
         return shipId;
     }
 
+    public final class ShipSpeed {
+        private final int maxSpeed;
+        private final int curSpeed;
 
+        public ShipSpeed(int maxSpeed, int curSpeed) {
+            this.maxSpeed = maxSpeed;
+            this.curSpeed = curSpeed;
+        }
+
+        public int getCurSpeed() {
+            return curSpeed;
+        }
+
+        public int getMaxSpeed() {
+            return maxSpeed;
+        }
+    }
 
 }

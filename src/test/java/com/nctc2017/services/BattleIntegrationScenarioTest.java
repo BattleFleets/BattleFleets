@@ -301,27 +301,19 @@ public class BattleIntegrationScenarioTest {
             assertTrue(battleService.getDistance(nikId) < dist);
             
             if (battleService.getDistance(nikId) == 0) {
-                try {
-                    holdDao.deleteHold(nikHoldId);
-                    holdDao.deleteHold(steveHoldId);
-                    nikHoldId = holdDao.createHold(nikShipId);
-                    steveHoldId = holdDao.createHold(steveShipId);
-                    putNewGoodsInHold(steveHoldId);
-                    putNewGoodsInHold(nikHoldId);
-                    currSteveSailors = shipDao.getCurrentShipSailors(steveShipId);
-                    assertEquals(steveShipBefore.getCurSailorsQuantity(), currSteveSailors);
-                    battleService.boarding(nikId, new DefaultBoardingBattleEnd());
-                    break;
-                } catch (DeadEndException e) {
-                    fail("DeadEndException unexpected");
-                    shipDao.updateShipSailorsNumber(nikShipId, 1);
-                    shipDao.updateShipSailorsNumber(steveShipId, 12);
-                    try {
-                        battleService.boarding(nikId, new DefaultBoardingBattleEnd());
-                    } catch (DeadEndException e1) {
-                        fail("DeadEndException unexpected");
-                    }
-                }
+                holdDao.deleteHold(nikHoldId);
+                holdDao.deleteHold(steveHoldId);
+                
+                nikHoldId = holdDao.createHold(nikShipId);
+                steveHoldId = holdDao.createHold(steveShipId);
+                
+                putNewGoodsInHold(steveHoldId);
+                putNewGoodsInHold(nikHoldId);
+                
+                currSteveSailors = shipDao.getCurrentShipSailors(steveShipId);
+                assertEquals(steveShipBefore.getCurSailorsQuantity(), currSteveSailors);
+                battleService.boarding(nikId, new DefaultBoardingBattleEnd());
+                break;
             }
         }
         nikShipAfter = shipDao.findShip(nikShipId);

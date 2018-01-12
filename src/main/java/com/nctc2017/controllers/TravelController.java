@@ -6,9 +6,12 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,8 +38,14 @@ public class TravelController {
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/world", method = RequestMethod.GET)
-    public ModelAndView worldWelcome(
+    public ModelAndView worldWelcome(@AuthenticationPrincipal PlayerUserDetails userDetails,
             @RequestParam(value = "info", required = false) String info) {
+        BigInteger playerId = userDetails.getPlayerId();
+        
+        if (travelService.isPlayerInTravel(playerId)) {
+            return new ModelAndView("redirect:/trip");
+        }
+        
         ModelAndView model = new ModelAndView();
         List<City> cities = travelService.getCities();
         for (int i = 0; i < cities.size(); i++) {
@@ -52,19 +61,22 @@ public class TravelController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/is_enemy_on_horizon", method = RequestMethod.GET, produces="text/plain")
     @ResponseBody
-    public String isEnemyOnHorizon(@AuthenticationPrincipal PlayerUserDetails userDetails) 
+    public ResponseEntity<String> isEnemyOnHorizon(@AuthenticationPrincipal PlayerUserDetails userDetails) 
             throws PlayerNotFoundException, InterruptedException {
         BigInteger playerId = userDetails.getPlayerId();
         LOG.debug("Player_" + playerId + " request isEnemyOnHorizon()");
+        if (travelService.isParticipated(playerId)) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
         boolean appeared = false;
         for (int i = 0; i < checkingCounter; i++) {
             appeared = travelService.isEnemyOnHorizon(playerId);
             if (appeared) {
-                return String.valueOf(appeared);
+                return ResponseEntity.ok(String.valueOf(appeared));
             }
             Thread.sleep(checkingInterval);
         }
-        return String.valueOf(appeared);
+        return ResponseEntity.ok(String.valueOf(appeared));
     }
     
     @Secured("ROLE_USER")
@@ -130,7 +142,7 @@ public class TravelController {
     @RequestMapping(value = "/is_decision_accept", method = RequestMethod.GET, produces="text/plain")
     @ResponseBody
     public String isDecisionAccept(@AuthenticationPrincipal PlayerUserDetails userDetails) 
-            throws InterruptedException {
+            throws InterruptedException, PlayerNotFoundException {
         BigInteger playerId = userDetails.getPlayerId();
         LOG.debug("Player_" + playerId + " request isDecisionAccept()");
         boolean accept = false; 
@@ -155,11 +167,20 @@ public class TravelController {
             city = travelService.getRelocationCity(playerId);
             model.addObject("city", city.getCityName());
         } catch (PlayerNotFoundException e) {
-            model.addObject("city", " ");
+            return new ModelAndView("redirect:/city");
         }
         model.addObject("time", relocateTime);
         model.setStatus(HttpStatus.OK);
         model.setViewName("TravelView");
+        return model;
+    }
+    
+    @ExceptionHandler(RuntimeException.class)
+    public ModelAndView handleCustomException(RuntimeException ex) {
+
+        ModelAndView model = new ModelAndView("/error");
+        model.addObject("reason", ex.getMessage());
+
         return model;
     }
 }
