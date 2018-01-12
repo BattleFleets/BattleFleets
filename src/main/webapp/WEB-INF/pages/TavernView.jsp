@@ -137,7 +137,7 @@ function cost(cost) {
 }
 
 function defaultValue() {
-        $("input.spend").val(${sailorCost});
+        $("input.spend").val("${sailorCost}");
 }
 </script>
 </html>

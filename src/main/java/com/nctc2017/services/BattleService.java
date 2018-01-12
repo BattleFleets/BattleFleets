@@ -30,7 +30,10 @@ import com.nctc2017.services.utils.BattleManager;
 public class BattleService {
     private static final Logger LOG = Logger.getLogger(ShipDaoImpl.class);
     private static final int RAPAIR_BONUS = 1;
-    
+    private static final String LOSE_MESSAGE_DESTROY = "Your ship destroy, your crew is feeding the fish";
+    private static final String WIN_MESSAGE_DESTROY = "Enemy ship destroy, you found some useful cargo among the wreckage.";
+    private static final String WIN_BOARDING_MESSAGE = "Good boarding Captain!";
+    private static final String LOSE_BOARDING_MESSAGE = "All who were alive were thrown overboard, and you lost your cargo.";
     @Autowired
     protected BattleManager battles;
     @Autowired
@@ -101,10 +104,10 @@ public class BattleService {
                 
                 if (enemyHp <= 0) {
                     visitor.endCaseVisit(playerDao, shipDao, plyerShipId, enemyShipId, playerId, enemyId);
-                    battle.setWinner(playerId);
+                    battle.setWinner(playerId, WIN_MESSAGE_DESTROY, LOSE_MESSAGE_DESTROY);
                 } else if (playerHp <= 0) {
                     visitor.endCaseVisit(playerDao, shipDao, enemyShipId, plyerShipId, enemyId, playerId);
-                    battle.setWinner(enemyId);
+                    battle.setWinner(enemyId, WIN_MESSAGE_DESTROY, LOSE_MESSAGE_DESTROY);
                 } else {
                     battle.resetSteps(playerId);
                     LOG.debug("Player_" + playerId + " reset steps ");
@@ -118,6 +121,11 @@ public class BattleService {
         }
     }
     
+    public boolean wasPalayerMadeStep(BigInteger playerId) throws BattleEndException {
+        Battle battle = battles.getBattle(playerId);
+        return battle.wasPlayerMadeStep(playerId);
+    }
+    
     public boolean isStepResultAvalible(BigInteger playerId) throws BattleEndException {       
         Battle battle = battles.getBattle(playerId);
 
@@ -129,7 +137,7 @@ public class BattleService {
             BattleEndVisitor visitor, BigInteger winnerId, BigInteger loserId) {
         shipDao.updateShipHealth(winnerShipId, random.nextInt(RAPAIR_BONUS));
         visitor.endCaseVisit(playerDao, shipDao, winnerShipId, loserShipId, winnerId, loserId);
-        battle.setWinner(winnerId);
+        battle.setWinner(winnerId, WIN_MESSAGE_DESTROY, LOSE_MESSAGE_DESTROY);
     }
     
     public void setConvergaceOfDist(BigInteger playerId, boolean decision) throws BattleEndException {
@@ -165,18 +173,23 @@ public class BattleService {
         return battle.getDistance();
     }
 
-    public Player boarding(BigInteger playerId, BattleEndVisitor visitor) throws DeadEndException, BattleEndException {
+    public BigInteger boarding(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException {
         Battle battle = battles.getBattle(playerId);
-        BigInteger winner;
+        BigInteger winnerId;
         synchronized(battle) {
             BigInteger enemyShipId = battle.getEnemyShipId(playerId);
             BigInteger plyerShipId = battle.getShipId(playerId);
             
-            if(plyerShipId == null) 
-                throw new BattleEndException("Battle already finish.\n"
-                        + "Your crwe: " + shipDao.getCurrentShipSailors(plyerShipId)
-                        + "Enemy crwe: " + shipDao.getCurrentShipSailors(enemyShipId));
-            if(battle.getDistance() > 0) throw new IllegalStateException("Distance too big for boarding");
+            if(plyerShipId == null) { 
+                BattleEndException ex =  new BattleEndException("Battle already finish.\n");
+                LOG.error("Player_" + playerId + " try boarding, but ship in battle not found", ex);
+                throw ex;
+            }
+            if(battle.getDistance() > 0) {
+                IllegalStateException ex = new IllegalStateException("Distance too big for boarding");
+                LOG.error("Player_" + playerId + " try boarding with big distance", ex);
+                throw ex;
+            }
             
             int enemyCrew = shipDao.getCurrentShipSailors(enemyShipId);
             int playerCrew = shipDao.getCurrentShipSailors(plyerShipId);
@@ -185,43 +198,47 @@ public class BattleService {
             
             int boarding = (playerCrew + playerRndCoef) - (enemyCrew + enemyRndCoef);
             
-            BigInteger loser;
+            BigInteger loserId;
             BigInteger shipWiner;
             BigInteger shipLoser;
             BigInteger enemyId = battles.getEnemyId(playerId); 
             int winerCrew;
             int loserCrew;
             
-            if (boarding > 0) {
-                winner = playerId;
-                loser = enemyId;
+            if (boarding >= 0) {
+                winnerId = playerId;
+                loserId = enemyId;
                 shipWiner = plyerShipId;
                 shipLoser = enemyShipId;
                 winerCrew = playerCrew;
                 loserCrew = enemyCrew;
             }
-            else if (boarding < 0) {
-                winner = enemyId;
-                loser = playerId;
+            else {
+                winnerId = enemyId;
+                loserId = playerId;
                 shipWiner = enemyShipId;
                 shipLoser = plyerShipId;
                 winerCrew = enemyCrew;
                 loserCrew = playerCrew;
+            } 
+            int winnerCrewAfter = Math.abs(boarding);
+            if ((winerCrew - winnerCrewAfter) > 0) {
+                shipDao.updateShipSailorsNumber(shipWiner, winnerCrewAfter);
             } else {
-                shipDao.updateShipSailorsNumber(plyerShipId, 0);
-                shipDao.updateShipSailorsNumber(enemyShipId, 0);
-                throw new DeadEndException("No one won. Full mortality!");
+                winnerCrewAfter = random.nextInt(winerCrew);
+                winnerCrewAfter = winnerCrewAfter == 0 ? 1 : winnerCrewAfter;
+                shipDao.updateShipSailorsNumber(shipWiner,  winnerCrewAfter);
             }
-            int loserCrewPrec = (loserCrew * 100) / winerCrew;
-            int crewDiff = winerCrew - loserCrew; 
-            shipDao.updateShipSailorsNumber(shipWiner, 
-                    loserCrewPrec > 100 ? 1 : random.nextInt(crewDiff));
+           
             shipDao.updateShipSailorsNumber(shipLoser, 0);
-            
-            visitor.endCaseVisit(playerDao, shipDao, shipWiner, shipLoser, winner, loser);
+
+            battle.setWinner(winnerId, 
+                    WIN_BOARDING_MESSAGE + " Your crew: " + winnerCrewAfter,
+                    LOSE_BOARDING_MESSAGE);
+            visitor.endCaseVisit(playerDao, shipDao, shipWiner, shipLoser, winnerId, loserId);
             battles.resetBattle(playerId);
         }
-        return playerDao.findPlayerById(winner);
+        return winnerId;
         
     }
 
@@ -229,12 +246,17 @@ public class BattleService {
         BigInteger enemyId = battles.getEnemyId(playerId);
         return playerDao.findPlayerById(enemyId);
     }
+    
+    public boolean isBattleStart(BigInteger playerId) throws BattleEndException {
+        Battle battle = battles.getBattle(playerId); 
+        return battle.isParticipantsReady(playerId);
+    }
 
     public ShipWrapper getShipInBattle(BigInteger playerId) throws BattleEndException {
         Battle battle = battles.getBattle(playerId); 
         BigInteger shipId = battle.getShipId(playerId);
         if (shipId == null) {
-            BattleEndException ex = new BattleEndException("Battle already end");
+            BattleEndException ex = new BattleEndException("Battle between two ships already end");
             LOG.warn("Player " + playerId + " try getting info about his ship, but id not found in battle", ex);
             throw ex;
         }

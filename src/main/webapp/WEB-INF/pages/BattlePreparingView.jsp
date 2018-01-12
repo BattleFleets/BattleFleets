@@ -15,7 +15,7 @@
     var timerId;
     var enemyReadyId;
     function shipChooseTimer() {
-        seconds= seconds - 1;
+        seconds = seconds - 1;
         $("#timer").html("Auto pick: " + seconds + " sec");
         if (seconds == 0) {
         	console.log("Timer choose stop");
@@ -35,6 +35,7 @@
     	    if (response == "true") {
                 window.location.href = "/battle";
     	    } else {
+    	    	waitEnemyReady();
                // window.location.href = "/error";
     	    }
     	}).fail(function(xhr, status, error) {

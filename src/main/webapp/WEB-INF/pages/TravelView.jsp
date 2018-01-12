@@ -80,17 +80,13 @@
         var decisionId;
         var acceptDecision = false;
         var lookoutId;
-       /* var watchDog = true;*/
-        function decisionAccept() {
+        function isDecisionAccept() {
     		clearInterval(decisionId);
-    		/*if (!watchDog) return;
-    		watchDog = false;*/
     		var n = number++;
-    		console.log("decisionAccept request *" + n);
+    		console.log("id decision accept? request *" + n);
         	$.get("/is_decision_accept")
             .done(function(response, status, xhr) {
-        		console.log("decisionAccept response done " + response + " *" + n);
-        		/*watchDog = true;*/
+        		console.log("id decision accept? response done " + response + " *" + n);
             	if (response == "true") {
             		if (!acceptDecision) {
             		    arrivalTimerTask();
@@ -98,10 +94,10 @@
             		}
 	            	$dialog_hint.dialog('close');
             	} else {
-            	    decisionAcceptTask();
+            	    isDecisionAcceptTask();
             	}
             }).fail(function(xhr, status, error) {
-        		console.log("decisionAccept response fail " + status + " *" + n);
+        		console.log("id decision accept? response fail " + status + " *" + n);
             	if (xhr.status == 409) {
             		console.log("reason: " + xhr.status + "Another fleet attacks enemy.");
             	    $( "#error-message" ).dialog({
@@ -114,25 +110,16 @@
             	        }
             	      });
             	} else if (xhr.status == 405) {
-            		console.log("reason: " + xhr.status + "Lost the enemy out of sight.");
-            		$( "#error_info" ).dialog({
-            	    	title: "Lost the enemy out of sight.",
-            	    	modal: true,
-            	        buttons: {
-            	            Ok: function() {
-            	                $( this ).dialog( "close" );
-            	            }
-            	        }
-            	   });
+            		console.log("reason: " + xhr.status + "player not found in travel");
+                    window.location.href = "/city";
             	}
-            	/*watchDog = true;*/
             	
             });
         };
         
-        function decisionAcceptTask() {
+        function isDecisionAcceptTask() {
     		clearInterval(decisionId);
-        	decisionId = setInterval(function() {decisionAccept();}, 1000);
+        	decisionId = setInterval(function() {isDecisionAccept();}, 1000);
         };
         
         function lookout() {
@@ -142,9 +129,12 @@
         	$.get("/is_enemy_on_horizon")
             .done(function(response, status, xhr) {
         		console.log("response /is_enemy_on_horizon - " + response + " *" + n);
+        		if (xhr.status == 204) {
+        			return;
+        		}
                 if (response == "true") {
                 	clearInterval(timerId);
-                	decisionAcceptTask();
+                	isDecisionAcceptTask();
                 	$dialog_hint = $( "#warning_info" ).dialog({
                         modal: true,
                         title: "Captain! Fleet on the horizon",

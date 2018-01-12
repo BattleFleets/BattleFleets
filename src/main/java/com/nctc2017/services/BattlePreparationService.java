@@ -120,7 +120,9 @@ public class BattlePreparationService {
         return ready;
     }
 
-    public int autoChoiceShipTimer(BigInteger playerId) {
+    public int autoChoiceShipTimer(BigInteger playerId) throws BattleEndException {
+        battles.getBattle(playerId);
+
         ThreadStorage existing = playerChoiceShipTimer.get(playerId);
         if (existing != null) {
             return (int)existing.decisionTask.getTimeLeft()/1000;
@@ -176,6 +178,7 @@ public class BattlePreparationService {
                 chooseShip(playerId, shipId);
                 setReady(playerId);
             } catch (BattleEndException e) {
+                stopAutoChooseTimer(playerId);
                 LOG.debug("Player_" + playerId + " enemy already leave", e);
             }
         }

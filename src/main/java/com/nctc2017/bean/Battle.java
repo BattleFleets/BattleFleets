@@ -59,6 +59,20 @@ public class Battle {
                 + errorDescription, ex);
         throw ex;
     }
+
+
+    public boolean isParticipantsReady(BigInteger playerId) {
+        Participant prtn = playerMap.get(playerId);
+        if (prtn != null) {
+            Participant enemy = playerMap.get(prtn.getEnemyId());
+            return enemy.isReady() && prtn.isReady();
+        }
+        RuntimeException ex = 
+                new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+        log.error("Error when checking two players for ready to battle, " 
+                + errorDescription, ex);
+        throw ex;
+    }
     
     public boolean isEnemyReady(BigInteger playerId) {
         Participant prtn = playerMap.get(playerId);
@@ -175,12 +189,12 @@ public class Battle {
         }
     }
 
-    public void setWinner(BigInteger playerId) {
+    public void setWinner(BigInteger playerId, String winMsg, String loseMsg) {
         Participant prtn = playerMap.get(playerId);
         if (prtn != null) {
             Participant enemy = playerMap.get(prtn.getEnemyId());
-            prtn.setWinner(true);
-            enemy.setWinner(false);
+            prtn.setWinner(true, winMsg);
+            enemy.setWinner(false, loseMsg);
             return;
         }
         RuntimeException ex = 
@@ -197,6 +211,17 @@ public class Battle {
         RuntimeException ex = 
                 new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
         log.error("Error when getting winner of Battle, " 
+                + errorDescription, ex);
+        throw ex;
+    }
+    
+    public String getWinMessage(BigInteger playerId) {
+        Participant prtn = playerMap.get(playerId);
+        if (prtn != null)
+            return prtn.getMessage();
+        RuntimeException ex = 
+                new IllegalArgumentException(WRONG_PLAYER_WITH_ID + playerId);
+        log.error("Error when getting winner message, " 
                 + errorDescription, ex);
         throw ex;
     }
@@ -236,6 +261,7 @@ public class Battle {
         private boolean madeStep;
         private boolean winner;
         private int[][] ammoCannon;
+        private String message;
 
         public Participant(BigInteger playerId, BigInteger enemyId) {
             this.playerId = playerId;
@@ -257,8 +283,13 @@ public class Battle {
             return winner;
         }
 
-        public void setWinner(boolean winner) {
+        public void setWinner(boolean winner, String winMsg) {
+            this.message = winMsg;
             this.winner = winner;
+        }
+        
+        public String getMessage() {
+            return message;
         }
 
         public boolean wasMadeStep() {

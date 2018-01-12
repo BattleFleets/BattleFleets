@@ -16,7 +16,15 @@
 </head>
 
 <body>
-    <c:set var = "errorMes" scope = "session" value = "Sorry, application error."/>
+    <c:choose>
+        <c:when test="${empty reason or reason.length() == 0}">
+            <c:set var = "errorMes" scope = "session" value = "Sorry, application error. ${reason}"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var = "errorMes" scope = "session" value = "Sorry, application error."/>
+        </c:otherwise>
+    </c:choose>
+    
     <jsp:include page="fragment/message.jsp"/>
 </body>
 </html>

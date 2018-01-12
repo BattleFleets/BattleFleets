@@ -11,7 +11,6 @@
     
     function hoverConveyor() {
         hoverInit("fire");
-        hoverInit("boarding");
         hoverInit("leave");
         hoverInit("payoff");
         hoverInit("surrender");
@@ -38,6 +37,9 @@
     	.html(ships.enemy_ship.curDamage)
     	tab.find("#distance")
     	.html(ships.distance);
+    	if (ships.distance == "0") {
+    		boardingAllow();
+    	}
     	$(".battle_info").slideDown("slow");
     	
     	ammoCannonQuantity(ships.player_ship);
@@ -133,24 +135,34 @@
 		wait.animate({opacity: '1.0'}, 2000);
     }
     
-    function animateTask(animFunction) {
+    function animateTask(animFunction, time) {
     	console.log("Animating timer start ");
     	var anId = setInterval(function() {
     		animFunction();
-        }, 1000);
+        }, time);
     	return anId;
     }
     
+    var waitId;
+    
+    function animateWaitTask() {
+    	console.log("Wait Task start");
+    	waitReset();
+    	waitId = animateTask(animateWait, 4000);
+    	animateWait();
+    }
+    
     function waitReset() {
+    	console.log("wait animation stop");
     	clearInterval(waitId);
 		$(".wait").attr("hidden", "true");
     }
     
-    function dialogBattleEnd(msg) {
+    function dialogBattleEnd(title_msg, msg) {
     	var dialog = $( "#dialog" );
 		dialog.html(msg);
 		dialog.dialog({
-	    	title: "Battle end",
+	    	title: title_msg,
 	    	modal: true,
 	        buttons: {
 	            Ok: function() {
@@ -161,38 +173,64 @@
 	      });
     }
     
+    var fireResultId;
+    function fireResultTask() {
+    	console.log("Task fire result timer start ");
+    	fireResultId = setInterval(function() {
+    		infoTabUpdate(false);
+        }, 2000);
+    }
+    
     function infoTabUpdate(forcibly_) {
+    	clearInterval(fireResultId);
+    	console.log("request for fire result");
     	$.get("/fire_results", {forcibly : forcibly_})
         .done(function(response, status, xhr) {
         	console.log("start get result - ship info " + response + " status " + xhr.status);
         	var json_obj = JSON.parse(response);
+        	if (json_obj.try_later) {
+        		fireResultTask();
+        		return;
+        	}
         	tabResultFilling(json_obj);
+        	console.log("page reloaded after step was made " + json_obj.madeStep);
+        	if (json_obj.madeStep) {
+        		infoTabUpdate(false);
+        		animateWaitTask();
+        	} else {
+    		    enable("fire");
+            	waitReset();
+        	}
         })
         .fail(function(xhr, status, error) {
-        	console.log("getting result ship info FAIL" + xhr.status + " " + status);
+        	console.log("getting result ship info FAIL " + xhr.status + " " + status);
         	if (xhr.status == 417) {
         		dialogBattleEnd(xhr.responseText);
         	} else if (xhr.status == 405){
             	window.location.href = "/battle_preparing";
+        	} else {
+        		$(".wait").html("Server error")
         	}
-        }).always(function(){
-        	waitReset();
+        	//waitReset();
         });
     }
     
     function warningMsg(msg) {
-		console.log(msg);
+		console.log("#warning_info " + msg);
 		var warn = $( "#warning_info" );
 		warn.html(msg);
 		warn.removeAttr("hidden");
     }
     
     function isBattleEnd() {
+    	console.log("is battle end request");
     	$.get("/is_battle_end")
     	.done(function(response, status, xhr) {
+        	console.log("is battle end response: " + response);
     		var json_obj = JSON.parse(response);
     		if (json_obj.end == "true") {
-        		dialogBattleEnd(json_obj.wonText);
+    	    	clearInterval(battleEndId);
+        		dialogBattleEnd(json_obj.title, json_obj.wonText);
     		}
     	})
         .fail(function(xhr, status, error) {
@@ -204,11 +242,48 @@
         });
     }
     
+    function boarding() {
+    	console.log("boarding request");
+       	$( "#warning_info" ).attr("hidden", "true");
+    	animateWaitTask();
+    	$.get("/boarding")
+    	.done(function(response, status, xhr) {
+        	console.log("boarding response " + response);
+
+    		isBattleEnd();
+    	})
+        .fail(function(xhr, status, error) {
+        	console.log("boarding FAIL" + error + " " + xhr.status);
+        	if (xhr.status == 405) {
+        		isBattleEnd();
+        	}
+            //window.location.href = "/error";
+        });
+    }
+    
+    function boardingAllow() {
+    	console.log("boarding allow now");
+        var boarding_button = $("#boarding");
+		enable("boarding");
+        boarding_button.click(function () {
+        	boarding();
+        });
+        battleEndTask();
+    }
+    
+    var battleEndId;
+    function battleEndTask() {
+    	console.log("BattleEnd timer start ");
+    	battleEndId = setInterval(function() {
+    		isBattleEnd();
+        }, 2000);
+    }
+    
     function fire() {
+    	disable("fire");
     	$( "#warning_info" ).attr("hidden", "true");
-    	console.log("fire start");
-    	waitReset();
-    	waitId = animateTask(animateWait);
+    	console.log("fire start !!!");
+    	animateWaitTask();
     	var spinner = $( ".spinner" );
     	var dimensional = $("#ammo_tab tr").length - 2;
         var ammoCannon = new Array(spinner.length);
@@ -218,12 +293,14 @@
         		var warn = spinner[i].value + " is not allowed value";
         		warningMsg(warn);
             	waitReset();
+            	enable("fire");
             	return;
         	}
             console.log(ammoCannon[i]);
         }
         if (! isCorrectAmmoCannon(ammoCannon, dimensional)) {
         	waitReset();
+        	enable("fire");
         	return;
         }
         var convergence = checkBox.prop("checked");
@@ -234,6 +311,7 @@
     		             "decrease" : convergence
     	})
     	.done(function(response, status, xhr) {
+        	console.log("fire done, now need update table");
     		infoTabUpdate();
     		isBattleEnd();
     	})
@@ -248,8 +326,7 @@
         	waitReset();
         });
     }
-    
-    var waitId;
+
     var checkBox;
     $(document).ready(function() {
         var spinner = $( ".spinner" ).spinner();
@@ -264,12 +341,33 @@
         });
         
         hoverConveyor();
-        $("#fire").click(function() {
+        $("#fire").click(function(event) {
         	fire();
         });
-    	waitId = animateTask(animateWait);
+    	animateWaitTask();
 		infoTabUpdate(true);
     });
+    
+    function enable(id) {
+    	console.log("enable #" + id);
+        var button = $("#" + id);
+        button.removeAttr("disabled");
+        var icon = button.find(".icon_" + id + "_disable");
+        icon.removeClass("icon_" + id + "_disable");
+        icon.addClass("icon_" + id);
+        hoverInit(id);
+    }
+    
+    function disable(id) {
+    	console.log("disable #" + id);
+        var button = $("#" + id);
+        button.attr("disabled", "disabled");
+        var icon = button.find(".icon_" + id);
+        icon.removeClass("icon_" + id);
+        icon.removeClass("icon_" + id + "_select");
+        icon.addClass("icon_" + id + "_disable");
+        button.unbind('hover');
+    }
 
     </script>
 </head>
@@ -350,13 +448,13 @@
         <table id="button_tab" class="panel messageText" width="100%" style="table-layout: fixed;">
             <tr>
                 <td>
-                    <button id="fire" class="button_pick" style="vertical-align:middle" name="fire" type="submit">
-                        <span class="icon_fire"></span><span style="float: none">Fire</span>
+                    <button id="fire" disabled="disabled" class="button_pick" style="vertical-align:middle" name="fire" type="submit">
+                        <span class="icon_fire_disable"></span><span style="float: none">Fire</span>
                     </button>
                 </td>
                 <td>
-                    <button id="boarding" class="button_pick" style="vertical-align:middle" name="boarding" type="submit">
-                        <span class="icon_boarding"></span><span style="float: none">Boarding</span>
+                    <button id="boarding" disabled="disabled" class="button_pick" style="vertical-align:middle" name="boarding" type="submit">
+                        <span class="icon_boarding_disable"></span><span style="float: none">Boarding</span>
                     </button>
                 </td> 
                 <td>
