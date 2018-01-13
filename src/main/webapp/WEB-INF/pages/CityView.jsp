@@ -21,7 +21,7 @@
                     $('html, body').animate({
                         scrollTop: $("#warning_info").offset().top
                     }, 1000);
-                } else if (xhr.status == 302) {
+                } else if (xhr.status == 202) {
                 	var errMessage = $(response).find('.titleText').text();
                 	var errTitle = $(response).find('.titleText').attr('title');
                 	$( "#warning_info" ).html(errMessage);

@@ -287,7 +287,6 @@
         boarding_button.click(function () {
         	boarding();
         });
-        battleEndTask();
     }
     
     var battleEndId;
@@ -372,7 +371,7 @@
 
     function payoff() {
     	console.log("payoff request");
-    	
+    	anotherEndCase("/payoff");
     }
 
     var checkBox;
@@ -399,10 +398,18 @@
         $("#escape").click(function(event) {
         	anotherEndCase("/escape");
         });
-        $("#payoff").click(function(event) {
-        	payoff();
-        });
+        
+        var payoffAvailable = "${payoffAvailable}";
+        console.log("payoffAvailable: " + payoffAvailable);
+        if (payoffAvailable == "true") {
+        	enable("payoff");
+            $("#payoff").click(function(event) {
+            	payoff();
+            });
+        }
+        
 		infoTabUpdate(true);
+        battleEndTask();
     });
     
     function enable(id) {
@@ -524,7 +531,7 @@
             </tr>
             <tr>
                 <td>
-                    <button id="payoff" class="button_pick" disabled="disabled" style="vertical-align:middle" name="payoff" type="submit">
+                    <button id="payoff" class="button_pick" disabled="disabled" style="vertical-align:middle" name="payoff" type="submit" title="${payoff}">
                         <span class="icon_payoff_disable"></span><span style="float: none">Payoff</span>
                     </button>
                 </td>

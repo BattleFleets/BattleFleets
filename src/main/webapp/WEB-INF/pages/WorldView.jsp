@@ -11,8 +11,9 @@
     <script type="text/javascript">
     function animateCityByClick() {
     	$( ".city" ).click(function() {
-        	$( this ).find("img").animate({width: "50%", height: "50%"}, 50);
-        	$( this ).find("img").animate({width: "100%", height: "100%"}, 50);
+    		var img = $( this ).find("img");
+    		img.animate({width: "50%", height: "50%"}, 50);
+    		img.animate({width: "100%", height: "100%"}, 50);
     	});
     }
     
@@ -48,7 +49,7 @@
     var curCityAnimId;
     var curCity;
     $(document).ready(function() {
-    	curCity = $(".city:contains('${info}')").find("img");
+    	curCity = $(".city:contains('${info}')");
     	animateTask();
     	animateCityByClick();
     	jorneySetUpByClick();
