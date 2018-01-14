@@ -51,7 +51,7 @@ public class MastDaoImpl implements MastDao {
 
     private Mast findMastTemplate(@NotNull BigInteger mastTemplateId) {
         Mast pickedUpMast = queryExecutor.findEntity(mastTemplateId, DatabaseObject.MAST_TEMPLATE_OBJTYPE_ID,
-                new EntityExtractor<>(mastTemplateId, new MastsVisitor()));
+                new EntityExtractor<>(mastTemplateId, new MastsTempVisitor()));
         if (pickedUpMast == null) {
             IllegalArgumentException e =
                     new IllegalArgumentException("Cannot find MastTemplate,wrong mastTemplateId = " + mastTemplateId);
@@ -169,17 +169,27 @@ public class MastDaoImpl implements MastDao {
         return result;
     }
 
-
-    private final class MastsVisitor implements ExtractingVisitor<Mast> {
+    private class MastsTempVisitor implements ExtractingVisitor<Mast> {
 
         @Override
         public Mast visit(BigInteger entityId, Map<String, String> papamMap) {
-            return new Mast(Mast.QUANTITY,
+            Mast mast = new Mast(Mast.QUANTITY,
                     entityId,
                     papamMap.remove(Mast.MAST_NAME),
                     Integer.valueOf(papamMap.remove(Mast.MAX_SPEED)),
                     JdbcConverter.parseInt(papamMap.remove(Mast.Cur_MAST_SPEED)),
                     Integer.valueOf(papamMap.remove(Mast.MAST_COST)));
+            return mast;
+        }
+    }
+
+    private class MastsVisitor extends MastsTempVisitor {
+
+        @Override
+        public Mast visit(BigInteger entityId, Map<String, String> papamMap) {
+            Mast mast = super.visit(entityId, papamMap);
+            mast.setTamplateId(queryExecutor.getTemplateId(entityId));
+            return mast;
         }
     }
 

@@ -116,20 +116,25 @@ public class AmmoDaoImpl implements AmmoDao {
     @Override
     public List<Ammo> getAllAmmoFromStock(BigInteger idStock) {
         Validator.dbInstanceOf(jdbcTemplate, "stock", idStock, DatabaseObject.STOCK_OBJTYPE_ID);
-        return getAllAmmoFromAnywear(idStock);
+        return getAllAmmoFromAnywhere(idStock);
     }
 
     @Override
     public List<Ammo> getAllAmmoFromHold(BigInteger idHold) {
         Validator.dbInstanceOf(jdbcTemplate, "hold", idHold, DatabaseObject.HOLD_OBJTYPE_ID);
-        return getAllAmmoFromAnywear(idHold);
+        return getAllAmmoFromAnywhere(idHold);
     }
     
-    private List<Ammo> getAllAmmoFromAnywear(BigInteger containerId) {
+    private List<Ammo> getAllAmmoFromAnywhere(BigInteger containerId) {
+        List<Ammo> ammoList = getAllAmmoFromAnywhere(containerId, new AmmoVisitor());
+        return ammoList;
+    }
+    
+    private List<Ammo> getAllAmmoFromAnywhere(BigInteger containerId, ExtractingVisitor<Ammo> visitor) {
         List<Ammo> ammoList = queryExecutor
                 .getEntitiesFromContainer(containerId, 
                         DatabaseObject.AMMO_OBJTYPE_ID, 
-                        new EntityListExtractor<>(new AmmoVisitor()));
+                        new EntityListExtractor<>(visitor));
         return ammoList;
     }
     
@@ -137,11 +142,13 @@ public class AmmoDaoImpl implements AmmoDao {
 
         @Override
         public Ammo visit(BigInteger entityId, Map<String, String> papamMap) {
-            return new Ammo(entityId,
+            Ammo ammo = new Ammo(entityId,
                     papamMap.get(Ammo.NAME),
                     papamMap.get(Ammo.TYPE),
                     Integer.valueOf(papamMap.get(Ammo.NUM)), 
                     Integer.valueOf(papamMap.get(Ammo.COST)));
+            ammo.setTamplateId(queryExecutor.getTemplateId(entityId));
+            return ammo;
         }
         
     }

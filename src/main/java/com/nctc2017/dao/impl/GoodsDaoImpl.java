@@ -168,11 +168,13 @@ public class GoodsDaoImpl implements GoodsDao {
 
         @Override
         public Goods visit(BigInteger entityId, Map<String, String> papamMap) {
-            return new Goods(entityId,
+            Goods goods = new Goods(entityId,
                     papamMap.remove(Goods.NAME),
                     Integer.valueOf(papamMap.remove(Goods.QUANTITY)),
                     Integer.valueOf(papamMap.remove(Goods.PRICE)),
                     Integer.valueOf(papamMap.remove(Goods.RARITY)));
+            goods.setTamplateId(queryExecutor.getTemplateId(entityId));
+            return goods;
         }
         
     }
