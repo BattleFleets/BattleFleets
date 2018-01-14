@@ -134,6 +134,10 @@ public class BattlesController {
         BigInteger playerId = userDetails.getPlayerId();
         LOG.debug("Player_" + playerId + " get battle request");
         ModelAndView model = new ModelAndView("BattleView");
+        int payoff = battleEndServ.getPayOffPrice(playerId);
+        boolean payoffAvailable = battleEndServ.isPayOffAvailable(payoff, playerId);
+        model.addObject("payoff", payoff);
+        model.addObject("payoffAvailable", payoffAvailable);
         model.setStatus(HttpStatus.OK);
         return model;
     }
@@ -198,7 +202,7 @@ public class BattlesController {
                     
                 shipMap.put("madeStep", battleService.wasPalayerMadeStep(playerId));
                 
-                boolean escapeAvaliable = battleEndServ.isBattleLocationEscapeAvaliable(playerId);
+                boolean escapeAvaliable = battleEndServ.isBattleLocationEscapeAvailable(playerId);
                 shipMap.put("escape_avaliable", escapeAvaliable);
                 
                 shipMap.put("try_later", false);
@@ -297,9 +301,15 @@ public class BattlesController {
         
         return ResponseEntity.ok(jsonShips);
     }
-
-    public void payoff(int id, int idHash) {
-        // TODO implement here
+    
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/payoff", method = RequestMethod.GET)
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    public Map<String, Boolean> payoff(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException {
+        BigInteger playerId = userDetails.getPlayerId();
+        boolean success = battleEndServ.payoff(playerId, new DefaultPayoffBattleEnd());
+        return Collections.singletonMap("success", success);
     }
 
     @Secured("ROLE_USER")
@@ -325,7 +335,7 @@ public class BattlesController {
 
         @Override
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
-                BigInteger winnerId, BigInteger loserId) throws SQLException {
+                BigInteger winnerId, BigInteger loserId) {
             battleEndServ.passDestroyGoodsToWinner(winnerShipId, loserShipId);
             battleEndServ.destroyShip(loserShipId);
         }
@@ -335,7 +345,7 @@ public class BattlesController {
 
         @Override
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
-                BigInteger winnerId, BigInteger loserId) throws SQLException {
+                BigInteger winnerId, BigInteger loserId) {
             battleEndServ.passCargoToWinnerAfterBoarding(winnerShipId, loserShipId);
         }
     }
@@ -344,7 +354,7 @@ public class BattlesController {
 
         @Override
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
-                BigInteger winnerId, BigInteger loserId) throws SQLException {
+                BigInteger winnerId, BigInteger loserId) {
             LOG.debug("Player_" + loserId + " pass goods to winner Player_" + winnerId + " ship because surrendered");
             battleEndServ.passSurrenderGoodsToWinner(winnerShipId, loserShipId);
         }
@@ -357,6 +367,15 @@ public class BattlesController {
                 BigInteger winnerId, BigInteger loserId) {
             LOG.debug("Player_" + winnerId + " escaped");
 
+        }
+    }
+    
+    private class DefaultPayoffBattleEnd implements BattleEndVisitor {
+
+        @Override
+        public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
+                BigInteger winnerId, BigInteger loserId) {
+            LOG.debug("Player_" + loserId + " pass money to winner Player_" + winnerId);
         }
     }
 

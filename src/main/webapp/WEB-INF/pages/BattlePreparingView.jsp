@@ -166,7 +166,7 @@
     	block.accordion({heightStyle: "content"});
     	block.accordion({ collapsible: true});
     	block.accordion({ active: false });
-    	block.hover(function() {
+    	$(".button_pick").hover(function() {
             $( this ).find(".icon_pick").addClass( "icon_pick_hover" );
         }, function() {
         	$( this ).find(".icon_pick").removeClass( "icon_pick_hover" );

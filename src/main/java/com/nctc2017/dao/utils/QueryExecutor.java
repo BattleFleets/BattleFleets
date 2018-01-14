@@ -186,4 +186,12 @@ public class QueryExecutor {
                         JdbcConverter.toNumber(attrId)},
                 extractor);
     }
+    
+    public BigInteger getTemplateId(@NotNull BigInteger objectId) {
+        return jdbcTemplate.queryForObject(Query.GET_TEMPLATE_ID, 
+                new Object[]{JdbcConverter.toNumber(objectId)}, 
+                BigDecimal.class).toBigIntegerExact();
+    }
+    
+    
 }

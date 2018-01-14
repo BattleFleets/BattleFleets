@@ -6,6 +6,7 @@ import java.math.BigInteger;
 
 public abstract class AbstractThing implements Thing {
 
+    protected BigInteger tamplateId;
     protected int quantity;
     protected BigInteger thingId;
 
@@ -31,6 +32,14 @@ public abstract class AbstractThing implements Thing {
     @Override
     public void setThingId(BigInteger thingId) {
         this.thingId = thingId;
+    }
+
+    public BigInteger getTamplateId() {
+        return tamplateId;
+    }
+
+    public void setTamplateId(BigInteger tamplateId) {
+        this.tamplateId = tamplateId;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.nctc2017.dao.impl;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.nctc2017.bean.Cannon;
+import com.nctc2017.bean.GoodsForSale.GoodsType;
+import com.nctc2017.bean.PlayerGoodsForSale;
 import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
@@ -134,12 +137,49 @@ public class CannonDaoImpl implements CannonDao {
         if (rowsAffected == 0) 
             log.warn("No cannon deleted with id = " + cannonId + ", expected one.");
     }
+    
+    public List<PlayerGoodsForSale> getAllCannonsForSailFromShip(@NotNull BigInteger shipId) {
+        Validator.dbInstanceOf(jdbcTemplate, "ship", shipId, DatabaseObject.SHIP_OBJTYPE_ID);
+        return getAllCannonsForSailFromAnywhere(shipId);
+    }
+    
+    public List<PlayerGoodsForSale> getAllCannonsForSailFromStock(@NotNull BigInteger stockId) {
+        Validator.dbInstanceOf(jdbcTemplate, "stock", stockId, DatabaseObject.STOCK_OBJTYPE_ID);
+        return getAllCannonsForSailFromAnywhere(stockId);
+    }
+    
+    public List<PlayerGoodsForSale> getAllCannonsForSailFromHold(@NotNull BigInteger holdId) {
+        Validator.dbInstanceOf(jdbcTemplate, "hold", holdId, DatabaseObject.HOLD_OBJTYPE_ID);
+        return getAllCannonsForSailFromAnywhere(holdId);
+    }
+    
+    private List<PlayerGoodsForSale> getAllCannonsForSailFromAnywhere(@NotNull BigInteger containerId) {
+        List<Cannon> cannons = getAllCannonsFromAnywhere(containerId, new CannonSailVisitor());
+        List<PlayerGoodsForSale> cannonsForSail = new ArrayList<>(cannons.size());
+        for (Cannon cannon : cannons) {
+            cannonsForSail
+            .add(new PlayerGoodsForSale(
+                    cannon.getThingId(), 
+                    cannon.getTamplateId(), 
+                    cannon.getQuantity(), 
+                    GoodsType.CANNON)
+                .setName(cannon.getName())
+                .setSalePrice(cannon.getCost()/2)
+                .appendDescription("damage " + cannon.getDamage())
+                .appendDescription("distance " + cannon.getDistance()));
+        }
+        return cannonsForSail;
+    }
 
     private List<Cannon> getAllCannonsFromAnywhere(@NotNull BigInteger containerId) {
+        return getAllCannonsFromAnywhere(containerId, new CannonVisitor());
+    }
+    
+    private List<Cannon> getAllCannonsFromAnywhere(@NotNull BigInteger containerId, ExtractingVisitor<Cannon> visitor) {
         List<Cannon> pickedUpCannons = queryExecutor
                 .getEntitiesFromContainer(containerId, 
                         DatabaseObject.CANNON_OBJTYPE_ID, 
-                        new EntityListExtractor<>(new CannonVisitor()));
+                        new EntityListExtractor<>(visitor));
         return pickedUpCannons;
     }
     
@@ -152,6 +192,21 @@ public class CannonDaoImpl implements CannonDao {
                     Integer.valueOf(papamMap.remove(Cannon.DAMAGE)),
                     Integer.valueOf(papamMap.remove(Cannon.DISTANCE)), 
                     Integer.valueOf(papamMap.remove(Cannon.COST)));
+        }
+        
+    }
+    
+    private final class CannonSailVisitor implements ExtractingVisitor<Cannon> {
+        
+        @Override
+        public Cannon visit(BigInteger entityId, Map<String, String> papamMap) {
+            Cannon cannon = new Cannon(entityId, 
+                    papamMap.remove(Cannon.NAME), 
+                    Integer.valueOf(papamMap.remove(Cannon.DAMAGE)),
+                    Integer.valueOf(papamMap.remove(Cannon.DISTANCE)), 
+                    Integer.valueOf(papamMap.remove(Cannon.COST)));
+            cannon.setTamplateId(queryExecutor.getTemplateId(entityId));
+            return cannon;
         }
         
     }

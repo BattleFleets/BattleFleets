@@ -29,6 +29,8 @@ public class BattleEndingService {
     private static final String SURRENDER_LOSER_MSG = "You shamefully surrendered, the enemy spared you, but you had to give him the whole cargo.";
     private static final String LEAVE_PLAYER_MSG = "Praise the sails you have come off the enemy.";
     private static final String LEAVE_MSG_FOR_ENEMY = "The enemy was able to slip away, our ship is too slow.";
+    private static final String PAYOFF_WINNER_MSG = "The enemy exchanged gold for life. You became richer for ? doubloons.";
+    private static final String PAYOFF_LOSER_MSG = "You paid off the enemy ? doubloons.";
     private static final int SPEED_DIFFERENCE_FOR_ESCAPE = 5;
     
     @Autowired
@@ -45,11 +47,11 @@ public class BattleEndingService {
     @Autowired
     protected BattleManager battles;
 
-    public String passCargoToWinnerAfterBoarding(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
+    public String passCargoToWinnerAfterBoarding(BigInteger shipWinnerId, BigInteger shipLoserId) {
         return executorDao.moveCargoToWinnerBoardingOSurrender(shipWinnerId, shipLoserId);
     }
 
-    public String passDestroyGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
+    public String passDestroyGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) {
         return executorDao.moveCargoToWinnerDestroying(shipWinnerId, shipLoserId);
     }
 
@@ -57,7 +59,7 @@ public class BattleEndingService {
         return shipDao.deleteShip(shipId);
     }
 
-    public String passSurrenderGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
+    public String passSurrenderGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) {
         return executorDao.moveCargoToWinnerBoardingOSurrender(shipWinnerId, shipLoserId);
     }
     
@@ -72,15 +74,23 @@ public class BattleEndingService {
         return payOff;
     }
     
+    public boolean isPayOffAvailable(int payoff, BigInteger playerId) {
+        int money = playerDao.getPlayerMoney(playerId);
+        return money >= payoff;
+    }
+    
     public int passPayOffToEnemy(BigInteger playerId) {
         BigInteger enemyId = battles.getEnemyId(playerId);
         int playerMoney = playerDao.getPlayerMoney(playerId);
+        int enemyMoney = playerDao.getPlayerMoney(enemyId);
         int enemyLvl = playerDao.getPlayerLevel(enemyId);
         int payOff = getPayOff(enemyLvl);
         if (payOff <= playerMoney) {
-            playerDao.updateMoney(enemyId, enemyLvl * PAY_OFF_COEF);
+            playerDao.updateMoney(enemyId, enemyMoney + payOff);
+            playerDao.updateMoney(playerId, playerMoney - payOff);
+            return payOff;
         }
-        return payOff;
+        return -1;
     }
     
     public boolean isBattleFinish(BigInteger playerId) throws BattleEndException {
@@ -141,7 +151,7 @@ public class BattleEndingService {
         return enemy == null;
     }
     
-    public void surrender(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException, SQLException {
+    public void surrender(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException {
         Battle battle = battles.getBattle(playerId);
         BigInteger winnerId = battle.getEnemyId(playerId);
         BigInteger winnerShipId = battle.getShipId(winnerId);
@@ -151,7 +161,7 @@ public class BattleEndingService {
         visitor.endCaseVisit(playerDao, shipDao, winnerShipId, loserShipId, winnerId, playerId);
     }
     
-    public boolean isBattleLocationEscapeAvaliable(BigInteger playerId) throws BattleEndException {
+    public boolean isBattleLocationEscapeAvailable(BigInteger playerId) throws BattleEndException {
         Battle battle = battles.getBattle(playerId);
         BigInteger enemyShipId = battle.getEnemyShipId(playerId);
         BigInteger playerShipId = battle.getShipId(playerId);
@@ -160,8 +170,8 @@ public class BattleEndingService {
         return playerShipSpeed - enemyShipSpeed > SPEED_DIFFERENCE_FOR_ESCAPE;
     }
     
-    public boolean escapeBattleLocation(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException, SQLException {
-        if (! isBattleLocationEscapeAvaliable(playerId)) return false;
+    public boolean escapeBattleLocation(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException {
+        if (! isBattleLocationEscapeAvailable(playerId)) return false;
         Battle battle = battles.getBattle(playerId);
         BigInteger loserId = battle.getEnemyId(playerId);
         BigInteger loserShipId = battle.getShipId(loserId);
@@ -169,6 +179,21 @@ public class BattleEndingService {
         battle.setWinner(playerId, LEAVE_PLAYER_MSG, LEAVE_MSG_FOR_ENEMY);
         battle.resetAll();
         visitor.endCaseVisit(playerDao, shipDao, winnerShipId, loserShipId, playerId, loserId);
+        return true;
+    }
+    
+    public boolean payoff(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException {
+        Battle battle = battles.getBattle(playerId);
+        BigInteger winnerId = battle.getEnemyId(playerId);
+        BigInteger winnerShipId = battle.getShipId(winnerId);
+        BigInteger loserShipId = battle.getShipId(playerId);
+        int payoff = passPayOffToEnemy(playerId);
+        if (payoff == -1) return false;
+        battle.setWinner(winnerId, 
+                PAYOFF_WINNER_MSG.replace("?", String.valueOf(payoff)), 
+                PAYOFF_LOSER_MSG.replace("?", String.valueOf(payoff)));
+        battle.resetAll();
+        visitor.endCaseVisit(playerDao, shipDao, winnerShipId, loserShipId, winnerId, playerId);
         return true;
     }
 }

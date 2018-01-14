@@ -344,7 +344,7 @@ public class BattleIntegrationScenarioTest {
 
         @Override
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
-                BigInteger winnerId, BigInteger loserId) throws SQLException {
+                BigInteger winnerId, BigInteger loserId) {
             int loserVolumeBefore = holdDao.getOccupiedVolume(loserShipId);
             int winnerVolumeBefore = holdDao.getOccupiedVolume(winnerShipId);
             battleEnd.passDestroyGoodsToWinner(winnerShipId, loserShipId);
@@ -368,7 +368,7 @@ public class BattleIntegrationScenarioTest {
 
         @Override
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
-                BigInteger winnerId, BigInteger loserId) throws SQLException {
+                BigInteger winnerId, BigInteger loserId) {
 
             int currSteveSailors = shipDao.getCurrentShipSailors(steveShipId);
             int currNikSailors = shipDao.getCurrentShipSailors(nikShipId);

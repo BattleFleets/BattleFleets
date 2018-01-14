@@ -12,7 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.nctc2017.bean.City;
@@ -41,7 +40,7 @@ public class CityActionsController {
         if (fleetSpeedOk && sailorsEnough && emptyStock) {
             model.setStatus(HttpStatus.OK);
         } else if (!emptyStock) {
-            model.setStatus(HttpStatus.FOUND);
+            model.setStatus(HttpStatus.ACCEPTED);
             model.addObject("errorMes", "You forgot something in stock. Do you want to come back?");
             model.addObject("errTitle", "Things in stock");
         } else {
@@ -61,9 +60,10 @@ public class CityActionsController {
     public ModelAndView getCity(@AuthenticationPrincipal PlayerUserDetails userDetails) {
         ModelAndView model = new ModelAndView();
         BigInteger playerId =userDetails.getPlayerId();
+        
         while (true) {
             int time = travelService.getRelocateTime(playerId);
-            if (time <= 0) break;
+            if (time < 0) break;
             else if (time > 5) return new ModelAndView("redirect:/trip");
             try {
                 Thread.sleep(time * 1000);
@@ -71,6 +71,7 @@ public class CityActionsController {
                 LOG.error("User thread was interrupted while entering in new city", e);
             }
         }
+        
         City currCity = travelService.getCurrentCity(playerId);
         model.setViewName("CityView");
         model.addObject("city", currCity.getCityName());

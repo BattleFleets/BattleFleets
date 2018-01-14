@@ -104,7 +104,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
     }
 
     @Override
-    public String moveCargoToWinnerBoardingOSurrender(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
+    public String moveCargoToWinnerBoardingOSurrender(BigInteger shipWinnerId, BigInteger shipLoserId) {
         try {
             SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(BOARDING_OR_SURRENDER_RESULT_FUNCTION_NAME);
             String result = call.executeFunction(String.class, shipWinnerId, shipLoserId);
@@ -112,20 +112,20 @@ public class ExecutorDaoImpl implements ExecutorDao {
         }
         catch (UncategorizedSQLException e){
             LOG.error("Mistake on client side, may be you are trying to transfer goods not between ships", e);
-            throw e.getSQLException();
+            return "error";
         }
     }
 
     @Override
-    public String moveCargoToWinnerDestroying(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
+    public String moveCargoToWinnerDestroying(BigInteger shipWinnerId, BigInteger shipLoserId) {
         try {
             SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(DESTROYING_RESULT_FUNCTION_NAME);
             String result = call.executeFunction(String.class, shipWinnerId, shipLoserId);
             return result;
         }
         catch (UncategorizedSQLException e){
-            LOG.error("Mistake on client side, may be you are trying to transfer goods not between ships", e);
-            throw e.getSQLException();
+            LOG.error("may be you are trying to transfer goods not between ships source ship: " + shipWinnerId + " target: " + shipLoserId, e);
+            return "error";
         }
 
     }
