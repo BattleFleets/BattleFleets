@@ -31,17 +31,14 @@ public class ShipTradeService {
 
 
     public String buyShip(BigInteger playerId, BigInteger shipTemplateId) {
-        try {
-            ShipTemplate shipTemplate = shipDao.findShipTemplate(shipTemplateId);
-            int numberOfShips = playerDao.findAllShip(playerId) == null ? 0 : playerDao.findAllShip(playerId).size();
-            if (levelUpService.getMaxShips(playerId) <= numberOfShips)
-                return "You have complete fleet for your level!";
-            moneyService.deductMoney(playerId, shipTemplate.getCost());
-            BigInteger createdId = shipService.createNewShip(shipTemplateId,playerId);
-            return createdId.toString();
-        } catch (RuntimeException e) {
+        ShipTemplate shipTemplate = shipDao.findShipTemplate(shipTemplateId);
+        int numberOfShips = playerDao.findAllShip(playerId) == null ? 0 : playerDao.findAllShip(playerId).size();
+        if (levelUpService.getMaxShips(playerId) <= numberOfShips)
+            return "You have complete fleet for your level!";
+        if (moneyService.deductMoney(playerId, shipTemplate.getCost()) == null)
             return "Money is not enough to buy that ship";
-        }
+        BigInteger createdId = shipService.createNewShip(shipTemplateId, playerId);
+        return createdId.toString();
     }
 
     public List<Integer> getShipsCost(List<Ship> ships) {
@@ -54,7 +51,7 @@ public class ShipTradeService {
     }
 
     public int costOfShip(Ship shipForSelling) {
-        int halfOfCost = shipForSelling.getCost()/2;
+        int halfOfCost = shipForSelling.getCost() / 2;
         if (shipForSelling == null)
             return 0;
         int costOfShip = halfOfCost - shipRepairService.countRepairCost(shipForSelling.getShipId());
@@ -64,8 +61,8 @@ public class ShipTradeService {
     public boolean sellShip(BigInteger playerId, BigInteger shipId) {
         try {
             Ship ship = shipDao.findShip(shipId);
-            int halfOfCost = ship.getCost()/2;
-            int costOfShip = halfOfCost-shipRepairService.countRepairCost(shipId);
+            int halfOfCost = ship.getCost() / 2;
+            int costOfShip = halfOfCost - shipRepairService.countRepairCost(shipId);
             moneyService.addMoney(playerId, costOfShip);
             shipDao.deleteShip(shipId);
             return true;

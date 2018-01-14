@@ -74,8 +74,9 @@
     	<h1 class="titleText">${city}</h1>
     </div>
 </head>
+<jsp:include  page="/addHeader"/>
 <body>
-
+<%@include file="fragment/footer.jsp"%>
 <audio autoplay id="gavan" onloadeddata="setHalfVolume()">
   <source src="static/audio/gavan-0-4.8.mp3" type="audio/mp3">
 </audio>
@@ -84,7 +85,7 @@
 </audio>
 
 <a href="/city" class="logOutBottom">Return to city</a>
-<div align="left">
+<div align="center">
 	<table class="panel">
 	<tr align="center">
 			<td>

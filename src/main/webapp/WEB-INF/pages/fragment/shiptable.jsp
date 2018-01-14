@@ -8,57 +8,64 @@
 </head>
 <body>
 <div>
-    <c:forEach items="${shipTemplates}" var="shipTemplates" varStatus="status">
-            <table class ="tableClass">
-            <tr>
-                <td>
-                <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getTemplateId()}" onclick="setShipName(this,'${shipTemplates.getTName()}')">
-                <span>Buy ${shipTemplates.getTName()}</span>
-                </button>
-                </td>
-                <td colspan="2">MaxCarryingLimit: <b class="values">${shipTemplates.getMaxCarryingLimit()}</b></td>
-            </tr>
-            <tr>
-                <td rowspan="3" id = "shipimg">
-                <c:choose>
-                     <c:when test = "${shipTemplates.getTemplateId() == 1}">
-                        <img src = "static/images/ships/Caravela.png">
-                     </c:when>
-                     <c:when test = "${shipTemplates.getTemplateId() == 2}">
-                         <img src = "static\images\ships\Caracca.png">
-                     </c:when>
-                     <c:when test = "${shipTemplates.getTemplateId() == 3}">
-                        <img src = "static/images/ships/Galion.png">
-                     </c:when>
-                     <c:when test = "${shipTemplates.getTemplateId() == 4}">
-                         <img src = "static/images/ships/Clipper.png">
-                     </c:when>
-                     <c:when test = "${shipTemplates.getTemplateId() == 5}">
-                         <img src = "static/images/ships/Fregata.png">
-                     </c:when>
-                    <c:otherwise>
-                        Ooh.Something go wrong.This Template have not an image:
-                    </c:otherwise>
-                </c:choose>
-                </td>
-                <td>MaxCannonQuantity:  <b class="values">${shipTemplates.getMaxCannonQuantity()}</b></td>
-                <td>StartNumCannon:  <b class="values">${shipEquipments.get(status.index).getStartNumCannon()}</b></td>
-            </tr>
-            <tr>
-                <td>MaxMastsQuantity:  <b class="values">${shipTemplates.getMaxMastsQuantity()}</b></td>
-                <td>StartCannonType:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeCannonName()}</b></td>
-            </tr>
-            <tr>
-                <td>MaxSailorsQuantity:  <b class="values">${shipTemplates.getMaxSailorsQuantity()}</b></td>
-                <td>StartNumMast:  <b class="values">${shipEquipments.get(status.index).getStartNumMast()}</b></td>
-            </tr>
-            <tr>
-                <td>Cost:  <b class="values">${shipTemplates.getCost()}</b></td>
-                <td>MaxHealth:  <b class="values">${shipTemplates.getMaxHealth()}</b></td>
-                <td>StartMastType:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeMastName()}</b></td>
-            </tr>
-            </table>
+    <table>
+    <tr>
+        <c:forEach items="${shipTemplates}" var="shipTemplates" varStatus="status">
+        <td>
+                <table class ="tableClass">
+                <tr>
+                    <td>
+                    <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getTemplateId()}" onclick="setShipName(this,'${shipTemplates.getTName()}')">
+                    <span>Buy ${shipTemplates.getTName()}</span>
+                    </button>
+                    </td>
+                    <td colspan="2">CarryingLimit: <b class="values">${shipTemplates.getMaxCarryingLimit()}</b></td>
+                </tr>
+                <tr>
+                    <td rowspan="3" id = "shipimg">
+                    <c:choose>
+                         <c:when test = "${shipTemplates.getTemplateId() == 1}">
+                            <img src = "static/images/ships/Caravela.png">
+                         </c:when>
+                         <c:when test = "${shipTemplates.getTemplateId() == 2}">
+                             <img src = "static\images\ships\Caracca.png">
+                         </c:when>
+                         <c:when test = "${shipTemplates.getTemplateId() == 3}">
+                            <img src = "static/images/ships/Galion.png">
+                         </c:when>
+                         <c:when test = "${shipTemplates.getTemplateId() == 4}">
+                             <img src = "static/images/ships/Clipper.png">
+                         </c:when>
+                         <c:when test = "${shipTemplates.getTemplateId() == 5}">
+                             <img src = "static/images/ships/Fregata.png">
+                         </c:when>
+                        <c:otherwise>
+                            Ooh.Something go wrong.This Template have not an image:
+                        </c:otherwise>
+                    </c:choose>
+                    </td>
+                    <td>Maximun cannon:  <b class="values">${shipTemplates.getMaxCannonQuantity()}</b></td>
+                    <td>Start cannon:  <b class="values">${shipEquipments.get(status.index).getStartNumCannon()}</b></td>
+                </tr>
+                <tr>
+                    <td>Maximum masts:  <b class="values">${shipTemplates.getMaxMastsQuantity()}</b></td>
+                    <td>Cannons type:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeCannonName()}</b></td>
+                </tr>
+                <tr>
+                    <td>Maximum sailors:  <b class="values">${shipTemplates.getMaxSailorsQuantity()}</b></td>
+                    <td>Start masts:  <b class="values">${shipEquipments.get(status.index).getStartNumMast()}</b></td>
+                </tr>
+                <tr>
+                    <td>Cost:  <b class="values">${shipTemplates.getCost()}</b></td>
+                    <td>MaxHealth:  <b class="values">${shipTemplates.getMaxHealth()}</b></td>
+                    <td>Masts type:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeMastName()}</b></td>
+                </tr>
+                </table>
+        </td>
         </c:forEach>
+    </tr>
+    </table>
+
 </div>
 
 <div id="answerModal" class="modal">

@@ -1,9 +1,8 @@
 package com.nctc2017.services;
 
 import com.nctc2017.dao.PlayerDao;
-import com.nctc2017.exception.MoneyLackException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigInteger;
 
@@ -19,14 +18,13 @@ public class MoneyService {
         return newMoney;
      }
 
-     public int deductMoney(BigInteger playerId, int moneyDeduct) {
+     public Integer deductMoney(BigInteger playerId, int moneyDeduct) {
          if(getPlayersMoney(playerId)>=moneyDeduct) {
              return addMoney(playerId, -moneyDeduct);
          }
          else{
-             MoneyLackException ex = new MoneyLackException("Not enough money");
-             log.error("MoneyService Exception while deduct money.", ex);
-             throw ex;
+             log.info("MoneyService Info not enough money while deduct money.");
+             return null;
          }
      }
 

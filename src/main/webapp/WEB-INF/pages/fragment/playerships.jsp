@@ -18,7 +18,10 @@
              </tr>
             </table>
         </c:if>
+    <table>
+    <tr>
     <c:forEach items="${playerShips}" var="shipTemplates" varStatus="status">
+        <td>
             <table class ="tableClass">
             <tr>
                 <td>
@@ -65,7 +68,10 @@
                 </c:if>
             </tr>
             </table>
+            </td>
         </c:forEach>
+        </tr>
+        </table>
 </div>
 
 <div id="myModal" class="modal">
