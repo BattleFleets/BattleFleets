@@ -23,12 +23,12 @@ body {
 }
 
 img{
-width: 100%;
+    width: 100%;
 }
 
 .capacity_for_background {
-background-image: none;
-background-color: transparent;
+    background-image: none;
+    background-color: transparent;
 }
 
 #shipimg {
@@ -78,7 +78,6 @@ background-color: transparent;
                  0px -5px 35px rgba(255,255,255,0.3);
 	font: bold;
 	font-size: 32pt;
-    vertical-align: middle;
     color: white;
     font-weight:bold;
     font-family: Arial, Helvetica, sans-serif;
@@ -87,7 +86,7 @@ background-color: transparent;
     padding: 20px;
     border: 1px solid #888;
     width: 650px;
-    height: 200px;
+    height: 250px;
     position: fixed;
     top: 40%;
     left: 40%;
@@ -96,8 +95,20 @@ background-color: transparent;
 }
 
 .values {
-font-size: 19px;
-text-decoration: underline;
-text-shadow: 2px 8px 6px rgba(0,0,0,0.8),
-                 0px -5px 35px rgba(255,255,255,0.3);
+    color: white;
+    font-size: 19px;
+    text-decoration: underline;
+    text-shadow: 2px 8px 6px rgba(0,0,0,0.8),
+                     0px -5px 35px rgba(255,255,255,0.3);
+}
+
+#prompt-form input[name="text"] {
+  display: block;
+  margin: 5px;
+  width: 180px;
+}
+
+.small_text {
+    color: red;
+    font-size: 12px;
 }
