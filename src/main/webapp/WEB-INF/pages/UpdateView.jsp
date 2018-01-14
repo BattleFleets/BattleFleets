@@ -5,7 +5,7 @@
 <link href="static/css/update.css" rel="stylesheet" media="screen">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 <html>
-<%@include file="fragment/header.jsp"%>
+<jsp:include  page="/addHeader"/>
 <div align="center" id="congratulate">
     <h1 class="titleText">Select what you want to improve</h1>
 </div>

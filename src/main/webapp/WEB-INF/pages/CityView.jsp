@@ -61,7 +61,7 @@
 </div>
 
 <a href="/logout" class="logOutBottom">Logout</a>
-<%@include file="fragment/header.jsp"%>
+<jsp:include  page="/addHeader"/>
 <form method="get">
 <div align="center">
 	<table class="panel">
@@ -96,7 +96,7 @@
 		<c:if test="${level>=nextLevel}">
 		<tr align="center">
 			<td>
-				<button class="button" style="vertical-align:middle" name="diff" value="${level-nextLevel}" type="submit" formaction="/update">
+				<button class="button" style="vertical-align:middle" name="diff" type="submit" formaction="/update">
 					<span>Update</span>
 				</button>
 			</td>

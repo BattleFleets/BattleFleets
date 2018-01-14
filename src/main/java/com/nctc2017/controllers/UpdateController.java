@@ -23,8 +23,6 @@ public class UpdateController {
 
     @Autowired
     private LevelUpService lvlUpService;
-    @Autowired
-    private MoneyService moneyService;
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/update", method = RequestMethod.GET)
@@ -32,22 +30,8 @@ public class UpdateController {
         ModelAndView model = new ModelAndView();
         model.setViewName("UpdateView");
         BigInteger playerId = userDetails.getPlayerId();
-        String login = lvlUpService.getLogin(playerId);
-        int money = moneyService.getPlayersMoney(playerId);
         int level = lvlUpService.getCurrentLevel(playerId);
-        int points = lvlUpService.getCurrentPoints(playerId);
-        int nextImprove = lvlUpService.getNextLevel(playerId);
-        int maxShips = lvlUpService.getMaxShips(playerId);
-        int income = lvlUpService.getPassiveIncome(playerId);
-        int pointsToNxtLvl =lvlUpService.getPointsToNxtLevel(playerId);
-        model.addObject("login", login);
-        model.addObject("money", money);
-        model.addObject("points", points);
         model.addObject("level", level);
-        model.addObject("nextImprove", nextImprove);
-        model.addObject("maxShips", maxShips);
-        model.addObject("income", income);
-        model.addObject("toNxt", pointsToNxtLvl);
         return model;
     }
 
@@ -60,7 +44,7 @@ public class UpdateController {
         int curIncome = lvlUpService.getPassiveIncome(userDetails.getPlayerId());
         int nxtLvlImprove = lvlUpService.getNextLevel(userDetails.getPlayerId());
         String[] results = new String[3];
-        results[0] = "Yor income grew";
+        results[0] = "Your income grew";
         results[1] = String.valueOf(curIncome);
         results[2] = String.valueOf(nxtLvlImprove);
         return results;
@@ -75,7 +59,7 @@ public class UpdateController {
         int curMaxShips = lvlUpService.getMaxShips(userDetails.getPlayerId());
         int nxtLvlImprove = lvlUpService.getNextLevel(userDetails.getPlayerId());
         String[] results = new String[3];
-        results[0] = "Yor max number of ships grew";
+        results[0] = "Your max number of ships grew";
         results[1] = String.valueOf(curMaxShips);
         results[2] = String.valueOf(nxtLvlImprove);
         return results;

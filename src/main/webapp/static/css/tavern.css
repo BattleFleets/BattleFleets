@@ -18,6 +18,15 @@ img{
     width:175px;
 }
 
+.panelTavern {
+    background-image:url("../images/general/panel_background.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: 4px ridge black;
+    padding: 1%;
+}
+
 .shipContainer {
     margin-top: 30px;
     width:550px;

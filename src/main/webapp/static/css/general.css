@@ -27,6 +27,12 @@ body{
     text-decoration: none;
 }
 
+.logOutBottom:hover,
+.logOutBottom:focus{
+    color:black;
+    text-decoration: none;
+}
+
 .panel {
     background-position: center;
     background-repeat: no-repeat;

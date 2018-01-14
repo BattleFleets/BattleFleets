@@ -33,6 +33,8 @@ public class PlayerGoodsForSale {
         this.goodsTemplateId = goodsTemplateId;
         this.quantity = quantity;
         this.type = type;
+        name = "";
+        description = "";
     }
 
     public void setName(String name) {
@@ -75,5 +77,16 @@ public class PlayerGoodsForSale {
         this.description = this.description + description;
     }
 
-
+    @Override
+    public String toString() {
+        return "PlayerGoodsForSale{" +
+                "goodsId=" + goodsId +
+                ", goodsTemplateId=" + goodsTemplateId +
+                ", quantity=" + quantity +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", type=" + type +
+                ", salePrice=" + salePrice +
+                '}';
+    }
 }

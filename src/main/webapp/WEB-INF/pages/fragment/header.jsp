@@ -7,10 +7,9 @@
 <header>
         <p>${login}</p>
         <p>Level ${level}</p>
-        <p>Points ${points}</p>
-        <p>To next Level ${toNxt}</p>
+        <p>Points ${points}/${toNxtLevel}</p>
         <p>Money <span id="money">${money}</span></p>
-        <p>MaxShips <span id="maxShips">${maxShips}</span></p>
+        <p>Fleet ${currShips}/<span id="maxShips">${maxShips}</span></p>
         <p>Income <span id="income">${income}</span>/day</p>
         <p>Improve <span  id="improve">${nextImprove}</span> lvl</p>
 </header>

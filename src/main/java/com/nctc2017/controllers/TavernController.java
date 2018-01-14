@@ -27,39 +27,22 @@ public class TavernController {
     private ShipService shipService;
     @Autowired
     private MoneyService moneyService;
-    @Autowired
-    private LevelUpService lvlUpService;
-
-    private ModelAndView model=new ModelAndView();
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/tavern", method = RequestMethod.GET)
     public ModelAndView tavernWelcome(
             @RequestParam(value = "tavern", required = false) String city,
             @AuthenticationPrincipal PlayerUserDetails userDetails) {
+        ModelAndView model=new ModelAndView();
         BigInteger playerId = userDetails.getPlayerId();
         List<Ship> ships = shipService.getAllPlayerShips(playerId);
         int sailorCost = shipService.getSailorCost();
-        String login = lvlUpService.getLogin(playerId);
         int money = moneyService.getPlayersMoney(playerId);
-        int level = lvlUpService.getCurrentLevel(playerId);
-        int points = lvlUpService.getCurrentPoints(playerId);
-        int maxShips = lvlUpService.getMaxShips(playerId);
-        int income = lvlUpService.getPassiveIncome(playerId);
-        int pointsToNxtLvl =lvlUpService.getPointsToNxtLevel(playerId);
-        int nextImprove = lvlUpService.getNextLevel(playerId);
         model.addObject("msg", "This is protected page - Only for Users!");
-        model.addObject("login", login);
         model.addObject("money", money);
-        model.addObject("points", points);
-        model.addObject("level", level);
         model.addObject("city", city);
         model.addObject("ships", ships);
-        model.addObject("maxShips", maxShips);
-        model.addObject("income", income);
-        model.addObject("toNxt", pointsToNxtLvl);
         model.addObject("sailorCost",sailorCost);
-        model.addObject("nextImprove",nextImprove);
         model.setViewName("TavernView");
         return model;
     }

@@ -15,6 +15,9 @@
 	<h1 class="titleText">${city}</h1>
 </div>
 <body>
+<header>
+    <p>Money <span id="money"></span></p>
+</header>
 <a href="/city" class="logOutBottom">Return to city</a>
 <div class="col-sm-5 panels">
     <h1 class="messageText">Stock</h1>
