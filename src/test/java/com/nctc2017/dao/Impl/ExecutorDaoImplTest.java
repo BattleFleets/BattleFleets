@@ -146,7 +146,7 @@ public class ExecutorDaoImplTest {
     }
     @Test(expected = SQLException.class)
     @Rollback(true)
-    public void moveCargoToWinnerWrongTwoId() {
+    public void moveCargoToWinnerWrongTwoId() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player player = playerDao.findPlayerByLogin("Steve");
         BigInteger myShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());
@@ -166,7 +166,7 @@ public class ExecutorDaoImplTest {
     }
     @Test(expected = SQLException.class)
     @Rollback(true)
-    public void moveCargoToWinneWrongWinId() {
+    public void moveCargoToWinneWrongWinId() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player player = playerDao.findPlayerByLogin("Steve");
         BigInteger myShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());
@@ -187,7 +187,7 @@ public class ExecutorDaoImplTest {
 
     @Test(expected = SQLException.class)
     @Rollback(true)
-    public void moveCargoToWinneIdWrongLoseId() {
+    public void moveCargoToWinneIdWrongLoseId() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player player = playerDao.findPlayerByLogin("Steve");
         BigInteger myShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());

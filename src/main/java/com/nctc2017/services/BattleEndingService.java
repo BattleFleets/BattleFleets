@@ -47,11 +47,11 @@ public class BattleEndingService {
     @Autowired
     protected BattleManager battles;
 
-    public String passCargoToWinnerAfterBoarding(BigInteger shipWinnerId, BigInteger shipLoserId) {
+    public String passCargoToWinnerAfterBoarding(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
         return executorDao.moveCargoToWinnerBoardingOSurrender(shipWinnerId, shipLoserId);
     }
 
-    public String passDestroyGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) {
+    public String passDestroyGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
         return executorDao.moveCargoToWinnerDestroying(shipWinnerId, shipLoserId);
     }
 
@@ -59,7 +59,7 @@ public class BattleEndingService {
         return shipDao.deleteShip(shipId);
     }
 
-    public String passSurrenderGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) {
+    public String passSurrenderGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
         return executorDao.moveCargoToWinnerBoardingOSurrender(shipWinnerId, shipLoserId);
     }
     

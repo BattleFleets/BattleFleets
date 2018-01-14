@@ -336,7 +336,12 @@ public class BattlesController {
         @Override
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
                 BigInteger winnerId, BigInteger loserId) {
-            battleEndServ.passDestroyGoodsToWinner(winnerShipId, loserShipId);
+            try {
+                battleEndServ.passDestroyGoodsToWinner(winnerShipId, loserShipId);
+            } catch (SQLException e) {
+                LOG.fatal("Unexpected error when passing goods at the end of battle ", e);
+                return;
+            }
             battleEndServ.destroyShip(loserShipId);
         }
     }
@@ -346,7 +351,12 @@ public class BattlesController {
         @Override
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
                 BigInteger winnerId, BigInteger loserId) {
-            battleEndServ.passCargoToWinnerAfterBoarding(winnerShipId, loserShipId);
+            try {
+                battleEndServ.passCargoToWinnerAfterBoarding(winnerShipId, loserShipId);
+            } catch (SQLException e) {
+                LOG.fatal("Unexpected error when passing goods at the end of battle ", e);
+                return;
+            }
         }
     }
     
@@ -356,7 +366,12 @@ public class BattlesController {
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
                 BigInteger winnerId, BigInteger loserId) {
             LOG.debug("Player_" + loserId + " pass goods to winner Player_" + winnerId + " ship because surrendered");
-            battleEndServ.passSurrenderGoodsToWinner(winnerShipId, loserShipId);
+            try {
+                battleEndServ.passSurrenderGoodsToWinner(winnerShipId, loserShipId);
+            } catch (SQLException e) {
+                LOG.fatal("Unexpected error when passing goods at the end of battle ", e);
+                return;
+            }
         }
     }
     

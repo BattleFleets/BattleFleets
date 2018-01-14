@@ -15,9 +15,9 @@ public interface ExecutorDao {
 
     String moveCargoTo(BigInteger cargoId, BigInteger destinationId, int quantity);
 
-    String moveCargoToWinnerBoardingOSurrender(BigInteger shipWinnerId, BigInteger shipLoserId);
+    String moveCargoToWinnerBoardingOSurrender(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException;
 
-    String moveCargoToWinnerDestroying(BigInteger shipWinnerId, BigInteger shipLoserId);
+    String moveCargoToWinnerDestroying(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException;
 
 
     BigInteger createCannon(BigInteger templateId);
