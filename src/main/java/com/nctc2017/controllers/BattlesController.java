@@ -87,7 +87,7 @@ public class BattlesController {
     @RequestMapping(value = "/escape", method = RequestMethod.GET)
     @ResponseBody
     @ResponseStatus(value = HttpStatus.OK)
-    public Map<String, Boolean> escape(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException {
+    public Map<String, Boolean> escape(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException, SQLException {
         BigInteger playerId = userDetails.getPlayerId();
         LOG.debug("Player_" + playerId + " escape from battle request. ");
         boolean success = battleEndServ.escapeBattleLocation(playerId, new DefaultEscapeBattleEnd());
@@ -227,7 +227,7 @@ public class BattlesController {
     @RequestMapping(value = "/boarding", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
-    public void boarding(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException {
+    public void boarding(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException, SQLException {
         BigInteger playerId  = userDetails.getPlayerId();
         LOG.debug("Player_" + playerId + " boarding request ");
         BigInteger winnerId = battleService.boarding(playerId, new DefaultBoardingBattleEnd());
@@ -316,7 +316,7 @@ public class BattlesController {
     @RequestMapping(value = "/surrender", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
-    public Map<String, Boolean> surrender(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException {
+    public Map<String, Boolean> surrender(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException, SQLException {
         BigInteger playerId = userDetails.getPlayerId();
         battleEndServ.surrender(playerId, new DefaultSurrenderBattleEnd());
         return Collections.singletonMap("success", true);

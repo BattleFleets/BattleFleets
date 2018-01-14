@@ -36,6 +36,12 @@ public class TavernController {
         ModelAndView model=new ModelAndView();
         BigInteger playerId = userDetails.getPlayerId();
         List<Ship> ships = shipService.getAllPlayerShips(playerId);
+        int completedShip=0;
+        for(int i = 0; i < ships.size(); i++){
+            if(ships.get(i).getMaxSailorsQuantity()==ships.get(i).getCurSailorsQuantity()){
+                completedShip++;
+            }
+        }
         int sailorCost = shipService.getSailorCost();
         int money = moneyService.getPlayersMoney(playerId);
         model.addObject("msg", "This is protected page - Only for Users!");
@@ -43,6 +49,7 @@ public class TavernController {
         model.addObject("city", city);
         model.addObject("ships", ships);
         model.addObject("sailorCost",sailorCost);
+        model.addObject("completedShip",completedShip);
         model.setViewName("TavernView");
         return model;
     }
@@ -58,7 +65,13 @@ public class TavernController {
         int oldNumSailors = shipService.getSailorsNumber(shipId);
         int costForSailors;
         int sailors;
-        if((oldNumSailors+Integer.valueOf(newSailors))>ship.getMaxSailorsQuantity()){
+        int sailorCost = shipService.getSailorCost();
+        if(Integer.valueOf(cost)>moneyService.getPlayersMoney(userDetails.getPlayerId())){
+            sailors = (int) Math.ceil((moneyService.getPlayersMoney(userDetails.getPlayerId())/sailorCost));
+            costForSailors =sailors*sailorCost;
+            sailors = oldNumSailors+sailors;
+        }
+        else if((oldNumSailors+Integer.valueOf(newSailors))>ship.getMaxSailorsQuantity()){
             costForSailors=Integer.valueOf(cost)-
                     ((oldNumSailors+Integer.valueOf(newSailors))-ship.getMaxSailorsQuantity())*shipService.getSailorCost();
             sailors=ship.getMaxSailorsQuantity();

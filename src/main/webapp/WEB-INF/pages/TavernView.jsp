@@ -16,6 +16,7 @@
 <body>
 <form method="get">
     <div align="center">
+
         <c:if test="${empty ships}">
             <table class="panelTavern">
                 <tr align="center">
@@ -29,7 +30,15 @@
             <table class="panelTavern">
                 <tr align="center">
                     <td>
-                          <p style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You can hire sailors on your ships</p>
+                        <c:if test="${completedShip!=ships.size() && money>=sailorCost}">
+                        <p id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You can hire sailors on your ships</p>
+                        </c:if>
+                        <c:if test="${completedShip==ships.size()}">
+                        <p id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">All your ships are staffed with sailors</p>
+                        </c:if>
+                        <c:if test="${money<sailorCost}">
+                        <p id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You need ${sailorCost-money} more money</p>
+                        </c:if>
                     </td>
                 </tr>
                 <tr>
@@ -90,6 +99,7 @@
                             </tr>
                         </table>
                             <input type="hidden" id="moneyId"  value="${money}">
+                            <input type="hidden" id="complete"  value="${ships.size()-completedShip}">
             </div>
         </c:if>
     </div>
@@ -172,7 +182,22 @@
                 $("input.sailorsNumber").attr("max",max-sailors).val(max-sailors);
                 $("input.spend").val( $("input.sailorsNumber").val()*(money/sailors));
                 $('#conCurrSailors').val(data[1]);
-                if(data[1]==$('#maxSailors').val()){
+                if(data[0]<(money/sailors)){
+                    $('#info').html("You need "+parseInt((money/sailors)-data[0])+ " more money");
+                    $('#choiceShipCopy').css('background-color','transparent');
+                    $('.listOfShips').css('background-color','transparent');
+                    $('.listOfShips').css('cursor','default');
+                    $('.listOfShips').removeAttr('onclick');
+                    $('#shipId').attr('disabled',true);
+                    $('#shipId').hide();
+                    $("input.sailorsNumber").hide();
+                    $("input.spend").hide();
+                }
+                else if($('#conCurrSailors').val()==$('#maxSailors').val()){
+                    $('#complete').val($('#complete').val()-1);
+                    if($('#complete').val()==0){
+                        $('#info').html("All your ships are staffed with sailors");
+                    }
                     $('#choiceShipCopy').css('background-color','transparent');
                     $('#choiceShipOrig').css('background-color','transparent');
                     $('#choiceShipOrig').css('cursor','default');
@@ -181,7 +206,6 @@
                     $('#shipId').hide();
                     $("input.sailorsNumber").hide();
                     $("input.spend").hide();
-
                 }
             }
         } );

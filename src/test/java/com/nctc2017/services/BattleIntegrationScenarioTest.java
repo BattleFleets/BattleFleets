@@ -217,7 +217,7 @@ public class BattleIntegrationScenarioTest {
     }
     
     @Test(expected = IllegalStateException.class)
-    public void testBoardingWithBigDist() throws DeadEndException, BattleEndException {
+    public void testBoardingWithBigDist() throws DeadEndException, BattleEndException, SQLException {
         battleService.boarding(nikId, null);
     }
     

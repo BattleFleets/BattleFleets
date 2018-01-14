@@ -4,6 +4,7 @@ import com.nctc2017.bean.PlayerUserDetails;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.services.LevelUpService;
 import com.nctc2017.services.MoneyService;
+import com.nctc2017.services.ScoreService;
 import com.nctc2017.services.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -27,6 +28,9 @@ public class HeaderController {
     @Autowired
     private ShipService shipService;
 
+    @Autowired
+    private ScoreService scoreService;
+
 
     @Secured("ROLE_USER")
     @RequestMapping(value="/addHeader",method = RequestMethod.GET)
@@ -41,6 +45,7 @@ public class HeaderController {
         int income = lvlUpService.getPassiveIncome(playerId);
         int pointsToNxtLvl =lvlUpService.getPointsToNxtLevel(playerId);
         int nextImprove = lvlUpService.getNextLevel(playerId);
+        int maxLvl = scoreService.getMaxLvl();
         List<Ship> currShips = shipService.getAllPlayerShips(playerId);
         model.addObject("login", login);
         model.addObject("money", money);
@@ -52,6 +57,7 @@ public class HeaderController {
         model.addObject("income", income);
         model.addObject("toNxtLevel", pointsToNxtLvl);
         model.addObject("nextImprove",nextImprove);
+        model.addObject("maxLvl",maxLvl);
         model.setViewName("fragment/header");
         return model;
     }

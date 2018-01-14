@@ -44,4 +44,9 @@ public class ScoreDaoImplTest {
         assertEquals(scoreDao.getScoreForPayoff(),0);
     }
 
+    @Test
+    @Rollback
+    public void getMaxLvl() throws Exception {
+        assertEquals(scoreDao.getMaxLvl(),100);
+    }
 }

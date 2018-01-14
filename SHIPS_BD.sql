@@ -167,8 +167,7 @@ INSERT INTO ATTRIBUTES (ATTR_ID, OBJECT_TYPE_ID, OBJECT_TYPE_ID_REF, NAME) VALUE
 INSERT INTO ATTRIBUTES (ATTR_ID, OBJECT_TYPE_ID, OBJECT_TYPE_ID_REF, NAME) VALUES (36, 14, null,'PurchasePrice');
 INSERT INTO ATTRIBUTES (ATTR_ID, OBJECT_TYPE_ID, OBJECT_TYPE_ID_REF, NAME) VALUES (37, 14, null,'GoodsNum');
 /*Аттрибуты Очки*/
-INSERT INTO ATTRIBUTES (ATTR_ID, OBJECT_TYPE_ID, OBJECT_TYPE_ID_REF, NAME) VALUES (38,15,null,'ScoreKind');
-INSERT INTO ATTRIBUTES (ATTR_ID, OBJECT_TYPE_ID, OBJECT_TYPE_ID_REF, NAME) VALUES (39,15,null,'ScoreNum');
+INSERT INTO ATTRIBUTES (ATTR_ID, OBJECT_TYPE_ID, OBJECT_TYPE_ID_REF, NAME) VALUES (38,15,null,'ScoreNum');
 /*Аттрибуты Матрос*/
 INSERT INTO ATTRIBUTES (ATTR_ID, OBJECT_TYPE_ID, OBJECT_TYPE_ID_REF, NAME) VALUES (35, 13, null,'SailorCost');
 
@@ -266,6 +265,7 @@ INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME) VALU
 INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME) VALUES (75, null, 15 , null, 'Destroying');
 INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME) VALUES (76, null, 15 , null, 'Surrender');
 INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME) VALUES (77, null, 15 , null, 'PayOff');
+INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME) VALUES (78, null, 15 , null, 'MaxLvl');
 /*Обьекты Матрос*/
 INSERT INTO OBJECTS (OBJECT_ID, PARENT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME) VALUES (58, null, 13 , null, 'Sailor');
 
@@ -516,14 +516,11 @@ INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (37, 
 INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (36, 68, '600', null);
 INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (37, 68, '101', null);
 /*Значения Аттрибутов Очки*/
-INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (38, 74, 'Boarding', null);
-INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (39, 74, '40', null);
-INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (38, 75, 'Destroying', null);
-INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (39, 75, '30', null);
-INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (38, 76, 'Surrender', null);
-INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (39, 76, '20', null);
-INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (38, 77, 'PayOff', null);
-INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (39, 77, '0', null);
+INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (38, 74, '40', null);
+INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (38, 75, '30', null);
+INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (38, 76, '20', null);
+INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (38, 77, '0', null);
+INSERT INTO ATTRIBUTES_VALUE(ATTR_ID, OBJECT_ID, VALUE, DATE_VALUE) VALUES (38, 78, '100', null);
 /*Значения Аттрибутов Трюм*/
 
 /*Значения Аттрибутов Склад*/
@@ -615,7 +612,7 @@ is
     INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (login_attr_id,obj_sq.currval,login,null);
     INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (password_attr_id,obj_sq.currval,password,null);
     INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (money_attr_id,obj_sq.currval,start_money,null);
-    INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (lvl_attr_id,obj_sq.currval,0,null);
+    INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (lvl_attr_id,obj_sq.currval,1,null);
     INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (points_attr_id,obj_sq.currval,0,null);
     INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (email_attr_id,obj_sq.currval,email,null);
     INSERT INTO ATTRIBUTES_VALUE(ATTR_ID,OBJECT_ID,VALUE,DATE_VALUE) VALUES (passive_income_attr_id,obj_sq.currval,start_passive_income,null);
@@ -1044,9 +1041,8 @@ BEGIN
 END;
 /
 
-CREATE OR REPLACE FUNCTION MOVE_CARGO_TO_WINNER(shipWinId NUMBER, shipLoseId NUMBER) RETURN VARCHAR2
+CREATE OR REPLACE FUNCTION DESTROYING_RESULT(shipWinId NUMBER, shipLoseId NUMBER) RETURN VARCHAR2
 IS
-  health NUMBER;
   holdIdWin NUMBER;
   holdIdLose NUMBER;
   carrying NUMBER;
@@ -1074,6 +1070,68 @@ IS
   mastObjType NUMBER:=7;
   shipObjType NUMBER:=6;
   CURSOR goodsId IS SELECT OBJECT_ID FROM (SELECT OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=goodsObjTypeId AND PARENT_ID=holdIdLose ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM<=ROUND(DBMS_RANDOM.VALUE(3,5));
+  BEGIN
+    SELECT OBJECT_TYPE_ID INTO winObjType FROM OBJECTS WHERE OBJECT_ID=shipWinId;
+    SELECT OBJECT_TYPE_ID INTO loseObjType FROM OBJECTS WHERE OBJECT_ID=shipLoseId;
+    IF winObjType=shipObjType AND loseObjType=shipObjType
+    THEN
+      SELECT SOURCE_ID INTO tShipWinId FROM OBJECTS WHERE OBJECT_ID=shipWinId;
+      SELECT VALUE INTO carrying FROM ATTRIBUTES_VALUE WHERE ATTR_ID=carryingAttrId AND OBJECT_ID=tShipWinId;
+      SELECT hold.OBJECT_ID INTO holdIdWin FROM OBJECTS ship, OBJECTS hold WHERE ship.OBJECT_ID=hold.PARENT_ID AND ship.OBJECT_ID=shipWinId AND hold.OBJECT_TYPE_ID=holdAttrId;
+      SELECT hold.OBJECT_ID INTO holdIdLose FROM OBJECTS ship, OBJECTS hold WHERE ship.OBJECT_ID=hold.PARENT_ID AND ship.OBJECT_ID=shipLoseId AND hold.OBJECT_TYPE_ID=holdAttrId;
+      SELECT COUNT(OBJECT_ID) INTO mastsAndCannons FROM OBJECTS WHERE (OBJECT_TYPE_ID=mastObjType OR OBJECT_TYPE_ID=canObjType) AND PARENT_ID=holdIdWin;
+      SELECT NVL(SUM(VALUE),0) INTO ammoQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=ammoNumAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND PARENT_ID=holdIdWin;
+      SELECT NVL(SUM(VALUE),0) INTO goodsQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=quantityGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND PARENT_ID=holdIdWin;
+      quantValue:=mastsAndCannons+ammoQuant+goodsQuant;
+      FOR goodId IN goodsId LOOP
+        UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE PARENT_ID=holdIdLose AND OBJECT_TYPE_ID=goodsObjTypeId AND OBJECT_ID=goodId.OBJECT_ID;
+        SELECT ROUND(VALUE*DBMS_RANDOM.VALUE(0.4,0.6)) INTO valGoodsQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=quantityGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND OBJECTS.OBJECT_ID=goodId.OBJECT_ID;
+        freePlace:=carrying-quantValue;
+        diff:=valGoodsQuant-freePlace;
+        IF diff>0
+        THEN
+          valGoodsQuant:=freePlace;
+        END IF;
+        UPDATE ATTRIBUTES_VALUE SET VALUE=ROUND(VALUE*DBMS_RANDOM.VALUE(0.2,0.8)) WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=goodId.OBJECT_ID;
+        UPDATE ATTRIBUTES_VALUE SET VALUE=valGoodsQuant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=goodId.OBJECT_ID;
+        quantValue:=quantValue+valGoodsQuant;
+      END LOOP;
+      RETURN 'You received part of goods from enemy ship as a result of destruction';
+    ELSE
+      raise_application_error( -20001,
+                               'Error '||shipWinId||' or '|| shipLoseId||' are not ships' );
+    END IF;
+  END;
+/
+
+CREATE OR REPLACE FUNCTION BOARDING_OR_SURRENDER_RESULT(shipWinId NUMBER, shipLoseId NUMBER) RETURN VARCHAR2
+IS
+  holdIdWin NUMBER;
+  holdIdLose NUMBER;
+  carrying NUMBER;
+  tShipWinId NUMBER;
+  mastsAndCannons NUMBER;
+  goodsQuant NUMBER;
+  ammoQuant NUMBER;
+  ammoNum NUMBER;
+  valGoodsQuant NUMBER;
+  freePlace NUMBER;
+  diff NUMBER;
+  goodCost NUMBER;
+  winObjType NUMBER;
+  loseObjType NUMBER;
+  put NUMBER;
+  quantValue NUMBER:=0;
+  HealthAttrId NUMBER:=24;
+  holdAttrId NUMBER:=9;
+  goodsObjTypeId NUMBER:=14;
+  ammoNumAttrId NUMBER:=34;
+  quantityGoodsAttrId NUMBER:=37;
+  costGoodsAttrId NUMBER:=36;
+  carryingAttrId NUMBER:=2;
+  canObjType NUMBER:=8;
+  mastObjType NUMBER:=7;
+  shipObjType NUMBER:=6;
   CURSOR cargos IS SELECT OBJECT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME FROM OBJECTS WHERE PARENT_ID=holdIdLose;
   BEGIN
     SELECT OBJECT_TYPE_ID INTO winObjType FROM OBJECTS WHERE OBJECT_ID=shipWinId;
@@ -1082,96 +1140,78 @@ IS
     THEN
       SELECT SOURCE_ID INTO tShipWinId FROM OBJECTS WHERE OBJECT_ID=shipWinId;
       SELECT VALUE INTO carrying FROM ATTRIBUTES_VALUE WHERE ATTR_ID=carryingAttrId AND OBJECT_ID=tShipWinId;
-      SELECT VALUE INTO health FROM ATTRIBUTES_VALUE WHERE ATTR_ID=HealthAttrId AND OBJECT_ID=shipLoseId;
       SELECT hold.OBJECT_ID INTO holdIdWin FROM OBJECTS ship, OBJECTS hold WHERE ship.OBJECT_ID=hold.PARENT_ID AND ship.OBJECT_ID=shipWinId AND hold.OBJECT_TYPE_ID=holdAttrId;
       SELECT hold.OBJECT_ID INTO holdIdLose FROM OBJECTS ship, OBJECTS hold WHERE ship.OBJECT_ID=hold.PARENT_ID AND ship.OBJECT_ID=shipLoseId AND hold.OBJECT_TYPE_ID=holdAttrId;
       SELECT COUNT(OBJECT_ID) INTO mastsAndCannons FROM OBJECTS WHERE (OBJECT_TYPE_ID=mastObjType OR OBJECT_TYPE_ID=canObjType) AND PARENT_ID=holdIdWin;
       SELECT NVL(SUM(VALUE),0) INTO ammoQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=ammoNumAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND PARENT_ID=holdIdWin;
       SELECT NVL(SUM(VALUE),0) INTO goodsQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=quantityGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND PARENT_ID=holdIdWin;
       quantValue:=mastsAndCannons+ammoQuant+goodsQuant;
-      IF health<=0
-      THEN
-        FOR goodId IN goodsId LOOP
-          UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE PARENT_ID=holdIdLose AND OBJECT_TYPE_ID=goodsObjTypeId AND OBJECT_ID=goodId.OBJECT_ID;
-          SELECT ROUND(VALUE*DBMS_RANDOM.VALUE(0.4,0.6)) INTO valGoodsQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=quantityGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND OBJECTS.OBJECT_ID=goodId.OBJECT_ID;
-          freePlace:=carrying-quantValue;
-          diff:=valGoodsQuant-freePlace;
-          IF diff>0
+      FOR cargo IN cargos LOOP
+        IF cargo.OBJECT_TYPE_ID=canObjType OR cargo.OBJECT_TYPE_ID=mastObjType
+        THEN
+          quantValue:=quantValue+1;
+          IF quantValue<=carrying
           THEN
-            valGoodsQuant:=freePlace;
+            UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE OBJECT_ID=cargo.OBJECT_ID;
           END IF;
-          UPDATE ATTRIBUTES_VALUE SET VALUE=ROUND(VALUE*DBMS_RANDOM.VALUE(0.2,0.8)) WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=goodId.OBJECT_ID;
-          UPDATE ATTRIBUTES_VALUE SET VALUE=valGoodsQuant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=goodId.OBJECT_ID;
-          quantValue:=quantValue+valGoodsQuant;
-        END LOOP;
-        RETURN 'You received part of goods from enemy ship as a result of destruction';
-      ELSE
-        FOR cargo IN cargos LOOP
-          IF cargo.OBJECT_TYPE_ID=canObjType OR cargo.OBJECT_TYPE_ID=mastObjType
+        ELSIF cargo.OBJECT_TYPE_ID=goodsObjTypeId
           THEN
-            quantValue:=quantValue+1;
-            IF quantValue<=carrying
-            THEN
-              UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE OBJECT_ID=cargo.OBJECT_ID;
-            END IF;
-          ELSIF cargo.OBJECT_TYPE_ID=goodsObjTypeId
-            THEN
-              SELECT VALUE INTO valGoodsQuant FROM ATTRIBUTES_VALUE WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargo.OBJECT_ID;
-              freePlace:=carrying-quantValue;
-              diff:=valGoodsQuant-freePlace;
-              IF diff>=0
-              THEN
-                put:=freePlace;
-              ELSE
-                put:=valGoodsQuant;
-              END IF;
-              IF freeplace>0
-              THEN
-                IF valGoodsQuant<=freePlace
-                THEN
-                  UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE OBJECT_ID=cargo.OBJECT_ID;
-                  quantValue:=quantValue+valGoodsQuant;
-                ELSE
-                  SELECT VALUE INTO goodCost FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=cargo.OBJECT_ID;
-                  UPDATE ATTRIBUTES_VALUE SET VALUE=diff WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargo.OBJECT_ID;
-                  INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL, holdIdWin, cargo.OBJECT_TYPE_ID, cargo.SOURCE_ID, cargo.NAME);
-                  INSERT INTO ATTRIBUTES_VALUE VALUES(costGoodsAttrId, obj_sq.CURRVAL, goodCost,null);
-                  INSERT INTO ATTRIBUTES_VALUE VALUES(quantityGoodsAttrId, obj_sq.CURRVAL, put,null);
-                  quantValue:=quantValue+put;
-                END IF;
-              END IF;
-          ELSE
-            SELECT VALUE INTO ammoNum FROM ATTRIBUTES_VALUE WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargo.OBJECT_ID;
+            SELECT VALUE INTO valGoodsQuant FROM ATTRIBUTES_VALUE WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargo.OBJECT_ID;
             freePlace:=carrying-quantValue;
-            diff:=ammoNum-freePlace;
+            diff:=valGoodsQuant-freePlace;
             IF diff>=0
             THEN
               put:=freePlace;
             ELSE
-              put:=ammoNum;
+              put:=valGoodsQuant;
             END IF;
-            IF freePlace>0
+            IF freeplace>0
             THEN
-              IF ammoNum<=freePlace
+              IF valGoodsQuant<=freePlace
               THEN
                 UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE OBJECT_ID=cargo.OBJECT_ID;
-                quantValue:=quantValue+ammoNum;
+                quantValue:=quantValue+valGoodsQuant;
               ELSE
-                UPDATE ATTRIBUTES_VALUE SET VALUE=diff WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargo.OBJECT_ID;
+                SELECT VALUE INTO goodCost FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=cargo.OBJECT_ID;
+                UPDATE ATTRIBUTES_VALUE SET VALUE=diff WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargo.OBJECT_ID;
                 INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL, holdIdWin, cargo.OBJECT_TYPE_ID, cargo.SOURCE_ID, cargo.NAME);
-                INSERT INTO ATTRIBUTES_VALUE VALUES(ammoNumAttrId, obj_sq.CURRVAL,put,null);
+                INSERT INTO ATTRIBUTES_VALUE VALUES(costGoodsAttrId, obj_sq.CURRVAL, goodCost,null);
+                INSERT INTO ATTRIBUTES_VALUE VALUES(quantityGoodsAttrId, obj_sq.CURRVAL, put,null);
                 quantValue:=quantValue+put;
               END IF;
             END IF;
+        ELSE
+          SELECT VALUE INTO ammoNum FROM ATTRIBUTES_VALUE WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargo.OBJECT_ID;
+          freePlace:=carrying-quantValue;
+          diff:=ammoNum-freePlace;
+          IF diff>=0
+          THEN
+            put:=freePlace;
+          ELSE
+            put:=ammoNum;
           END IF;
-        END LOOP;
-        RETURN 'You received part of goods from enemy ship as a result of boarding';
-      END IF;
+          IF freePlace>0
+          THEN
+            IF ammoNum<=freePlace
+            THEN
+              UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE OBJECT_ID=cargo.OBJECT_ID;
+              quantValue:=quantValue+ammoNum;
+            ELSE
+              UPDATE ATTRIBUTES_VALUE SET VALUE=diff WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargo.OBJECT_ID;
+              INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL, holdIdWin, cargo.OBJECT_TYPE_ID, cargo.SOURCE_ID, cargo.NAME);
+              INSERT INTO ATTRIBUTES_VALUE VALUES(ammoNumAttrId, obj_sq.CURRVAL,put,null);
+              quantValue:=quantValue+put;
+            END IF;
+          END IF;
+        END IF;
+      END LOOP;
+      RETURN 'You received part of goods from enemy ship as a result of boarding';
     ELSE
-      RETURN 'Wrong input data';
+      raise_application_error( -20001,
+                               'Error '||shipWinId||' and '|| shipLoseId||' are not ships' );
     END IF;
   END;
-  /
+/
 
 CREATE OR REPLACE FUNCTION MOVE_CARGO_TO(cargoId NUMBER, destinationId NUMBER, quantity NUMBER) RETURN VARCHAR2
 IS

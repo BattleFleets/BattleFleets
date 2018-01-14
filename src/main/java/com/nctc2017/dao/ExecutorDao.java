@@ -15,7 +15,10 @@ public interface ExecutorDao {
 
     String moveCargoTo(BigInteger cargoId, BigInteger destinationId, int quantity);
 
-    String moveCargoToWinner(BigInteger shipWinnerId, BigInteger shipLosserId);
+    String moveCargoToWinnerBoardingOSurrender(BigInteger shipWinnerId, BigInteger shipLoserId);
+
+    String moveCargoToWinnerDestroying(BigInteger shipWinnerId, BigInteger shipLoserId);
+
 
     BigInteger createCannon(BigInteger templateId);
 

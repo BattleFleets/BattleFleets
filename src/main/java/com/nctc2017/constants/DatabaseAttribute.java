@@ -42,7 +42,7 @@ public class DatabaseAttribute {
 
     public static final BigInteger SAILOR_COST_ATTR_ID = BigInteger.valueOf(35);
 
-    public static final BigInteger SCORE_NUM_ATTR_ID = BigInteger.valueOf(39);
+    public static final BigInteger SCORE_NUM_ATTR_ID = BigInteger.valueOf(38);
 
 
     public static final BigInteger VERIFICATION_TOKEN_TOKEN = BigInteger.valueOf(45);

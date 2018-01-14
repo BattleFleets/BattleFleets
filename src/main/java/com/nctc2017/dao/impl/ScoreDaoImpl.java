@@ -35,4 +35,9 @@ public class ScoreDaoImpl implements ScoreDao{
     public int getScoreForPayoff() {
         return queryExecutor.getAttrValue(DatabaseObject.SCORE_PAYOFF_ID, DatabaseAttribute.SCORE_NUM_ATTR_ID, Integer.class);
     }
+
+    @Override
+    public int getMaxLvl() {
+        return queryExecutor.getAttrValue(DatabaseObject.MAX_LVL, DatabaseAttribute.SCORE_NUM_ATTR_ID, Integer.class);
+    }
 }

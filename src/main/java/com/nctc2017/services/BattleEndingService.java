@@ -1,6 +1,7 @@
 package com.nctc2017.services;
 
 import java.math.BigInteger;
+import java.sql.SQLException;
 import java.util.*;
 
 import org.apache.log4j.Logger;
@@ -47,19 +48,19 @@ public class BattleEndingService {
     protected BattleManager battles;
 
     public String passCargoToWinnerAfterBoarding(BigInteger shipWinnerId, BigInteger shipLoserId) {
-        return executorDao.moveCargoToWinner(shipWinnerId, shipLoserId);
+        return executorDao.moveCargoToWinnerBoardingOSurrender(shipWinnerId, shipLoserId);
     }
 
     public String passDestroyGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) {
-        return executorDao.moveCargoToWinner(shipWinnerId, shipLoserId);
+        return executorDao.moveCargoToWinnerDestroying(shipWinnerId, shipLoserId);
     }
 
     public boolean destroyShip(BigInteger shipId) {
         return shipDao.deleteShip(shipId);
     }
 
-    public String passSurrenderGoodsToWinner(BigInteger winnerShipId, BigInteger loserShipId) {
-        return "";
+    public String passSurrenderGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) {
+        return executorDao.moveCargoToWinnerBoardingOSurrender(shipWinnerId, shipLoserId);
     }
     
     private int getPayOff(int enemyLvl) {

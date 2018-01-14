@@ -134,7 +134,7 @@ public class BattleService {
     }
     
     private void defineWinner(Battle battle, BigInteger winnerShipId, BigInteger loserShipId, 
-            BattleEndVisitor visitor, BigInteger winnerId, BigInteger loserId) {
+            BattleEndVisitor visitor, BigInteger winnerId, BigInteger loserId) throws SQLException {
         shipDao.updateShipHealth(winnerShipId, random.nextInt(RAPAIR_BONUS));
         visitor.endCaseVisit(playerDao, shipDao, winnerShipId, loserShipId, winnerId, loserId);
         battle.setWinner(winnerId, WIN_MESSAGE_DESTROY, LOSE_MESSAGE_DESTROY);
@@ -173,7 +173,7 @@ public class BattleService {
         return battle.getDistance();
     }
 
-    public BigInteger boarding(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException {
+    public BigInteger boarding(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException, SQLException {
         Battle battle = battles.getBattle(playerId);
         BigInteger winnerId;
         synchronized(battle) {
