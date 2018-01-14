@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -46,6 +47,7 @@ import com.nctc2017.services.utils.BattleEndVisitor;
 @Rollback(true)
 @FixMethodOrder
 public class BattleIntegrationScenarioTest {
+    private static final Logger LOG = Logger.getLogger(BattleIntegrationScenarioTest.class);
     @Autowired
     private ApplicationContext context;
     
@@ -347,7 +349,12 @@ public class BattleIntegrationScenarioTest {
                 BigInteger winnerId, BigInteger loserId) {
             int loserVolumeBefore = holdDao.getOccupiedVolume(loserShipId);
             int winnerVolumeBefore = holdDao.getOccupiedVolume(winnerShipId);
-            battleEnd.passDestroyGoodsToWinner(winnerShipId, loserShipId);
+            try {
+                battleEnd.passDestroyGoodsToWinner(winnerShipId, loserShipId);
+            } catch (SQLException e) {
+                LOG.error(e);
+                fail(e.getMessage());
+            }
             int loserVolumeAfter = holdDao.getOccupiedVolume(loserShipId);
             int winnerVolumeAfter = holdDao.getOccupiedVolume(winnerShipId);
             assertTrue("loser: Volume After: " 
@@ -375,7 +382,12 @@ public class BattleIntegrationScenarioTest {
             //assertTrue(currSteveSailors + " > " + currNikSailors, currSteveSailors > currNikSailors);
             int loserVolumeBefore = holdDao.getOccupiedVolume(loserShipId);
             int winnerVolumeBefore = holdDao.getOccupiedVolume(winnerShipId);
-            battleEnd.passCargoToWinnerAfterBoarding(winnerShipId, loserShipId);
+            try {
+                battleEnd.passCargoToWinnerAfterBoarding(winnerShipId, loserShipId);
+            } catch (SQLException e) {
+                LOG.error(e);
+                fail(e.getMessage());
+            }
             int loserVolumeAfter = holdDao.getOccupiedVolume(loserShipId);
             int winnerVolumeAfter = holdDao.getOccupiedVolume(winnerShipId);
             
