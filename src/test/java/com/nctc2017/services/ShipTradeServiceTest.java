@@ -121,7 +121,7 @@ public class ShipTradeServiceTest {
 
         when(levelUpService.getMaxShips(steve.getPlayerId())).thenReturn(10);
         when(shipRepairService.countRepairCost(any())).thenReturn(0);
-        when(shipService.createNewShip(any(), any())).thenReturn(any());
+        when(shipService.createNewShip(any(), any())).thenReturn(new BigInteger("1"));
         when(shipDao.findShipTemplate(t_BlackPerl.getTemplateId())).thenReturn(t_BlackPerl);
         when(shipDao.findShip(blackPerl.getShipId())).thenReturn(blackPerl);
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(steve.getMoney());

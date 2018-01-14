@@ -35,7 +35,8 @@ public class ShipTradeService {
         int numberOfShips = playerDao.findAllShip(playerId) == null ? 0 : playerDao.findAllShip(playerId).size();
         if (levelUpService.getMaxShips(playerId) <= numberOfShips)
             return "You have complete fleet for your level!";
-        if (moneyService.deductMoney(playerId, shipTemplate.getCost()) == null)
+        Integer newMoney = moneyService.deductMoney(playerId, shipTemplate.getCost());
+        if ( newMoney== null)
             return "Money is not enough to buy that ship";
         BigInteger createdId = shipService.createNewShip(shipTemplateId, playerId);
         return createdId.toString();
