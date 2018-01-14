@@ -1,7 +1,5 @@
 package com.nctc2017.dao;
 
-import java.math.BigInteger;
-
 public interface ScoreDao {
 
     int getScoreForDestroy();
@@ -11,4 +9,6 @@ public interface ScoreDao {
     int getScoreForSurrender();
 
     int getScoreForPayoff();
+
+    int getMaxLvl();
 }

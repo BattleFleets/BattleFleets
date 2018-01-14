@@ -3,12 +3,15 @@ package com.nctc2017.services;
 
 import com.nctc2017.dao.PlayerDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 
 public class LevelUpService {
     @Autowired
-    PlayerDao playerDao;
+    private PlayerDao playerDao;
+    @Autowired
+    private ScoreService scoreService;
 
     private static final int upPassiveIncome = 50;
     private static final int upMaxShips = 1;
@@ -33,25 +36,26 @@ public class LevelUpService {
 
     public int getPointsToNxtLevel(BigInteger playerId){
         int curLvl = getCurrentLevel(playerId);
-        double points = Math.ceil(factor*Math.pow(ratio, curLvl));
+        double points = Math.floor(factor*Math.pow(ratio, curLvl-1));
         return (int)(points);
     }
 
     public void pointsUp(BigInteger playerId, int points) {
        double diff;
        int curLvl = getCurrentLevel(playerId);
-       int newPoints = points + getCurrentPoints(playerId);
-       double maxCurPoints = Math.ceil(factor*Math.pow(ratio, curLvl));
-       if(newPoints<maxCurPoints){
-           playerDao.updatePoints(playerId, newPoints);
-       }
-       else{
-         diff = newPoints-maxCurPoints;
-         levelUp(playerId, curLvl + updatelvl);
-         playerDao.updatePoints(playerId, zero);
-         if(diff!=0) {
-             pointsUp(playerId, (int) diff);
-         }
+       if(curLvl!=scoreService.getMaxLvl()) {
+           int newPoints = points + getCurrentPoints(playerId);
+           double maxCurPoints = Math.ceil(factor * Math.pow(ratio, curLvl - 1));
+           if (newPoints < maxCurPoints) {
+               playerDao.updatePoints(playerId, newPoints);
+           } else {
+               diff = newPoints - maxCurPoints;
+               levelUp(playerId, curLvl + updatelvl);
+               playerDao.updatePoints(playerId, zero);
+               if (diff != 0) {
+                   pointsUp(playerId, (int) diff);
+               }
+           }
        }
     }
 

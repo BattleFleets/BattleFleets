@@ -6,12 +6,7 @@ import java.util.Properties;
 import javax.mail.Session;
 import javax.sql.DataSource;
 
-import com.nctc2017.services.LevelUpService;
-import com.nctc2017.services.MoneyService;
-import com.nctc2017.services.ShipRepairService;
-import com.nctc2017.services.ShipService;
-import com.nctc2017.services.ShipTradeService;
-import com.nctc2017.services.TravelService;
+import com.nctc2017.services.*;
 import com.nctc2017.services.utils.BattleManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +95,7 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
 
         return javaMailSender;
     }
-    
+
     @Bean(name = "travelServicePrototype")
     @Scope("prototype")
     public TravelService travelServiceProt() {
@@ -124,6 +119,13 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     public LevelUpService levelUpServiceProt() {
         return new LevelUpService();
     }
+
+   @Bean(name = "scoreServicePrototype")
+    @Scope("prototype")
+    public ScoreService scoreServiceProt() {
+       return new ScoreService();
+   }
+
 
     @Bean(name = "travelServiceSingleton")
     @Scope("singleton")

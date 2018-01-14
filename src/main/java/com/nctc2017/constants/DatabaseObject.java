@@ -52,6 +52,7 @@ public class DatabaseObject {
     public static final BigInteger SCORE_DESTROYING_ID = BigInteger.valueOf(75);
     public static final BigInteger SCORE_SURRENDER_ID = BigInteger.valueOf(76);
     public static final BigInteger SCORE_PAYOFF_ID = BigInteger.valueOf(77);
+    public static final BigInteger MAX_LVL = BigInteger.valueOf(78);
 
 
     public static final BigInteger SAILOR_OBJECT_ID = BigInteger.valueOf(58);

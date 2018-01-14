@@ -1,6 +1,7 @@
 package com.nctc2017.services;
 
 import java.math.BigInteger;
+import java.sql.SQLException;
 import java.util.*;
 
 import org.apache.log4j.Logger;
@@ -44,20 +45,20 @@ public class BattleEndingService {
     @Autowired
     protected BattleManager battles;
 
-    public String passCargoToWinnerAfterBoarding(BigInteger shipWinnerId, BigInteger shipLoserId) {
-        return executorDao.moveCargoToWinner(shipWinnerId, shipLoserId);
+    public String passCargoToWinnerAfterBoarding(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
+        return executorDao.moveCargoToWinnerBoardingOSurrender(shipWinnerId, shipLoserId);
     }
 
-    public String passDestroyGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) {
-        return executorDao.moveCargoToWinner(shipWinnerId, shipLoserId);
+    public String passDestroyGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
+        return executorDao.moveCargoToWinnerDestroying(shipWinnerId, shipLoserId);
     }
 
     public boolean destroyShip(BigInteger shipId) {
         return shipDao.deleteShip(shipId);
     }
 
-    public String passSurrenderGoodsToWinner(BigInteger winnerShipId, BigInteger loserShipId) {
-        return "";
+    public String passSurrenderGoodsToWinner(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
+        return executorDao.moveCargoToWinnerBoardingOSurrender(shipWinnerId, shipLoserId);
     }
     
     private int getPayOff(int enemyLvl) {
@@ -140,7 +141,7 @@ public class BattleEndingService {
         return enemy == null;
     }
     
-    public void surrender(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException {
+    public void surrender(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException, SQLException {
         Battle battle = battles.getBattle(playerId);
         BigInteger winnerId = battle.getEnemyId(playerId);
         BigInteger winnerShipId = battle.getShipId(winnerId);
@@ -159,7 +160,7 @@ public class BattleEndingService {
         return playerShipSpeed - enemyShipSpeed > SPEED_DIFFERENCE_FOR_ESCAPE;
     }
     
-    public boolean escapeBattleLocation(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException {
+    public boolean escapeBattleLocation(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException, SQLException {
         if (! isBattleLocationEscapeAvaliable(playerId)) return false;
         Battle battle = battles.getBattle(playerId);
         BigInteger loserId = battle.getEnemyId(playerId);

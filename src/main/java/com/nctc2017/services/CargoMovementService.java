@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +32,8 @@ public class CargoMovementService {
     @Autowired
     private ExecutorDao executorDao;
 
-    public String moveCargoBetweenPlayers(BigInteger shipFromId, BigInteger shipToId) {
-        return  executorDao.moveCargoToWinner(shipToId, shipFromId);
+    public String moveCargoBetweenPlayers(BigInteger shipFromId, BigInteger shipToId) throws SQLException {
+        return  executorDao.moveCargoToWinnerBoardingOSurrender(shipToId, shipFromId);
 
     }
 

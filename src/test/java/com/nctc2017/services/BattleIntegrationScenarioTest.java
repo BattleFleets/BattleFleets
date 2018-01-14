@@ -217,7 +217,7 @@ public class BattleIntegrationScenarioTest {
     }
     
     @Test(expected = IllegalStateException.class)
-    public void testBoardingWithBigDist() throws DeadEndException, BattleEndException {
+    public void testBoardingWithBigDist() throws DeadEndException, BattleEndException, SQLException {
         battleService.boarding(nikId, null);
     }
     
@@ -344,7 +344,7 @@ public class BattleIntegrationScenarioTest {
 
         @Override
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
-                BigInteger winnerId, BigInteger loserId) {
+                BigInteger winnerId, BigInteger loserId) throws SQLException {
             int loserVolumeBefore = holdDao.getOccupiedVolume(loserShipId);
             int winnerVolumeBefore = holdDao.getOccupiedVolume(winnerShipId);
             battleEnd.passDestroyGoodsToWinner(winnerShipId, loserShipId);
@@ -368,7 +368,7 @@ public class BattleIntegrationScenarioTest {
 
         @Override
         public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
-                BigInteger winnerId, BigInteger loserId) {
+                BigInteger winnerId, BigInteger loserId) throws SQLException {
 
             int currSteveSailors = shipDao.getCurrentShipSailors(steveShipId);
             int currNikSailors = shipDao.getCurrentShipSailors(nikShipId);
