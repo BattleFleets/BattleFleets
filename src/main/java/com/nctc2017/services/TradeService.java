@@ -60,7 +60,7 @@ public class TradeService {
         Market market = marketManager.findMarketByCityId(cityId);
 
         for(Map.Entry<BigInteger, PlayerGoodsForSale> entry : goods.entrySet()){
-            BigInteger templateId = entry.getKey();
+            BigInteger templateId = entry.getValue().getGoodsTemplateId();
             GoodsForSale templateObj = market.getGoods(templateId);
             entry.getValue().appendDescription(templateObj.getGoodsDescription());
             entry.getValue().setName(templateObj.getName());
