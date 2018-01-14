@@ -3,6 +3,7 @@ package com.nctc2017.services;
 import com.nctc2017.bean.*;
 import com.nctc2017.dao.*;
 import com.nctc2017.services.utils.CompBeans;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,8 @@ public class ShipService {
     private MastDao mastDao;
     @Autowired
     private HoldDao holdDao;
+
+    private static Logger log = Logger.getLogger(MoneyService.class);
 
     public List<ShipTemplate> getAllShipTemplates() {
         List<ShipTemplate> result = shipDao.findAllShipTemplates();
@@ -96,6 +99,17 @@ public class ShipService {
         }
         holdDao.createHold(shipId);
         return shipId;
+    }
+
+    public boolean setShipName(BigInteger shipId, String newShipName) {
+        try {
+            shipDao.updateShipName(shipId,newShipName);
+            return true;
+        }catch (Exception e) {
+            RuntimeException ex = new IllegalArgumentException("ship does not exist. can not set name");
+            log.error("ShipService Exception while set name.", ex);
+            throw ex;
+        }
     }
 
     public final class ShipSpeed {

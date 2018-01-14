@@ -132,9 +132,7 @@ public class ShipTradeServiceTest {
     public void buyShipTest() throws Exception {
         money = steve.getMoney();
         BigInteger shipTempId = t_BlackPerl.getTemplateId();
-
-        assertEquals("Congratulations! One more ship is already armed.",
-                shipTradeService.buyShip(steve.getPlayerId(), shipTempId));
+        shipTradeService.buyShip(steve.getPlayerId(), shipTempId);
         assertEquals(money - t_BlackPerl.getCost(), steve.getMoney());
     }
 

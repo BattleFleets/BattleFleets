@@ -83,7 +83,6 @@ var btn = document.getElementById("shipTemplateId");
 var span = document.getElementsByClassName("close")[0];
 
 function chooseOfAction(elem, action) {
-    alert('ku');
     if (action == 'Sell')
         sellship(elem);
     else if (action == 'Repair')

@@ -12,7 +12,7 @@
             <table class ="tableClass">
             <tr>
                 <td>
-                <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getTemplateId()}" onclick="buyShip(this)">
+                <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getTemplateId()}" onclick="setShipName(this,'${shipTemplates.getTName()}')">
                 <span>Buy ${shipTemplates.getTName()}</span>
                 </button>
                 </td>
@@ -61,31 +61,68 @@
         </c:forEach>
 </div>
 
-<div id="myModal" class="modal">
+<div id="answerModal" class="modal">
     <div class="modal-content">
     <span class="close">&times;</span>
     <p id="text"></p>
     </div>
 </div>
 
+<div id="setNameModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p class="small_text">Maximum length: 20.Language - English.</p>
+            <p>How we can call our ship, captain?</p>
+            <input class = "capacity_for_background values" id="setNameText" autofocus>
+            <button class="button capacity_for_background" id ="setShipButton" onclick="confirmNewName()">
+                <span>Ok</span>
+            </button>
+        </div>
+</div>
+
 <script>
-var modal = document.getElementById('myModal');
+
+var answerModal = document.getElementById('answerModal');
 var text = document.getElementById('text');
 var btn = document.getElementById("shipTemplateId");
 
-var span = document.getElementsByClassName("close")[0];
+var setNameModal = document.getElementById("setNameModal");
+var setShipButton = document.getElementById("setShipButton");
+var setNewNameButton = document.getElementById("setShipButton");
 
-function buyShip(elem) {
-var shipTemplateId = elem.value;
+var currentElem = 0;
+var currentDefaultName = "";
+
+$( ".close" ).click(function() {
+  answerModal.style.display = "none";
+  setNameModal.style.display = "none";
+});
+
+function confirmNewName() {
+    var shipName = document.getElementById("setNameText").value;
+    setNameModal.style.display = "none";
+    buyShip(currentElem, shipName, currentDefaultName);
+}
+
+function setShipName(elem, defaultName) {
+    document.getElementById("setNameText").value='';
+    setNameModal.style.display = "block";
+    currentElem = elem.value;
+    currentDefaultName = defaultName;
+}
+
+
+function buyShip(elem, shipName, defaultName) {
+    var shipTemplateId = elem;
     $(function(){
         $.ajax({
             url:'/buy',
             method:"GET",
-            data: { 'shipTemplateId' : shipTemplateId },
+            data: { 'shipTemplateId' : shipTemplateId, 'shipName' : shipName , 'defaultName' : defaultName },
             success: function(data) {
                          console.log("SUCCESS: ",data);
                          text.innerHTML=data;
-                         modal.style.display = "block";
+                         answerModal.style.display = "block";
                          },
                          error : function(e) {
                              console.log("ERROR: ", e);
@@ -94,13 +131,14 @@ var shipTemplateId = elem.value;
     });
 }
 
-span.onclick = function() {
-    modal.style.display = "none";
-}
+
 
 window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
+    if (event.target == answerModal) {
+        answerModal.style.display = "none";
+    }
+    if (event.target == setNameModal) {
+        setNameModal.style.display = "none";
     }
 }
 </script>
