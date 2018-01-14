@@ -37,12 +37,14 @@ public class PlayerGoodsForSale {
         description = "";
     }
 
-    public void setName(String name) {
+    public PlayerGoodsForSale setName(String name) {
         this.name = name;
+        return this;
     }
 
-    public void setSalePrice(int salePrice) {
+    public PlayerGoodsForSale setSalePrice(int salePrice) {
         this.salePrice = salePrice;
+        return this;
     }
 
     public BigInteger getGoodsId() {
@@ -73,8 +75,12 @@ public class PlayerGoodsForSale {
         return salePrice;
     }
 
-    public void appendDescription(String description) {
+    public PlayerGoodsForSale appendDescription(String description) {
+        description = description.trim();
+        description = description.substring(0, 1).toUpperCase() + description.substring(1);
+        description = description.concat(". ");
         this.description = this.description + description;
+        return this;
     }
 
     @Override

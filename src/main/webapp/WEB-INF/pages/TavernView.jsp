@@ -12,7 +12,7 @@
 <div align="center" id="res">
     <h1 class="titleText">${city}</h1>
 </div>
-<jsp:include  page="/addHeader"/>
+<c:import url="/addHeader"/>
 <body>
 <form method="get">
     <div align="center">

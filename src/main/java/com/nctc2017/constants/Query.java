@@ -307,6 +307,8 @@ public class Query {
                     + " entity_obj.OBJECT_TYPE_ID = ?"
                     + " AND entity_obj.PARENT_ID = ?"
                     + " GROUP BY entity_obj.NAME";
+    
+    public static final String GET_TEMPLATE_ID = "SELECT source_id FROM objects WHERE OBJECT_ID = ?";
 
 
 }

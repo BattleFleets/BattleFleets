@@ -61,7 +61,7 @@
 </div>
 
 <a href="/logout" class="logOutBottom">Logout</a>
-<jsp:include  page="/addHeader"/>
+<c:import url= "/addHeader"/>
 <form method="get">
 <div align="center">
 	<table class="panel">
