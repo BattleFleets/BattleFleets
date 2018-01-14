@@ -6,7 +6,6 @@ import java.math.BigInteger;
 
 public class GoodsForSale {
 
-    @JsonView(View.No.class)
     protected final BigInteger templateId;
 
     protected final String name;

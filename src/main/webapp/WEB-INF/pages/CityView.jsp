@@ -61,10 +61,7 @@
 </div>
 
 <a href="/logout" class="logOutBottom">Logout</a>
-<div class="level">
-	<span>Level ${level}</span>
-</div>
-
+<jsp:include  page="/addHeader"/>
 <form method="get">
 <div align="center">
 	<table class="panel">
@@ -91,7 +88,7 @@
 		</tr>
 		<tr align="center">
 			<td>
-			<button id="B_travel" class="button" style="vertical-align:middle" name="travel" type="button" value="World Map" >
+			<button id="B_travel" class="button" style="vertical-align:middle" name="travel" type="button" value="${city}" >
 			<span>Travel</span>
 			</button>
 			</td>
@@ -99,7 +96,7 @@
 		<c:if test="${level>=nextLevel}">
 		<tr align="center">
 			<td>
-				<button class="button" style="vertical-align:middle" name="diff" value="${level-nextLevel}" type="submit" formaction="/update">
+				<button class="button" style="vertical-align:middle" name="diff" type="submit" formaction="/update">
 					<span>Update</span>
 				</button>
 			</td>
@@ -113,4 +110,6 @@
 </div>
 
 </body>
+<%@include file="fragment/footer.jsp"%>
+
 </html>

@@ -3,9 +3,10 @@
 <link href="static/css/text.css" rel="stylesheet" media="screen">
 <link href="static/css/general.css" rel="stylesheet" media="screen">
 <link href="static/css/update.css" rel="stylesheet" media="screen">
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 <html>
-<div align="center">
+<jsp:include  page="/addHeader"/>
+<div align="center" id="congratulate">
     <h1 class="titleText">Select what you want to improve</h1>
 </div>
 <body>
@@ -14,14 +15,14 @@
 <table class="panel">
     <tr align="center">
         <td>
-            <button class="button"  style="vertical-align:middle" name="diffShip" value="${diff}"  type="submit" formaction="/shipUp">
+            <button id="btnShip" class="button"  style="vertical-align:middle"  value="${level}"  type="submit" onclick="shipUp()">
                 <span style="font-size:21px">Update max number of ships</span>
             </button>
         </td>
     </tr>
     <tr align="center">
         <td>
-            <button class="button" style="vertical-align:middle" name="diffIncome" value="${diff}" type="submit" formaction="/incomeUp">
+            <button id="btnIncome" class="button"  style="vertical-align:middle" value="${level}" type="submit" onclick="incomeUp()">
                 <span style="font-size:22px">Update passive income</span>
             </button>
         </td>
@@ -30,4 +31,53 @@
 </div>
 </form>
 </body>
+<div id="exit"></div>
+<script>
+    function shipUp(){
+        event.preventDefault();
+        $.ajax({
+            url:'/shipUp',
+            method:"GET",
+            success: function(data) {
+                var nxt=5;
+                if($('#btnShip').val()>=nxt) {
+                    $('#btnShip').val($('#btnShip').val()-nxt);
+                    $('#btnIncome').val( $('#btnIncome').val()-nxt);
+                    $('#congratulate').html("<h1 class='titleText'>"+data[0]+"</h1>");
+                    $('#maxShips').html(data[1]);
+                    $('#improve').html(data[2]);
+                    if($('#btnShip').val()<nxt){
+                        $('#btnShip').attr('disabled',true);
+                        $('#btnIncome').attr('disabled',true);
+                        $('#exit').html("<a href='/city' class='logOutBottom'>"+"Return to city"+"</a>");
+                    }
+                }
+            }
+        } );
+    }
+    function incomeUp() {
+        event.preventDefault();
+        $.ajax({
+            url:'/incomeUp',
+            method:"GET",
+            success: function(data) {
+                var nxt=5;
+                if($('#btnIncome').val()>=nxt) {
+                    $('#btnShip').val($('#btnShip').val()-nxt);
+                    $('#btnIncome').val( $('#btnIncome').val()-nxt);
+                    $('#congratulate').html("<h1 class='titleText'>"+data[0]+"</h1>");
+                    $('#income').html(data[1]);
+                    $('#improve').html(data[2]);
+                    if($('#btnIncome').val()<nxt){
+                        $('#btnShip').attr('disabled',true);
+                        $('#btnIncome').attr('disabled',true);
+                        $('#exit').html("<a href='/city' class='logOutBottom'>"+"Return to city"+"</a>");
+                    }
+                }
+
+            }
+        } );
+    }
+</script>
+<%@include file="fragment/footer.jsp"%>
 </html>

@@ -12,8 +12,19 @@ body {
     background-attachment: fixed;
 }
 .transparent75 {
-    filter: alpha(Opacity=90); /* Полупрозрачность для IE */
-    opacity: 0.90; /* Полупрозрачность для других браузеров */ 
+    filter: alpha(Opacity=80); /* Полупрозрачность для IE */
+    opacity: 0.80; /* Полупрозрачность для других браузеров */ 
+}
+
+@keyframes map_anim {
+    from {filter: alpha(Opacity=80); opacity: 0.80;}
+    to {filter: alpha(Opacity=100); opacity: 1.0;}
+}
+
+.map {
+	animation-name: map_anim;
+    animation-duration: 8s;
+    animation-fill-mode: forwards;
 }
 
 .map {
@@ -24,7 +35,7 @@ body {
 	background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    border: 4px ridge black; /* Параметры границы */
+    border: 4px ridge black;
     padding: 5%;
     border-spacing: 10%;
     width: 900px; height: 574px;
@@ -44,31 +55,37 @@ body {
 	top: 50%;
 	width: 100%;
 }
+
+.city > img, .city > p {
+	width: 0%; height: 0%; opacity: 0;
+}
+
 .city {
 	cursor: pointer;
 	position: absolute; 
 }
+
 #city1 {
-	left: 450px; 
-	top: 217px;
+    left: 44%;
+    top: 30%;
 }
 
 #city2 {
-	left: 200px; 
-	top: 385px;
+    left: 20%;
+    top: 60%;
 }
 
 #city3 { 
-	left: 770px; 
-	top: 500px;
+    left: 78%;
+    top: 74%;
 }
 
 #city4 {
-	left: 200px; 
-	top: 200px;
+    left: 20%;
+    top: 30%;
 }
 
 #city5 {
-	left: 480px; 
-	top: 320px;
+    left: 48%;
+    top: 48%;
 }

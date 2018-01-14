@@ -11,14 +11,17 @@
     
     function hoverConveyor() {
         hoverInit("fire");
-        hoverInit("leave");
+        hoverInit("escape");
         hoverInit("payoff");
         hoverInit("surrender");
     }
     
     function tabResultFilling (ships) {
     	var tab = $("#info_tab");
-    	$(".battle_info").slideUp("slow");
+    	var battle_info =$(".battle_info");
+    	
+    	battle_info.slideUp("slow");
+    	
     	tab.find("#P_health")
     	.html(ships.player_ship.ship.curHealth +"/" + ships.player_ship.ship.maxHealth)
     	tab.find("#E_health")
@@ -40,7 +43,8 @@
     	if (ships.distance == "0") {
     		boardingAllow();
     	}
-    	$(".battle_info").slideDown("slow");
+    	
+    	battle_info.slideDown("slow");
     	
     	ammoCannonQuantity(ships.player_ship);
     }
@@ -96,7 +100,10 @@
     }
     
     function ammoCannonQuantity(shipWrapper) {
-    	$(".ammo_cannon").slideUp("slow");
+    	var ammo_cannon = $(".ammo_cannon");
+    	
+    	ammo_cannon.slideUp("slow");
+    	
         if (shipWrapper.cannons != null) {
             mortars = shipWrapper.cannons.Mortar;
             bombards = shipWrapper.cannons.Bombard;
@@ -125,7 +132,8 @@
     	tab.find("#cball").html("Cannonball<br>(" + cannonballs + ")");
     	tab.find("#bshot").html("Buckshot<br>(" + buckshots + ")");
     	tab.find("#chains").html("Chain<br>(" + chains + ")");
-    	$(".ammo_cannon").slideDown("slow");
+    	
+    	ammo_cannon.slideDown("slow");
     }
     
     function animateWait() {
@@ -188,25 +196,36 @@
         .done(function(response, status, xhr) {
         	console.log("start get result - ship info " + response + " status " + xhr.status);
         	var json_obj = JSON.parse(response);
+        	
+        	if (json_obj.end) {
+        		dialogBattleEnd(json_obj.title, json_obj.wonText);
+        	}
         	if (json_obj.try_later) {
         		fireResultTask();
         		return;
         	}
+        	
         	tabResultFilling(json_obj);
+        	
+        	if(json_obj.escape_avaliable) {
+    		    enable("escape");
+        	} else {
+        		disable("escape");
+        	}
+        	
         	console.log("page reloaded after step was made " + json_obj.madeStep);
         	if (json_obj.madeStep) {
         		infoTabUpdate(false);
         		animateWaitTask();
         	} else {
     		    enable("fire");
+    		    enable("surrender");
             	waitReset();
         	}
         })
         .fail(function(xhr, status, error) {
         	console.log("getting result ship info FAIL " + xhr.status + " " + status);
-        	if (xhr.status == 417) {
-        		dialogBattleEnd(xhr.responseText);
-        	} else if (xhr.status == 405){
+        	if (xhr.status == 405){
             	window.location.href = "/battle_preparing";
         	} else {
         		$(".wait").html("Server error")
@@ -272,6 +291,7 @@
     }
     
     var battleEndId;
+    
     function battleEndTask() {
     	console.log("BattleEnd timer start ");
     	battleEndId = setInterval(function() {
@@ -281,6 +301,7 @@
     
     function fire() {
     	disable("fire");
+    	disable("surrender");
     	$( "#warning_info" ).attr("hidden", "true");
     	console.log("fire start !!!");
     	animateWaitTask();
@@ -294,6 +315,7 @@
         		warningMsg(warn);
             	waitReset();
             	enable("fire");
+    		    enable("surrender");
             	return;
         	}
             console.log(ammoCannon[i]);
@@ -301,6 +323,7 @@
         if (! isCorrectAmmoCannon(ammoCannon, dimensional)) {
         	waitReset();
         	enable("fire");
+		    enable("surrender");
         	return;
         }
         var convergence = checkBox.prop("checked");
@@ -326,9 +349,35 @@
         	waitReset();
         });
     }
+    
+    function anotherEndCase(end_link) {
+    	console.log(end_link + " request");
+    	$.get(end_link)
+    	.done(function(response, status, xhr) {
+        	console.log(end_link + " response " + response);
+        	if (response.success) {
+    		    isBattleEnd();
+        	} else {
+        	    //window.location.href = "/error";
+        	}
+    	})
+        .fail(function(xhr, status, error) {
+        	console.log(end_link + " FAIL " + error + " " + xhr.status);
+        	if (xhl.status == 405) {
+        		isBattleEnd();
+        	}
+        	window.location.href = "/error";
+        });
+    }
+
+    function payoff() {
+    	console.log("payoff request");
+    	
+    }
 
     var checkBox;
     $(document).ready(function() {
+    	animateWaitTask();
         var spinner = $( ".spinner" ).spinner();
         spinner.click(function(){
         	$( "#warning_info" ).attr("hidden", "true");
@@ -344,14 +393,23 @@
         $("#fire").click(function(event) {
         	fire();
         });
-    	animateWaitTask();
+        $("#surrender").click(function(event) {
+        	anotherEndCase("/surrender");
+        });
+        $("#escape").click(function(event) {
+        	anotherEndCase("/escape");
+        });
+        $("#payoff").click(function(event) {
+        	payoff();
+        });
 		infoTabUpdate(true);
     });
     
     function enable(id) {
     	console.log("enable #" + id);
         var button = $("#" + id);
-        button.removeAttr("disabled");
+        if(! button.prop("disabled")) { return; }
+        button.prop("disabled", false);
         var icon = button.find(".icon_" + id + "_disable");
         icon.removeClass("icon_" + id + "_disable");
         icon.addClass("icon_" + id);
@@ -361,7 +419,8 @@
     function disable(id) {
     	console.log("disable #" + id);
         var button = $("#" + id);
-        button.attr("disabled", "disabled");
+        if(button.prop("disabled")) { return; }
+        button.prop("disabled", true);
         var icon = button.find(".icon_" + id);
         icon.removeClass("icon_" + id);
         icon.removeClass("icon_" + id + "_select");
@@ -458,15 +517,15 @@
                     </button>
                 </td> 
                 <td>
-                    <button id="leave" class="button_pick" style="vertical-align:middle" name="leave" type="submit">
-                        <span class="icon_leave"></span><span style="float: none">Leave</span>
+                    <button id="escape" class="button_pick" disabled="disabled" style="vertical-align:middle" name="escape" type="submit">
+                        <span class="icon_escape_disable"></span><span style="float: none">Escape</span>
                     </button>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <button id="payoff" class="button_pick" style="vertical-align:middle" name="payoff" type="submit">
-                        <span class="icon_payoff"></span><span style="float: none">Payoff</span>
+                    <button id="payoff" class="button_pick" disabled="disabled" style="vertical-align:middle" name="payoff" type="submit">
+                        <span class="icon_payoff_disable"></span><span style="float: none">Payoff</span>
                     </button>
                 </td>
                 <td>

@@ -3,6 +3,7 @@ package com.nctc2017.services;
 import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.exception.MoneyLackException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -72,7 +73,7 @@ public class MoneyServiceTest {
         assertEquals(money-50, steve.getMoney());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=MoneyLackException.class)
     public void deductMoneyFailed() throws Exception {
         int money = steve.getMoney();
         steve.setMoney(moneyService.deductMoney(steve.getPlayerId(),300));

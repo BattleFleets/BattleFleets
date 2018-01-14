@@ -1,19 +1,12 @@
 package com.nctc2017.controllers;
 
-import java.math.BigInteger;
-import java.util.*;
-
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nctc2017.bean.Market;
 import com.nctc2017.bean.PlayerUserDetails;
-import com.nctc2017.bean.Thing;
 import com.nctc2017.bean.View;
+import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.services.MoneyService;
-import com.nctc2017.services.TravelService;
-import com.nctc2017.services.utils.MarketManager;
+import com.nctc2017.services.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,10 +24,7 @@ public class TradeController {
     MoneyService moneyService;
 
     @Autowired
-    MarketManager marketManager;
-
-    @Autowired
-    private TravelService travelService;
+    TradeService tradeService;
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/market", method = RequestMethod.GET)
@@ -58,31 +48,31 @@ public class TradeController {
     }
 
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/market/buy", method = RequestMethod.GET)
+    @RequestMapping(value = "/market/getBuyGoods", method = RequestMethod.GET)
     @ResponseBody
     public String getAllGoodsForBuying(@AuthenticationPrincipal PlayerUserDetails userDetails)
             throws JsonProcessingException {
+        //moneyService.addMoney(userDetails.getPlayerId(),30000000);
+        //tradeService.buy(userDetails.getPlayerId(), DatabaseObject.RUM_TEMPLATE_ID, tradeService.getMarketGoodsByPlayerId(userDetails.getPlayerId()).get(19).getBuyingPrice(), 11);
         return new ObjectMapper().writerWithView(View.Buy.class)
-                    .writeValueAsString(
-                            marketManager.findMarketByCityId(
-                                travelService.getCurrentCity(
-                                        userDetails.getPlayerId())
-                                            .getCityId())
-                                    .getAllGoodsValues());
+                    .writeValueAsString(tradeService.getMarketGoodsByPlayerId(userDetails.getPlayerId()));
     }
 
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/market/sell", method = RequestMethod.GET)
-    public String getAllGoodsForSelling(@AuthenticationPrincipal PlayerUserDetails userDetails) {
-        // TODO implement here
-        return null;
+    @RequestMapping(value = "/market/getSellGoods", method = RequestMethod.GET)
+    @ResponseBody
+    public String getAllGoodsForSelling(@AuthenticationPrincipal PlayerUserDetails userDetails)
+    throws JsonProcessingException{
+        return new ObjectMapper().writerWithView(View.Sell.class)
+                .writeValueAsString(tradeService.getPlayersGoodsForSale(userDetails.getPlayerId()));
     }
 
-    public String getMoney(BigInteger playerId){
-        int money;
-        money = moneyService.getPlayersMoney(playerId);
-        String s="sdkgjh";
-        return s;
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/market/myMoney", method = RequestMethod.GET)
+    @ResponseBody
+    public String getMoney(@AuthenticationPrincipal PlayerUserDetails userDetails){
+        int money = moneyService.getPlayersMoney(userDetails.getPlayerId());
+        return String.valueOf(money);
     }
 
 }

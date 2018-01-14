@@ -30,8 +30,8 @@ import com.nctc2017.services.utils.BattleManager;
 public class BattleService {
     private static final Logger LOG = Logger.getLogger(ShipDaoImpl.class);
     private static final int RAPAIR_BONUS = 1;
-    private static final String LOSE_MESSAGE_DESTROY = "Your ship destroy, your crew is feeding the fish";
-    private static final String WIN_MESSAGE_DESTROY = "Enemy ship destroy, you found some useful cargo among the wreckage.";
+    private static final String LOSE_MESSAGE_DESTROY = "Your ship destroyed, your crew is feeding the fish";
+    private static final String WIN_MESSAGE_DESTROY = "Enemy ship destroyed, you found some useful cargo among the wreckage.";
     private static final String WIN_BOARDING_MESSAGE = "Good boarding Captain!";
     private static final String LOSE_BOARDING_MESSAGE = "All who were alive were thrown overboard, and you lost your cargo.";
     @Autowired
@@ -134,7 +134,7 @@ public class BattleService {
     }
     
     private void defineWinner(Battle battle, BigInteger winnerShipId, BigInteger loserShipId, 
-            BattleEndVisitor visitor, BigInteger winnerId, BigInteger loserId) {
+            BattleEndVisitor visitor, BigInteger winnerId, BigInteger loserId) throws SQLException {
         shipDao.updateShipHealth(winnerShipId, random.nextInt(RAPAIR_BONUS));
         visitor.endCaseVisit(playerDao, shipDao, winnerShipId, loserShipId, winnerId, loserId);
         battle.setWinner(winnerId, WIN_MESSAGE_DESTROY, LOSE_MESSAGE_DESTROY);
@@ -173,7 +173,7 @@ public class BattleService {
         return battle.getDistance();
     }
 
-    public BigInteger boarding(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException {
+    public BigInteger boarding(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException, SQLException {
         Battle battle = battles.getBattle(playerId);
         BigInteger winnerId;
         synchronized(battle) {

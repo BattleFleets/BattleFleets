@@ -2,10 +2,10 @@ package com.nctc2017.controllers;
 
 
 import java.math.BigInteger;
-import java.util.*;
 
 import com.nctc2017.bean.PlayerUserDetails;
 import com.nctc2017.bean.Ship;
+import com.nctc2017.services.LevelUpService;
 import com.nctc2017.services.MoneyService;
 import com.nctc2017.services.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +15,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.math.BigInteger;
 import java.util.List;
 
 
@@ -28,38 +28,66 @@ public class TavernController {
     @Autowired
     private MoneyService moneyService;
 
-    private ModelAndView model=new ModelAndView();
-
     @Secured("ROLE_USER")
     @RequestMapping(value = "/tavern", method = RequestMethod.GET)
     public ModelAndView tavernWelcome(
             @RequestParam(value = "tavern", required = false) String city,
             @AuthenticationPrincipal PlayerUserDetails userDetails) {
-        List<Ship> ships = shipService.getAllPlayerShips(userDetails.getPlayerId());
+        ModelAndView model=new ModelAndView();
+        BigInteger playerId = userDetails.getPlayerId();
+        List<Ship> ships = shipService.getAllPlayerShips(playerId);
+        int completedShip=0;
+        for(int i = 0; i < ships.size(); i++){
+            if(ships.get(i).getMaxSailorsQuantity()==ships.get(i).getCurSailorsQuantity()){
+                completedShip++;
+            }
+        }
         int sailorCost = shipService.getSailorCost();
-        int money = moneyService.getPlayersMoney(userDetails.getPlayerId());
+        int money = moneyService.getPlayersMoney(playerId);
         model.addObject("msg", "This is protected page - Only for Users!");
         model.addObject("money", money);
         model.addObject("city", city);
         model.addObject("ships", ships);
         model.addObject("sailorCost",sailorCost);
+        model.addObject("completedShip",completedShip);
         model.setViewName("TavernView");
         return model;
     }
 
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/buySailors", method = RequestMethod.POST)
-    public ModelAndView buySailors(@RequestParam(value="shipId",required = false) BigInteger shipId,
-                                   @RequestParam(value="num",required = false) int newSailors,
-                                   @RequestParam(value="toSpend",required = false) Integer cost,
-                                   @AuthenticationPrincipal PlayerUserDetails userDetails){
+    @RequestMapping(value = "/buySailors", method = RequestMethod.GET)
+    @ResponseBody
+    public String[] buySailors(@RequestParam(value="shipId",required = false) BigInteger shipId,
+                               @RequestParam(value="num",required = false) String newSailors,
+                               @RequestParam(value="toSpend",required = false) String cost,
+                               @AuthenticationPrincipal PlayerUserDetails userDetails){
         Ship ship = shipService.findShip(shipId);
-        shipService.updateShipSailorsNumber(shipId, ship.getCurSailorsQuantity()+newSailors);
-        int money = moneyService.deductMoney(userDetails.getPlayerId(), cost);
-        List<Ship> ships = shipService.getAllPlayerShips(userDetails.getPlayerId());
-        model.addObject("money",money);
-        model.addObject("ships",ships);
-        return model;
+        int oldNumSailors = shipService.getSailorsNumber(shipId);
+        int costForSailors;
+        int sailors;
+        int sailorCost = shipService.getSailorCost();
+        if(Integer.valueOf(cost)>moneyService.getPlayersMoney(userDetails.getPlayerId())){
+            sailors = (int) Math.ceil((moneyService.getPlayersMoney(userDetails.getPlayerId())/sailorCost));
+            costForSailors =sailors*sailorCost;
+            sailors = oldNumSailors+sailors;
+        }
+        else if((oldNumSailors+Integer.valueOf(newSailors))>ship.getMaxSailorsQuantity()){
+            costForSailors=Integer.valueOf(cost)-
+                    ((oldNumSailors+Integer.valueOf(newSailors))-ship.getMaxSailorsQuantity())*shipService.getSailorCost();
+            sailors=ship.getMaxSailorsQuantity();
+        }
+        else
+        {
+            costForSailors=Integer.valueOf(cost);
+            sailors=oldNumSailors+Integer.valueOf(newSailors);
+        }
+        int money = moneyService.deductMoney(userDetails.getPlayerId(), costForSailors);
+        shipService.updateShipSailorsNumber(shipId, sailors);
+        int curSailors = shipService.getSailorsNumber(shipId);
+        String[] results = new String[2];
+        results[0] = String.valueOf(money);
+        results[1] = String .valueOf(curSailors);
+        return results;
     }
 
 }

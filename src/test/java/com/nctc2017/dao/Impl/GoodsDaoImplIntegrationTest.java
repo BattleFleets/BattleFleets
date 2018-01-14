@@ -28,12 +28,11 @@ public class GoodsDaoImplIntegrationTest {
     GoodsDao goodsDao;
 
     @Test
-    @Ignore
     public void findGoodsById(){
-        BigInteger objectId = new BigInteger("59");
-        Goods expectedGoods = new Goods(objectId, "Wood", 10123  ,  95, 1);
+        BigInteger goodsId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,40,19);
+        Goods expectedGoods = new Goods(goodsId, "Wood", 40  ,  19, 1);
 
-        Goods resultGoods = goodsDao.findById(objectId);
+        Goods resultGoods = goodsDao.findById(goodsId);
 
         assertEquals(expectedGoods.getQuantity(), resultGoods.getQuantity());
         assertEquals(expectedGoods.getPurchasePrice(), resultGoods.getPurchasePrice());
@@ -66,29 +65,27 @@ public class GoodsDaoImplIntegrationTest {
     }
 
     @Test
-    @Ignore
     public void increaseGoodsQuantityTest(){
-        BigInteger objectId = new BigInteger("59");
+        BigInteger goodsId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,40,19);
         int increaseValue = 50;
-        int expectedQuantity = 10173;
+        int expectedQuantity = 90;
 
-        goodsDao.increaseGoodsQuantity(objectId, increaseValue);
+        goodsDao.increaseGoodsQuantity(goodsId, increaseValue);
 
-        int actualQuantity = goodsDao.getGoodsQuantity(objectId);
+        int actualQuantity = goodsDao.getGoodsQuantity(goodsId);
 
         assertEquals(expectedQuantity, actualQuantity);
     }
 
     @Test
-    @Ignore
     public void decreaseGoodsQuantityTest(){
-        BigInteger objectId = new BigInteger("59");
+        BigInteger goodsId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,200,19);
         int decreaseValue = 100;
-        int expectedQuantity = 10023;
+        int expectedQuantity = 100;
 
-        goodsDao.decreaseGoodsQuantity(objectId, decreaseValue);
+        goodsDao.decreaseGoodsQuantity(goodsId, decreaseValue);
 
-        int actualQuantity = goodsDao.getGoodsQuantity(objectId);
+        int actualQuantity = goodsDao.getGoodsQuantity(goodsId);
 
         assertEquals(expectedQuantity, actualQuantity);
     }

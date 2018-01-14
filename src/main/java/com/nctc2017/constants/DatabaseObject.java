@@ -1,5 +1,6 @@
 package com.nctc2017.constants;
 
+import java.lang.management.BufferPoolMXBean;
 import java.math.BigInteger;
 
 public class DatabaseObject {
@@ -46,6 +47,13 @@ public class DatabaseObject {
     public static final BigInteger CITY_OBJTYPE_ID = BigInteger.valueOf(16);
     public static final BigInteger STOCK_OBJTYPE_ID = BigInteger.valueOf(12);
     public static final BigInteger AMMO_OBJTYPE_ID = BigInteger.valueOf(11);
+
+    public static final BigInteger SCORE_BOARDING_ID = BigInteger.valueOf(74);
+    public static final BigInteger SCORE_DESTROYING_ID = BigInteger.valueOf(75);
+    public static final BigInteger SCORE_SURRENDER_ID = BigInteger.valueOf(76);
+    public static final BigInteger SCORE_PAYOFF_ID = BigInteger.valueOf(77);
+    public static final BigInteger MAX_LVL = BigInteger.valueOf(78);
+
 
     public static final BigInteger SAILOR_OBJECT_ID = BigInteger.valueOf(58);
 

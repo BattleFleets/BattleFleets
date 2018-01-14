@@ -24,7 +24,8 @@ import com.nctc2017.dao.utils.JdbcConverter;
 public class ExecutorDaoImpl implements ExecutorDao {
     private static final Logger LOG = Logger.getLogger(ExecutorDaoImpl.class);
     private static final String CREATE_CANNON_FUNCTION_NAME = "CREATE_CANNON";
-    private static final String MOVE_CARGO_TO_WINNER_FUNCTION_NAME = "MOVE_CARGO_TO_WINNER";
+    private static final String BOARDING_OR_SURRENDER_RESULT_FUNCTION_NAME = "BOARDING_OR_SURRENDER_RESULT";
+    private static final String DESTROYING_RESULT_FUNCTION_NAME = "DESTROYING_RESULT";
     private static final String MOVE_CARGO_TO_FUNCTION_NAME = "MOVE_CARGO_TO";
     private static final String CREATE_CANNON_PARAMETER_NAME = "ObjectIdTemplate";
     private static final String CALCULATE_DAMAGE_FUNCTION_NAME = "CALCULATE_DAMAGE";
@@ -82,9 +83,9 @@ public class ExecutorDaoImpl implements ExecutorDao {
         try {
             call.execute(in);
         } catch (UncategorizedSQLException e) {
-            LOG.warn("Mistake on client side, may be incorrect ratio of ammunition to cannons "
-                    + "or ammunition to quantity in hold");
-            throw new SQLDataException("Incorrect placement of ammo ", e);
+            LOG.error("Mistake on client side, may be incorrect ratio of ammunition to cannons "
+                    + "or ammunition to quantity in hold", e);
+            throw e.getSQLException();
         }
         
     }
@@ -103,10 +104,30 @@ public class ExecutorDaoImpl implements ExecutorDao {
     }
 
     @Override
-    public String moveCargoToWinner(BigInteger shipWinnerId, BigInteger shipLosserId) {
-        SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(MOVE_CARGO_TO_WINNER_FUNCTION_NAME);
-        String result = call.executeFunction(String.class, shipWinnerId, shipLosserId);
-        return result;
+    public String moveCargoToWinnerBoardingOSurrender(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
+        try {
+            SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(BOARDING_OR_SURRENDER_RESULT_FUNCTION_NAME);
+            String result = call.executeFunction(String.class, shipWinnerId, shipLoserId);
+            return result;
+        }
+        catch (UncategorizedSQLException e){
+            LOG.error("Mistake on client side, may be you are trying to transfer goods not between ships", e);
+            throw e.getSQLException();
+        }
+    }
+
+    @Override
+    public String moveCargoToWinnerDestroying(BigInteger shipWinnerId, BigInteger shipLoserId) throws SQLException {
+        try {
+            SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(DESTROYING_RESULT_FUNCTION_NAME);
+            String result = call.executeFunction(String.class, shipWinnerId, shipLoserId);
+            return result;
+        }
+        catch (UncategorizedSQLException e){
+            LOG.error("Mistake on client side, may be you are trying to transfer goods not between ships", e);
+            throw e.getSQLException();
+        }
+
     }
 
     @Override

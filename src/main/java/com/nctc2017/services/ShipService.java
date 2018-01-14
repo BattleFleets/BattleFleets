@@ -83,6 +83,10 @@ public class ShipService {
         return result;
     }
 
+    public int getSailorsNumber(BigInteger shipId){
+        return shipDao.getCurrentShipSailors(shipId);
+    }
+
 
     public BigInteger createNewShip(BigInteger templateId, BigInteger playerId){
         BigInteger shipId = shipDao.createNewShip(templateId, playerId);

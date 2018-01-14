@@ -1,15 +1,30 @@
 package com.nctc2017.bean;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import java.math.BigInteger;
 
 public class PlayerGoodsForSale {
 
+    @JsonView(View.Sell.class)
     protected BigInteger goodsId;
+
+    @JsonView(View.Sell.class)
     protected BigInteger goodsTemplateId;
+
+    @JsonView(View.No.class)
     protected int quantity;
+
+    @JsonView(View.No.class)
     protected String name;
+
+    @JsonView(View.No.class)
     protected String description;
+
+    @JsonView(View.Sell.class)
     protected GoodsForSale.GoodsType type;
+
+    @JsonView(View.Sell.class)
     protected int salePrice;
 
 
@@ -18,6 +33,8 @@ public class PlayerGoodsForSale {
         this.goodsTemplateId = goodsTemplateId;
         this.quantity = quantity;
         this.type = type;
+        name = "";
+        description = "";
     }
 
     public void setName(String name) {
@@ -60,5 +77,16 @@ public class PlayerGoodsForSale {
         this.description = this.description + description;
     }
 
-
+    @Override
+    public String toString() {
+        return "PlayerGoodsForSale{" +
+                "goodsId=" + goodsId +
+                ", goodsTemplateId=" + goodsTemplateId +
+                ", quantity=" + quantity +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", type=" + type +
+                ", salePrice=" + salePrice +
+                '}';
+    }
 }
