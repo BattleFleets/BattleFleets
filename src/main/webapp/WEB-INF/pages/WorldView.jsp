@@ -5,6 +5,7 @@
     <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/world.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
+    <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -17,22 +18,72 @@
     	});
     }
     
-    function jorneySetUpByClick() {
+    function tripAvailable(cityId) {
+    	$("#warning_info").load("travel", function(response, status, xhr){
+            if (xhr.status == 200){
+            	setUpJourney(cityId);
+            } else if (xhr.status == 423){
+                $("#warning_info").html(response);
+                $('html, body').animate({
+                    scrollTop: $("#warning_info").offset().top
+                }, 1000);
+            } else if (xhr.status == 202) {
+            	var errMessage = $(response).find('.titleText').text();
+            	var errTitle = $(response).find('.titleText').attr('title');
+            	$( "#dialog_info" ).html(errMessage);
+                $( "#dialog_info" ).dialog({
+                    modal: true,
+                    title: errTitle,
+                    width: 470,
+                    height: 210,
+                    buttons: [
+                    {
+                        id: "Delete",
+                        text: "It's rubbish! ... Raise the sails!",
+                        click: function () {
+                        	setUpJourney(cityId);
+                            $(this).dialog('close');
+                        }
+                    },
+                    {
+                        id: "Cancel",
+                        text: "Back",
+                        click: function () {
+                            window.location.href = "/city";
+                            $(this).dialog('close');
+                        }
+                    }
+                    ]
+                });
+            }
+            return
+        });
+    }
+    
+    function setUpJourney(cityId) {
+    	$.post("/relocate", {city_id: cityId})
+        .done(function(response, status, xhr){
+            window.location.href = "/trip";
+        })
+        .fail(function(xhr, status, error) {
+            if (xhr.status == 423) {
+        	    $( "#warning_info" ).html(xhr.responseText);
+        	    scrollToWorning()
+        	}
+		});
+    }
+    
+    function journeySetUpByClick() {
     	$(".city").click(function() { 
             var cityId = $(this).find("input").attr("value");
-            $.post("/relocate", {city_id: cityId})
-            .done(function(response, status, xhr){
-                window.location.href = "/trip";
-            })
-            .fail(function(xhr, status, error) {
-                if (xhr.status == 423) {
-            	    $( "#warning_info" ).html(xhr.responseText);
-            	    $('html, body').animate({
-                        scrollTop: $("#warning_info").offset().top
-                    }, 1000);
-            	}
-    		});
+            tripAvailable(cityId);
         }); 
+    }
+    
+    function scrollToWorning() {
+    	$('html, body').animate({
+            scrollTop: $("#warning_info").offset().top
+        }, 1000);
     }
     
     function animateCurCity() {
@@ -52,7 +103,7 @@
     	curCity = $(".city:contains('${info}')");
     	animateTask();
     	animateCityByClick();
-    	jorneySetUpByClick();
+    	journeySetUpByClick();
     	var city = $( ".city > img, .city > p" );
     	city.animate({width: "110%", height: "110%", opacity: "1"}, 1100);
 
@@ -68,6 +119,7 @@
 </head>
 
 <body>
+<a href="/city" class="logOutBottom">Return to city</a>
 	<div align="center">
 		<h1 class="titleText">World Map</h1>
 	</div>
@@ -82,6 +134,9 @@
 			
 	</div>
 	<div id="warning_info">
+
+	</div>
+	<div id="dialog_info">
 
 	</div>
 </body>

@@ -77,6 +77,7 @@ public class GoodsForSale {
 
     public GoodsForSale appendDescription(String description) {
         description = description.trim();
+        if(description.isEmpty()) return this;
         description = description.substring(0, 1).toUpperCase() + description.substring(1);
         description = description.concat(". ");
         this.description = this.description + description;

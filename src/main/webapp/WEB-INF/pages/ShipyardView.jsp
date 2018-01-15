@@ -74,7 +74,7 @@
     	<h1 class="titleText">${city}</h1>
     </div>
 </head>
-<jsp:include  page="/addHeader"/>
+<c:import url= "/addHeader"/>
 <body>
 <%@include file="fragment/footer.jsp"%>
 <audio autoplay id="gavan" onloadeddata="setHalfVolume()">
