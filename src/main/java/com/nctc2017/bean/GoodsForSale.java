@@ -6,104 +6,92 @@ import java.math.BigInteger;
 
 public class GoodsForSale {
 
-    protected final BigInteger templateId;
-
-    protected final String name;
-
-    @JsonView(View.No.class)
-    protected final String goodsDescription;
-
-    protected final GoodsType type;
-
-    @JsonView(View.No.class)
-    protected int goodsRarity;
-
-    @JsonView(View.Buy.class)
-    protected volatile int buyingPrice;
-
-    protected volatile int quantity;
+    @JsonView(View.Sell.class)
+    protected BigInteger goodsId;
 
     @JsonView(View.Sell.class)
-    protected volatile int salePrice;
+    protected BigInteger goodsTemplateId;
 
     @JsonView(View.No.class)
-    public enum GoodsType{
-        GOODS, AMMO, MAST, CANNON
-    }
+    protected int quantity;
 
-    public GoodsForSale(BigInteger templateId, String name, String goodsDescription, GoodsType type) {
-        this.templateId = templateId;
-        this.name = name;
-        this.goodsDescription = goodsDescription;
+    @JsonView(View.No.class)
+    protected String name;
+
+    @JsonView(View.No.class)
+    protected String description;
+
+    @JsonView(View.Sell.class)
+    protected GoodsForBuying.GoodsType type;
+
+    @JsonView(View.Sell.class)
+    protected int salePrice;
+
+
+    public GoodsForSale(BigInteger goodsId, BigInteger goodsTemplateId, int quantity, GoodsForBuying.GoodsType type) {
+        this.goodsId = goodsId;
+        this.goodsTemplateId = goodsTemplateId;
+        this.quantity = quantity;
         this.type = type;
+        name = "";
+        description = "";
     }
 
-    public GoodsForSale(GoodsForSale origin){
-        this(origin.templateId, origin.name, origin.goodsDescription, origin.type);
-        goodsRarity = origin.getGoodsRarity();
-        buyingPrice = origin.getBuyingPrice();
-        salePrice = origin.getSalePrice();
-        quantity = origin.getQuantity();
+    public GoodsForSale setName(String name) {
+        this.name = name;
+        return this;
     }
 
-    public String getName() {
-        return name;
+    public GoodsForSale setSalePrice(int salePrice) {
+        this.salePrice = salePrice;
+        return this;
     }
 
-    public String getGoodsDescription() {
-        return goodsDescription;
+    public BigInteger getGoodsId() {
+        return goodsId;
     }
 
-    public int getBuyingPrice() {
-        return buyingPrice;
-    }
-
-    public void setBuyingPrice(int buyingPrice) {
-        this.buyingPrice = buyingPrice;
+    public BigInteger getGoodsTemplateId() {
+        return goodsTemplateId;
     }
 
     public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public GoodsForBuying.GoodsType getType() {
+        return type;
     }
 
     public int getSalePrice() {
         return salePrice;
     }
 
-    public void setSalePrice(int salePrice) {
-        this.salePrice = salePrice;
-    }
-
-    public int getGoodsRarity() {
-        return goodsRarity;
-    }
-
-    public void setGoodsRarity(int goodsRarity) {
-        this.goodsRarity = goodsRarity;
-    }
-
-    public BigInteger getTemplateId() {
-        return templateId;
-    }
-
-    public GoodsType getType() {
-        return type;
+    public GoodsForSale appendDescription(String description) {
+        description = description.trim();
+        description = description.substring(0, 1).toUpperCase() + description.substring(1);
+        description = description.concat(". ");
+        this.description = this.description + description;
+        return this;
     }
 
     @Override
     public String toString() {
         return "GoodsForSale{" +
-                "templateId=" + templateId +
-                ", name='" + name + '\'' +
-                ", goodsDescription='" + goodsDescription + '\'' +
-                ", type=" + type +
-                ", goodsRarity=" + goodsRarity +
-                ", buyingPrice=" + buyingPrice +
+                "goodsId=" + goodsId +
+                ", goodsTemplateId=" + goodsTemplateId +
                 ", quantity=" + quantity +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", type=" + type +
                 ", salePrice=" + salePrice +
                 '}';
     }

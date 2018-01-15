@@ -1,6 +1,6 @@
 package com.nctc2017.dao;
 
-import com.nctc2017.bean.PlayerGoodsForSale;
+import com.nctc2017.bean.GoodsForSale;
 
 import java.math.BigInteger;
 import java.util.Map;
@@ -19,5 +19,5 @@ public interface StockDao {
 
     int getOccupiedVolume(BigInteger playerId);
 
-    Map<BigInteger, PlayerGoodsForSale> getAllPlayersGoodsForSale(BigInteger playerId);
+    Map<BigInteger, GoodsForSale> getAllPlayersGoodsForSale(BigInteger playerId);
 }

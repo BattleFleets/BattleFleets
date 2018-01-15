@@ -2,7 +2,6 @@ package com.nctc2017.services;
 
 import com.nctc2017.bean.*;
 import com.nctc2017.dao.*;
-import com.nctc2017.dao.utils.JdbcConverter;
 import com.nctc2017.exception.GoodsLackException;
 import com.nctc2017.exception.MoneyLackException;
 import com.nctc2017.services.utils.MarketManager;
@@ -53,21 +52,21 @@ public class TradeService {
      * @param playerId player whose goods we are getting
      * @return
      */
-    public List<PlayerGoodsForSale> getPlayersGoodsForSale(BigInteger playerId){
-        Map<BigInteger, PlayerGoodsForSale> goods = stockDao.getAllPlayersGoodsForSale(playerId);
+    public List<GoodsForSale> getPlayersGoodsForSale(BigInteger playerId){
+        Map<BigInteger, GoodsForSale> goods = stockDao.getAllPlayersGoodsForSale(playerId);
 
         BigInteger cityId = playerDao.getPlayerCity(playerId);
         Market market = marketManager.findMarketByCityId(cityId);
 
-        for(Map.Entry<BigInteger, PlayerGoodsForSale> entry : goods.entrySet()){
+        for(Map.Entry<BigInteger, GoodsForSale> entry : goods.entrySet()){
             BigInteger templateId = entry.getValue().getGoodsTemplateId();
-            GoodsForSale templateObj = market.getGoods(templateId);
+            GoodsForBuying templateObj = market.getGoods(templateId);
             entry.getValue().appendDescription(templateObj.getGoodsDescription());
             entry.getValue().setName(templateObj.getName());
             entry.getValue().setSalePrice(templateObj.getSalePrice());
         }
 
-        return new ArrayList<PlayerGoodsForSale>(goods.values());
+        return new ArrayList<GoodsForSale>(goods.values());
     }
 
     /**
@@ -75,10 +74,10 @@ public class TradeService {
      * @param playerId - player id, for whom is market getting
      * @return list of goods in market for current player's city
      */
-    public List<GoodsForSale> getMarketGoodsByPlayerId(BigInteger playerId){
+    public List<GoodsForBuying> getMarketGoodsByPlayerId(BigInteger playerId){
         BigInteger cityId = playerDao.getPlayerCity(playerId);
-        Map<BigInteger, GoodsForSale> market = marketManager.findMarketByCityId(cityId).getAllGoods();
-        return new ArrayList<GoodsForSale>(market.values());
+        Map<BigInteger, GoodsForBuying> market = marketManager.findMarketByCityId(cityId).getAllGoods();
+        return new ArrayList<GoodsForBuying>(market.values());
     }
 
     public String buy(BigInteger playerId, BigInteger goodsTemplateId, int price, int quantity) {
@@ -191,7 +190,7 @@ public class TradeService {
             throw e;
         }
 
-        GoodsForSale.GoodsType type = marketManager.findMarketByCityId(cityId).getGoodsType(goodsTemplateId);
+        GoodsForBuying.GoodsType type = marketManager.findMarketByCityId(cityId).getGoodsType(goodsTemplateId);
 
         switch (type) {
 

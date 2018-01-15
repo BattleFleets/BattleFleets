@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <audio autoplay id="myaudio" onloadeddata="setHalfVolume()">
+        <source src="static/audio/market.mp3" type="audio/mp3">
+    </audio>
 </head>
 <div align="center">
 	<h1 class="titleText">${city}</h1>

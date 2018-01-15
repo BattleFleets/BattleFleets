@@ -1,4 +1,5 @@
 var buyJson;
+var sellJson;
 var woodLink="/static/images/market/wood.png";
 var coffeeLink="/static/images/market/coffee.jpg";
 var gemsLink="/static/images/market/gems.png";
@@ -15,15 +16,22 @@ var mortarLink="/static/images/market/mortar.jpg";
 var buckshotLink="/static/images/market/buckshot.png";
 var cannonballLink="/static/images/market/cannonball.jpg";
 var chainLink="/static/images/market/chain.png";
-var mast1Link="/static/images/market/mast1.jpg";
-$(document).ready(function() {
-    updateMoney();
+var mast1Link="/static/images/market/mast_1.png";
+var mast2Link="/static/images/market/mast_2.png";
+var mast3Link="/static/images/market/mast_3.png";
+var mast4Link="/static/images/market/mast_4.png";
+var mast5Link="/static/images/market/mast_5.png";
+function updateMarket(){
     $.ajax({
         type: "GET",
         url: "/market/getBuyGoods",
         dataType: "json",
         success: function(data){buyJson=data;}
     });
+}
+$(document).ready(function() {
+    updateMoney();
+    updateMarket();
 });
 
 $(document).ready(function() {
@@ -101,9 +109,23 @@ $(document).ready(function() {
                     case "Mortar":
                         picture=mortarLink;
                         break;
+                    case "T_Mast1":
+                        picture=mast1Link;
+                        break;
+                    case "T_Mast2":
+                        picture=mast2Link;
+                        break;
+                    case "T_Mast3":
+                        picture=mast3Link;
+                        break;
+                    case "T_Mast4":
+                        picture=mast4Link;
+                        break;
+                    case "T_Mast5":
+                        picture=mast5Link;
+                        break;
                     default:
                         picture=mast1Link;
-
                 }
                 trHTML += "<tr><td>"
                     + "<img width=\"40\" height=\"40\" src="
@@ -130,4 +152,8 @@ function updateMoney() {
         }
     });
     return;
+}
+
+function setHalfVolume() {
+    document.getElementById("myaudio").volume = 0.05;
 }
