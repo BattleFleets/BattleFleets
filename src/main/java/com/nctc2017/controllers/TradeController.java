@@ -43,7 +43,7 @@ public class TradeController {
     }
 
     @Secured("ROLE_USER")
-    public void sale(int id, int idHash, int goodsTemplateId, int buyingCost, int quantity, int price) {
+    public void sell(int id, int idHash, int goodsTemplateId, int buyingCost, int quantity, int price) {
         // TODO implement here
     }
 

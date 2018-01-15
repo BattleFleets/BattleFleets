@@ -9,7 +9,7 @@
     <script src="static/js/market.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <audio autoplay id="myaudio" onloadeddata="setHalfVolume()">
         <source src="static/audio/market.mp3" type="audio/mp3">
     </audio>
@@ -22,6 +22,40 @@
     <p>Money <span id="money"></span></p>
 </header>
 <a href="/city" class="logOutBottom">Return to city</a>
+
+<!--Modal window-->
+<div class="modal fade" id="buyModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title modalText"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <p class="col-6 col-md-4 modalText">Price per unit:</p>
+                    <p id="oneCount" class="col-6 col-md-4 modalText"></p>
+                    <div class="col-6 col-md-4"></div>
+                </div>
+                <div class="row">
+                    <p class="col-6 col-md-4 modalText">Quantity:</p>
+                    <input type="number" id="modalQuantity" min="1" class="col-6 col-md-4">
+                    <div class="col-6 col-md-4"></div>
+                </div>
+                <div class="row">
+                    <p class="col-6 col-md-4 modalText">Total amount:</p>
+                    <p id="allCount" class="col-6 col-md-4 modalText"></p>
+                    <div class="col-6 col-md-4"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn buyButton">Buy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="col-sm-5 panels">
     <h1 class="messageText">Stock</h1>
     <div class="table">

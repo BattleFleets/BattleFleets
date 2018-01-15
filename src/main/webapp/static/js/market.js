@@ -133,11 +133,11 @@ $(document).ready(function() {
                     + item.name + "</td><td>"
                     + item.buyingPrice + "</td><td>"
                     + item.quantity + "</td><td>"
-                    + "<button>Buy</button>" + "</td></tr>";
+                    + "<button type=\"button\" class=\"btn buyButton\" id="
+                    + item.templateId+">Buy</button>" + "</td></tr>";
             }
         });
-        $("#buyTable").empty();
-        $("#buyTable").append(trHTML);
+        $("#buyTable").html(trHTML);
     });
 });
 
@@ -157,3 +157,28 @@ function updateMoney() {
 function setHalfVolume() {
     document.getElementById("myaudio").volume = 0.05;
 }
+
+$(document).ready(function () {
+    $('#buyTable').on('click', '.buyButton', function () {
+        var buyTemp=this.id;
+        var buyObject;
+        updateMarket();
+        $.each(buyJson,function(i,item){
+            if(item.templateId==buyTemp)
+                buyObject=item;
+        });
+        var mHead="Buy: "+buyObject.name;
+        $("#buyModal").modal();
+        $(".modal-title").html(mHead);
+        $("#oneCount").html(buyObject.buyingPrice);
+        $("#modalQuantity").val(1);
+        $("#allCount").html(buyObject.buyingPrice);
+    });
+});
+
+$(document).ready(function () {
+    $('.modal-body #modalQuantity').bind('input', function(){
+        var total = $(this).val()*$("#oneCount").html();
+        $("#allCount").html(total);
+    });
+});
