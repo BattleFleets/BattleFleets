@@ -63,10 +63,10 @@ public class CityActionsController {
         
         while (true) {
             int time = travelService.getRelocateTime(playerId);
-            if (time < 0) break;
-            else if (time > 5) return new ModelAndView("redirect:/trip");
+            if (time == Integer.MIN_VALUE) break;
+            else if (time > 0) return new ModelAndView("redirect:/trip");
             try {
-                Thread.sleep(time * 1000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 LOG.error("User thread was interrupted while entering in new city", e);
             }

@@ -13,7 +13,7 @@
     <script type="text/javascript">
         function setHalfVolume() {
             var audio = document.getElementById("myaudio");
-            audio.volume = 0.01;
+            audio.volume = 0.1;
         };
     </script>
     <script type="text/javascript">

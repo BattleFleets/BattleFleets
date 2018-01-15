@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import java.math.BigInteger;
 
+import javax.validation.constraints.NotNull;
+
 public class PlayerGoodsForSale {
 
     @JsonView(View.Sell.class)
@@ -33,8 +35,8 @@ public class PlayerGoodsForSale {
         this.goodsTemplateId = goodsTemplateId;
         this.quantity = quantity;
         this.type = type;
-        name = "";
-        description = "";
+        this.name = "";
+        this.description = "";
     }
 
     public PlayerGoodsForSale setName(String name) {
@@ -75,8 +77,9 @@ public class PlayerGoodsForSale {
         return salePrice;
     }
 
-    public PlayerGoodsForSale appendDescription(String description) {
+    public PlayerGoodsForSale appendDescription(@NotNull String description) {
         description = description.trim();
+        if(description.isEmpty()) return this;
         description = description.substring(0, 1).toUpperCase() + description.substring(1);
         description = description.concat(". ");
         this.description = this.description + description;
