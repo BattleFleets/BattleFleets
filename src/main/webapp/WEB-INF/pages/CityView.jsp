@@ -13,42 +13,7 @@
 <script type="text/javascript">
     $(document).ready(function() { 
         $("#B_travel").click(function() { 
-            $("#warning_info").load("travel", function(response, status, xhr){
-                if (xhr.status == 200){
-                    window.location.href = "/world?info="+$("#B_travel").val();
-                } else if (xhr.status == 423){
-                    $("#warning_info").html(response);
-                    $('html, body').animate({
-                        scrollTop: $("#warning_info").offset().top
-                    }, 1000);
-                } else if (xhr.status == 202) {
-                	var errMessage = $(response).find('.titleText').text();
-                	var errTitle = $(response).find('.titleText').attr('title');
-                	$( "#warning_info" ).html(errMessage);
-                    $( "#warning_info" ).dialog({
-                        modal: true,
-                        title: errTitle,
-                        width: 470,
-                        height: 210,
-                        buttons: [
-                        {
-                            id: "Delete",
-                            text: "It's rubbish! ... Raise the sails!",
-                            click: function () {
-                                window.location.href = "/world?info="+$("#B_travel").val();
-                            }
-                        },
-                        {
-                            id: "Cancel",
-                            text: "Back",
-                            click: function () {
-                                $(this).dialog('close');
-                            }
-                        }
-                        ]
-                    });
-                }
-            });
+            window.location.href = "/world?info="+$("#B_travel").val();
         }); 
     });
 </script>

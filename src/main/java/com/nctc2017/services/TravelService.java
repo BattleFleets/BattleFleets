@@ -126,8 +126,14 @@ public class TravelService {
         return playerDao.getFleetSpeed(playerId) > 1;
     }
     
+    public boolean isHaveShip(BigInteger playerId) {
+        List<BigInteger> shipsId = playerDao.findAllShip(playerId);
+        return ! shipsId.isEmpty();
+    }
+    
     public boolean isSailorsEnough(BigInteger playerId) {
         List<BigInteger> shipsId = playerDao.findAllShip(playerId);
+        if (shipsId.isEmpty()) return false;
         for (BigInteger shipId : shipsId) {
             Ship ship = shipDao.findShip(shipId);
             if (ship.getCurSailorsQuantity() < ship.getMaxSailorsQuantity() / 2) {
@@ -156,6 +162,14 @@ public class TravelService {
 
     public boolean isParticipated(BigInteger playerId) throws PlayerNotFoundException {
         return travelManager.isParticipated(playerId);
+    }
+    
+    public void deleteStock(BigInteger playerId) {
+        stockDao.deleteStock(playerId);
+    }
+    
+    public void createStock(BigInteger playerId) {
+        stockDao.createStock(playerId);
     }
 
     public int getAutoDecisionTime() {

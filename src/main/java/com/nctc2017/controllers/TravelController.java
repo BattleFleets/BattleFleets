@@ -163,6 +163,8 @@ public class TravelController {
         } catch (PlayerNotFoundException e) {
             return new ModelAndView("redirect:/city");
         }
+        travelService.deleteStock(playerId);
+        travelService.createStock(playerId);
         model.addObject("time", relocateTime);
         model.setStatus(HttpStatus.OK);
         model.setViewName("TravelView");

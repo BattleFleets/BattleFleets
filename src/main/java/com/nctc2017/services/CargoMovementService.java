@@ -129,7 +129,7 @@ public class CargoMovementService {
                         GoodsType.CANNON)
                     .setName(goodsInst.getName())
                     .setSalePrice(0)
-                    .appendDescription("You can buy it and sale in another place"));
+                    .appendDescription("Purchase price: " + goodsInst.getPurchasePrice()));
             }
         }
         
