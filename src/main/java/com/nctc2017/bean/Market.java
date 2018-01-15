@@ -1,7 +1,5 @@
 package com.nctc2017.bean;
 
-import org.apache.log4j.Logger;
-
 import java.math.BigInteger;
 import java.util.*;
 
@@ -9,12 +7,12 @@ public class Market {
 
     private static final int INITIAL_CAPACITY = 21;
 
-    protected Map<BigInteger, GoodsForSale> bar;
+    protected Map<BigInteger, GoodsForBuying> bar;
 
-    public Market(List<GoodsForSale> goodsForSales) {
+    public Market(List<GoodsForBuying> goodsForBuyings) {
         bar = new HashMap<>(INITIAL_CAPACITY);
 
-        for (GoodsForSale goods : goodsForSales) {
+        for (GoodsForBuying goods : goodsForBuyings) {
             if (goods != null) {
                 bar.put(goods.getTemplateId(), goods);
             }
@@ -23,8 +21,8 @@ public class Market {
 
     public Market(Market market) {
         bar = new HashMap<>(INITIAL_CAPACITY);
-        for (Map.Entry<BigInteger, GoodsForSale> entry : market.bar.entrySet()){
-            bar.put(entry.getKey(), new GoodsForSale(entry.getValue()));
+        for (Map.Entry<BigInteger, GoodsForBuying> entry : market.bar.entrySet()){
+            bar.put(entry.getKey(), new GoodsForBuying(entry.getValue()));
         }
     }
 
@@ -32,7 +30,7 @@ public class Market {
         return bar.get(id).getQuantity();
     }
 
-    public GoodsForSale.GoodsType getGoodsType(BigInteger id) {
+    public GoodsForBuying.GoodsType getGoodsType(BigInteger id) {
         return bar.get(id).getType();
     }
 
@@ -44,12 +42,12 @@ public class Market {
         return bar.get(id).getSalePrice();
     }
 
-    public GoodsForSale getGoods(BigInteger id) {
+    public GoodsForBuying getGoods(BigInteger id) {
         return bar.get(id);
     }
 
     public void updateGoodsQuantity(BigInteger id, int quantity) {
-        GoodsForSale goods = bar.get(id);
+        GoodsForBuying goods = bar.get(id);
         goods.setQuantity(quantity);
     }
 
@@ -65,9 +63,9 @@ public class Market {
         return bar.keySet();
     }
 
-    public List<GoodsForSale> getAllGoodsValues() {return new ArrayList<>(bar.values());}
+    public List<GoodsForBuying> getAllGoodsValues() {return new ArrayList<>(bar.values());}
 
-    public Map<BigInteger, GoodsForSale> getAllGoods(){
+    public Map<BigInteger, GoodsForBuying> getAllGoods(){
         return bar;
     }
 

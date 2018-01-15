@@ -1,7 +1,7 @@
 package com.nctc2017.dao.impl;
 
+import com.nctc2017.bean.GoodsForBuying;
 import com.nctc2017.bean.GoodsForSale;
-import com.nctc2017.bean.PlayerGoodsForSale;
 import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
@@ -180,8 +180,8 @@ public class StockDaoImpl implements StockDao {
     }
 
     @Override
-    public Map<BigInteger, PlayerGoodsForSale> getAllPlayersGoodsForSale(BigInteger playerId) {
-        Map<BigInteger, PlayerGoodsForSale> goods = new HashMap<>();
+    public Map<BigInteger, GoodsForSale> getAllPlayersGoodsForSale(BigInteger playerId) {
+        Map<BigInteger, GoodsForSale> goods = new HashMap<>();
         BigInteger stockId = findStockId(playerId);
 
         getGoods(goods, stockId);
@@ -192,7 +192,7 @@ public class StockDaoImpl implements StockDao {
         return  goods;
     }
 
-    private void getGoods(Map<BigInteger, PlayerGoodsForSale> goods, BigInteger stockId) {
+    private void getGoods(Map<BigInteger, GoodsForSale> goods, BigInteger stockId) {
         try {
             SqlRowSet result = jdbcTemplate.queryForRowSet(GET_GOODS_FOR_SALE,
                     JdbcConverter.toNumber(DatabaseObject.GOODS_OBJTYPE_ID),
@@ -201,10 +201,10 @@ public class StockDaoImpl implements StockDao {
                     JdbcConverter.toNumber(DatabaseAttribute.GOODS_PURCHASE_PRICE));
 
             while (result.next()) {
-                PlayerGoodsForSale goodsForSale = new PlayerGoodsForSale(
+                GoodsForSale goodsForSale = new GoodsForSale(
                         result.getBigDecimal(1).toBigInteger(),
                         result.getBigDecimal(2).toBigInteger(),
-                        result.getInt(3), GoodsForSale.GoodsType.GOODS);
+                        result.getInt(3), GoodsForBuying.GoodsType.GOODS);
                 goodsForSale.appendDescription("Purchase price: " + result.getInt(4) + ".\n");
                 goods.put(goodsForSale.getGoodsId(), goodsForSale);
             }
@@ -214,7 +214,7 @@ public class StockDaoImpl implements StockDao {
         }
     }
 
-    private void getAmmo(Map<BigInteger, PlayerGoodsForSale> goods, BigInteger stockId) {
+    private void getAmmo(Map<BigInteger, GoodsForSale> goods, BigInteger stockId) {
         try {
             SqlRowSet result = jdbcTemplate.queryForRowSet(GET_AMMO_FOR_SALE,
                     JdbcConverter.toNumber(DatabaseObject.AMMO_OBJTYPE_ID),
@@ -222,10 +222,10 @@ public class StockDaoImpl implements StockDao {
                     JdbcConverter.toNumber(DatabaseAttribute.AMMO_NUM));
 
             while (result.next()) {
-                PlayerGoodsForSale goodsForSale = new PlayerGoodsForSale(
+                GoodsForSale goodsForSale = new GoodsForSale(
                         result.getBigDecimal(1).toBigInteger(),
                         result.getBigDecimal(2).toBigInteger(),
-                        result.getInt(3), GoodsForSale.GoodsType.AMMO);
+                        result.getInt(3), GoodsForBuying.GoodsType.AMMO);
                 goods.put(goodsForSale.getGoodsId(), goodsForSale);
             }
         } catch (DataAccessException e) {
@@ -234,17 +234,17 @@ public class StockDaoImpl implements StockDao {
         }
     }
 
-    private void getCannon(Map<BigInteger, PlayerGoodsForSale> goods, BigInteger stockId) {
+    private void getCannon(Map<BigInteger, GoodsForSale> goods, BigInteger stockId) {
         try {
             SqlRowSet result = jdbcTemplate.queryForRowSet(GET_CANNON_FOR_SALE,
                     JdbcConverter.toNumber(DatabaseObject.CANNON_OBJTYPE_ID),
                     JdbcConverter.toNumber(stockId));
 
             while (result.next()) {
-                PlayerGoodsForSale goodsForSale = new PlayerGoodsForSale(
+                GoodsForSale goodsForSale = new GoodsForSale(
                         result.getBigDecimal(1).toBigInteger(),
                         result.getBigDecimal(2).toBigInteger(),
-                        1, GoodsForSale.GoodsType.CANNON);
+                        1, GoodsForBuying.GoodsType.CANNON);
                 goods.put(goodsForSale.getGoodsId(), goodsForSale);
             }
         } catch (DataAccessException e){
@@ -253,7 +253,7 @@ public class StockDaoImpl implements StockDao {
         }
     }
 
-    private void getMast(Map<BigInteger, PlayerGoodsForSale> goods, BigInteger stockId) {
+    private void getMast(Map<BigInteger, GoodsForSale> goods, BigInteger stockId) {
         try {
             SqlRowSet result = jdbcTemplate.queryForRowSet(GET_MAST_FOR_SALE,
                     JdbcConverter.toNumber(DatabaseObject.MAST_OBJTYPE_ID),
@@ -263,10 +263,10 @@ public class StockDaoImpl implements StockDao {
                     JdbcConverter.toNumber(DatabaseAttribute.ATTR_MAX_MAST_SPEED_ID));
 
             while (result.next()) {
-                PlayerGoodsForSale goodsForSale = new PlayerGoodsForSale(
+                GoodsForSale goodsForSale = new GoodsForSale(
                         result.getBigDecimal(1).toBigInteger(),
                         result.getBigDecimal(2).toBigInteger(),
-                        1, GoodsForSale.GoodsType.MAST);
+                        1, GoodsForBuying.GoodsType.MAST);
                 goods.put(goodsForSale.getGoodsId(), goodsForSale);
             }
         } catch (DataAccessException e){

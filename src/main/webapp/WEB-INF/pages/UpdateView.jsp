@@ -10,6 +10,7 @@
     <h1 class="titleText">Select what you want to improve</h1>
 </div>
 <body>
+<a href="/city" class="logOutBottom">Return to city</a>
 <form method="get">
 <div align="center">
 <table class="panel">

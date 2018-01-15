@@ -1,11 +1,8 @@
 package com.nctc2017.services;
 
-import com.nctc2017.bean.Ammo;
-import com.nctc2017.bean.Cannon;
-import com.nctc2017.bean.Goods;
-import com.nctc2017.bean.PlayerGoodsForSale;
-import com.nctc2017.bean.GoodsForSale.GoodsType;
-import com.nctc2017.bean.Mast;
+import com.nctc2017.bean.*;
+import com.nctc2017.bean.GoodsForSale;
+import com.nctc2017.bean.GoodsForBuying.GoodsType;
 import com.nctc2017.dao.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +42,7 @@ public class CargoMovementService {
         executorDao.moveCargoTo(cargoId, destinationId, quantity);
     }
     
-    public List<PlayerGoodsForSale> getCargoFromShip(BigInteger playerId, BigInteger shipId) {
+    public List<GoodsForSale> getCargoFromShip(BigInteger playerId, BigInteger shipId) {
 
         List<Mast> masts = mastDao.getShipMastsFromShip(shipId);
         List<Cannon> cannons = cannonDao.getAllCannonFromShip(shipId);
@@ -53,7 +50,7 @@ public class CargoMovementService {
         return cargoConvert(null, cannons, null, masts);
     }
     
-    public List<PlayerGoodsForSale> getCargoFromHold(BigInteger playerId, BigInteger shipId) {
+    public List<GoodsForSale> getCargoFromHold(BigInteger playerId, BigInteger shipId) {
         BigInteger holdId = holdDao.findHold(shipId);
 
         List<Goods> goods = goodsDao.getAllGoodsFromHold(holdId);
@@ -64,7 +61,7 @@ public class CargoMovementService {
         return cargoConvert(goods, cannons, ammos, masts);
     }
     
-    public List<PlayerGoodsForSale> getCargoFromStock(BigInteger playerId) {
+    public List<GoodsForSale> getCargoFromStock(BigInteger playerId) {
         BigInteger stockId = stockDao.findStockId(playerId);
         
         List<Goods> goods = goodsDao.getAllGoodsFromStock(stockId);
@@ -75,15 +72,15 @@ public class CargoMovementService {
         return cargoConvert(goods, cannons, ammos, masts);
     }
     
-    private List<PlayerGoodsForSale> cargoConvert(List<Goods> goods, 
-            List<Cannon> cannons, 
-            List<Ammo> ammos, 
-            List<Mast> masts) {
-        List<PlayerGoodsForSale> cargoInStock = new ArrayList<>();
+    private List<GoodsForSale> cargoConvert(List<Goods> goods,
+                                            List<Cannon> cannons,
+                                            List<Ammo> ammos,
+                                            List<Mast> masts) {
+        List<GoodsForSale> cargoInStock = new ArrayList<>();
         
         if (cannons != null) {
             for (Cannon cannon : cannons) {
-                cargoInStock.add(new PlayerGoodsForSale(
+                cargoInStock.add(new GoodsForSale(
                         cannon.getThingId(), 
                         cannon.getTamplateId(), 
                         cannon.getQuantity(), 
@@ -97,7 +94,7 @@ public class CargoMovementService {
         
         if (ammos != null) {
             for (Ammo ammo : ammos) {
-                cargoInStock.add(new PlayerGoodsForSale(
+                cargoInStock.add(new GoodsForSale(
                         ammo.getThingId(), 
                         ammo.getTamplateId(), 
                         ammo.getQuantity(), 
@@ -111,7 +108,7 @@ public class CargoMovementService {
         
         if (masts != null) {
             for (Mast mast : masts) {
-                cargoInStock.add(new PlayerGoodsForSale(
+                cargoInStock.add(new GoodsForSale(
                         mast.getThingId(), 
                         mast.getTamplateId(), 
                         mast.getQuantity(), 
@@ -125,7 +122,7 @@ public class CargoMovementService {
         
         if (goods != null) {
             for (Goods goodsInst : goods) {
-                cargoInStock.add(new PlayerGoodsForSale(
+                cargoInStock.add(new GoodsForSale(
                         goodsInst.getThingId(), 
                         goodsInst.getTamplateId(), 
                         goodsInst.getQuantity(), 
