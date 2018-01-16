@@ -114,19 +114,6 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         return new ShipService();
     }
 
-    @Bean(name = "levelUpServicePrototype")
-    @Scope("prototype")
-    public LevelUpService levelUpServiceProt() {
-        return new LevelUpService();
-    }
-
-   @Bean(name = "scoreServicePrototype")
-    @Scope("prototype")
-    public ScoreService scoreServiceProt() {
-       return new ScoreService();
-   }
-
-
     @Bean(name = "travelServiceSingleton")
     @Scope("singleton")
     public TravelService travelServiceSing() {

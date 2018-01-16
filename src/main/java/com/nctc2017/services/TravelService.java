@@ -13,15 +13,16 @@ import com.nctc2017.services.utils.AutoDecisionTask;
 import com.nctc2017.services.utils.BattleManager;
 import com.nctc2017.services.utils.TravelManager;
 import com.nctc2017.services.utils.Visitor;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Transactional
@@ -42,7 +43,7 @@ public class TravelService {
     @Autowired
     private StockDao stockDao;
     
-    private Map<BigInteger, Thread> playerAutoDecision = new HashMap<>();
+    private Map<BigInteger, Thread> playerAutoDecision = new ConcurrentHashMap<>();
 
     public void relocate(BigInteger playerId, BigInteger cityId) {
         Player player = playerDao.findPlayerById(playerId);

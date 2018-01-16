@@ -1,21 +1,44 @@
 package com.nctc2017.services.utils;
 
 import java.math.BigInteger;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.nctc2017.bean.Battle;
 import com.nctc2017.exception.BattleEndException;
 import com.nctc2017.exception.BattleStartException;
+import com.nctc2017.services.BattleEndingService;
+import com.nctc2017.services.utils.endVisitorImpl.SurrenderDefaultBattleEnd;
 
 @Component
 public class BattleManager {
     private static final Logger LOG = Logger.getLogger(BattleManager.class);
+
+    private static final long AUTO_STEP_TIME = 180000;
+
+    @Autowired
+    protected SurrenderDefaultBattleEnd surrenderDefaultBattleEnd;
+    @Autowired
+    protected BattleEndingService battleEnd;
     
     private Map<BigInteger, Battle> battles = new HashMap<>();
+
+    private Map<BigInteger, Long> autoStep = new ConcurrentHashMap<>();
+    
+    @PostConstruct
+    private void init() {
+        AutoStepManager mng = new AutoStepManager();
+        Thread thread = new Thread(mng);
+        thread.start();
+    }
     
     public void newBattleBetween(BigInteger pl1, BigInteger pl2) throws BattleStartException {
         if (battles.get(pl1) != null) {
@@ -28,7 +51,16 @@ public class BattleManager {
             LOG.warn("Players " + pl1 + " and " + pl2 + " cannon make a battlt ", ex);
             throw ex;
         }
-        Battle newBattle = new Battle(pl1, pl2);
+        
+        Battle newBattle = new Battle(pl1, pl2, new Visitor() {
+
+            @Override
+            public void visit() {
+                setUpAutoStepTime(pl1, pl2);
+            }
+            
+        });
+        
         battles.put(pl1, newBattle);
         battles.put(pl2, newBattle);
     }
@@ -62,6 +94,69 @@ public class BattleManager {
     public void resetBattle(BigInteger playerId) {
         battles.get(playerId).resetAll();
     }
+    
+    public void clearAutoStepTime(BigInteger playerId) {
+        autoStep.remove(playerId);
+    }
+    
+    public void clearAutoStepTime(BigInteger playerId, BigInteger enemyId) {
+        autoStep.remove(enemyId);
+        autoStep.remove(playerId);
+    }
+    
+    public int getAutoStepTime(BigInteger playerId) {
+        Long timeInFuture = autoStep.get(playerId);
+        if (timeInFuture == null) {
+            return 0;
+        }
+        Long timeNow = new GregorianCalendar().getTimeInMillis();
+        return (int)((timeInFuture - timeNow) / 1000L);
+    }
+    
+    public void setUpAutoStepTime(BigInteger playerId, BigInteger enemyId) {
+        Long now = new GregorianCalendar().getTimeInMillis();
+        long timeInFuture = now + AUTO_STEP_TIME;
+        LOG.debug("     --==Write time to auto step==-- " + timeInFuture);
+        if (autoStep.containsKey(playerId) || autoStep.containsKey(enemyId)) return;
+        autoStep.put(playerId, timeInFuture);
+        autoStep.put(enemyId, timeInFuture);
+    }
 
+    private class AutoStepManager implements Runnable {
+
+        @Override
+        public void run() {
+            while (true) {
+                LOG.debug("AutoStepManager start");
+                Long min = AUTO_STEP_TIME;
+                long buf;
+                Long now = new GregorianCalendar().getTimeInMillis();
+                
+                for (Map.Entry<BigInteger,Long> time : autoStep.entrySet()) {
+                    if (now >= time.getValue()) {
+                        try {
+                            LOG.debug("Player_" + time.getKey() + " TIME TO SURRENDER");
+                            battleEnd.surrender(time.getKey(), surrenderDefaultBattleEnd);
+                        } catch (BattleEndException e) {
+                            LOG.fatal("Timer for auto step ended with excetion while try surrender player", e);
+                        }
+                    } else {
+                        buf = time.getValue() - now;
+                        if (min > buf) {
+                            min = buf;
+                        }
+                    }
+                }
+                
+                try {
+                    LOG.debug("AutoStepManager sleep " + min + "ms");
+                    Thread.sleep(min);
+                } catch (InterruptedException e) {
+                    LOG.error("AutoStepManager was interapted", e);
+                }
+            }
+        }
+        
+    }
     
 }

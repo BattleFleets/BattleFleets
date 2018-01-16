@@ -2,6 +2,8 @@ package com.nctc2017.bean;
 
 import org.apache.log4j.Logger;
 
+import com.nctc2017.services.utils.Visitor;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,10 +17,11 @@ public class Battle {
     
     private Logger log = Logger.getLogger(Battle.class);
     private Map<BigInteger, Participant> playerMap;
+    private Visitor visitorForShipsChosen;
     
     protected int distance = 0;
     
-    public Battle(BigInteger idPlayer1, BigInteger idPlayer2) {
+    public Battle(BigInteger idPlayer1, BigInteger idPlayer2, Visitor visitorForShipsChosen) {
         playerMap = new HashMap<>(2);
         playerMap.put(idPlayer1, new Participant(idPlayer1, idPlayer2));
         playerMap.put(idPlayer2, new Participant(idPlayer2, idPlayer1));
@@ -26,6 +29,7 @@ public class Battle {
                 + idPlayer1 
                 + " and id2 = " 
                 + idPlayer2;
+        this.visitorForShipsChosen = visitorForShipsChosen;
     }
 
     public int getDistance() {
@@ -51,6 +55,9 @@ public class Battle {
         Participant prtn = playerMap.get(playerId);
         if (prtn != null) {
             prtn.setShipId(shipId);
+            if (getEnemyShipId(playerId) != null) {
+                visitorForShipsChosen.visit();
+            }
             return;
         }
         RuntimeException ex = 

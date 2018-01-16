@@ -2,16 +2,18 @@ package com.nctc2017.services;
 
 import com.nctc2017.dao.ScoreDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 
+@Service
 public class ScoreService {
     @Autowired
     private ScoreDao scoreDao;
+    @Autowired
+    private LevelUpService lvlUpService;
 
-     LevelUpService lvlUpService;
-
-     private final double growthRate = 1.05;
+    private final double growthRate = 1.05;
 
     public int getScoreForDestroy(BigInteger playerId) {
         int lvl = lvlUpService.getCurrentLevel(playerId);
@@ -40,12 +42,10 @@ public class ScoreService {
         int winnerLvl = lvlUpService.getCurrentLevel(playerWinId);
         int loserLvl = lvlUpService.getCurrentLevel(playerLoseId);
         double xp;
-        if(winnerLvl<=loserLvl)
-        {
+        if(winnerLvl<=loserLvl){
            xp = defaultScore*(1+0.05*(loserLvl-winnerLvl));
         }
-        else
-        {
+        else{
             xp = defaultScore*(1-(winnerLvl-loserLvl)/10);
         }
         return (int)Math.floor(xp);

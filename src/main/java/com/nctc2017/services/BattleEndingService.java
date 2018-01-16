@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.ViewRendererServlet;
 
 import com.nctc2017.bean.Battle;
 import com.nctc2017.dao.ExecutorDao;
@@ -18,7 +17,6 @@ import com.nctc2017.exception.BattleEndException;
 import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.utils.BattleEndVisitor;
 import com.nctc2017.services.utils.BattleManager;
-import com.nctc2017.services.utils.Visitor;
 
 @Service
 @Transactional
@@ -112,6 +110,7 @@ public class BattleEndingService {
         if ( ! isLeaveBattleFieldAvailable(playerId)) return false;
         synchronized (battles) {
             BigInteger enemyId = battles.getEnemyId(playerId);
+            
             if (! battles.endBattle(enemyId) || ! battles.endBattle(playerId))
                 throw new BattleEndException("Battle already end. You automatically left.");
             prepService.stopAutoChooseTimer(enemyId);
@@ -154,8 +153,14 @@ public class BattleEndingService {
     public void surrender(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException {
         Battle battle = battles.getBattle(playerId);
         BigInteger winnerId = battle.getEnemyId(playerId);
+        
+        battles.clearAutoStepTime(playerId, winnerId);
+        
         BigInteger winnerShipId = battle.getShipId(winnerId);
         BigInteger loserShipId = battle.getShipId(playerId);
+        
+        if (winnerShipId == null || loserShipId == null) return;
+        
         battle.setWinner(winnerId, SURRENDER_WINNER_MSG, SURRENDER_LOSER_MSG);
         battle.resetAll();
         visitor.endCaseVisit(playerDao, shipDao, winnerShipId, loserShipId, winnerId, playerId);
@@ -174,6 +179,9 @@ public class BattleEndingService {
         if (! isBattleLocationEscapeAvailable(playerId)) return false;
         Battle battle = battles.getBattle(playerId);
         BigInteger loserId = battle.getEnemyId(playerId);
+        
+        battles.clearAutoStepTime(playerId, loserId);
+        
         BigInteger loserShipId = battle.getShipId(loserId);
         BigInteger winnerShipId = battle.getShipId(playerId);
         battle.setWinner(playerId, LEAVE_PLAYER_MSG, LEAVE_MSG_FOR_ENEMY);
@@ -185,6 +193,9 @@ public class BattleEndingService {
     public boolean payoff(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException {
         Battle battle = battles.getBattle(playerId);
         BigInteger winnerId = battle.getEnemyId(playerId);
+        
+        battles.clearAutoStepTime(playerId, winnerId);
+        
         BigInteger winnerShipId = battle.getShipId(winnerId);
         BigInteger loserShipId = battle.getShipId(playerId);
         int payoff = passPayOffToEnemy(playerId);

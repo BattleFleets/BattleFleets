@@ -11,6 +11,7 @@ import com.nctc2017.exception.BattleEndException;
 import com.nctc2017.services.utils.AutoDecisionTask;
 import com.nctc2017.services.utils.BattleManager;
 import com.nctc2017.services.utils.Visitor;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Transactional
@@ -40,7 +42,7 @@ public class BattlePreparationService {
     private BattleEndingService battleEnd;
     
     private Random randomShip = new Random(System.currentTimeMillis());
-    private Map<BigInteger, ThreadStorage> playerChoiceShipTimer = new HashMap<>();
+    private Map<BigInteger, ThreadStorage> playerChoiceShipTimer = new ConcurrentHashMap<>();
     
     public boolean escape(BigInteger playerId) {
         BigInteger enemyId = battles.getEnemyId(playerId);
