@@ -6,25 +6,18 @@ import java.math.BigInteger;
 
 public class GoodsForSale {
 
-    @JsonView(View.Sell.class)
     protected BigInteger goodsId;
 
-    @JsonView(View.Sell.class)
     protected BigInteger goodsTemplateId;
 
-    @JsonView(View.No.class)
     protected int quantity;
 
-    @JsonView(View.No.class)
     protected String name;
 
-    @JsonView(View.No.class)
     protected String description;
 
-    @JsonView(View.Sell.class)
     protected GoodsForBuying.GoodsType type;
 
-    @JsonView(View.Sell.class)
     protected int salePrice;
 
 
