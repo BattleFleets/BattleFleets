@@ -1,5 +1,6 @@
 var buyJson;
 var saleJson;
+var buyObject;
 var saleObject;
 var woodLink="/static/images/market/wood.png";
 var coffeeLink="/static/images/market/coffee.jpg";
@@ -32,8 +33,7 @@ function updateMoney() {
         url: "/market/myMoney",
         dataType: "text",
         success: function(data){
-            $("#money").empty();
-            $("#money").append(data);
+            $("#money").html(data);
         }
     });
     return;
@@ -54,6 +54,38 @@ function updatePlayerStock(){
         url: "/market/getSellGoods",
         dataType: "json",
         success: function(data){saleJson=data;}
+    });
+}
+
+function buy(queryString){
+    $.ajax({
+        type: "POST",
+        url: "/market/buy",
+        data: queryString,
+        dataType: "text",
+        success: function (msg) {
+            console.log(msg);
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            console.log(xhr.status);
+            console.log(thrownError);
+        }
+    });
+}
+
+function sell(queryString){
+    $.ajax({
+        type: "POST",
+        url: "/market/sell",
+        data: queryString,
+        dataType: "text",
+        success: function (msg) {
+            console.log(msg);
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            console.log(xhr.status);
+            console.log(thrownError);
+        }
     });
 }
 
@@ -174,7 +206,6 @@ $(document).ready(function() {
 $(document).ready(function () {
     $('#buyTable').on('click', '.buyButton', function () {
         var buyTemp=this.id;
-        var buyObject;
         updateMarket();
         $.each(buyJson,function(i,item){
             if(item.templateId==buyTemp){
@@ -203,6 +234,19 @@ $(document).ready(function () {
     });
 });
 
+$(document).ready(function() {
+    $(".buyButton").click(function() {
+        var goodsTemplateId = buyObject.templateId;
+        var price = $("#oneCount").html();
+        var quantity = $("#modalQuantity").val();
+        var string = "goodsTemplateId="+goodsTemplateId
+                        +"&price="+price
+                        +"&quantity="+quantity;
+        buy(string);
+    });
+});
+
+//SALE PART
 $(document).ready(function() {
     $(".saleJson").click(function() {
         //here I understand what click's id I get
@@ -323,7 +367,7 @@ $(document).ready(function () {
         $("#saleModal").modal();
         $(".modal-title").html(mHead);
         $("#oneSaleCount").html(saleObject.salePrice);
-        if(buyObject.quantity>0){
+        if(saleObject.quantity>0){
             $("#modalSaleQuantity").val(1);
         }
         else{
@@ -338,5 +382,28 @@ $(document).ready(function () {
     $('.modal-body #modalSaleQuantity').bind('input', function(){
         var total = $(this).val()*$("#oneSaleCount").html();
         $("#allSaleCount").html(total);
+    });
+});
+
+$(document).ready(function() {
+    $(".saleButton").click(function() {
+        var goodId = saleObject.goodsId;
+        var goodsTemplateId = saleObject.goodsTemplateId;
+        var price = saleObject.salePrice;
+        var quantity = $("#modalSaleQuantity").val();
+        var string = "goodsId="+goodId
+            +"&goodsTemplateId="+goodsTemplateId
+            +"&price="+price
+            +"&quantity="+quantity;
+        sell(string);
+    });
+});
+
+//On modal close reload page
+$(document).ready(function() {
+    $("#buyModal,#saleModal").on("hidden.bs.modal", function () {
+        updateMoney();
+        updateMarket();
+        updatePlayerStock();
     });
 });

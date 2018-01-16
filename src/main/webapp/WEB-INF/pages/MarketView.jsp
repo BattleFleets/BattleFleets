@@ -29,7 +29,7 @@
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&#x274C;</button>
                 <h4 class="modal-title modalText"></h4>
             </div>
             <div class="modal-body">
@@ -50,7 +50,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn buyButton">Buy</button>
+                <p id="messageBuy"></p>
+                <button type="button" class="btn buyButton col-4">Buy</button>
             </div>
         </div>
     </div>
@@ -62,7 +63,7 @@
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&#x274E;</button>
                 <h4 class="modal-title modalText"></h4>
             </div>
             <div class="modal-body">
@@ -83,7 +84,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn buyButton">Sell</button>
+                <p id="messageSale"></p>
+                <button type="button" class="btn saleButton">Sell</button>
             </div>
         </div>
     </div>
