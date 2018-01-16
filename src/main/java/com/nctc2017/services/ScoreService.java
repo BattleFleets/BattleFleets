@@ -17,17 +17,17 @@ public class ScoreService {
 
     public int getScoreForDestroy(BigInteger playerId) {
         int lvl = lvlUpService.getCurrentLevel(playerId);
-        return (int)Math.floor(scoreDao.getScoreForDestroy()*Math.pow(growthRate,lvl));
+        return (int)Math.floor(scoreDao.getScoreForDestroy()*Math.pow(growthRate,lvl-1));
     }
 
     public int getScoreForBoarding(BigInteger playerId) {
         int lvl = lvlUpService.getCurrentLevel(playerId);
-        return (int)Math.floor(scoreDao.getScoreForBoarding()*Math.pow(growthRate,lvl));
+        return (int)Math.floor(scoreDao.getScoreForBoarding()*Math.pow(growthRate,lvl-1));
     }
 
     public int getScoreForSurrender(BigInteger playerId) {
         int lvl = lvlUpService.getCurrentLevel(playerId);
-        return (int)Math.floor(scoreDao.getScoreForSurrender()*Math.pow(growthRate,lvl));
+        return (int)Math.floor(scoreDao.getScoreForSurrender()*Math.pow(growthRate,lvl-1));
     }
 
     public int getScoreForPayoff() {

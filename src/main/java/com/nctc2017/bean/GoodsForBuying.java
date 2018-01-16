@@ -17,7 +17,6 @@ public class GoodsForBuying {
     @JsonView(View.No.class)
     protected int goodsRarity;
 
-    @JsonView(View.Buy.class)
     protected volatile int buyingPrice;
 
     protected volatile int quantity;

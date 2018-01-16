@@ -14,7 +14,9 @@
         <p>Money <span id="money">${money}</span></p>
         <p>Fleet ${currShips}/<span id="maxShips">${maxShips}</span></p>
         <p>Income <span id="income">${income}</span>/day</p>
-        <p>Improve <span  id="improve">${nextImprove}</span> lvl</p>
+        <c:if test="${nextImprove<=maxLvl}">
+        <p id="improveWrapper">Improve <span  id="improve">${nextImprove}</span> lvl</p>
+        </c:if>
 </header>
 </body>
 </html>

@@ -125,7 +125,7 @@ public class ShipRepairServiceTest {
     @Test
     public void checkRepairCost() throws Exception {
         int repairCost = shipRepairService.countRepairCost(flyingDutchman.getShipId());
-        assertEquals(60,repairCost);
+        assertEquals(69,repairCost);
     }
 
 

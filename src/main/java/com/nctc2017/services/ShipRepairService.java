@@ -22,16 +22,14 @@ public class ShipRepairService {
 
     public int countRepairCost(BigInteger shipId) {
         int speedDifference = 0;
-        int repairCost = 0;
+        double repairCost = 0;
         for (Mast mast : mastDao.getShipMastsFromShip(shipId)) {
             speedDifference = speedDifference + (mast.getMaxSpeed() - mast.getCurSpeed());
         }
-        repairCost = (shipDao.getShipCost(shipId) / 1000) *
-                (shipDao.getHealthLimit(shipId) - shipDao.getCurrentShipHealth(shipId)) +
-                speedDifference;
-        return repairCost;/*((shipDao.getShipCost(shipId)/1000)
-                *(shipDao.getHealthLimit(shipId)-shipDao.getCurrentShipHealth(shipId))
-                +speedDifference);*/
+        repairCost = ((double)shipDao.getShipCost(shipId) / 1000) *
+                (double)(shipDao.getHealthLimit(shipId) - shipDao.getCurrentShipHealth(shipId)) +
+                (double)speedDifference;
+        return (int)repairCost;
     }
 
     @Transactional

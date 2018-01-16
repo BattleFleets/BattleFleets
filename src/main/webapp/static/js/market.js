@@ -1,5 +1,6 @@
 var buyJson;
-var sellJson;
+var saleJson;
+var saleObject;
 var woodLink="/static/images/market/wood.png";
 var coffeeLink="/static/images/market/coffee.jpg";
 var gemsLink="/static/images/market/gems.png";
@@ -21,6 +22,23 @@ var mast2Link="/static/images/market/mast_2.png";
 var mast3Link="/static/images/market/mast_3.png";
 var mast4Link="/static/images/market/mast_4.png";
 var mast5Link="/static/images/market/mast_5.png";
+function setHalfVolume() {
+    document.getElementById("myaudio").volume = 0.05;
+}
+
+function updateMoney() {
+    $.ajax({
+        type: "GET",
+        url: "/market/myMoney",
+        dataType: "text",
+        success: function(data){
+            $("#money").empty();
+            $("#money").append(data);
+        }
+    });
+    return;
+}
+
 function updateMarket(){
     $.ajax({
         type: "GET",
@@ -29,9 +47,20 @@ function updateMarket(){
         success: function(data){buyJson=data;}
     });
 }
+
+function updatePlayerStock(){
+    $.ajax({
+        type: "GET",
+        url: "/market/getSellGoods",
+        dataType: "json",
+        success: function(data){saleJson=data;}
+    });
+}
+
 $(document).ready(function() {
     updateMoney();
     updateMarket();
+    updatePlayerStock();
 });
 
 $(document).ready(function() {
@@ -130,30 +159,184 @@ $(document).ready(function() {
                 trHTML += "<tr><td>"
                     + "<img width=\"40\" height=\"40\" src="
                     + picture+ "/>" + "</td><td>"
-                    + item.name + "</td><td>"
+                    + item.name +"<br/>"+item.goodsDescription+"</td><td>"
                     + item.buyingPrice + "</td><td>"
                     + item.quantity + "</td><td>"
-                    + "<button>Buy</button>" + "</td></tr>";
+                    + "<button type=\"button\" class=\"btn buyButton\" id="
+                    + item.templateId+">Buy</button>" + "</td></tr>";
             }
         });
-        $("#buyTable").empty();
-        $("#buyTable").append(trHTML);
+        $("#buyTable").html(trHTML);
     });
 });
 
-function updateMoney() {
-    $.ajax({
-        type: "GET",
-        url: "/market/myMoney",
-        dataType: "text",
-        success: function(data){
-            $("#money").empty();
-            $("#money").append(data);
-        }
-    });
-    return;
-}
 
-function setHalfVolume() {
-    document.getElementById("myaudio").volume = 0.05;
-}
+$(document).ready(function () {
+    $('#buyTable').on('click', '.buyButton', function () {
+        var buyTemp=this.id;
+        var buyObject;
+        updateMarket();
+        $.each(buyJson,function(i,item){
+            if(item.templateId==buyTemp){
+                buyObject=item;
+            }
+        });
+        var mHead="Buy: "+buyObject.name;
+        $("#buyModal").modal();
+        $(".modal-title").html(mHead);
+        $("#oneCount").html(buyObject.buyingPrice);
+        if(buyObject.quantity>0){
+            $("#modalQuantity").val(1);
+        }
+        else{
+            $("#modalQuantity").val(0);
+        }
+        $("#modalQuantity").prop('max',buyObject.quantity);
+        $("#allCount").html(buyObject.buyingPrice);
+    });
+});
+
+$(document).ready(function () {
+    $('.modal-body #modalQuantity').bind('input', function(){
+        var total = $(this).val()*$("#oneCount").html();
+        $("#allCount").html(total);
+    });
+});
+
+$(document).ready(function() {
+    $(".saleJson").click(function() {
+        //here I understand what click's id I get
+        var id_click = $(this).attr("id");
+        var type;
+        switch(id_click){
+            case "goodSaleJson":
+                type="GOODS";
+                break;
+            case "ammoSaleJson":
+                type="AMMO";
+                break;
+            case "cannonSaleJson":
+                type="CANNON";
+                break;
+            case "mastSaleJson":
+                type="MAST";
+                break;
+            default:
+
+        }
+
+        var trHTML ="";
+        $.each(saleJson,function(i,item){
+            if(item.type===type){
+                var picture;
+                switch(item.name){
+                    case "Coffee":
+                        picture=coffeeLink;
+                        break;
+                    case "Gems":
+                        picture=gemsLink;
+                        break;
+                    case "Grain":
+                        picture=grainLink;
+                        break;
+                    case "Rum":
+                        picture=rumLink;
+                        break;
+                    case "Silk":
+                        picture=silkLink;
+                        break;
+                    case "Spices":
+                        picture=spicesLink;
+                        break;
+                    case "Sugarcane":
+                        picture=sugarcaneLink;
+                        break;
+                    case "Tea":
+                        picture=teaLink;
+                        break;
+                    case "Tobacco":
+                        picture=tobaccoLink;
+                        break;
+                    case "Wood":
+                        picture=woodLink;
+                        break;
+                    case "Chain":
+                        picture=chainLink;
+                        break;
+                    case "Cannonball":
+                        picture=cannonballLink;
+                        break;
+                    case "Buckshot":
+                        picture=buckshotLink;
+                        break;
+                    case "Kulevrin":
+                        picture=kulevrinLink;
+                        break;
+                    case "Bombard":
+                        picture=bombardLink;
+                        break;
+                    case "Mortar":
+                        picture=mortarLink;
+                        break;
+                    case "T_Mast1":
+                        picture=mast1Link;
+                        break;
+                    case "T_Mast2":
+                        picture=mast2Link;
+                        break;
+                    case "T_Mast3":
+                        picture=mast3Link;
+                        break;
+                    case "T_Mast4":
+                        picture=mast4Link;
+                        break;
+                    case "T_Mast5":
+                        picture=mast5Link;
+                        break;
+                    default:
+                        picture=mast1Link;
+                }
+                trHTML += "<tr><td>"
+                    + "<img width=\"40\" height=\"40\" src="
+                    + picture+ "/>" + "</td><td>"
+                    + item.name +"<br/>"+item.description+"</td><td>"
+                    + item.salePrice + "</td><td>"
+                    + item.quantity + "</td><td>"
+                    + "<button type=\"button\" class=\"btn saleButton\" id="
+                    + item.goodsId +">Sell</button>" + "</td></tr>";
+            }
+        });
+        $("#saleTable").html(trHTML);
+    });
+});
+
+$(document).ready(function () {
+    $('#saleTable').on('click', '.saleButton', function () {
+        var saleTemp=this.id;
+        updatePlayerStock();
+        $.each(saleJson,function(i,item){
+            if(item.goodsId==saleTemp){
+                saleObject=item;
+            }
+        });
+        var mHead="Sell: "+saleObject.name;
+        $("#saleModal").modal();
+        $(".modal-title").html(mHead);
+        $("#oneSaleCount").html(saleObject.salePrice);
+        if(buyObject.quantity>0){
+            $("#modalSaleQuantity").val(1);
+        }
+        else{
+            $("#modalSaleQuantity").val(0);
+        }
+        $("#modalSaleQuantity").prop('max',saleObject.quantity);
+        $("#allSaleCount").html(saleObject.salePrice);
+    });
+});
+
+$(document).ready(function () {
+    $('.modal-body #modalSaleQuantity').bind('input', function(){
+        var total = $(this).val()*$("#oneSaleCount").html();
+        $("#allSaleCount").html(total);
+    });
+});

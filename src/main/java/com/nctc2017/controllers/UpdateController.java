@@ -4,6 +4,7 @@ import com.nctc2017.bean.PlayerUserDetails;
 import com.nctc2017.dao.ScoreDao;
 import com.nctc2017.services.LevelUpService;
 import com.nctc2017.services.MoneyService;
+import com.nctc2017.services.ScoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +24,8 @@ public class UpdateController {
 
     @Autowired
     private LevelUpService lvlUpService;
+    @Autowired
+    private ScoreService scoreService;
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/update", method = RequestMethod.GET)
@@ -30,8 +33,12 @@ public class UpdateController {
         ModelAndView model = new ModelAndView();
         model.setViewName("UpdateView");
         BigInteger playerId = userDetails.getPlayerId();
-        int level = lvlUpService.getCurrentLevel(playerId);
-        model.addObject("level", level);
+        int nextImprove = lvlUpService.getNextLevel(playerId);
+        int lvl = lvlUpService.getCurrentLevel(playerId);
+        int maxLvl = scoreService.getMaxLvl();
+        model.addObject("lvl", lvl);
+        model.addObject("nextImprove", nextImprove);
+        model.addObject("maxLvl", maxLvl);
         return model;
     }
 
