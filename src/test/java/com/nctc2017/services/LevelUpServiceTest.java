@@ -34,6 +34,9 @@ public class LevelUpServiceTest {
 
     @InjectMocks
     private LevelUpService levelUpService;
+    
+    @Mock
+    private ScoreService score;
 
     @BeforeClass
     public static void createPlayerSteve() {
@@ -50,14 +53,14 @@ public class LevelUpServiceTest {
 
     @Before
     public void initMocks() {
-        levelUpService = (LevelUpService)this.context.getBean("levelUpServicePrototype");
         MockitoAnnotations.initMocks(this);
 
         when(playerDao.getPlayerLevel(steve.getPlayerId())).thenReturn(10).thenReturn(10).thenReturn(11);
         when(playerDao.getPlayerPoints(steve.getPlayerId())).thenReturn(200).thenReturn(61);
         when(playerDao.getCurrentPassiveIncome(steve.getPlayerId())).thenReturn(100).thenReturn(150);
         when(playerDao.getCurrentMaxShips(steve.getPlayerId())).thenReturn(3).thenReturn(4);
-
+        when(score.getMaxLvl()).thenReturn(61);
+        
         doNothing().when(playerDao).updatePoints(steve.getPlayerId(),200);
         doNothing().when(playerDao).updateLevel(steve.getPlayerId(),10);
         doNothing().when(playerDao).updatePassiveIncome(steve.getPlayerId(),200);

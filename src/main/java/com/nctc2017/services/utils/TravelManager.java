@@ -322,11 +322,11 @@ public class TravelManager {
                 GregorianCalendar clock = new GregorianCalendar();
                 long now = clock.getTimeInMillis();
                 
-                Iterator<Entry<BigInteger, TravelBook>> mapInerator = journals.entrySet().iterator();
+                Iterator<Entry<BigInteger, TravelBook>> mapIterator = journals.entrySet().iterator();
                 Map.Entry<BigInteger, TravelBook> player;
                 
-                while (mapInerator.hasNext()) {
-                    player = mapInerator.next();
+                while (mapIterator.hasNext()) {
+                    player = mapIterator.next();
                     TravelBook travelBook = player.getValue();
                     long timeToLeft = travelBook.getTime();
                     if (now >= timeToLeft) {
@@ -335,7 +335,7 @@ public class TravelManager {
                         if (enemyId != null) {
                             new Thread(new EnemyJournalFixTask(enemyId, player.getKey())).start();
                         }
-                        mapInerator.remove();
+                        mapIterator.remove();
                     }
                 }
                 try {

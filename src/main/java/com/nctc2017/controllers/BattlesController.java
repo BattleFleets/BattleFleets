@@ -3,7 +3,6 @@ package com.nctc2017.controllers;
 
 import java.math.BigInteger;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,36 +23,46 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nctc2017.bean.PlayerUserDetails;
 import com.nctc2017.bean.Ship;
-import com.nctc2017.dao.PlayerDao;
-import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
-import com.nctc2017.exception.DeadEndException;
 import com.nctc2017.services.BattleEndingService;
 import com.nctc2017.services.BattlePreparationService;
 import com.nctc2017.services.BattlePreparationService.ShipWrapper;
 import com.nctc2017.services.BattleService;
-import com.nctc2017.services.LevelUpService;
-import com.nctc2017.services.utils.BattleEndVisitor;
+import com.nctc2017.services.utils.endVisitorImpl.BoardingDefaultBattleEnd;
+import com.nctc2017.services.utils.endVisitorImpl.DestroyDefaultBattleEnd;
+import com.nctc2017.services.utils.endVisitorImpl.EscapeDefaultBattleEnd;
+import com.nctc2017.services.utils.endVisitorImpl.PayoffDefaultBattleEnd;
+import com.nctc2017.services.utils.endVisitorImpl.SurrenderDefaultBattleEnd;
 
 @Controller
 public class BattlesController {
     private static final int checkingCounter = 5; 
     private static final int checkingInterval = 3000;
     private static final Logger LOG = Logger.getLogger(BattlesController.class);
+    
+    @Autowired
+    protected SurrenderDefaultBattleEnd surrenderDefaultBattleEnd;
+    @Autowired
+    protected BoardingDefaultBattleEnd boardingDefaultBattleEnd;
+    @Autowired
+    protected DestroyDefaultBattleEnd destroyDefaultBattleEnd;
+    @Autowired
+    protected PayoffDefaultBattleEnd payoffDefaultBattleEnd;
+    @Autowired
+    protected EscapeDefaultBattleEnd escapeDefaultBattleEnd;
+    
+    
     @Autowired
     private BattlePreparationService prepService;
     @Autowired
     private BattleService battleService;
     @Autowired
     private BattleEndingService battleEndServ;
-    @Autowired
-    private LevelUpService levelUp;
     
     @Secured("ROLE_USER")
     @RequestMapping(value = "/battle_preparing", method = RequestMethod.GET)
@@ -90,7 +98,7 @@ public class BattlesController {
     public Map<String, Boolean> escape(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException, SQLException {
         BigInteger playerId = userDetails.getPlayerId();
         LOG.debug("Player_" + playerId + " escape from battle request. ");
-        boolean success = battleEndServ.escapeBattleLocation(playerId, new DefaultEscapeBattleEnd());
+        boolean success = battleEndServ.escapeBattleLocation(playerId, escapeDefaultBattleEnd);
         return Collections.singletonMap("success", success);
     }
 
@@ -164,7 +172,7 @@ public class BattlesController {
         BigInteger playerId  = userDetails.getPlayerId();
         LOG.debug("Player_" + playerId + " fire request with convergace dist: " + decrease);
         battleService.setConvergaceOfDist(playerId, decrease);
-        battleService.calculateDamage(ammoCannon2, playerId, new DefaultDestroyBattleEnd());
+        battleService.calculateDamage(ammoCannon2, playerId, destroyDefaultBattleEnd);
     }
 
     @Secured("ROLE_USER")
@@ -194,20 +202,22 @@ public class BattlesController {
                 BattleService.ShipWrapper playerShip = battleService.getShipInBattle(playerId);
                 Ship enemyShip = battleService.getEnemyShipInBattle(playerId);
                 
-                Map<String, Object> shipMap = new HashMap<>();
-                shipMap.put("enemy_ship", enemyShip);
-                shipMap.put("player_ship", playerShip);
+                Map<String, Object> infoMap = new HashMap<>();
+                infoMap.put("enemy_ship", enemyShip);
+                infoMap.put("player_ship", playerShip);
                 int distance = battleService.getDistance(playerId);
-                shipMap.put("distance", distance);
+                infoMap.put("distance", distance);
                     
-                shipMap.put("madeStep", battleService.wasPalayerMadeStep(playerId));
+                infoMap.put("madeStep", battleService.wasPalayerMadeStep(playerId));
                 
                 boolean escapeAvaliable = battleEndServ.isBattleLocationEscapeAvailable(playerId);
-                shipMap.put("escape_avaliable", escapeAvaliable);
+                infoMap.put("escape_avaliable", escapeAvaliable);
                 
-                shipMap.put("try_later", false);
+                infoMap.put("try_later", false);
+                
+                infoMap.put("auto_step_time", battleService.getAutoStepTime(playerId));
                 ObjectMapper mapper = new ObjectMapper();
-                String jsonShips = mapper.writeValueAsString(shipMap);
+                String jsonShips = mapper.writeValueAsString(infoMap);
                 LOG.debug("Player_" + playerId + " ship info will return");
                 
                 return ResponseEntity.ok(jsonShips);
@@ -230,16 +240,8 @@ public class BattlesController {
     public void boarding(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException, SQLException {
         BigInteger playerId  = userDetails.getPlayerId();
         LOG.debug("Player_" + playerId + " boarding request ");
-        BigInteger winnerId = battleService.boarding(playerId, new DefaultBoardingBattleEnd());
+        BigInteger winnerId = battleService.boarding(playerId, boardingDefaultBattleEnd);
 
-    }
-
-    public void getResource(int id, int idHash) {
-        // TODO implement here  
-    }
-
-    public void getMoney(int id, int idHash) {
-        // TODO implement here 
     }
     
     @Secured("ROLE_USER")
@@ -308,7 +310,7 @@ public class BattlesController {
     @ResponseBody
     public Map<String, Boolean> payoff(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException {
         BigInteger playerId = userDetails.getPlayerId();
-        boolean success = battleEndServ.payoff(playerId, new DefaultPayoffBattleEnd());
+        boolean success = battleEndServ.payoff(playerId, payoffDefaultBattleEnd);
         return Collections.singletonMap("success", success);
     }
 
@@ -318,7 +320,7 @@ public class BattlesController {
     @ResponseBody
     public Map<String, Boolean> surrender(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException, SQLException {
         BigInteger playerId = userDetails.getPlayerId();
-        battleEndServ.surrender(playerId, new DefaultSurrenderBattleEnd());
+        battleEndServ.surrender(playerId, surrenderDefaultBattleEnd);
         return Collections.singletonMap("success", true);
     }
     
@@ -329,69 +331,6 @@ public class BattlesController {
         model.addObject("reason", ex.getMessage());
 
         return model;
-    }
-    
-    private class DefaultDestroyBattleEnd implements BattleEndVisitor {
-
-        @Override
-        public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
-                BigInteger winnerId, BigInteger loserId) {
-            try {
-                battleEndServ.passDestroyGoodsToWinner(winnerShipId, loserShipId);
-            } catch (SQLException e) {
-                LOG.fatal("Unexpected error when passing goods at the end of battle ", e);
-                return;
-            }
-            battleEndServ.destroyShip(loserShipId);
-        }
-    }
-    
-    private class DefaultBoardingBattleEnd implements BattleEndVisitor {
-
-        @Override
-        public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
-                BigInteger winnerId, BigInteger loserId) {
-            try {
-                battleEndServ.passCargoToWinnerAfterBoarding(winnerShipId, loserShipId);
-            } catch (SQLException e) {
-                LOG.fatal("Unexpected error when passing goods at the end of battle ", e);
-                return;
-            }
-        }
-    }
-    
-    private class DefaultSurrenderBattleEnd implements BattleEndVisitor {
-
-        @Override
-        public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
-                BigInteger winnerId, BigInteger loserId) {
-            LOG.debug("Player_" + loserId + " pass goods to winner Player_" + winnerId + " ship because surrendered");
-            try {
-                battleEndServ.passSurrenderGoodsToWinner(winnerShipId, loserShipId);
-            } catch (SQLException e) {
-                LOG.fatal("Unexpected error when passing goods at the end of battle ", e);
-                return;
-            }
-        }
-    }
-    
-    private class DefaultEscapeBattleEnd implements BattleEndVisitor {
-
-        @Override
-        public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
-                BigInteger winnerId, BigInteger loserId) {
-            LOG.debug("Player_" + winnerId + " escaped");
-
-        }
-    }
-    
-    private class DefaultPayoffBattleEnd implements BattleEndVisitor {
-
-        @Override
-        public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
-                BigInteger winnerId, BigInteger loserId) {
-            LOG.debug("Player_" + loserId + " pass money to winner Player_" + winnerId);
-        }
     }
 
 }

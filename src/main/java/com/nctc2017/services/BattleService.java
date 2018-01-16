@@ -19,16 +19,14 @@ import com.nctc2017.dao.ExecutorDao;
 import com.nctc2017.dao.HoldDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
-import com.nctc2017.dao.impl.ShipDaoImpl;
 import com.nctc2017.exception.BattleEndException;
-import com.nctc2017.exception.DeadEndException;
 import com.nctc2017.services.utils.BattleEndVisitor;
 import com.nctc2017.services.utils.BattleManager;
 
 @Service
 @Transactional
 public class BattleService {
-    private static final Logger LOG = Logger.getLogger(ShipDaoImpl.class);
+    private static final Logger LOG = Logger.getLogger(BattleService.class);
     private static final int RAPAIR_BONUS = 1;
     private static final String LOSE_MESSAGE_DESTROY = "Your ship destroyed, your crew is feeding the fish";
     private static final String WIN_MESSAGE_DESTROY = "Enemy ship destroyed, you found some useful cargo among the wreckage.";
@@ -53,7 +51,7 @@ public class BattleService {
     private HoldDao holdDao;
     
     private Random random = new Random(System.currentTimeMillis());
-
+    
     public void calculateDamage(int[][] ammoCannon, BigInteger playerId, BattleEndVisitor visitor) 
             throws SQLException, BattleEndException {
         
@@ -63,6 +61,8 @@ public class BattleService {
             battle.setAmmoCannon(playerId, ammoCannon);
             battle.makeStep(playerId);
             LOG.debug("Player_" + playerId + " Made step");
+            
+            battles.clearAutoStepTime(playerId);
             
             if (battle.wasEnemyMadeStep(playerId)) {
                 LOG.debug("Player_" + playerId + " Enemy made step too");
@@ -109,6 +109,9 @@ public class BattleService {
                     visitor.endCaseVisit(playerDao, shipDao, enemyShipId, plyerShipId, enemyId, playerId);
                     battle.setWinner(enemyId, WIN_MESSAGE_DESTROY, LOSE_MESSAGE_DESTROY);
                 } else {
+                    
+                    battles.setUpAutoStepTime(playerId, enemyId);
+                    
                     battle.resetSteps(playerId);
                     LOG.debug("Player_" + playerId + " reset steps ");
                     return;
@@ -175,6 +178,10 @@ public class BattleService {
 
     public BigInteger boarding(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException, SQLException {
         Battle battle = battles.getBattle(playerId);
+        BigInteger enemyId = battles.getEnemyId(playerId); 
+        
+        battles.clearAutoStepTime(playerId, enemyId);
+        
         BigInteger winnerId;
         synchronized(battle) {
             BigInteger enemyShipId = battle.getEnemyShipId(playerId);
@@ -201,7 +208,6 @@ public class BattleService {
             BigInteger loserId;
             BigInteger shipWiner;
             BigInteger shipLoser;
-            BigInteger enemyId = battles.getEnemyId(playerId); 
             int winerCrew;
             int loserCrew;
             
@@ -249,7 +255,8 @@ public class BattleService {
     
     public boolean isBattleStart(BigInteger playerId) throws BattleEndException {
         Battle battle = battles.getBattle(playerId); 
-        return battle.isParticipantsReady(playerId);
+        boolean ready =  battle.isParticipantsReady(playerId);
+        return ready;
     }
 
     public ShipWrapper getShipInBattle(BigInteger playerId) throws BattleEndException {
@@ -277,6 +284,10 @@ public class BattleService {
         return shipDao.findShip(enemyShipId);
     }
     
+    public int getAutoStepTime(BigInteger playerId) {
+        return battles.getAutoStepTime(playerId);
+    }
+    
     public class ShipWrapper {
         private Ship ship;
         private Map<String, String> cannons;
@@ -300,4 +311,5 @@ public class BattleService {
         }
         
     }
+    
 }

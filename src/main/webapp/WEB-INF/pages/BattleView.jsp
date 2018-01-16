@@ -189,6 +189,33 @@
         }, 2000);
     }
     
+    var auto_step;
+    var $surrender_time ;
+    function autoStepTimer() {
+    	auto_step = auto_step - 1;
+    	timeUpdate();
+        if (auto_step == 0) {
+        	console.log("Surrender timer stop");
+            clearInterval(timerId);
+            $surrender_time.html("Timeout!");
+        }
+    };
+    
+    function timeUpdate() {
+    	var sec = auto_step % 60;
+    	var min = auto_step / 60 ^ 0;
+    	$surrender_time.html(min + ":" + (sec < 10 ? "0" + sec : sec));
+    }
+    
+    var timerId;
+    function autoStepTask() {
+        clearInterval(timerId);
+    	console.log("Surrender timer start ");
+    	timerId = setInterval(function() {
+    		autoStepTimer();
+        }, 1000);
+    };
+    
     function infoTabUpdate(forcibly_) {
     	clearInterval(fireResultId);
     	console.log("request for fire result");
@@ -199,11 +226,19 @@
         	
         	if (json_obj.end) {
         		dialogBattleEnd(json_obj.title, json_obj.wonText);
+        		return;
         	}
         	if (json_obj.try_later) {
         		fireResultTask();
         		return;
         	}
+        	
+        	$surrender_time = $("#surrender_time");
+        	auto_step = json_obj.auto_step_time;
+        	if (auto_step > 0) {
+            	autoStepTask();
+        	}
+        	timeUpdate();
         	
         	tabResultFilling(json_obj);
         	
@@ -301,6 +336,9 @@
     function fire() {
     	disable("fire");
     	disable("surrender");
+
+        clearInterval(timerId);
+        
     	$( "#warning_info" ).attr("hidden", "true");
     	console.log("fire start !!!");
     	animateWaitTask();
@@ -539,6 +577,11 @@
                     <button id="surrender" class="button_pick" style="vertical-align:middle" name="surrender" type="submit">
                         <span class="icon_surrender"></span><span style="float: none">Surrender</span>
                     </button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" valign="bottom" style="padding-bottom: 0; padding-top: 5%;">
+                    Auto surrender: <span id="surrender_time"></span>
                 </td>
             </tr>
         </table>
