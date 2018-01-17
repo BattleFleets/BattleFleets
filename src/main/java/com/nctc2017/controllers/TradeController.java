@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.math.BigInteger;
+
 @Controller
 public class TradeController {
 
@@ -38,13 +40,22 @@ public class TradeController {
     }
 
     @Secured("ROLE_USER")
-    public void buy(int id, int idHash, int goodsTemplateId, int quantity, int price) {
-        // TODO implement here
+    @RequestMapping(value = "/market/buy", method = RequestMethod.POST)
+    public String buy(@RequestParam(value = "goodsTemplateId") BigInteger goodsTemplateId,
+                    @RequestParam(value = "price") int price,
+                    @RequestParam(value = "quantity") int quantity,
+                    @AuthenticationPrincipal PlayerUserDetails userDetails) {
+        return tradeService.buy(userDetails.getPlayerId(),goodsTemplateId,price,quantity);
     }
 
     @Secured("ROLE_USER")
-    public void sell(int id, int idHash, int goodsTemplateId, int buyingCost, int quantity, int price) {
-        // TODO implement here
+    @RequestMapping(value = "/market/sell", method = RequestMethod.POST)
+    public String sell(@RequestParam(value = "goodsId") BigInteger goodsId,
+                     @RequestParam(value = "goodsTemplateId") BigInteger goodsTemplateId,
+                     @RequestParam(value = "price") int price,
+                     @RequestParam(value = "quantity") int quantity,
+                     @AuthenticationPrincipal PlayerUserDetails userDetails) {
+        return tradeService.sell(userDetails.getPlayerId(),goodsId, goodsTemplateId,price,quantity);
     }
 
     @Secured("ROLE_USER")
