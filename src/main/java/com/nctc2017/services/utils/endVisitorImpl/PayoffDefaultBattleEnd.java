@@ -16,7 +16,7 @@ public class PayoffDefaultBattleEnd implements BattleEndVisitor {
     @Override
     public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
             BigInteger winnerId, BigInteger loserId) {
-        LOG.debug("Player_" + loserId + " pass money to winner Player_" + winnerId);
+        LOG.debug("Pass money to winner Player_" + winnerId);
     }
 
 }

@@ -722,7 +722,7 @@ BEGIN
         /*DBMS_OUTPUT.PUT_LINE('DAMAGE: MAX ' || (all_damage * 0.8) 
                              || ' MIN ' || (all_damage * 0.4));*/
         enemy_crew := enemy_crew - 
-                ((all_damage * DBMS_RANDOM.VALUE(0.4, 0.8) / max_game_damage) * enemy_crew);
+                (( ( all_damage * DBMS_RANDOM.VALUE(0.4, 0.8) ) / max_game_damage) * enemy_crew);
         /*DBMS_OUTPUT.PUT_LINE('AFTER SHOT '|| i ||', ENEMY CREW: ' 
                               || enemy_crew || CHR(10));*/
     END LOOP;

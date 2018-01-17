@@ -115,18 +115,16 @@ public class BattleEndingService {
                 throw new BattleEndException("Battle already end. You automatically left.");
             prepService.stopAutoChooseTimer(enemyId);
             try {
-                int time = travelService.resumeRelocateTime(enemyId);
-                LOG.debug("Player_" + playerId + " continue travel for enemy player_" + enemyId
-                        + ". Time left: " + time);
+                LOG.debug("Continue travel for enemy_" + enemyId);
+                travelService.resumeRelocateTime(enemyId);
             } catch (PlayerNotFoundException e) {
-                LOG.warn("try resume relocate time for enemy fail when leaving battle field", e);
+                LOG.warn("Try resume relocate time for enemy fail when leaving battle field", e);
             }
         }
         prepService.stopAutoChooseTimer(playerId);
         try {
-            int time = travelService.resumeRelocateTime(playerId);
-            LOG.debug("Player_" + playerId + " continue travel"
-                    + ". Time left: " + time);
+            LOG.debug("Continue travel for himself");
+            travelService.resumeRelocateTime(playerId);
         } catch (PlayerNotFoundException e) {
             return true;
         }

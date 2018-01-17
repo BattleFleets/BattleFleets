@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -68,27 +69,31 @@ public class BattlesController {
     @RequestMapping(value = "/battle_preparing", method = RequestMethod.GET)
     public ModelAndView battleWelcome(@AuthenticationPrincipal PlayerUserDetails userDetails) {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " battle preparing request");
-
+        MDC.put("userName", userDetails.getUsername());
+        
+        LOG.debug("Request battle_preparing");
         List<Ship> enemyFleet;
         int time;
-        
         try {
-            if (battleService.isBattleStart(playerId)) {
-                return new ModelAndView("redirect:/battle");
+            try {
+                if (battleService.isBattleStart(playerId)) {
+                    return new ModelAndView("redirect:/battle");
+                }
+                enemyFleet = prepService.getEnemyShips(playerId);
+                time = prepService.autoChoiceShipTimer(playerId);
+            } catch (BattleEndException e) {
+                return new ModelAndView("redirect:/trip");
             }
-            enemyFleet = prepService.getEnemyShips(playerId);
-            time = prepService.autoChoiceShipTimer(playerId);
-        } catch (BattleEndException e) {
-            return new ModelAndView("redirect:/trip");
+            List<ShipWrapper> fleet = prepService.getShipsExtraInfo(playerId);
+            
+            ModelAndView model = new ModelAndView("BattlePreparingView");
+            model.addObject("fleet", fleet);
+            model.addObject("enemy_fleet", enemyFleet);
+            model.addObject("timer", time);
+            return model;
+        } finally {
+            MDC.remove("userName");
         }
-        List<ShipWrapper> fleet = prepService.getShipsExtraInfo(playerId);
-        
-        ModelAndView model = new ModelAndView("BattlePreparingView");
-        model.addObject("fleet", fleet);
-        model.addObject("enemy_fleet", enemyFleet);
-        model.addObject("timer", time);
-        return model;
     }
     
     @Secured("ROLE_USER")
@@ -97,9 +102,15 @@ public class BattlesController {
     @ResponseStatus(value = HttpStatus.OK)
     public Map<String, Boolean> escape(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException, SQLException {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " escape from battle request. ");
-        boolean success = battleEndServ.escapeBattleLocation(playerId, escapeDefaultBattleEnd);
-        return Collections.singletonMap("success", success);
+        MDC.put("userName", userDetails.getUsername());
+        
+        LOG.debug("Request. Escape from battle");
+        try {
+            boolean success = battleEndServ.escapeBattleLocation(playerId, escapeDefaultBattleEnd);
+            return Collections.singletonMap("success", success);
+        } finally {
+            MDC.remove("userName");
+        }
     }
 
     @Secured("ROLE_USER")
@@ -110,10 +121,16 @@ public class BattlesController {
             @AuthenticationPrincipal PlayerUserDetails userDetails,
             @RequestParam(value = "ship_id", required = true) String shipId) throws BattleEndException {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " Ship picked request Ship: " + shipId);
-        prepService.chooseShip(playerId, new BigInteger(shipId));
-        prepService.setReady(playerId);
-        return "Wait for enemy pick...";
+        MDC.put("userName", userDetails.getUsername());
+        
+        LOG.debug("Ship picked request. Ship: " + shipId);
+        try {
+            prepService.chooseShip(playerId, new BigInteger(shipId));
+            prepService.setReady(playerId);
+            return "Wait for enemy pick...";
+        } finally {
+            MDC.remove("userName");
+        }
     }
 
     @Secured("ROLE_USER")
@@ -124,15 +141,21 @@ public class BattlesController {
             @AuthenticationPrincipal PlayerUserDetails userDetails) 
                     throws BattleEndException, InterruptedException {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " wait for enemy ready request");
-        boolean ready = prepService.waitForEnemyReady(playerId);
-        for (int i = 0; i < checkingCounter; i++) {
-            Thread.sleep(checkingInterval);
-            ready = prepService.waitForEnemyReady(playerId);
-            if (ready) break;
-        }
+        MDC.put("userName", userDetails.getUsername());
         
-        return String.valueOf(ready);
+        LOG.debug("Wait for enemy ready request");
+        try {
+            boolean ready = prepService.waitForEnemyReady(playerId);
+            for (int i = 0; i < checkingCounter; i++) {
+                Thread.sleep(checkingInterval);
+                ready = prepService.waitForEnemyReady(playerId);
+                if (ready) break;
+            }
+            
+            return String.valueOf(ready);
+        } finally {
+            MDC.remove("userName");
+        }
     }
 
     @Secured("ROLE_USER")
@@ -140,14 +163,20 @@ public class BattlesController {
     public ModelAndView getBattle(
             @AuthenticationPrincipal PlayerUserDetails userDetails) {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " get battle request");
-        ModelAndView model = new ModelAndView("BattleView");
-        int payoff = battleEndServ.getPayOffPrice(playerId);
-        boolean payoffAvailable = battleEndServ.isPayOffAvailable(payoff, playerId);
-        model.addObject("payoff", payoff);
-        model.addObject("payoffAvailable", payoffAvailable);
-        model.setStatus(HttpStatus.OK);
-        return model;
+        MDC.put("userName", userDetails.getUsername());
+        
+        LOG.debug("Request. Get battle page");
+        try {
+            ModelAndView model = new ModelAndView("BattleView");
+            int payoff = battleEndServ.getPayOffPrice(playerId);
+            boolean payoffAvailable = battleEndServ.isPayOffAvailable(payoff, playerId);
+            model.addObject("payoff", payoff);
+            model.addObject("payoffAvailable", payoffAvailable);
+            model.setStatus(HttpStatus.OK);
+            return model;
+        } finally {
+            MDC.remove("userName");
+        }
     }
     
     @Secured("ROLE_USER")
@@ -170,9 +199,15 @@ public class BattlesController {
         }
 
         BigInteger playerId  = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " fire request with convergace dist: " + decrease);
-        battleService.setConvergaceOfDist(playerId, decrease);
-        battleService.calculateDamage(ammoCannon2, playerId, destroyDefaultBattleEnd);
+        MDC.put("userName", userDetails.getUsername());
+        
+        LOG.debug("Fire request with convergace dist: " + decrease);
+        try {
+            battleService.setConvergaceOfDist(playerId, decrease);
+            battleService.calculateDamage(ammoCannon2, playerId, destroyDefaultBattleEnd);
+        } finally {
+            MDC.remove("userName");
+        }
     }
 
     @Secured("ROLE_USER")
@@ -184,53 +219,59 @@ public class BattlesController {
             @RequestParam(value = "forcibly", required = false) Boolean forcibly) 
                     throws JsonProcessingException, InterruptedException, BattleEndException {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " request for getting fire result");
-        if (forcibly == null) forcibly = false;
-        for (int i = 0; i < checkingCounter; i++) {
-            boolean avaliable = battleService.isStepResultAvalible(playerId);
-            LOG.debug("Player_" + playerId + " step result avaliable: " + avaliable);
-
-            if (battleEndServ.isBattleFinish(playerId)) {
-                LOG.debug("Player_" + playerId + " battle end news will return ");
-                HttpHeaders headers = new HttpHeaders();
-                headers.add("Location", "/is_battle_end");    
-                return new ResponseEntity<String>(headers,HttpStatus.SEE_OTHER);
+        MDC.put("userName", userDetails.getUsername());
+        
+        LOG.debug("Request for getting fire result");
+        try {
+            if (forcibly == null) forcibly = false;
+            for (int i = 0; i < checkingCounter; i++) {
+                boolean avaliable = battleService.isStepResultAvalible(playerId);
+                LOG.debug("Step result avaliable: " + avaliable);
+    
+                if (battleEndServ.isBattleFinish(playerId)) {
+                    LOG.debug("Battle end news will return ");
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.add("Location", "/is_battle_end");    
+                    return new ResponseEntity<String>(headers,HttpStatus.SEE_OTHER);
+                }
+                
+                if (avaliable || forcibly) {
+                    
+                    BattleService.ShipWrapper playerShip = battleService.getShipInBattle(playerId);
+                    Ship enemyShip = battleService.getEnemyShipInBattle(playerId);
+                    
+                    Map<String, Object> infoMap = new HashMap<>();
+                    infoMap.put("enemy_ship", enemyShip);
+                    infoMap.put("player_ship", playerShip);
+                    int distance = battleService.getDistance(playerId);
+                    infoMap.put("distance", distance);
+                        
+                    infoMap.put("madeStep", battleService.wasPalayerMadeStep(playerId));
+                    
+                    boolean escapeAvaliable = battleEndServ.isBattleLocationEscapeAvailable(playerId);
+                    infoMap.put("escape_avaliable", escapeAvaliable);
+                    
+                    infoMap.put("try_later", false);
+                    
+                    infoMap.put("auto_step_time", battleService.getAutoStepTime(playerId));
+                    ObjectMapper mapper = new ObjectMapper();
+                    String jsonShips = mapper.writeValueAsString(infoMap);
+                    LOG.debug("Ship info will return");
+                    
+                    return ResponseEntity.ok(jsonShips);
+                } else {
+                    Thread.sleep(checkingInterval);
+                }
             }
             
-            if (avaliable || forcibly) {
-                
-                BattleService.ShipWrapper playerShip = battleService.getShipInBattle(playerId);
-                Ship enemyShip = battleService.getEnemyShipInBattle(playerId);
-                
-                Map<String, Object> infoMap = new HashMap<>();
-                infoMap.put("enemy_ship", enemyShip);
-                infoMap.put("player_ship", playerShip);
-                int distance = battleService.getDistance(playerId);
-                infoMap.put("distance", distance);
-                    
-                infoMap.put("madeStep", battleService.wasPalayerMadeStep(playerId));
-                
-                boolean escapeAvaliable = battleEndServ.isBattleLocationEscapeAvailable(playerId);
-                infoMap.put("escape_avaliable", escapeAvaliable);
-                
-                infoMap.put("try_later", false);
-                
-                infoMap.put("auto_step_time", battleService.getAutoStepTime(playerId));
-                ObjectMapper mapper = new ObjectMapper();
-                String jsonShips = mapper.writeValueAsString(infoMap);
-                LOG.debug("Player_" + playerId + " ship info will return");
-                
-                return ResponseEntity.ok(jsonShips);
-            } else {
-                Thread.sleep(checkingInterval);
-            }
+            Map<String, Object> shipMap = new HashMap<>();
+            shipMap.put("try_later", true);
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonShips = mapper.writeValueAsString(shipMap);
+            return ResponseEntity.ok(jsonShips);
+        } finally {
+            MDC.remove("userName");
         }
-        
-        Map<String, Object> shipMap = new HashMap<>();
-        shipMap.put("try_later", true);
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonShips = mapper.writeValueAsString(shipMap);
-        return ResponseEntity.ok(jsonShips);
     }
 
     @Secured("ROLE_USER")
@@ -239,9 +280,14 @@ public class BattlesController {
     @ResponseBody
     public void boarding(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException, SQLException {
         BigInteger playerId  = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " boarding request ");
-        BigInteger winnerId = battleService.boarding(playerId, boardingDefaultBattleEnd);
-
+        MDC.put("userName", userDetails.getUsername());
+        
+        LOG.debug("Request boarding");
+        try {
+            battleService.boarding(playerId, boardingDefaultBattleEnd);
+        } finally {
+            MDC.remove("userName");
+        }
     }
     
     @Secured("ROLE_USER")
@@ -250,10 +296,16 @@ public class BattlesController {
     @ResponseBody
     public String isLeaveBattleFieldAvailable(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " exit avaliable request");
-        boolean exit = battleEndServ.isLeaveBattleFieldAvailable(playerId);
-        LOG.debug("Player_" + playerId + " exit avaliable: " + exit);
-        return String.valueOf(exit);
+        MDC.put("userName", userDetails.getUsername());
+        
+        try {
+            LOG.debug("Request is_exit_available");
+            boolean exit = battleEndServ.isLeaveBattleFieldAvailable(playerId);
+            LOG.debug("Exit avaliable: " + exit);
+            return String.valueOf(exit);
+        } finally {
+            MDC.remove("userName");
+        }
     }
     
     @Secured("ROLE_USER")
@@ -262,10 +314,16 @@ public class BattlesController {
     @ResponseBody
     public String leaveBattleField(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " exit battlefield request");
-        boolean exit = battleEndServ.leaveBattleField(playerId);
-        LOG.debug("Player_" + playerId + " exit battlefield : " + exit);
-        return String.valueOf(exit);
+        MDC.put("userName", userDetails.getUsername());
+        
+        try {
+            LOG.debug("Exit battlefield request");
+            boolean exit = battleEndServ.leaveBattleField(playerId);
+            LOG.debug("Exit battlefield : " + exit);
+            return String.valueOf(exit);
+        } finally {
+            MDC.remove("userName");
+        }
     }
     
     @Secured("ROLE_USER")
@@ -274,10 +332,16 @@ public class BattlesController {
     @ResponseBody
     public String isEnemyLeaveBattleField(@AuthenticationPrincipal PlayerUserDetails userDetails) {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " is_enemy_leave_battlefield request");
-        boolean exit = battleEndServ.isEnemyLeaveBattlefield(playerId);
-        LOG.debug("Player_" + playerId + " exit battlefield : " + exit);
-        return String.valueOf(exit);
+        MDC.put("userName", userDetails.getUsername());
+        
+        try {
+            LOG.debug("Request is_enemy_leave_battlefield ");
+            boolean exit = battleEndServ.isEnemyLeaveBattlefield(playerId);
+            LOG.debug("Exit battlefield : " + exit);
+            return String.valueOf(exit);
+        } finally {
+            MDC.remove("userName");
+        }
     }
     
     @Secured("ROLE_USER")
@@ -286,22 +350,28 @@ public class BattlesController {
     @ResponseBody
     public ResponseEntity<String> isBattleEnd(@AuthenticationPrincipal PlayerUserDetails userDetails) throws JsonProcessingException, BattleEndException {
         BigInteger playerId = userDetails.getPlayerId();
-        boolean finish = battleEndServ.isBattleFinish(playerId);
-        Map<String, String> resp = new HashMap<>();
-        resp.put("end", String.valueOf(finish));
-        if (finish) {
-            if (battleEndServ.isPlayerWinner(playerId)) {
-                resp.put("title", String.valueOf("You Won!!!"));
-                resp.put("wonText", String.valueOf(battleEndServ.getWinnerMessage(playerId)));
-            } else {
-                resp.put("title", String.valueOf("You Lose :("));
-                resp.put("wonText", String.valueOf(battleEndServ.getWinnerMessage(playerId)));
-            }
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonShips = mapper.writeValueAsString(resp);
+        MDC.put("userName", userDetails.getUsername());
         
-        return ResponseEntity.ok(jsonShips);
+        try {
+            boolean finish = battleEndServ.isBattleFinish(playerId);
+            Map<String, String> resp = new HashMap<>();
+            resp.put("end", String.valueOf(finish));
+            if (finish) {
+                if (battleEndServ.isPlayerWinner(playerId)) {
+                    resp.put("title", String.valueOf("You Won!!!"));
+                    resp.put("wonText", String.valueOf(battleEndServ.getWinnerMessage(playerId)));
+                } else {
+                    resp.put("title", String.valueOf("You Lose :("));
+                    resp.put("wonText", String.valueOf(battleEndServ.getWinnerMessage(playerId)));
+                }
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonShips = mapper.writeValueAsString(resp);
+            
+            return ResponseEntity.ok(jsonShips);
+        } finally {
+            MDC.remove("userName");
+        }
     }
     
     @Secured("ROLE_USER")
@@ -310,8 +380,14 @@ public class BattlesController {
     @ResponseBody
     public Map<String, Boolean> payoff(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException {
         BigInteger playerId = userDetails.getPlayerId();
-        boolean success = battleEndServ.payoff(playerId, payoffDefaultBattleEnd);
-        return Collections.singletonMap("success", success);
+        MDC.put("userName", userDetails.getUsername());
+        
+        try {
+            boolean success = battleEndServ.payoff(playerId, payoffDefaultBattleEnd);
+            return Collections.singletonMap("success", success);
+        } finally {
+            MDC.remove("userName");
+        }
     }
 
     @Secured("ROLE_USER")
@@ -320,8 +396,14 @@ public class BattlesController {
     @ResponseBody
     public Map<String, Boolean> surrender(@AuthenticationPrincipal PlayerUserDetails userDetails) throws BattleEndException, SQLException {
         BigInteger playerId = userDetails.getPlayerId();
-        battleEndServ.surrender(playerId, surrenderDefaultBattleEnd);
-        return Collections.singletonMap("success", true);
+        MDC.put("userName", userDetails.getUsername());
+        
+        try {
+            battleEndServ.surrender(playerId, surrenderDefaultBattleEnd);
+            return Collections.singletonMap("success", true);
+        } finally {
+            MDC.remove("userName");
+        }
     }
     
     @ExceptionHandler(RuntimeException.class)
