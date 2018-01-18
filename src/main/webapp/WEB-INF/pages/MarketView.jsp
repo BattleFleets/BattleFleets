@@ -5,11 +5,11 @@
     <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/market.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="static/js/jquery.min.js"></script>
     <script src="static/js/market.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="static/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet">
+    <link href="static/bootstrap-3.3.7/css/bootstrap-theme.css" rel="stylesheet">
+    <script src="static/bootstrap-3.3.7/js/bootstrap.js"></script>
     <audio autoplay id="myaudio" onloadeddata="setHalfVolume()">
         <source src="static/audio/market.mp3" type="audio/mp3">
     </audio>
@@ -29,7 +29,7 @@
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&#x274C;</button>
+                <button type="button" class="close" data-dismiss="modal">&#x274E;</button>
                 <h4 class="modal-title modalText"></h4>
             </div>
             <div class="modal-body">
@@ -50,8 +50,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <p id="messageBuy"></p>
-                <button type="button" class="btn buyButton col-4">Buy</button>
+                <p id="messageBuy" class="pull-left"></p>
+                <button type="button" class="btn buyButton pull-right">Buy</button>
             </div>
         </div>
     </div>
@@ -84,8 +84,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <p id="messageSale"></p>
-                <button type="button" class="btn saleButton">Sell</button>
+                <p id="messageSale" class="pull-left"></p>
+                <button type="button" class="btn saleButton pull-right">Sell</button>
             </div>
         </div>
     </div>

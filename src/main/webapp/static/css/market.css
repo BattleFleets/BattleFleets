@@ -86,3 +86,8 @@ footer{
     font-weight:bold;
     color:black;
 }
+
+#messageSale,
+#messageBuy{
+    font-family: Arial, Helvetica, sans-serif;
+}
