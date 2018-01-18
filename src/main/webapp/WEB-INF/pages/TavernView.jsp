@@ -6,6 +6,11 @@
     <link href="static/css/tavern.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/jquery-ui.min.js"></script>
+    <link href="static/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet">
+    <link href="static/bootstrap-3.3.7/css/bootstrap-theme.css" rel="stylesheet">
+    <script src="static/bootstrap-3.3.7/js/bootstrap.js"></script>
 </head>
 
 
