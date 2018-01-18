@@ -115,10 +115,13 @@ public class BattleManager {
     }
     
     public void setUpAutoStepTime(BigInteger playerId, BigInteger enemyId) {
+        LOG.debug("Auto Step need set up");
+        if (autoStep.containsKey(playerId) || autoStep.containsKey(enemyId)) return;
+        LOG.debug("     --==Write time " + AUTO_STEP_TIME + " to auto step==-- ");
+        
         Long now = new GregorianCalendar().getTimeInMillis();
         long timeInFuture = now + AUTO_STEP_TIME;
-        LOG.debug("     --==Write time " + AUTO_STEP_TIME + " to auto step==-- ");
-        if (autoStep.containsKey(playerId) || autoStep.containsKey(enemyId)) return;
+
         autoStep.put(playerId, timeInFuture);
         autoStep.put(enemyId, timeInFuture);
     }

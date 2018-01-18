@@ -117,9 +117,12 @@ public class TravelManager {
                     + timeToArrival/60000 + " min");
         }
         
-        timeToArrival = timeNow + minTime + rand.nextInt(maxTime - minTime);
+        long timeLeft = minTime + rand.nextInt(maxTime - minTime);
+        timeToArrival = timeNow + timeLeft;
         cityTime = new TravelBook(city, timeToArrival, lvl);
         journals.put(playerId, cityTime);
+        if (LOG.isDebugEnabled())
+            LOG.debug("Journey started. Time Left: " + timeLeft);
     }
 
     public int getRelocateTime(BigInteger playerId) {
@@ -176,7 +179,7 @@ public class TravelManager {
         playerBook.resume();
         GregorianCalendar clock = new GregorianCalendar();
         long now = clock.getTimeInMillis();
-        return (int) (now - playerBook.getTime());
+        return (int) (playerBook.getTime() - now);
     }
 
     public BigInteger getRelocationCity(BigInteger playerId) throws PlayerNotFoundException {
@@ -208,12 +211,18 @@ public class TravelManager {
     }
     
     private TravelBook getPlayersJournal(BigInteger playerId) throws PlayerNotFoundException {
-        if (journals.get(playerId) == null) {
+        TravelBook travelBook = journals.get(playerId);
+        if (travelBook == null) {
             PlayerNotFoundException ex = new PlayerNotFoundException("May be player already arrived");
             LOG.warn("Player not found in trip", ex);
             throw ex;
         }
-        return journals.get(playerId);
+        return travelBook;
+    }
+
+    public void stopRelocationTimer(BigInteger playerId) throws PlayerNotFoundException {
+        TravelBook travelBook = getPlayersJournal(playerId);
+        travelBook.pause();
     }
     
     private class TravelBook {
@@ -263,6 +272,8 @@ public class TravelManager {
             this.pause = true;
             GregorianCalendar clock = new GregorianCalendar();
             pauseTime = clock.getTimeInMillis();
+            if(LOG.isDebugEnabled())
+                LOG.debug("Pause when time left: " + (arrivalTime - pauseTime));
         }
         
         public void resume() {
@@ -272,7 +283,10 @@ public class TravelManager {
             }
             GregorianCalendar clock = new GregorianCalendar();
             long now = clock.getTimeInMillis();
-            arrivalTime = now + (arrivalTime - pauseTime);
+            long timeLeft = arrivalTime - pauseTime;
+            if(LOG.isDebugEnabled())
+                LOG.debug("Resume - time left: " + timeLeft);
+            arrivalTime = now + timeLeft;
             pauseTime = 0L;
             this.pause = false;
         }
