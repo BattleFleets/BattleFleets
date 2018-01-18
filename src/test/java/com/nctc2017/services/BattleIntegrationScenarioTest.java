@@ -237,7 +237,8 @@ public class BattleIntegrationScenarioTest {
         while(true) {
             steveShipBefore = shipDao.findShip(steveShipId);
             
-            battleService.decreaseOfDistance(nikId);
+            battleService.setConvergaceOfDist(nikId, true);
+            battleService.setConvergaceOfDist(steveId, true);
             
             battleService.calculateDamage(hullDamage, nikId, null);
             battleService.calculateDamage(mastAndCrewDamage, steveId, new DefaultDestroyBattleEnd());

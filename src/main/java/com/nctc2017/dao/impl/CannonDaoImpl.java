@@ -69,15 +69,13 @@ public class CannonDaoImpl implements CannonDao {
     }
 
     @Override
-    public int getDistance(int cannonId) {
-        // TODO implement here
-        return 0;
+    public int getDistance(@NotNull BigInteger cannonTemplateId) {
+        return queryExecutor.getAttrValue(cannonTemplateId, DatabaseAttribute.CANNON_DISTANCE, Integer.class);
     }
 
     @Override
-    public int getDamage(int cannonId) {
-        // TODO implement here
-        return 0;
+    public int getDamage(@NotNull BigInteger cannonTemplateId) {
+        return queryExecutor.getAttrValue(cannonTemplateId, DatabaseAttribute.CANNON_DAMAGE, Integer.class);
     }
 
     @Override

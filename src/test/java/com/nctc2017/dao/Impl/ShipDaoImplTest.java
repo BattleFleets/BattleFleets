@@ -66,7 +66,7 @@ public class ShipDaoImplTest {
 
 
         assertTrue(s.getMaxHealth() == s.getCurHealth());
-        assertTrue(s.getMaxCarryingLimit() == s.getCurCarryingLimit());
+        assertTrue(0 == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
         assertEquals(SHIP_TEMPALTE_CARAVELA_NAME, s.getTName());
@@ -82,7 +82,7 @@ public class ShipDaoImplTest {
 
 
         assertTrue(s.getMaxHealth() == s.getCurHealth());
-        assertTrue(s.getMaxCarryingLimit() == s.getCurCarryingLimit());
+        assertTrue(0 == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
 
@@ -98,7 +98,7 @@ public class ShipDaoImplTest {
 
 
         assertTrue(s.getMaxHealth() == s.getCurHealth());
-        assertTrue(s.getMaxCarryingLimit() == s.getCurCarryingLimit());
+        assertTrue(0 == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
         assertEquals(SHIP_TEMPALTE_GALION_NAME, s.getTName());
@@ -119,7 +119,7 @@ public class ShipDaoImplTest {
 
 
         assertTrue(s.getMaxHealth() == s.getCurHealth());
-        assertTrue(s.getMaxCarryingLimit() == s.getCurCarryingLimit());
+        assertTrue(0 == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
         assertEquals(SHIP_TEMPALTE_CLIPPER_NAME, s.getTName());
@@ -134,7 +134,7 @@ public class ShipDaoImplTest {
 
 
         assertTrue(s.getMaxHealth() == s.getCurHealth());
-        assertTrue(s.getMaxCarryingLimit() == s.getCurCarryingLimit());
+        assertTrue(0 == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
         assertEquals(SHIP_TEMPALTE_FREGATA_NAME, s.getTName());

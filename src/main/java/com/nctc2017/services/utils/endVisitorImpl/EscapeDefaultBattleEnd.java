@@ -17,7 +17,7 @@ public class EscapeDefaultBattleEnd implements BattleEndVisitor {
     public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
             BigInteger winnerId, BigInteger loserId) {
 
-        LOG.debug("Player_" + winnerId + " escaped");
+        LOG.debug("Escaped");
     }
 
 }

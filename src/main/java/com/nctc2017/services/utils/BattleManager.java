@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -76,7 +77,7 @@ public class BattleManager {
         Battle battle = battles.get(playerId);
         if (battle == null) {
             BattleEndException ex = new BattleEndException("Battle already end or wrong player id = " + playerId);
-            LOG.warn("Player " + playerId + " not found his battle", ex);
+            LOG.warn("Player not found his battle", ex);
             throw ex;
         }
         return battle;
@@ -116,7 +117,7 @@ public class BattleManager {
     public void setUpAutoStepTime(BigInteger playerId, BigInteger enemyId) {
         Long now = new GregorianCalendar().getTimeInMillis();
         long timeInFuture = now + AUTO_STEP_TIME;
-        LOG.debug("     --==Write time to auto step==-- " + timeInFuture);
+        LOG.debug("     --==Write time " + AUTO_STEP_TIME + " to auto step==-- ");
         if (autoStep.containsKey(playerId) || autoStep.containsKey(enemyId)) return;
         autoStep.put(playerId, timeInFuture);
         autoStep.put(enemyId, timeInFuture);
@@ -126,8 +127,10 @@ public class BattleManager {
 
         @Override
         public void run() {
+            MDC.put("userName", "AutoStepManager");
+            
             while (true) {
-                LOG.debug("AutoStepManager start");
+                
                 Long min = AUTO_STEP_TIME;
                 long buf;
                 Long now = new GregorianCalendar().getTimeInMillis();
@@ -149,11 +152,14 @@ public class BattleManager {
                 }
                 
                 try {
-                    LOG.debug("AutoStepManager sleep " + min + "ms");
+                    LOG.debug("Sleep " + min + "ms");
                     Thread.sleep(min);
                 } catch (InterruptedException e) {
-                    LOG.error("AutoStepManager was interapted", e);
+                    LOG.error("Was interapted", e);
+                    MDC.remove("userName");
+                    return;
                 }
+                LOG.debug("Awoke");
             }
         }
         

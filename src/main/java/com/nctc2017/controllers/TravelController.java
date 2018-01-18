@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,8 +29,8 @@ import com.nctc2017.services.TravelService;
 @Controller
 public class TravelController {
     private static final Logger LOG = Logger.getLogger(TravelController.class);
-    private static final int checkingCounter = 5; 
-    private static final int checkingInterval = 2000;
+    private static final int CHECKING_COUNTER = 5; 
+    private static final int CHECKING_INTERVAL = 2000;
         
     @Autowired
     private TravelService travelService;
@@ -58,19 +59,26 @@ public class TravelController {
     public ResponseEntity<String> isEnemyOnHorizon(@AuthenticationPrincipal PlayerUserDetails userDetails) 
             throws PlayerNotFoundException, InterruptedException {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " request isEnemyOnHorizon()");
-        if (travelService.isParticipated(playerId)) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-        boolean appeared = false;
-        for (int i = 0; i < checkingCounter; i++) {
-            appeared = travelService.isEnemyOnHorizon(playerId);
-            if (appeared) {
-                return ResponseEntity.ok(String.valueOf(appeared));
+        
+        MDC.put("userName", userDetails.getUsername());
+        
+        LOG.debug("Request isEnemyOnHorizon()");
+        try {
+            if (travelService.isParticipated(playerId)) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
-            Thread.sleep(checkingInterval);
+            
+            boolean appeared = false;
+            for (int i = 0; i < CHECKING_COUNTER; i++) {
+                appeared = travelService.isEnemyOnHorizon(playerId);
+                if (appeared) break;
+                Thread.sleep(CHECKING_INTERVAL);
+            }
+            
+            return ResponseEntity.ok(String.valueOf(appeared));
+        } finally {
+            MDC.remove("userName");
         }
-        return ResponseEntity.ok(String.valueOf(appeared));
     }
     
     @Secured("ROLE_USER")
@@ -81,8 +89,15 @@ public class TravelController {
             @RequestParam(value = "decision", required = false) String decision
             ) throws PlayerNotFoundException, BattleStartException {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " request for make decision() - " + decision);
-        travelService.confirmAttack(playerId, Boolean.valueOf(decision));
+        
+        MDC.put("userName", userDetails.getUsername());
+        LOG.debug("Request for make decision");
+        
+        try {
+            travelService.confirmAttack(playerId, Boolean.valueOf(decision));
+        } finally {
+            MDC.remove("userName");
+        }
     }
     
     @Secured("ROLE_USER")
@@ -91,16 +106,23 @@ public class TravelController {
     public String isBattleStart(@AuthenticationPrincipal PlayerUserDetails userDetails) 
             throws InterruptedException {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " request isBattleStart()");
-        boolean start = false;
-        for (int i = 0; i < checkingCounter; i++) {
-            start = travelService.isBattleStart(playerId);
-            if (start) {
-                return String.valueOf(start);
+        
+        MDC.put("userName", userDetails.getUsername());
+        LOG.debug("Request is_battle_start");
+        
+        try {
+            boolean start = false;
+            for (int i = 0; i < CHECKING_COUNTER; i++) {
+                start = travelService.isBattleStart(playerId);
+                if (start) {
+                    return String.valueOf(start);
+                }
+                Thread.sleep(CHECKING_INTERVAL);
             }
-            Thread.sleep(checkingInterval);
+            return String.valueOf(start);
+        } finally {
+            MDC.remove("userName");
         }
-        return String.valueOf(start);
     }
     
     @Secured("ROLE_USER")
@@ -111,25 +133,32 @@ public class TravelController {
         BigInteger cityId = new BigInteger(id);
         BigInteger playerId = userDetails.getPlayerId();
         ModelAndView model = new ModelAndView();
-        City currCity = travelService.getCurrentCity(playerId);
-        if (currCity.getCityId().equals(cityId)) {
-            model.setStatus(HttpStatus.LOCKED);
-            model.addObject("errorMes", "You already in " + currCity.getCityName() + ", Captain!");
-            model.addObject("errTitle", "You drunk!");
-        } else {
-            
-            try {
-                travelService.relocate(playerId, cityId);
-                
-            } catch (IllegalAccessError e) {
-                LOG.warn("Player try to relocate to another city while is already traveling."
-                        + " Player continue his last trip.");
-            }
-            model.setStatus(HttpStatus.OK);
-        }
-        model.setViewName("fragment/message");
         
-        return model;
+        MDC.put("userName", userDetails.getUsername());
+        
+        try {
+            City currCity = travelService.getCurrentCity(playerId);
+            if (currCity.getCityId().equals(cityId)) {
+                model.setStatus(HttpStatus.LOCKED);
+                model.addObject("errorMes", "You already in " + currCity.getCityName() + ", Captain!");
+                model.addObject("errTitle", "You drunk!");
+            } else {
+                
+                try {
+                    travelService.relocate(playerId, cityId);
+                    
+                } catch (IllegalAccessError e) {
+                    LOG.warn("Player try to relocate to another city while is already traveling."
+                            + " Player continue his last trip.");
+                }
+                model.setStatus(HttpStatus.OK);
+            }
+            model.setViewName("fragment/message");
+            
+            return model;
+        } finally {
+            MDC.remove("userName");
+        }
     }
     
     @Secured("ROLE_USER")
@@ -138,16 +167,22 @@ public class TravelController {
     public String isDecisionAccept(@AuthenticationPrincipal PlayerUserDetails userDetails) 
             throws InterruptedException, PlayerNotFoundException {
         BigInteger playerId = userDetails.getPlayerId();
-        LOG.debug("Player_" + playerId + " request isDecisionAccept()");
-        boolean accept = false; 
-        for (int i = 0; i < checkingCounter; i++) {
-            accept = travelService.isDecisionAccept(playerId);
-            if (accept) {
-                return String.valueOf(accept);
+        MDC.put("userName", userDetails.getUsername());
+        
+        LOG.debug("Request is_decision_accept");
+        try {
+            boolean accept = false; 
+            for (int i = 0; i < CHECKING_COUNTER; i++) {
+                accept = travelService.isDecisionAccept(playerId);
+                if (accept) {
+                    return String.valueOf(accept);
+                }
+                Thread.sleep(CHECKING_INTERVAL);
             }
-            Thread.sleep(checkingInterval);
+            return String.valueOf(accept);
+        } finally {
+            MDC.remove("userName");
         }
-        return String.valueOf(accept);
     }
     
     @Secured("ROLE_USER")
@@ -155,20 +190,30 @@ public class TravelController {
     public ModelAndView travelWelcome(@AuthenticationPrincipal PlayerUserDetails userDetails) {
         ModelAndView model = new ModelAndView();
         BigInteger playerId = userDetails.getPlayerId();
-        int relocateTime = travelService.getRelocateTime(playerId);
-        City city;
+        MDC.put("userName", userDetails.getUsername());
+        
         try {
-            city = travelService.getRelocationCity(playerId);
-            model.addObject("city", city.getCityName());
-        } catch (PlayerNotFoundException e) {
-            return new ModelAndView("redirect:/city");
+            int relocateTime = travelService.getRelocateTime(playerId);
+            City city;
+            
+            try {
+                city = travelService.getRelocationCity(playerId);
+                model.addObject("city", city.getCityName());
+            } catch (PlayerNotFoundException e) {
+                return new ModelAndView("redirect:/city");
+            }
+            
+            travelService.deleteStock(playerId);
+            travelService.createStock(playerId);
+            
+            model.addObject("time", relocateTime);
+            model.setStatus(HttpStatus.OK);
+            model.setViewName("TravelView");
+            return model;
+            
+        } finally {
+            MDC.remove("userName");
         }
-        travelService.deleteStock(playerId);
-        travelService.createStock(playerId);
-        model.addObject("time", relocateTime);
-        model.setStatus(HttpStatus.OK);
-        model.setViewName("TravelView");
-        return model;
     }
     
     @ExceptionHandler(RuntimeException.class)

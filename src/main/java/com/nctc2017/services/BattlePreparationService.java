@@ -13,6 +13,7 @@ import com.nctc2017.services.utils.BattleManager;
 import com.nctc2017.services.utils.Visitor;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +80,7 @@ public class BattlePreparationService {
         BigInteger enemyId = battles.getEnemyId(playerId);
         if (enemyId == null) {
             stopAutoChooseTimer(playerId);
-            BattleEndException ex = new BattleEndException("Enemy of Player_" + playerId + " run away.");
+            BattleEndException ex = new BattleEndException("Enemy run away.");
             LOG.warn("Battle not found! ", ex);
             throw ex;
         }
@@ -90,7 +91,7 @@ public class BattlePreparationService {
         ThreadStorage timer = playerChoiceShipTimer.get(playerId);
         if (timer != null && timer.decisionThread.isAlive()) {
             timer.decisionThread.interrupt();
-            LOG.debug("Player_" + playerId + " auto ship timer stoped. ");
+            LOG.debug("Auto choose ship timer stoped. ");
         }
         playerChoiceShipTimer.remove(playerId);
     }
@@ -104,21 +105,21 @@ public class BattlePreparationService {
         int maxDist = shipDao.getMaxShotDistance(shipId);
         if (battle.getDistance() < maxDist) {
             battle.setDistance(maxDist);
-            LOG.debug("Player_" + playerId + " reset distance " + maxDist);
+            LOG.debug("Reset distance " + maxDist);
         }
-        LOG.debug("Player_" + playerId + " chose ship " + shipId);
+        LOG.debug("Chose ship " + shipId);
     }
 
     public void setReady(BigInteger playerId) throws BattleEndException {
         Battle battle = battles.getBattle(playerId);
         battle.setReady(playerId, true);
-        LOG.debug("Player_" + playerId + " Ready to fight!");
+        LOG.debug("Ready to fight!");
     }
     
     public boolean waitForEnemyReady(BigInteger playerId) throws BattleEndException {
         Battle battle = battles.getBattle(playerId);
         boolean ready = battle.isEnemyReady(playerId);
-        LOG.debug("Player_" + playerId + " ask for enemy ready. Ready: " + ready);
+        LOG.debug("Ask for enemy ready. Ready: " + ready);
         return ready;
     }
 
@@ -134,7 +135,7 @@ public class BattlePreparationService {
         ThreadStorage storage = new ThreadStorage(decisionTask, decisionThread);
         decisionThread.start();
         playerChoiceShipTimer.put(playerId, storage);
-        LOG.debug("Player_" + playerId + " auto choice ship timer started");
+        LOG.debug("Auto choose ship timer started");
         return DELAY/1000;
     }
     
@@ -155,33 +156,38 @@ public class BattlePreparationService {
     private class ShipVisitor implements Visitor{
         
         private BigInteger playerId;
+        private Object userName;
         
         public ShipVisitor(BigInteger playerId) {
             this.playerId = playerId;
+            this.userName = MDC.get("userName");
         }
 
         @Override
         public void visit() {
+            MDC.put("userName", userName);
             try {
-                LOG.debug("Ship choosing TIMEOUT for Player_" + playerId);
+                LOG.debug("Ship choosing TIMEOUT");
                 List<BigInteger> ships = playerDao.findAllShip(playerId);
                 
                 ships.removeAll(getShipsLeftBattle(playerId));
     
-                LOG.debug("Player_" + playerId + "has ships: " + ships.size());
+                LOG.debug("Has ships: " + ships.size());
                 if (ships.size() == 0) {
-                    LOG.debug("Player_" + playerId + " has no ships");
+                    LOG.debug("Has no ships");
                     battleEnd.leaveBattleField(playerId);
                     return;
                 } 
                 
                 BigInteger shipId = ships.get(randomShip.nextInt(ships.size()));
-                LOG.debug("Player_" + playerId + " choose ship with id=" + shipId);
+                LOG.debug("Choose ship with id = " + shipId);
                 chooseShip(playerId, shipId);
                 setReady(playerId);
             } catch (BattleEndException e) {
                 stopAutoChooseTimer(playerId);
-                LOG.debug("Player_" + playerId + " enemy already leave", e);
+                LOG.debug("When TIMEOUT the enemy already leave", e);
+            } finally {
+                MDC.remove("userName");
             }
         }
         
