@@ -28,7 +28,7 @@ public class SurrenderDefaultBattleEnd implements BattleEndVisitor {
     public void endCaseVisit(PlayerDao playerDao, ShipDao shipDao, BigInteger winnerShipId, BigInteger loserShipId,
             BigInteger winnerId, BigInteger loserId) {
         
-        LOG.debug("Player_" + loserId + " pass goods to winner Player_" + winnerId + " ship because surrendered");
+        LOG.debug("Pass goods to winner Player_" + winnerId + " ship because surrendered");
         try {
             battleEndServ.passSurrenderGoodsToWinner(winnerShipId, loserShipId);
         } catch (SQLException e) {

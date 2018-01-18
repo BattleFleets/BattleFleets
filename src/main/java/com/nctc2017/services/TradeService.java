@@ -247,7 +247,7 @@ public class TradeService {
         if (actualQuantity > sellingQuantity) {
             goodsDao.decreaseGoodsQuantity(sellingGoods.getThingId(), sellingQuantity);
         }
-        marketManager.decreaseGoodsQuantity(cityId, goodsTemplateId, sellingQuantity);
+        marketManager.increaseGoodsQuantity(cityId, goodsTemplateId, sellingQuantity);
         moneyService.addMoney(playerId, sellingQuantity * price);
     }
 
@@ -305,7 +305,7 @@ public class TradeService {
         }
 
         mastDao.deleteMast(sellingGoods.getThingId());
-        marketManager.decreaseGoodsQuantity(cityId, goodsTemplateId, 1);
+        marketManager.increaseGoodsQuantity(cityId, goodsTemplateId, 1);
         moneyService.addMoney(playerId, price);
     }
 
@@ -328,7 +328,7 @@ public class TradeService {
         }
 
         cannonDao.deleteCannon(sellingGoods.getThingId());
-        marketManager.decreaseGoodsQuantity(cityId, goodsTemplateId, 1);
+        marketManager.increaseGoodsQuantity(cityId, goodsTemplateId, 1);
         moneyService.addMoney(playerId, price);
     }
 }

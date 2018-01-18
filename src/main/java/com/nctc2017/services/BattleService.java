@@ -13,6 +13,7 @@ import com.nctc2017.bean.Ammo;
 import com.nctc2017.bean.Battle;
 import com.nctc2017.bean.Player;
 import com.nctc2017.bean.Ship;
+import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.AmmoDao;
 import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.ExecutorDao;
@@ -60,12 +61,12 @@ public class BattleService {
         synchronized (battle) {
             battle.setAmmoCannon(playerId, ammoCannon);
             battle.makeStep(playerId);
-            LOG.debug("Player_" + playerId + " Made step");
+            LOG.debug("Made step");
             
             battles.clearAutoStepTime(playerId);
             
             if (battle.wasEnemyMadeStep(playerId)) {
-                LOG.debug("Player_" + playerId + " Enemy made step too");
+                LOG.debug("Enemy already made step too");
                 
                 BigInteger enemyId = battle.getEnemyId(playerId);
                 BigInteger enemyShipId = battle.getEnemyShipId(playerId);
@@ -74,18 +75,20 @@ public class BattleService {
                 decreaseOfDistance(enemyId);
                 decreaseOfDistance(playerId);
                 
-                LOG.debug("Player_" + playerId + " Start damage calc");
-                executorDao.calculateDamage(battle.getAmmoCannon(playerId), plyerShipId, enemyShipId);
-                LOG.debug("Player_" + playerId + " End damage calc");
+                int dist = battle.getDistance();
                 
-                LOG.debug("Player_" + enemyId + " Start damage calc");
-                executorDao.calculateDamage(battle.getAmmoCannon(enemyId), enemyShipId, plyerShipId);
-                LOG.debug("Player_" + enemyId + " End damage calc");
+                LOG.debug("Start damage calc");
+                executorDao.calculateDamage(battle.getAmmoCannon(playerId), plyerShipId, enemyShipId, dist);
+                LOG.debug("End damage calc");
+                
+                LOG.debug("Enemy_" + enemyId + " Start damage calc");
+                executorDao.calculateDamage(battle.getAmmoCannon(enemyId), enemyShipId, plyerShipId, dist);
+                LOG.debug("Enemy_" + enemyId + " End damage calc");
                 
                 int enemyHp = shipDao.getCurrentShipHealth(enemyShipId);
-                LOG.debug("Player_" + enemyId + " HP: " + enemyHp);
+                LOG.debug("Enemy HP: " + enemyHp);
                 int playerHp = shipDao.getCurrentShipHealth(plyerShipId);
-                LOG.debug("Player_" + playerId + " HP: " + playerHp);
+                LOG.debug("Player HP: " + playerHp);
                 
                 if (enemyHp <= 0 && playerHp <=0) {
                     if (playerHp > enemyHp) {
@@ -113,11 +116,11 @@ public class BattleService {
                     battles.setUpAutoStepTime(playerId, enemyId);
                     
                     battle.resetSteps(playerId);
-                    LOG.debug("Player_" + playerId + " reset steps ");
+                    LOG.debug("Reset steps ");
                     return;
                 }
                 
-                LOG.debug("Player_" + playerId + " reset battle ");
+                LOG.debug("Reset battle ");
                 battles.resetBattle(playerId);
             }
             return;
@@ -150,12 +153,12 @@ public class BattleService {
 
     public void decreaseOfDistance(BigInteger playerId) throws BattleEndException {
         Battle battle = battles.getBattle(playerId); 
-        LOG.debug("Player_" + playerId + " Start decrease of distance");
+        LOG.debug("Start decrease of distance");
         
         synchronized (battle) {
             if (battle.isConvergence(playerId)) {
                 int dist = battle.getDistance();
-                LOG.debug("Player_" + playerId + " Decrease of distance. Current: " + dist);
+                LOG.debug("Decrease of distance. Current: " + dist);
                 BigInteger shipId = battle.getShipId(playerId);
                 
                 int speed = shipDao.getSpeed(shipId);
@@ -164,9 +167,9 @@ public class BattleService {
                 
                 battle.setDistance(dist); // (speed *10) / 100; => 10%
                 battle.setConvergence(playerId, false);
-                LOG.debug("Player_" + playerId + " Finish decreasing of distance. Current: " + dist);
+                LOG.debug("Finish decreasing of distance. Now: " + dist);
             } else {
-                LOG.debug("Player_" + playerId + " No decrease of distance by player decision");
+                LOG.debug("No decrease of distance by player decision");
             }
         }
     }
@@ -189,12 +192,12 @@ public class BattleService {
             
             if(plyerShipId == null) { 
                 BattleEndException ex =  new BattleEndException("Battle already finish.\n");
-                LOG.error("Player_" + playerId + " try boarding, but ship in battle not found", ex);
+                LOG.error("Try boarding, but ship in battle not found", ex);
                 throw ex;
             }
             if(battle.getDistance() > 0) {
                 IllegalStateException ex = new IllegalStateException("Distance too big for boarding");
-                LOG.error("Player_" + playerId + " try boarding with big distance", ex);
+                LOG.error("Try boarding with big distance", ex);
                 throw ex;
             }
             
@@ -262,20 +265,35 @@ public class BattleService {
     public ShipWrapper getShipInBattle(BigInteger playerId) throws BattleEndException {
         Battle battle = battles.getBattle(playerId); 
         BigInteger shipId = battle.getShipId(playerId);
+        
         if (shipId == null) {
             BattleEndException ex = new BattleEndException("Battle between two ships already end");
-            LOG.warn("Player " + playerId + " try getting info about his ship, but id not found in battle", ex);
+            LOG.warn("Try getting info about his ship, but id not found in battle", ex);
             throw ex;
         }
+        
         Ship ship = shipDao.findShip(shipId);
         Map<String, String> cannons = cannonDao.getCurrentQuantity(shipId);
+        
+        int kulevrinDist = cannonDao.getDistance(DatabaseObject.KULEVRIN_TEMPLATE_ID);
+        int bombardDist = cannonDao.getDistance(DatabaseObject.BOMBARD_TEMPLATE_ID);
+        int mortarDist = cannonDao.getDistance(DatabaseObject.MORTAR_TEMPLATE_ID);
+        Map<String, Integer> cannonsDist = new HashMap<>();
+        cannonsDist.put("Mortar", mortarDist);
+        cannonsDist.put("Bombard", bombardDist);
+        cannonsDist.put("Kulevrin", kulevrinDist);
+        
         BigInteger holdId = holdDao.findHold(shipId);
         List<Ammo> ammos = ammoDao.getAllAmmoFromHold(holdId);
+        
         Map<String, Integer> ammoQuantity = new HashMap<>();
         for (Ammo ammo : ammos) {
             ammoQuantity.put(ammo.getName(), ammo.getQuantity());
         }
-        return new ShipWrapper(ship, cannons, ammoQuantity);
+        
+        ShipWrapper shipWrapper = new ShipWrapper(ship, cannons, ammoQuantity);
+        shipWrapper.setCannonsDist(cannonsDist);
+        return shipWrapper;
     }
 
     public Ship getEnemyShipInBattle(BigInteger playerId) throws BattleEndException {
@@ -292,6 +310,7 @@ public class BattleService {
         private Ship ship;
         private Map<String, String> cannons;
         private Map<String, Integer>  ammo;
+        private Map<String, Integer> cannonsDist;
         public ShipWrapper(Ship ship, Map<String, String> cannons, Map<String, Integer> ammo) {
             this.ship = ship;
             this.cannons = cannons;
@@ -308,6 +327,14 @@ public class BattleService {
 
         public Map<String, Integer> getAmmo() {
             return ammo;
+        }
+
+        public Map<String, Integer> getCannonsDist() {
+            return cannonsDist;
+        }
+
+        public void setCannonsDist(Map<String, Integer> cannonsDist) {
+            this.cannonsDist = cannonsDist;
         }
         
     }

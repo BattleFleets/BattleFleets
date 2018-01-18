@@ -5,10 +5,13 @@ import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 
+@Service
+@Transactional
 public class ShipRepairService {
 
     @Autowired
@@ -32,7 +35,6 @@ public class ShipRepairService {
         return (int)repairCost;
     }
 
-    @Transactional
     public boolean repairShip(BigInteger playerId, BigInteger shipId) {
         //updating Player money
         int updateMoney = playerDao.getPlayerMoney(playerId) - countRepairCost(shipId);

@@ -14,9 +14,9 @@ public interface CannonDao {
 
     int getCost(int cannonId);
 
-    int getDistance(int cannonId);
+    int getDistance(BigInteger cannonTemplateId);
 
-    int getDamage(int cannonId);
+    int getDamage(BigInteger cannonTemplateId);
 
     List<Cannon> getAllCannonFromStock(BigInteger stockId);
 

@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -39,7 +40,7 @@ public class TravelManager {
     private Thread manager;
     
     public TravelManager(){
-        Runnable managerTask = new ManagerTask();
+        Runnable managerTask = new TravelManagerTask();
         manager = new Thread(managerTask);
         
         LOG.debug("TravelManager starting");
@@ -53,29 +54,26 @@ public class TravelManager {
     }
     
     public boolean prepareEnemyFor(BigInteger playerId) throws PlayerNotFoundException {
-        LOG.debug("Find enemy for Player_" + playerId);
+        LOG.debug("Find enemy");
         boolean isEnemyOnHorisont = false;
-        TravelBook playerJornal = journals.get(playerId);
-        if (playerJornal == null) {
-            throw new PlayerNotFoundException("Player left a trip or has not yet begun");
-        }
+        TravelBook playerJornal = getPlayersJournal(playerId);
 
         if (playerJornal.isParticipated()) {
-            LOG.debug("Player_" + playerId + " is participated, no enemy needed");
+            LOG.debug("Already took part in the battle, does not need an enemy");
             return false;
         }
         int lvl = playerJornal.getPlayerLevel();
-        LOG.debug("Player_" + playerId + " lvl = " + lvl);
+        LOG.debug("lvl = " + lvl);
 
         if (playerJornal.isFriendly()) {
-            LOG.debug("Player_" + playerId + " is friendly (prepareEnemy) ");
+            LOG.debug("Is friendly (prepareEnemy) ");
             return false;
         }
 
         if (playerJornal.getEnemyId() != null) {
-            LOG.debug("Player_" + playerId + " already have enemy");
+            LOG.debug("Already have enemy");
             if (playerJornal.isFriendly()) {
-                LOG.debug("But player_" + playerId + " friendly");
+                LOG.debug("But this player friendly");
                 return false;
             }
             
@@ -95,7 +93,7 @@ public class TravelManager {
             if (Math.abs(lvl - enemyLvl) <= lvlDiff) {
                 playerJornal.setEnemyId(enemy.getKey());
                 enemyJornal.setEnemyId(playerId);
-                LOG.debug("Enemy for Player_" + playerId + " found - Player_" + playerJornal.getEnemyId());
+                LOG.debug("Enemy for found - Player_" + playerJornal.getEnemyId());
                 playerJornal.pause();
                 enemyJornal.pause();
 
@@ -119,9 +117,12 @@ public class TravelManager {
                     + timeToArrival/60000 + " min");
         }
         
-        timeToArrival = timeNow + minTime + rand.nextInt(maxTime - minTime);
+        long timeLeft = minTime + rand.nextInt(maxTime - minTime);
+        timeToArrival = timeNow + timeLeft;
         cityTime = new TravelBook(city, timeToArrival, lvl);
         journals.put(playerId, cityTime);
+        if (LOG.isDebugEnabled())
+            LOG.debug("Journey started. Time Left: " + timeLeft);
     }
 
     public int getRelocateTime(BigInteger playerId) {
@@ -139,7 +140,7 @@ public class TravelManager {
     }
 
     public void friendly(BigInteger playerId) throws PlayerNotFoundException {
-        LOG.debug("Player_" + playerId + " .friendly() ");
+        LOG.debug("Became friendly");
         TravelBook playerBook = getPlayersJournal(playerId);
         
         BigInteger enemyId = playerBook.getEnemyId();
@@ -147,19 +148,19 @@ public class TravelManager {
         if (enemyId == null) {
             RuntimeException ex = 
                     new IllegalStateException(".friendly() was called when no enemy was written down in travel book.");
-            LOG.warn("Player_" + playerId + " no enemy found ", ex);
+            LOG.error("No enemy found ", ex);
             throw ex;
         }
         
         TravelBook enemyBook = journals.get(enemyId);
         if (enemyBook == null) {
-            PlayerNotFoundException ex = new PlayerNotFoundException("Player_" + enemyId + " already left travel.");
-            LOG.warn("Player_" + playerId + " enemy not found", ex);
+            PlayerNotFoundException ex = new PlayerNotFoundException("Enemy_" + enemyId + " already left travel.");
+            LOG.warn("Enemy not found in travel", ex);
             throw ex;
         }
 
         if (enemyBook.isFriendly()) {
-            LOG.debug("Player_" + playerId + " and Player_" + enemyId + " - Both Friendly");
+            LOG.debug(" and Player_" + enemyId + " - Both Friendly");
             playerBook.setEnemyId(null);
             playerBook.setFriendly(false);
             playerBook.setDecisionMade(false);
@@ -169,7 +170,7 @@ public class TravelManager {
             enemyBook.setDecisionMade(false);
         } else {
             playerBook.setFriendly(true);
-            LOG.debug("Player_" + playerId + " is friendly now.");
+            LOG.debug("Is friendly now.");
         }
     }
     
@@ -178,11 +179,11 @@ public class TravelManager {
         playerBook.resume();
         GregorianCalendar clock = new GregorianCalendar();
         long now = clock.getTimeInMillis();
-        return (int) (now - playerBook.getTime());
+        return (int) (playerBook.getTime() - now);
     }
 
     public BigInteger getRelocationCity(BigInteger playerId) throws PlayerNotFoundException {
-        LOG.debug("Player_" + playerId + " getting his relocation city ");
+        LOG.debug("Getting his relocation city ");
         return getPlayersJournal(playerId).getCityId();
     }
     
@@ -210,12 +211,18 @@ public class TravelManager {
     }
     
     private TravelBook getPlayersJournal(BigInteger playerId) throws PlayerNotFoundException {
-        if (journals.get(playerId) == null) {
+        TravelBook travelBook = journals.get(playerId);
+        if (travelBook == null) {
             PlayerNotFoundException ex = new PlayerNotFoundException("May be player already arrived");
-            LOG.warn("Player_" + playerId + " not found in trip", ex);
+            LOG.warn("Player not found in trip", ex);
             throw ex;
         }
-        return journals.get(playerId);
+        return travelBook;
+    }
+
+    public void stopRelocationTimer(BigInteger playerId) throws PlayerNotFoundException {
+        TravelBook travelBook = getPlayersJournal(playerId);
+        travelBook.pause();
     }
     
     private class TravelBook {
@@ -265,6 +272,8 @@ public class TravelManager {
             this.pause = true;
             GregorianCalendar clock = new GregorianCalendar();
             pauseTime = clock.getTimeInMillis();
+            if(LOG.isDebugEnabled())
+                LOG.debug("Pause when time left: " + (arrivalTime - pauseTime));
         }
         
         public void resume() {
@@ -274,7 +283,10 @@ public class TravelManager {
             }
             GregorianCalendar clock = new GregorianCalendar();
             long now = clock.getTimeInMillis();
-            arrivalTime = now + (arrivalTime - pauseTime);
+            long timeLeft = arrivalTime - pauseTime;
+            if(LOG.isDebugEnabled())
+                LOG.debug("Resume - time left: " + timeLeft);
+            arrivalTime = now + timeLeft;
             pauseTime = 0L;
             this.pause = false;
         }
@@ -314,10 +326,12 @@ public class TravelManager {
         
     }
     
-    private class ManagerTask implements Runnable{
+    private class TravelManagerTask implements Runnable{
         
         @Override
         public void run() {
+            MDC.put("userName", "TravelManager");
+            
             while (true) {
                 GregorianCalendar clock = new GregorianCalendar();
                 long now = clock.getTimeInMillis();
@@ -339,12 +353,14 @@ public class TravelManager {
                     }
                 }
                 try {
-                    LOG.trace("TravelManager sleep");
+                    LOG.trace("Sleep");
                     Thread.sleep(managerWakeUp);
                 } catch (InterruptedException e) {
-                    LOG.error("TravelManager was Interrupted", e);
+                    LOG.error("Was interapted", e);
+                    MDC.remove("userName");
+                    return;
                 }
-                LOG.trace("TravelManager awoke");
+                LOG.trace("Awoke");
             }
         }
     }
@@ -354,6 +370,7 @@ public class TravelManager {
         private BigInteger playerId;
         
         public EnemyJournalFixTask(BigInteger enemyId, BigInteger playerId) {
+            LOG.debug("EnemyJournalFixTask will run");
             this.enemyId = enemyId;
             this.playerId = playerId;
         }

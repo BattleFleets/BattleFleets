@@ -2,14 +2,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Trip</title>
     <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/travel.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <title>Trip</title>
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/jquery-ui.min.js"></script>
+    <script src="static/js/IsBattleStartTask.js" type="text/javascript"></script>
     <script type="text/javascript">
         function setHalfVolume() {
             var audio = document.getElementById("myaudio");
@@ -41,156 +41,7 @@
             arrivalTimerTask();
         });
     </script>
-    <script type="text/javascript">
-        var battleStartId;
-        
-        function isBattleStart() {
-        	clearInterval(battleStartId);
-        	
-        	var n = number++;
-        	console.log("request on /is_battle_start *" + n);
-        	
-        	$.get("/is_battle_start")
-        	.done(function(response, status, xhr){
-            	console.log("response from /is_battle_start " + response + " *" + n);
-        	    if (response == "true") {
-        	    	console.log("request /battle_preparing *" + n);
-                    window.location.href = "/battle_preparing";
-        	    } else {
-            	    battleStartTask();
-        	    }
-        	});
-        	
-        };
-        
-        function battleStartTask() {
-        	console.log(" isBattleStart task run");
-        	clearInterval(battleStartId);
-        	battleStartId = setInterval(function() {
-	        	isBattleStart();
-	        }, 1000);
-        };
-        
-        $(document).ready(function() {
-        	battleStartTask();
-        });
-    </script>
-    <script type="text/javascript">
-        var $dialog_hint
-        var decisionId;
-        var acceptDecision = false;
-        var lookoutId;
-        function isDecisionAccept() {
-    		clearInterval(decisionId);
-    		var n = number++;
-    		console.log("id decision accept? request *" + n);
-        	$.get("/is_decision_accept")
-            .done(function(response, status, xhr) {
-        		console.log("id decision accept? response done " + response + " *" + n);
-            	if (response == "true") {
-            		if (!acceptDecision) {
-            		    arrivalTimerTask();
-	            	    lookoutTask();
-            		}
-	            	$dialog_hint.dialog('close');
-            	} else {
-            	    isDecisionAcceptTask();
-            	}
-            }).fail(function(xhr, status, error) {
-        		console.log("id decision accept? response fail " + status + " *" + n);
-            	if (xhr.status == 409) {
-            		console.log("reason: " + xhr.status + "Another fleet attacks enemy.");
-            	    $( "#error-message" ).dialog({
-            	    	title: "Another fleet attacks enemy.",
-            	    	modal: true,
-            	        buttons: {
-            	            Ok: function() {
-            	                $( this ).dialog( "close" );
-            	            }
-            	        }
-            	      });
-            	} else if (xhr.status == 405) {
-            		console.log("reason: " + xhr.status + "player not found in travel");
-                    window.location.href = "/city";
-            	}
-            	
-            });
-        };
-        
-        function isDecisionAcceptTask() {
-    		clearInterval(decisionId);
-        	decisionId = setInterval(function() {isDecisionAccept();}, 1000);
-        };
-        
-        function lookout() {
-        	var n = number++;
-    		console.log("request /is_enemy_on_horizon *" + n);
-        	clearInterval(lookoutId);
-        	$.get("/is_enemy_on_horizon")
-            .done(function(response, status, xhr) {
-        		console.log("response /is_enemy_on_horizon - " + response + " *" + n);
-        		if (xhr.status == 204) {
-        			return;
-        		}
-                if (response == "true") {
-                	clearInterval(timerId);
-                	isDecisionAcceptTask();
-                	$dialog_hint = $( "#warning_info" ).dialog({
-                        modal: true,
-                        title: "Captain! Fleet on the horizon",
-                        width: 670,
-                        height: 200,
-                        buttons: [
-                        {
-                            id: "Accept",
-                            text: "Attack, stupid ship rats!",
-                            click: function () {
-                        		console.log("ACCEPT *" + n);
-                        		acceptDecision = true;
-                            	$.post("/attack_decision", {decision: "true"})
-                            	.done(function(response, status, xhr) {
-                            		/*watchDog = false;*/
-                            		/*clearInterval(decisionId);
-                            		clearInterval(battleStartId);*/
-                                    /*window.location.href = "/battle_preparing";*/
-                            	}).fail(function(xhr, status, error) {
-                                    if (xhr.status == 405) {
-                                    	$( "#error_info" ).html(error + " " + xhr.responseText);
-                                        window.location.href = "/city";
-                                	} else {
-                                        window.location.href = "/error";
-                            	    }
-                        		});
-                            }
-                        },
-                        {
-                            id: "Cancel",
-                            text: "Shut up! I hope they are blind.",
-                            click: function () {
-                        		console.log("REJECT *" + n);
-                            	$.post("/attack_decision", {decision: "false"});
-                            }
-                        }
-                        ]
-                    });
-                } else {
-                	lookoutTask();
-                }
-            })
-            .fail(function(xhr, status, error) {
-            	lookoutTask();/*already arrived*/
-            });
-        }
-        
-        function lookoutTask() {
-    		clearInterval(lookoutId);
-        	lookoutId = setInterval(function () {lookout();}, 1000);
-        };
-        
-        $(document).ready(function() {
-        	lookoutTask();
-        });
-    </script>
+    <script src="static/js/EnemyOnHorizon.js" type="text/javascript"></script>
 </head>
 <body>
 <div id="ship" class="layer">
