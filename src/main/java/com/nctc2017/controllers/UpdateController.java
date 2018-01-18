@@ -2,6 +2,7 @@ package com.nctc2017.controllers;
 
 import com.nctc2017.bean.PlayerUserDetails;
 import com.nctc2017.dao.ScoreDao;
+import com.nctc2017.exception.UpdateException;
 import com.nctc2017.services.LevelUpService;
 import com.nctc2017.services.MoneyService;
 import com.nctc2017.services.ScoreService;
@@ -9,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.math.BigInteger;
@@ -71,5 +69,12 @@ public class UpdateController {
         results[2] = String.valueOf(nxtLvlImprove);
         return results;
     }
+
+    /*@ExceptionHandler(UpdateException.class)
+    public ModelAndView updateException(Exception ex){
+        ModelAndView model = new ModelAndView();
+        model.setViewName("ErrorView");
+        return model;
+    }*/
 }
 

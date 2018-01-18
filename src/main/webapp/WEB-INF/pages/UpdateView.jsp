@@ -74,6 +74,10 @@
                         }
                     }
 
+            },
+            error : function(e) {
+                console.log("ERROR",e);
+                window.location.href="/city";
             }
         } );
     }
@@ -98,7 +102,12 @@
                         $('#exit').html("<a href='/city' class='logOutBottom'>"+"Return to city"+"</a>");
                         if(parseInt($('#imp').val())>parseInt($('#maxLvl').val())) {
                             $('#improveWrapper').css('display', 'none');
-                        }                    }
+                        }
+                    }
+            },
+            error : function(e) {
+                console.log("ERROR",e);
+                window.location.href="/city";
             }
         } );
     }

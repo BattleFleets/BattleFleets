@@ -2,6 +2,7 @@ package com.nctc2017.services;
 
 import com.nctc2017.bean.*;
 import com.nctc2017.dao.*;
+import com.nctc2017.exception.UpdateException;
 import com.nctc2017.services.utils.CompBeans;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +75,44 @@ public class ShipService {
     }
 
     public boolean updateShipSailorsNumber(BigInteger shipId, int newSailorsNumber){
-        return shipDao.updateShipSailorsNumber(shipId, newSailorsNumber);
+       // Ship ship = findShip(shipId);
+       // if(ship.getCurSailorsQuantity()!=ship.getMaxSailorsQuantity()) {
+            return shipDao.updateShipSailorsNumber(shipId, newSailorsNumber);
+        //}
+        //else{
+          //  UpdateException ex = new UpdateException("Level greater then next level update");
+            //log.error("Your current level should be greater or equal to level at which the update is possible",ex);
+            //throw ex;
+        //}
+    }
+
+    public boolean isAllShipsCompleted(BigInteger playerId){
+        int complete = 0;
+        List<Ship> ships = getAllPlayerShips(playerId);
+        for(int i=0; i<ships.size(); i++)
+        {
+            if(ships.get(i).getMaxSailorsQuantity()==ships.get(i).getCurSailorsQuantity()){
+                complete++;
+            }
+        }
+        if(ships.size()==complete){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public int numShipsCompleted(BigInteger playerId){
+        int complete = 0;
+        List<Ship> ships = getAllPlayerShips(playerId);
+        for(int i=0; i<ships.size(); i++)
+        {
+            if(ships.get(i).getMaxSailorsQuantity()==ships.get(i).getCurSailorsQuantity()){
+                complete++;
+            }
+        }
+       return complete;
     }
 
     public List<StartShipEquipment> getStartShipEquipment() {
@@ -129,5 +167,4 @@ public class ShipService {
             return maxSpeed;
         }
     }
-
 }

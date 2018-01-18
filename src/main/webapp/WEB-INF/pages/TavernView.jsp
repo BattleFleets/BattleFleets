@@ -36,7 +36,7 @@
                         <c:if test="${completedShip==ships.size()}">
                         <p id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">All your ships are staffed with sailors</p>
                         </c:if>
-                        <c:if test="${money<sailorCost}">
+                        <c:if test="${money<sailorCost && completedShip!=ships.size()}">
                         <p id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You need ${sailorCost-money} more money</p>
                         </c:if>
                     </td>
@@ -48,7 +48,7 @@
                                 <span>Buy sailors</span>
                             </button>
                             <input style="width:35px" type="number" class="sailorsNumber" min="1" max="" autocomplete="off"  onkeyup="cost(${sailorCost})">
-                            <input style="width:35px" type="number" class="spend" autocomplete="off" readonly>
+                            <span id="spend" style="font-family: tempus sans itc; color:white"></span>
                         </div>
                     </td>
                 </tr>
@@ -70,7 +70,7 @@
                                         <td class="listOfShips">
                                     </c:if>
                                     <c:if test="${nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity && money>=sailorCost}">
-                                        <td class="listOfShips" bgcolor="#8B0000" id="Id${nextShip.shipId}" value="${nextShip.shipId}" style="cursor: pointer" onclick="toggle(sailors,cont,buy,oneShip,${sailorCost},${money}),show(Id${nextShip.shipId}), maxValue(currId${nextShip.shipId},maxcurrId${nextShip.shipId},${nextShip.maxSailorsQuantity},${sailorCost}),btnSetValue(${nextShip.shipId})">
+                                        <td class="listOfShips" bgcolor="#8B0000" id="Id${nextShip.shipId}" value="${nextShip.shipId}" style="cursor: pointer" onclick="toggle(sailors,cont,buy,oneShip,${sailorCost},${money}),show(Id${nextShip.shipId}), maxValue(${nextShip.shipId}),btnSetValue(${nextShip.shipId})">
                                     </c:if>
                                     <c:choose>
                                         <c:when test = "${nextShip.templateId == 1}">
@@ -93,13 +93,13 @@
                                     <p>health ${nextShip.curHealth}</p>
                                     <p>crew <span id="crew">${nextShip.curSailorsQuantity}</span>/${nextShip.maxSailorsQuantity}</p>
                                     </td>
-                                    <input type="hidden" id="currId${nextShip.shipId}"  value="${nextShip.curSailorsQuantity}">
-                                    <input type="hidden" id="maxcurrId${nextShip.shipId}"  value="${nextShip.maxSailorsQuantity}">
+                                    <%--<input type="hidden" id="currId${nextShip.shipId}"  value="${nextShip.curSailorsQuantity}">
+                                    <input type="hidden" id="maxcurrId${nextShip.shipId}"  value="${nextShip.maxSailorsQuantity}">--%>
                                 </c:forEach>
                             </tr>
                         </table>
-                            <input type="hidden" id="moneyId"  value="${money}">
-                            <input type="hidden" id="complete"  value="${ships.size()-completedShip}">
+                            <%--<input type="hidden" id="moneyId"  value="${money}">
+                            <input type="hidden" id="complete"  value="${ships.size()-completedShip}">--%>
             </div>
         </c:if>
     </div>
@@ -111,6 +111,12 @@
     </button>
 </div>
 </body>
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p id="text"></p>
+    </div>
+</div>
 <a href="/city" class="logOutBottom">Return to city</a>
 <%@include file="fragment/footer.jsp"%>
 <script>
@@ -126,11 +132,9 @@
         $('#shipId').attr('disabled',false);
         $('#shipId').show();
         $("input.sailorsNumber").show();
-        $("input.spend").show();
+        $("#spend").show();
         var $shipFromList = $(id).clone();
         var idf = $(id).attr('id');
-        oldId = 'curr'+idf;
-        mOldId = 'maxcurr'+idf;
         $shipFromList.css('cursor','default');
         $shipFromList.removeAttr('onclick');
         $shipFromList.attr('id','choiceShipCopy');
@@ -141,63 +145,44 @@
                 $('#oneShip').empty();
                 $('td#choiceShipOrig.listOfShips p span').attr('id','Crew');
                 $(id).attr('id',idf);
-                $('#conCurrSailors').attr('id', oldId);
-                $('#maxSailors').attr('id', mOldId);
             });
         });
     }
-    function maxValue(id,maxId,limit,cost) {
-        $(id).attr('id', 'conCurrSailors');
-        $(maxId).attr('id','maxSailors');
-        var curr = $('#conCurrSailors').val();
-        var money = $('#moneyId').val();
-            var canToBuy = Math.floor(money / cost);
-            if (canToBuy < (limit - curr)) {
-                $("input.sailorsNumber").attr("max", canToBuy).val(canToBuy);
-                $("input.spend").val(canToBuy * cost);
+    function maxValue(id) {
+        event.preventDefault();
+        $.ajax({
+            url:'/maxValue',
+            method:"GET",
+            data:{'shipId':id},
+            success: function (data) {
+                $("input.sailorsNumber").attr('max', data[0]).val(data[0]);
+                $('#spend').html(data[1]);
             }
-            else {
-                $("input.sailorsNumber").attr("max", limit - curr).val(limit - curr);
-                $("input.spend").val((limit - curr) * cost);
-            }
+        })
 
     }
     function cost(cost) {
-        $("input.spend").val($("input.sailorsNumber").val()*cost);
+        if($("input.sailorsNumber").val()>$("input.sailorsNumber").attr('max') || $("input.sailorsNumber").val()<0)
+        {
+            $("input.sailorsNumber").val($("input.sailorsNumber").attr('max')) ;
+        }
+        $("#spend").html($("input.sailorsNumber").val()*cost);
     }
     function buySailors() {
         event.preventDefault();
         var sailors = $("input.sailorsNumber").val();
-        var max = $("input.sailorsNumber").attr('max');
-        var money = $("input.spend").val();
         var id = $('#shipId').val();
+        if(sailors>0){
         $.ajax({
             url:'/buySailors',
             method:"GET",
-            data:{'shipId':id, 'num':sailors, 'toSpend':money},
+            data:{'shipId':id, 'num':sailors},
             success: function(data){
                 $('#money').html(data[0]);
-                $('#moneyId').val(data[0]);
                 $('span#choiceCrew').html(data[1]);
-                $("input.sailorsNumber").attr("max",max-sailors).val(max-sailors);
-                $("input.spend").val( $("input.sailorsNumber").val()*(money/sailors));
-                $('#conCurrSailors').val(data[1]);
-                if(data[0]<(money/sailors)){
-                    $('#info').html("You need "+parseInt((money/sailors)-data[0])+ " more money");
-                    $('#choiceShipCopy').css('background-color','transparent');
-                    $('.listOfShips').css('background-color','transparent');
-                    $('.listOfShips').css('cursor','default');
-                    $('.listOfShips').removeAttr('onclick');
-                    $('#shipId').attr('disabled',true);
-                    $('#shipId').hide();
-                    $("input.sailorsNumber").hide();
-                    $("input.spend").hide();
-                }
-                else if($('#conCurrSailors').val()==$('#maxSailors').val()){
-                    $('#complete').val($('#complete').val()-1);
-                    if($('#complete').val()==0){
-                        $('#info').html("All your ships are staffed with sailors");
-                    }
+                maxValue(id);
+                 if(data[2]=='true'){
+                    $('#info').html("All your ships are staffed with sailors");
                     $('#choiceShipCopy').css('background-color','transparent');
                     $('#choiceShipOrig').css('background-color','transparent');
                     $('#choiceShipOrig').css('cursor','default');
@@ -205,16 +190,39 @@
                     $('#shipId').attr('disabled',true);
                     $('#shipId').hide();
                     $("input.sailorsNumber").hide();
-                    $("input.spend").hide();
+                    $("#spend").hide();
                 }
+                else if(data[3]=='false'){
+                     $('#info').html("You need "+parseInt(${sailorCost}-data[0])+ " more money");
+                     $('#choiceShipCopy').css('background-color','transparent');
+                     $('.listOfShips').css('background-color','transparent');
+                     $('.listOfShips').css('cursor','default');
+                     $('.listOfShips').removeAttr('onclick');
+                     $('#shipId').attr('disabled',true);
+                     $('#shipId').hide();
+                     $("input.sailorsNumber").hide();
+                     $("#spend").hide();
+                 }
+            },
+            error : function(e) {
+                console.log("ERROR: ", e);
+                window.location.href="/tavern";
             }
         } );
+        }
+        else{
+            text.innerHTML="Error, incorrect data, value should be grater then 0";
+            $('.modal').css('display', 'block');
+            maxValue(id);
+        }
     }
     function btnSetValue(val) {
         $('#shipId').attr('value',val);
         $('td#choiceShipOrig.listOfShips p span').attr('id','choiceCrew');
-        $('td#choiceShipCopy.listOfShips p span').attr('id','choiceCrew')
-
+        $('td#choiceShipCopy.listOfShips p span').attr('id','choiceCrew');
     }
+    $('.close').click(function() {
+        $('.modal').css('display', 'none');
+    });
 </script>
 </html>
