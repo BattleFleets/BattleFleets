@@ -8,10 +8,17 @@
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
     <script src="static/js/Battle.js" type="text/javascript"></script>
+    <script src="static/js/volume.js" type="text/javascript"></script>
 
 </head>
 
 <body class="battle_view">
+<audio autoplay id="back_audio_ship" onloadeddata="setVolume(back_audio_ship, 0.04)">
+    <source src="static/audio/Paluba_skripit.mp3" type="audio/mp3">
+</audio>
+<audio autoplay id="back_audio" onloadeddata="setVolume(back_audio, 0.01)">
+    <source src="static/audio/battle.mp3" type="audio/mp3">
+</audio>
 <div class="player_ship" align="left">
     <img alt="5" src="static/images/ships/player_ship2.png" height="100%">
 </div>
