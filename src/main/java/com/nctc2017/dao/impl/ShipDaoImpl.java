@@ -350,7 +350,7 @@ public class ShipDaoImpl implements ShipDao {
                     Integer.valueOf(papamMap.remove(ShipTemplate.MAX_CARRYING_LIMIT))
             );
 
-            int curCarryLimit = shipT.getMaxCarryingLimit() - holdDao.getOccupiedVolume(entityId);
+            int curCarryLimit = holdDao.getOccupiedVolume(entityId);
 
             return new Ship(
                     shipT,

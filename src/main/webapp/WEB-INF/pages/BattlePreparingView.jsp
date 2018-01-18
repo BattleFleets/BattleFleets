@@ -6,7 +6,7 @@
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
     <link href="static/css/battle.css" rel="stylesheet" media="screen">
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <script src="static/js/hover_button.js"></script>
+    <script src="static/js/HoverButton.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>

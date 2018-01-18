@@ -32,6 +32,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
     private static final String PLAYER_SHIP_ID = "playerShipId";
     private static final String ENEMY_SHIP_ID = "enemyShipId";
     private static final String DIMENSION = "dimension_";
+    private static final String DISTANCE = "distance";
     private static final String IN_LIST = "in_l";
 
     @Autowired
@@ -44,7 +45,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
     }
 
     @Override
-    public void calculateDamage(int[][] ammoCannon, BigInteger playerShipId, BigInteger idEnemyShip) throws SQLException {
+    public void calculateDamage(int[][] ammoCannon, BigInteger playerShipId, BigInteger idEnemyShip, int dist) throws SQLException {
         
         StringBuilder arrToStr = new StringBuilder();
         for (int i = 0; i < ammoCannon.length; i++) {
@@ -78,7 +79,8 @@ public class ExecutorDaoImpl implements ExecutorDao {
                 .addValue(IN_LIST, arrInStr)
                 .addValue(PLAYER_SHIP_ID, JdbcConverter.toNumber(playerShipId))
                 .addValue(ENEMY_SHIP_ID, JdbcConverter.toNumber(idEnemyShip))
-                .addValue(DIMENSION, ammoCannon.length);
+                .addValue(DIMENSION, ammoCannon.length)
+                .addValue(DISTANCE, dist);
         
         try {
             call.execute(in);

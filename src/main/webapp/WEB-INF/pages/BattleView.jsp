@@ -61,21 +61,21 @@
             </tr>
             <tr>
                 <th id="mortar">Mortar</th>
-                <td><input class = "spinner" name = "ballM"></td>
-                <td><input class = "spinner" name = "ballB"></td> 
-                <td><input class = "spinner" name = "ballK"></td>
+                <td><input class = "spinner s_mortar s_ball" id = "mBall"></td>
+                <td><input class = "spinner s_mortar s_bshot" id = "mBshot"></td> 
+                <td><input class = "spinner s_mortar s_chains" id = "mChains"></td>
             </tr>
             <tr>
                 <th id="bombard">Bombard</th> 
-                <td><input class = "spinner" name = "bshotM"></td>
-                <td><input class = "spinner" name = "bshotB"></td> 
-                <td><input class = "spinner" name = "bshotK"></td>
+                <td><input class = "spinner s_bombard s_ball" id = "bBall"></td>
+                <td><input class = "spinner s_bombard s_bshot" id = "bBshot"></td> 
+                <td><input class = "spinner s_bombard s_chains" id = "bChains"></td>
             </tr>
             <tr>
                 <th id="kulevrin">Kulevrin</th>
-                <td><input class = "spinner" name = "chainsM"></td>
-                <td><input class = "spinner" name = "chainsB"></td> 
-                <td><input class = "spinner" name = "chainsK"></td>
+                <td><input class = "spinner s_kulevrin s_ball" id = "kBall"></td>
+                <td><input class = "spinner s_kulevrin s_bshot" id = "kBshot"></td> 
+                <td><input class = "spinner s_kulevrin s_chains" id = "kChains"></td>
             </tr>
             <tr class="titleText"  style="background-color: darkred">
                 <td id="warning_info" hidden="true" colspan="4"> </td>

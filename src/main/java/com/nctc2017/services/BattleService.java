@@ -13,6 +13,7 @@ import com.nctc2017.bean.Ammo;
 import com.nctc2017.bean.Battle;
 import com.nctc2017.bean.Player;
 import com.nctc2017.bean.Ship;
+import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.AmmoDao;
 import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.ExecutorDao;
@@ -74,12 +75,14 @@ public class BattleService {
                 decreaseOfDistance(enemyId);
                 decreaseOfDistance(playerId);
                 
+                int dist = battle.getDistance();
+                
                 LOG.debug("Start damage calc");
-                executorDao.calculateDamage(battle.getAmmoCannon(playerId), plyerShipId, enemyShipId);
+                executorDao.calculateDamage(battle.getAmmoCannon(playerId), plyerShipId, enemyShipId, dist);
                 LOG.debug("End damage calc");
                 
                 LOG.debug("Enemy_" + enemyId + " Start damage calc");
-                executorDao.calculateDamage(battle.getAmmoCannon(enemyId), enemyShipId, plyerShipId);
+                executorDao.calculateDamage(battle.getAmmoCannon(enemyId), enemyShipId, plyerShipId, dist);
                 LOG.debug("Enemy_" + enemyId + " End damage calc");
                 
                 int enemyHp = shipDao.getCurrentShipHealth(enemyShipId);
@@ -271,6 +274,15 @@ public class BattleService {
         
         Ship ship = shipDao.findShip(shipId);
         Map<String, String> cannons = cannonDao.getCurrentQuantity(shipId);
+        
+        int kulevrinDist = cannonDao.getDistance(DatabaseObject.KULEVRIN_TEMPLATE_ID);
+        int bombardDist = cannonDao.getDistance(DatabaseObject.BOMBARD_TEMPLATE_ID);
+        int mortarDist = cannonDao.getDistance(DatabaseObject.MORTAR_TEMPLATE_ID);
+        Map<String, Integer> cannonsDist = new HashMap<>();
+        cannonsDist.put("Mortar", mortarDist);
+        cannonsDist.put("Bombard", bombardDist);
+        cannonsDist.put("Kulevrin", kulevrinDist);
+        
         BigInteger holdId = holdDao.findHold(shipId);
         List<Ammo> ammos = ammoDao.getAllAmmoFromHold(holdId);
         
@@ -279,7 +291,9 @@ public class BattleService {
             ammoQuantity.put(ammo.getName(), ammo.getQuantity());
         }
         
-        return new ShipWrapper(ship, cannons, ammoQuantity);
+        ShipWrapper shipWrapper = new ShipWrapper(ship, cannons, ammoQuantity);
+        shipWrapper.setCannonsDist(cannonsDist);
+        return shipWrapper;
     }
 
     public Ship getEnemyShipInBattle(BigInteger playerId) throws BattleEndException {
@@ -296,6 +310,7 @@ public class BattleService {
         private Ship ship;
         private Map<String, String> cannons;
         private Map<String, Integer>  ammo;
+        private Map<String, Integer> cannonsDist;
         public ShipWrapper(Ship ship, Map<String, String> cannons, Map<String, Integer> ammo) {
             this.ship = ship;
             this.cannons = cannons;
@@ -312,6 +327,14 @@ public class BattleService {
 
         public Map<String, Integer> getAmmo() {
             return ammo;
+        }
+
+        public Map<String, Integer> getCannonsDist() {
+            return cannonsDist;
+        }
+
+        public void setCannonsDist(Map<String, Integer> cannonsDist) {
+            this.cannonsDist = cannonsDist;
         }
         
     }

@@ -695,7 +695,9 @@ END;
 
 CREATE OR REPLACE FUNCTION buckshot_damage (ammo_to_cannon INT_LIST_LIST, 
                               cannons_type_count INT_LIST, 
+                              cannons_dist INT_LIST,
                               damages INT_LIST, 
+                              dist INTEGER,
                               e_crew INTEGER) RETURN INTEGER IS
     val INTEGER;
     ammo_qnt INTEGER; 
@@ -717,6 +719,8 @@ BEGIN
     FOR i IN 1 .. ammo_to_cannon.LAST
     LOOP
         ammo_qnt := ammo_to_cannon(i)(2);
+        CONTINUE WHEN ammo_qnt = 0 OR cannons_type_count(i) = 0 OR cannons_dist(i) < dist;
+        
         /*DBMS_OUTPUT.PUT_LINE('BUCKSHOT IN CANNONS with type' || i || ': ' || ammo_qnt);*/
         all_damage := ammo_qnt * damages(i);
         /*DBMS_OUTPUT.PUT_LINE('DAMAGE: MAX ' || (all_damage * 0.8) 
@@ -767,7 +771,10 @@ END;
 /
 
 CREATE OR REPLACE FUNCTION calc_cannonball_damage (ammo_to_cannon INT_LIST_LIST,
+                                                   cannons_type_count INT_LIST,
+                                                   cannons_dist INT_LIST,
                                                    damages INT_LIST,
+                                                   dist INTEGER,
                                                    e_health INTEGER) 
                                                    RETURN INTEGER IS 
     ammo_qnt INTEGER;
@@ -779,6 +786,8 @@ BEGIN
     FOR i IN 1 .. ammo_to_cannon.LAST
     LOOP
         ammo_qnt := ammo_to_cannon(i)(1);
+        CONTINUE WHEN ammo_qnt = 0 OR cannons_type_count(i) = 0 OR cannons_dist(i) < dist;
+
         /*DBMS_OUTPUT.PUT_LINE('CANNONBALL IN CANNONS with type' || i || ': ' || ammo_qnt);*/
         all_damage := ammo_qnt * damages(i);
         /*DBMS_OUTPUT.PUT_LINE('DAMAGE: MAX ' || all_damage 
@@ -808,7 +817,10 @@ END;
 
 CREATE OR REPLACE FUNCTION calc_chains_damage (speeds_ number_array,
                                                ammo_to_cannon INT_LIST_LIST,
+                                               cannons_type_count INT_LIST,
+                                               cannons_dist INT_LIST,
                                                damages INT_LIST,
+                                               dist INTEGER,
                                                mast_obj_ids number_array) 
                                                RETURN number_array IS
     ammo_qnt INTEGER;
@@ -821,6 +833,8 @@ BEGIN
     FOR i IN 1 .. ammo_to_cannon.LAST
     LOOP
         ammo_qnt := ammo_to_cannon(i)(3);
+        CONTINUE WHEN ammo_qnt = 0 OR cannons_type_count(i) = 0 OR cannons_dist(i) < dist;
+        
         /*DBMS_OUTPUT.PUT_LINE('CHAIN IN CANNONS with type' || i || ': ' || ammo_qnt);*/
         all_damage := ammo_qnt * damages(i) * DBMS_RANDOM.VALUE(0.05, 0.35);
         /*DBMS_OUTPUT.PUT_LINE('START DAMAGE WITH VALUE: ' || all_damage);*/
@@ -857,7 +871,8 @@ END;
 CREATE OR REPLACE PROCEDURE calculate_damage (in_l VARCHAR2,
                                          playerShipId NUMBER, 
                                          enemyShipId NUMBER,
-                                         dimension_ INTEGER) IS
+                                         dimension_ INTEGER,
+                                         distance INTEGER) IS
     ammo_to_cannon INT_LIST_LIST := INT_LIST_LIST();
     j INTEGER;
     t_kulevrin INTEGER := 13;
@@ -870,6 +885,7 @@ CREATE OR REPLACE PROCEDURE calculate_damage (in_l VARCHAR2,
     t_cball_id INTEGER := 14;
     t_chain_id INTEGER := 15;
     t_bshot_id INTEGER := 16;
+    cannon_dist_attr INTEGER := 16;
     ex_custom EXCEPTION;
     PRAGMA EXCEPTION_INIT( ex_custom, -20001 );
     damage_atr_id NUMBER(38) := 15;
@@ -886,11 +902,28 @@ CREATE OR REPLACE PROCEDURE calculate_damage (in_l VARCHAR2,
     cannons_type_count INT_LIST := INT_LIST();
     speeds number_array;
     mast_obj_ids number_array;
+    cannons_dist INT_LIST := INT_LIST();
 BEGIN
     ammo_to_cannon := to_array(in_l, dimension_);
-                                 /*STEP 1 Hull Damage*/
+                                 
+             /*====Getting distance of cannons of each type====*/
+    cannons_dist.EXTEND(ammo_to_cannon.LAST);
+    
+    SELECT value INTO cannons_dist(1) 
+    FROM ATTRIBUTES_VALUE 
+    WHERE attr_id = cannon_dist_attr AND object_id = t_mortar;
+    
+    SELECT value INTO cannons_dist(2) 
+    FROM ATTRIBUTES_VALUE 
+    WHERE attr_id = cannon_dist_attr AND object_id = t_bombard;
+    
+    SELECT value INTO cannons_dist(3) 
+    FROM ATTRIBUTES_VALUE 
+    WHERE attr_id = cannon_dist_attr AND object_id = t_kulevrin;
+    
               /*====Getting count of cannon of each type====*/
     cannons_type_count.EXTEND(ammo_to_cannon.LAST);
+    
     SELECT count(OBJECT_ID) INTO cannons_type_count(1) 
     FROM OBJECTS 
     WHERE PARENT_ID = playerShipId AND SOURCE_ID = t_mortar;
@@ -922,6 +955,7 @@ BEGIN
     
               /*====Getting damages of each cannon types====*/
     damages.EXTEND(ammo_to_cannon.LAST);
+    
     SELECT atr_v.VALUE INTO damages(1) 
     FROM ATTRIBUTES_VALUE atr_v 
     WHERE atr_v.OBJECT_ID = t_mortar AND atr_v.ATTR_ID = damage_atr_id;
@@ -936,6 +970,8 @@ BEGIN
     FROM ATTRIBUTES_VALUE atr_v 
     WHERE atr_v.OBJECT_ID = t_kulevrin AND atr_v.ATTR_ID = damage_atr_id;
     /*DBMS_OUTPUT.PUT_LINE('KULIVRINE DAMAGE: '|| damages(3) || CHR(10));*/
+    
+                            /*STEP 1 Hull Damage*/
     
                        /*====Getting enemy health====*/
     enemy_health := get_attr_val(enemyShipId, ship_health_id);
@@ -954,7 +990,8 @@ BEGIN
     IF total_ammo_qnt > 0 AND ammo_for_shot > 0 THEN
                             /*====Damage calculating====*/
         enemy_health := 
-            calc_cannonball_damage (ammo_to_cannon, damages, enemy_health);
+            calc_cannonball_damage (ammo_to_cannon, cannons_type_count, 
+                                    cannons_dist, damages, distance, enemy_health);
         
                       /*====Decrease cannonballs=====*/
         total_ammo_qnt := total_ammo_qnt - ammo_for_shot;
@@ -984,7 +1021,7 @@ BEGIN
     IF total_ammo_qnt > 0 AND ammo_for_shot > 0 THEN
                        /*====Damage crew calculating====*/
         enemy_crew := buckshot_damage (ammo_to_cannon, cannons_type_count, 
-                                        damages, enemy_crew);   
+                                   cannons_dist, damages, distance, enemy_crew);   
                               
                         /*====Decrease buckshot====*/  
         total_ammo_qnt := total_ammo_qnt - ammo_for_shot;
@@ -1019,8 +1056,8 @@ BEGIN
     
     IF total_ammo_qnt > 0 AND ammo_for_shot > 0 THEN
                       /*====Damage mast calculating====*/
-        speeds := calc_chains_damage (speeds, ammo_to_cannon, 
-                                      damages, mast_obj_ids);
+        speeds := calc_chains_damage (speeds, ammo_to_cannon, cannons_type_count, 
+                                   cannons_dist, damages, distance, mast_obj_ids);
         
                      /*====Decrease chain====*/  
         total_ammo_qnt := total_ammo_qnt - ammo_for_shot;
