@@ -111,6 +111,8 @@ public class TravelService {
             BigInteger enemyId = travelManager.getEnemyId(playerId);
             stopAutoDecisionTimer(enemyId);
             battleManager.newBattleBetween(playerId, enemyId);
+            LOG.debug("Stop relocation timer for enemy");
+            travelManager.stopRelocationTimer(enemyId);
             travelManager.setParticipated(playerId);
             travelManager.setParticipated(enemyId);
             LOG.debug("     --==battle created!==--");

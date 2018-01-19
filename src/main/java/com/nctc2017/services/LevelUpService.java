@@ -2,6 +2,8 @@ package com.nctc2017.services;
 
 
 import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.exception.UpdateException;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +11,8 @@ import java.math.BigInteger;
 
 @Service
 public class LevelUpService {
+    private static Logger log = Logger.getLogger(LevelUpService.class);
+
     @Autowired
     private PlayerDao playerDao;
     @Autowired
@@ -66,7 +70,16 @@ public class LevelUpService {
 
     public void incomeUp(BigInteger playerId) {
        int curPass = playerDao.getCurrentPassiveIncome(playerId);
-       playerDao.updatePassiveIncome(playerId,curPass+upPassiveIncome);
+       int lvl = getCurrentLevel(playerId);
+       int next = getNextLevel(playerId);
+       if(lvl>=next) {
+           playerDao.updatePassiveIncome(playerId, curPass + upPassiveIncome);
+       }
+       else{
+           UpdateException ex = new UpdateException("Level greater then next level update");
+           log.error("Your current level should be greater or equal to level at which the update is possible",ex);
+           throw ex;
+       }
     }
 
     public int getMaxShips(BigInteger playerId){
@@ -75,7 +88,16 @@ public class LevelUpService {
 
     public void shipUp(BigInteger playerId) {
         int curMaxShips = playerDao.getCurrentMaxShips(playerId);
-        playerDao.updateMaxShips(playerId,curMaxShips+upMaxShips);
+        int lvl = getCurrentLevel(playerId);
+        int next = getNextLevel(playerId);
+        if(lvl>=next) {
+            playerDao.updateMaxShips(playerId, curMaxShips + upMaxShips);
+        }
+        else{
+            UpdateException ex = new UpdateException("Level greater then next level update");
+            log.error("Your current level should be greater or equal to level at which the update is possible",ex);
+            throw ex;
+        }
     }
 
     public int getNextLevel(BigInteger playerId){

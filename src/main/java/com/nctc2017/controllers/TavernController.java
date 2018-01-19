@@ -36,22 +36,43 @@ public class TavernController {
         ModelAndView model=new ModelAndView();
         BigInteger playerId = userDetails.getPlayerId();
         List<Ship> ships = shipService.getAllPlayerShips(playerId);
-        int completedShip=0;
-        for(int i = 0; i < ships.size(); i++){
-            if(ships.get(i).getMaxSailorsQuantity()==ships.get(i).getCurSailorsQuantity()){
-                completedShip++;
-            }
-        }
+
         int sailorCost = shipService.getSailorCost();
         int money = moneyService.getPlayersMoney(playerId);
+        int completedShip = shipService.numShipsCompleted(playerId);
         model.addObject("msg", "This is protected page - Only for Users!");
         model.addObject("money", money);
         model.addObject("city", city);
         model.addObject("ships", ships);
+        model.addObject("completedShip", completedShip);
         model.addObject("sailorCost",sailorCost);
-        model.addObject("completedShip",completedShip);
         model.setViewName("TavernView");
         return model;
+    }
+
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/maxValue", method = RequestMethod.GET)
+    @ResponseBody
+    public String[] maxValue(
+            @RequestParam(value = "shipId", required = false) BigInteger shipId,
+            @AuthenticationPrincipal PlayerUserDetails userDetails){
+        String results[] = new String[2];
+        Ship ship = shipService.findShip(shipId);
+        int curr = ship.getCurSailorsQuantity();
+        int limit = ship.getMaxSailorsQuantity();
+        int money = moneyService.getPlayersMoney(userDetails.getPlayerId());
+        int cost = shipService.getSailorCost();
+        int canToBuy = (int)Math.floor(money / cost);
+        if (canToBuy < (limit - curr)) {
+            results[0] = String.valueOf(canToBuy);
+            results[1] = String.valueOf(canToBuy*cost);
+            return results;
+        }
+        else {
+            results[0] = String.valueOf(limit-curr);
+            results[1] = String.valueOf((limit-curr)*cost);
+            return  results;
+        }
     }
 
     @Secured("ROLE_USER")
@@ -59,34 +80,21 @@ public class TavernController {
     @ResponseBody
     public String[] buySailors(@RequestParam(value="shipId",required = false) BigInteger shipId,
                                @RequestParam(value="num",required = false) String newSailors,
-                               @RequestParam(value="toSpend",required = false) String cost,
                                @AuthenticationPrincipal PlayerUserDetails userDetails){
-        Ship ship = shipService.findShip(shipId);
         int oldNumSailors = shipService.getSailorsNumber(shipId);
-        int costForSailors;
-        int sailors;
         int sailorCost = shipService.getSailorCost();
-        if(Integer.valueOf(cost)>moneyService.getPlayersMoney(userDetails.getPlayerId())){
-            sailors = (int) Math.ceil((moneyService.getPlayersMoney(userDetails.getPlayerId())/sailorCost));
-            costForSailors =sailors*sailorCost;
-            sailors = oldNumSailors+sailors;
-        }
-        else if((oldNumSailors+Integer.valueOf(newSailors))>ship.getMaxSailorsQuantity()){
-            costForSailors=Integer.valueOf(cost)-
-                    ((oldNumSailors+Integer.valueOf(newSailors))-ship.getMaxSailorsQuantity())*shipService.getSailorCost();
-            sailors=ship.getMaxSailorsQuantity();
-        }
-        else
-        {
-            costForSailors=Integer.valueOf(cost);
-            sailors=oldNumSailors+Integer.valueOf(newSailors);
-        }
-        int money = moneyService.deductMoney(userDetails.getPlayerId(), costForSailors);
+        int cost = sailorCost*Integer.valueOf(newSailors);
+        int sailors = oldNumSailors + Integer.valueOf(newSailors);
+        int money = moneyService.deductMoney(userDetails.getPlayerId(), cost);
         shipService.updateShipSailorsNumber(shipId, sailors);
         int curSailors = shipService.getSailorsNumber(shipId);
-        String[] results = new String[2];
+        boolean complete = shipService.isAllShipsCompleted(userDetails.getPlayerId());
+        boolean enoughMoney = moneyService.isEnoughMoney(userDetails.getPlayerId(), sailorCost);
+        String[] results = new String[4];
         results[0] = String.valueOf(money);
         results[1] = String .valueOf(curSailors);
+        results[2] = String.valueOf(complete);
+        results[3] = String.valueOf(enoughMoney);
         return results;
     }
 

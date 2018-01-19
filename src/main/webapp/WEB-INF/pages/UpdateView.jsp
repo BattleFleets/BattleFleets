@@ -4,6 +4,11 @@
 <link href="static/css/general.css" rel="stylesheet" media="screen">
 <link href="static/css/update.css" rel="stylesheet" media="screen">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/jquery-ui.min.js"></script>
+<link href="static/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet">
+<link href="static/bootstrap-3.3.7/css/bootstrap-theme.css" rel="stylesheet">
+<script src="static/bootstrap-3.3.7/js/bootstrap.js"></script>
 <html>
 <c:import url="/addHeader"/>
 <div align="center" id="congratulate">
@@ -74,6 +79,10 @@
                         }
                     }
 
+            },
+            error : function(e) {
+                console.log("ERROR",e);
+                window.location.href="/city";
             }
         } );
     }
@@ -98,7 +107,12 @@
                         $('#exit').html("<a href='/city' class='logOutBottom'>"+"Return to city"+"</a>");
                         if(parseInt($('#imp').val())>parseInt($('#maxLvl').val())) {
                             $('#improveWrapper').css('display', 'none');
-                        }                    }
+                        }
+                    }
+            },
+            error : function(e) {
+                console.log("ERROR",e);
+                window.location.href="/city";
             }
         } );
     }

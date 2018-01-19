@@ -7,16 +7,10 @@
     <link href="static/css/travel.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/jquery-ui.min.js"></script>
     <script src="static/js/IsBattleStartTask.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        function setHalfVolume() {
-            var audio = document.getElementById("myaudio");
-            audio.volume = 0.1;
-        };
-    </script>
+    <script src="static/js/volume.js" type="text/javascript"></script>
     <script type="text/javascript">
         var number = 1;
         var city = '${city}';
@@ -51,7 +45,7 @@
 <div>
     <p class="timer" id="timer"></p>
 </div>
-<audio autoplay id="myaudio" onloadeddata="setHalfVolume()">
+<audio autoplay id="back_audio" onloadeddata="setVolume('back_audio', 0.1);">
   <source src="static/audio/piraty-karibskogo-morya--original.mp3" type="audio/mp3">
 </audio>
 <div id="warning_info">
