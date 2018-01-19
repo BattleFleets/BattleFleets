@@ -201,7 +201,7 @@ function buildBuyTable(type){
                     picture=mast1Link;
             }
             trHTML += "<tr><td>"
-                + "<img width=\"50\" height=\"50\" src="
+                + "<img width=\"60\" height=\"50\" src="
                 + picture+ "/>" + "</td><td>"
                 + item.name +"<br/>"+item.goodsDescription+"</td><td>"
                 + item.buyingPrice + "</td><td>"
@@ -286,7 +286,7 @@ function buildSaleTable(type){
                     picture=mast1Link;
             }
             trHTML += "<tr><td>"
-                + "<img width=\"50\" height=\"50\" src="
+                + "<img width=\"60\" height=\"50\" src="
                 + picture+ "/>" + "</td><td>"
                 + item.name +"<br/>"+item.description+"</td><td>"
                 + item.salePrice + "</td><td>"
@@ -382,7 +382,7 @@ $(document).ready(function() {
         }
         else if(quantity<=0){
             $("#messageBuy").css("color","#e54b4b");
-            $("#messageBuy").append("The quantity can not be negative!");
+            $("#messageBuy").append("The quantity can not be negative or zero!");
         }
         else if($("#modalQuantity").val()*$("#oneCount").html()>$("#money").html())
         {
