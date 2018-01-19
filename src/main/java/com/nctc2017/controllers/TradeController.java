@@ -14,11 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.method.annotation.*;
 
 import java.math.BigInteger;
 
@@ -52,6 +50,9 @@ public class TradeController {
         try{
             return ResponseEntity.status(HttpStatus.OK).body(tradeService
                     .buy(userDetails.getPlayerId(),goodsTemplateId,price,quantity));
+        }
+        catch(GoodsLackException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         catch(MoneyLackException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -87,8 +88,7 @@ public class TradeController {
     @ResponseBody
     public String getAllGoodsForBuying(@AuthenticationPrincipal PlayerUserDetails userDetails)
             throws JsonProcessingException {
-        //moneyService.addMoney(userDetails.getPlayerId(),30000000);
-        //tradeService.buy(userDetails.getPlayerId(), DatabaseObject.RUM_TEMPLATE_ID, tradeService.getMarketGoodsByPlayerId(userDetails.getPlayerId()).get(19).getBuyingPrice(), 11);
+        //moneyService.addMoney(userDetails.getPlayerId(),999000000);
         return new ObjectMapper().writerWithView(View.Buy.class)
                     .writeValueAsString(tradeService.getMarketGoodsByPlayerId(userDetails.getPlayerId()));
     }
@@ -108,6 +108,11 @@ public class TradeController {
     public String getMoney(@AuthenticationPrincipal PlayerUserDetails userDetails){
         int money = moneyService.getPlayersMoney(userDetails.getPlayerId());
         return String.valueOf(money);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<String> handleBadParameters(MethodArgumentTypeMismatchException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quantity must be a natural number");
     }
 
 }

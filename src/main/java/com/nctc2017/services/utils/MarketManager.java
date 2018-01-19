@@ -2,6 +2,7 @@ package com.nctc2017.services.utils;
 
 import com.nctc2017.bean.City;
 import com.nctc2017.bean.Market;
+import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.GoodsForSaleDao;
 import com.nctc2017.dao.PlayerDao;
@@ -72,6 +73,14 @@ public class MarketManager {
 
     public boolean isActualSalePrice(BigInteger cityId, BigInteger goodsId, int price) {
         return price == markets.get(cityId).getGoodsSalePrice(goodsId);
+    }
+
+    public boolean isActualBuyingQuantity(BigInteger cityId, BigInteger goodsId, int quantity)
+    {
+        return ((goodsId == DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID)
+                || (goodsId == DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID)
+                || (goodsId == DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID)
+                || (quantity <= markets.get(cityId).getGoodsQuantity(goodsId)));
     }
 
     private void generateMarketForCity(Market market) {

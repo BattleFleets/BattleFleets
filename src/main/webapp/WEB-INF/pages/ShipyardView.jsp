@@ -12,8 +12,8 @@
             function setHalfVolume() {
                 var audio = document.getElementById("gavan");
                 var audio1 = document.getElementById("gavan1");
-                audio.volume = 0.01;
-                audio1.volume = 0.01;
+                audio.volume = 0.1;
+                audio1.volume = 0.1;
             };
 
             function conf(){

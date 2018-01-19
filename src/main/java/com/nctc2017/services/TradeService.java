@@ -24,14 +24,9 @@ public class TradeService {
     private static final Logger log = Logger.getLogger(TradeService.class);
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
     private MoneyService moneyService;
     @Autowired
     private MarketManager marketManager;
-    @Autowired
-    private CargoMovementService cargoMovementService;
 
     @Autowired
     private PlayerDao playerDao;
@@ -83,6 +78,11 @@ public class TradeService {
     public String buy(BigInteger playerId, BigInteger goodsTemplateId, int price, int quantity) {
         int totalCost = price * quantity;
 
+        if (quantity<0) {
+            RuntimeException e = new IllegalArgumentException("The quantity can not be negative");
+            log.error("TradeService Exception while buying", e);
+            throw e;
+        }
         if (!moneyService.isEnoughMoney(playerId, totalCost)) {
             MoneyLackException e = new MoneyLackException("Not enough money to pay " + totalCost);
             log.error("TradeService Exception while buying goods", e);
@@ -94,6 +94,12 @@ public class TradeService {
             log.error("TradeService Exception while buying", e);
             throw e;
         }
+
+        /*if(!marketManager.isActualBuyingQuantity(cityId, goodsTemplateId, quantity)){
+            GoodsLackException e = new GoodsLackException("Try to buy more goods than there is in the market");
+            log.error("TradeService Exception while buying", e);
+            throw e;
+        }*/
 
 
         switch (marketManager.findMarketByCityId(cityId).getGoodsType(goodsTemplateId)) {
@@ -182,6 +188,12 @@ public class TradeService {
 
 
     public String sell(BigInteger playerId, BigInteger goodsId, BigInteger goodsTemplateId, int price, int quantity) {
+
+        if (quantity<0) {
+            RuntimeException e = new IllegalArgumentException("The quantity can not be negative");
+            log.error("TradeService Exception while selling", e);
+            throw e;
+        }
 
         BigInteger cityId = playerDao.getPlayerCity(playerId);
         if (!marketManager.isActualSalePrice(cityId, goodsTemplateId, price)) {
