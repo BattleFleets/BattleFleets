@@ -16,9 +16,9 @@
 </head>
 
 <body timer="${timer}">
-<audio autoplay id="back_audio" onloadeddata="setVolume(back_audio, 0.1)">
-    <source src="static/audio/battle_preparing.mp3" type="audio/mp3">
-</audio>
+    <audio autoplay id="back_audio" onloadeddata="setVolume('back_audio', 0.1)">
+        <source src="static/audio/battle_preparing.mp3" type="audio/mp3">
+    </audio>
     <div align="right" class="exit_button_block">
         <button id="exit" disabled="disabled" class="button_exit" style="/* vertical-align:middle; */width: 100%;height: 100%;" name="exit" type="submit">
             <span class="icon_exit_disable"></span><span>Exit</span>

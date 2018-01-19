@@ -45,7 +45,7 @@
 <div>
     <p class="timer" id="timer"></p>
 </div>
-<audio autoplay id="back_audio" onloadeddata="setVolume(back_audio, 0.1)">
+<audio autoplay id="back_audio" onloadeddata="setVolume('back_audio', 0.1);">
   <source src="static/audio/piraty-karibskogo-morya--original.mp3" type="audio/mp3">
 </audio>
 <div id="warning_info">
