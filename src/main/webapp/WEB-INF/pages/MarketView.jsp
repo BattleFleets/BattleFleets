@@ -14,10 +14,10 @@
         <source src="static/audio/market.mp3" type="audio/mp3">
     </audio>
 </head>
-<div align="center">
-	<h1 class="titleText">${city}</h1>
-</div>
 <body>
+<div align="center">
+    <h1 class="titleText">Market ${city}</h1>
+</div>
 <header>
     <p>Money <span id="money"></span></p>
 </header>
@@ -92,7 +92,7 @@
 </div>
 
 <div class="col-sm-5 panels">
-    <h1 class="messageText">Stock</h1>
+    <h1 class="messageText"><a href="/stock?page=market&city=${city}">Stock</a></h1>
     <div class="table">
         <ul class="nav nav-tabs center-block">
             <li><a href="#" class="saleJson" id="goodSaleJson">Goods</a></li>

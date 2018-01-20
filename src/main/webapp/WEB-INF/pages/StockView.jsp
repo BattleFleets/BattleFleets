@@ -533,7 +533,7 @@ $(document).ready(function () {
 	<h1 class="titleText">Stock</h1>
 </div>
 <c:import url="/addHeader"/>
-<a id="returnLink" href='/'+${page} class="logOutBottom">Return to ${page}</a>
+<a id="returnLink" href="/${page}?city=${city}" class="logOutBottom">Return to ${page}</a>
 
 <table style=" table-layout: fixed; width: 70%; margin-left: auto; margin-right: auto;" cellspacing="10" cellpadding="5">
     <tbody>
