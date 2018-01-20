@@ -374,9 +374,9 @@ $(document).ready(function() {
         var goodsTemplateId = buyObject.templateId;
         var price = buyObject.buyingPrice;
         var quantity = $("#modalQuantity").val();
-        if(quantity>buyObject.quantity){
-            $("#messageBuy").css("color","#e54b4b");
-            $("#messageBuy").html("Try to buy more goods than there is in the market");
+        if((quantity+price+goodsTemplateId) % 1 !== 0){
+            $("#messageBuy").css("color","#97b2e5");
+            $("#messageBuy").html("Quantity must be a natural number");
         }
         else if(quantity<=0){
             $("#messageBuy").css("color","#e54b4b");
@@ -387,9 +387,9 @@ $(document).ready(function() {
             $("#messageBuy").css("color","#e54b4b");
             $("#messageBuy").html("Not enough money to pay");
         }
-        else if((quantity+price+goodsTemplateId) % 1 !== 0){
-            $("#messageBuy").css("color","#97b2e5");
-            $("#messageBuy").html("Quantity must be a natural number");
+        else if(quantity>buyObject.quantity){
+            $("#messageBuy").css("color","#e54b4b");
+            $("#messageBuy").html("Try to buy more goods than there is in the market");
         }
         else{
             var string = "goodsTemplateId="+goodsTemplateId
@@ -468,17 +468,17 @@ $(document).ready(function() {
         var goodsTemplateId = saleObject.goodsTemplateId;
         var price = saleObject.salePrice;
         var quantity = $("#modalSaleQuantity").val();
-        if(quantity>saleObject.quantity){
-            $("#messageSale").css("color","#e54b4b");
-            $("#messageSale").html("Trying to sell more goods than have");
+        if((quantity+price+goodsTemplateId) % 1 !== 0){
+            $("#messageSale").css("color","#97b2e5");
+            $("#messageSale").html("Quantity must be a natural number");
         }
         else if(quantity<=0) {
             $("#messageSale").css("color","#e54b4b");
             $("#messageSale").html("The quantity can not be negative or zero");
         }
-        else if((quantity+price+goodsTemplateId) % 1 !== 0){
-            $("#messageSale").css("color","#97b2e5");
-            $("#messageSale").html("Quantity must be a natural number");
+        else if(quantity>saleObject.quantity){
+            $("#messageSale").css("color","#e54b4b");
+            $("#messageSale").html("Trying to sell more goods than have");
         }
         else{
             var string = "goodsId="+goodId
