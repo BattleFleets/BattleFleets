@@ -68,7 +68,6 @@ public class CargoMovementService {
     public BigInteger getShipHold(BigInteger shipId){ return holdDao.findHold(shipId);}
 
     public String moveCargoTo(BigInteger cargoId, BigInteger destinationId, int quantity) {
-        LOG.debug("cargo id = " + cargoId + "destination id = " + destinationId + "quantity" + quantity);
         if(quantity < 1) {
             IllegalArgumentException e = new IllegalArgumentException("quantity is not valid");
             LOG.error("Exception while moving cargo, not valid quantity = " + quantity);
