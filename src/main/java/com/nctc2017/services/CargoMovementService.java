@@ -5,8 +5,11 @@ import com.nctc2017.bean.GoodsForSale;
 import com.nctc2017.bean.GoodsForBuying.GoodsType;
 import com.nctc2017.dao.*;
 
+import com.nctc2017.dao.utils.Validator;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -14,7 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service("cargoMovementService")
+@Transactional
 public class CargoMovementService {
+    private static final Logger LOG = Logger.getLogger(CargoMovementService.class);
 
     @Autowired
     private GoodsDao goodsDao;
@@ -29,6 +34,8 @@ public class CargoMovementService {
     private StockDao stockDao;
     @Autowired
     private HoldDao holdDao;
+    @Autowired
+    private ShipDao shipDao;
 
     @Autowired
     private ExecutorDao executorDao;
@@ -38,8 +45,44 @@ public class CargoMovementService {
 
     }
 
-    public void moveCargoTo(BigInteger cargoId, BigInteger destinationId, int quantity) {
-        executorDao.moveCargoTo(cargoId, destinationId, quantity);
+    public void equipShip(BigInteger equipmentId, GoodsType type, BigInteger shipId){
+        boolean result = false;
+        if (type == GoodsType.CANNON){
+            result = shipDao.setCannonOnShip(equipmentId, shipId);
+        }
+        if(type == GoodsType.MAST){
+            result = shipDao.setMastOnShip(equipmentId, shipId);
+        }
+        if (!result){
+            IllegalArgumentException e = new IllegalArgumentException("Can not equip the ship!");
+            LOG.error("equipShip method exception while setting inventory");
+            throw e;
+        }
+
+    }
+
+    public BigInteger getPlayerStock(BigInteger playerId){
+        return stockDao.findStockId(playerId);
+    }
+
+    public BigInteger getShipHold(BigInteger shipId){ return holdDao.findHold(shipId);}
+
+    public String moveCargoTo(BigInteger cargoId, BigInteger destinationId, int quantity) {
+        LOG.debug("cargo id = " + cargoId + "destination id = " + destinationId + "quantity" + quantity);
+        if(quantity < 1) {
+            IllegalArgumentException e = new IllegalArgumentException("quantity is not valid");
+            LOG.error("Exception while moving cargo, not valid quantity = " + quantity);
+            throw e;
+        }
+        return executorDao.moveCargoTo(cargoId, destinationId, quantity);
+    }
+
+    public void moveCargoToStock(BigInteger cargoId, BigInteger playerId){
+        stockDao.addCargo(cargoId, playerId);
+    }
+
+    public void moveCargoToHold(BigInteger cargoId, BigInteger holdId){
+        holdDao.addCargo(cargoId, holdId);
     }
     
     public List<GoodsForSale> getCargoFromShip(BigInteger playerId, BigInteger shipId) {
@@ -98,11 +141,10 @@ public class CargoMovementService {
                         ammo.getThingId(), 
                         ammo.getTamplateId(), 
                         ammo.getQuantity(), 
-                        GoodsType.CANNON)
+                        GoodsType.AMMO)
                     .setName(ammo.getName())
                     .setSalePrice(ammo.getCost()/2)
-                    .appendDescription("damage type" + ammo.getDamageType())
-                    .appendDescription("distance "));
+                    .appendDescription("For " + ammo.getDamageType()));
             }
         }
         
@@ -112,11 +154,10 @@ public class CargoMovementService {
                         mast.getThingId(), 
                         mast.getTamplateId(), 
                         mast.getQuantity(), 
-                        GoodsType.CANNON)
-                    .setName("Mast. Jast a Mast!")
+                        GoodsType.MAST)
+                    .setName("Mast. Just a Mast!")
                     .setSalePrice(mast.getCost()/2)
-                    .appendDescription("speed " + mast.getCurSpeed() + "/" + mast.getMaxSpeed())
-                    .appendDescription("Quantity " + mast.getQuantity()));
+                    .appendDescription("speed: " + mast.getCurSpeed() + "/" + mast.getMaxSpeed()));
             }
         }
         
@@ -126,7 +167,7 @@ public class CargoMovementService {
                         goodsInst.getThingId(), 
                         goodsInst.getTamplateId(), 
                         goodsInst.getQuantity(), 
-                        GoodsType.CANNON)
+                        GoodsType.GOODS)
                     .setName(goodsInst.getName())
                     .setSalePrice(0)
                     .appendDescription("Purchase price: " + goodsInst.getPurchasePrice()));

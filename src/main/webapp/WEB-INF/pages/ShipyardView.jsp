@@ -109,10 +109,11 @@
 			</td>
 		</tr>
 		<tr align="center">
-			<td>
-			<button class="button" style="vertical-align:middle" name="tavern" type="submit" value="Tavern ${city}" formaction="/tavern">
-			<span>Distribute resources</span>
+			<td> <form action="<c:url value="/stock" />" method="GET">
+			<button class="button" name = "stock" value = "${city}" formaction="/stock" style="vertical-align:middle" type="submit" action="<c:url value="/stock" />" method="GET">
+			<span>Stock</span>
 			</button>
+			<form>
 			</td>
 		</tr>
 	</table>
