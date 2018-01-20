@@ -2,12 +2,15 @@ package com.nctc2017.dao.utils;
 
 import com.nctc2017.bean.Cannon;
 import com.nctc2017.bean.Goods;
+import com.nctc2017.bean.Player;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseAttribute;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.constants.Query;
 import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.GoodsDao;
+import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.dao.ShipDao;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,10 @@ public class QueryBuilderTest {
     private CannonDao cannonDao;
     @Autowired
     private GoodsDao goodsDao;
+    @Autowired
+    private PlayerDao playerDao;
+    @Autowired
+    private ShipDao shipDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -94,29 +101,34 @@ public class QueryBuilderTest {
     @Test
     @Rollback(true)
     public void testUpdateParentId() {
-        BigInteger objectId = new BigInteger("59");
-        BigInteger parentId = new BigInteger("46");
+       playerDao.addNewPlayer("Steve", "1111", "Rogers@gmail.com");
+       playerDao.addNewPlayer("Tony", "2222", "Stark@gmail.com");
+       Player steve = playerDao.findPlayerByLogin("Steve");
+       Player tony = playerDao.findPlayerByLogin("Tony");
+       BigInteger shipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, steve.getPlayerId());
 
-        PreparedStatementCreator actualPreparedStmt = QueryBuilder.updateParent(objectId, parentId).build();
+        PreparedStatementCreator actualPreparedStmt = QueryBuilder.updateParent(shipId, tony.getPlayerId()).build();
         jdbcTemplate.update(actualPreparedStmt);
 
-        String parentIdQuery = "select parent_id from objects where object_id = 59";
-        BigInteger resultParentId = jdbcTemplate.queryForObject(parentIdQuery, BigDecimal.class).toBigInteger();
+        BigInteger resultParentId = jdbcTemplate.queryForObject("select parent_id from objects where object_id = ?", BigDecimal.class,
+                shipId.longValueExact()).toBigInteger();
 
-        assertEquals(parentId, resultParentId);
+        assertEquals(tony.getPlayerId(), resultParentId);
     }
 
     @Test
     @Rollback(true)
     public void testUpdateParentIdToNull() {
-        BigInteger objectId = new BigInteger("59");
+        playerDao.addNewPlayer("Steve", "1111", "Rogers@gmail.com");
+        Player steve = playerDao.findPlayerByLogin("Steve");
+        BigInteger shipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, steve.getPlayerId());
         BigInteger parentId = null;
 
-        PreparedStatementCreator actualPreparedStmt = QueryBuilder.updateParent(objectId, parentId).build();
+        PreparedStatementCreator actualPreparedStmt = QueryBuilder.updateParent(shipId, parentId).build();
         jdbcTemplate.update(actualPreparedStmt);
 
-        String parentIdQuery = "select parent_id from objects where object_id = 59";
-        BigDecimal idValue = jdbcTemplate.queryForObject(parentIdQuery, BigDecimal.class);
+        BigDecimal idValue = jdbcTemplate.queryForObject("select parent_id from objects where object_id = ?", BigDecimal.class,
+                shipId.longValueExact());
         BigInteger resultParentId = (idValue == null) ? null : idValue.toBigInteger();
 
         assertNull(resultParentId);
@@ -125,7 +137,7 @@ public class QueryBuilderTest {
     @Test
     @Rollback(true)
     public void testUpdateAttrValues() {
-        BigInteger objectId = new BigInteger("59");
+        BigInteger objectId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID, 20, 40);
         Goods expectedGoods = new Goods(objectId, "Wood", 350, 50, 1);
 
         PreparedStatementCreator actualPreparedStmt = QueryBuilder.updateAttributeValue(objectId)
@@ -146,9 +158,9 @@ public class QueryBuilderTest {
     @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void testDeleteObject() {
-        BigInteger objectId = new BigInteger("59");
+        BigInteger objectId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID, 20, 40);
 
-        PreparedStatementCreator actualPreparedStmt = QueryBuilder.delete(new BigInteger("59")).build();
+        PreparedStatementCreator actualPreparedStmt = QueryBuilder.delete(objectId).build();
         jdbcTemplate.update(actualPreparedStmt);
 
         Goods resultGoods = goodsDao.findById(objectId);
