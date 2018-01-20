@@ -100,7 +100,7 @@ public class ShipyardController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/sell", method = RequestMethod.GET)
     @ResponseBody
-    public boolean sellShip(@RequestParam(value = "shipId") BigInteger shipId,
+    public String sellShip(@RequestParam(value = "shipId") BigInteger shipId,
                             @AuthenticationPrincipal PlayerUserDetails userDetails) {
         BigInteger playerId = userDetails.getPlayerId();
         return shipTradeService.sellShip(playerId, shipId);

@@ -8,7 +8,7 @@
 </head>
 <body>
 <div>
-    <table>
+    <table class="externalBorder">
     <tr>
         <c:forEach items="${shipTemplates}" var="shipTemplates" varStatus="status">
         <td>
@@ -19,7 +19,8 @@
                     <span>Buy ${shipTemplates.getTName()}</span>
                     </button>
                     </td>
-                    <td colspan="2">CarryingLimit: <b class="values">${shipTemplates.getMaxCarryingLimit()}</b></td>
+                    <td>Cost:  <b class="values">${shipTemplates.getCost()}</b></td>
+                    <td>CarryingLimit: <b class="values">${shipTemplates.getMaxCarryingLimit()}</b></td>
                 </tr>
                 <tr>
                     <td rowspan="3" id = "shipimg">
@@ -44,21 +45,16 @@
                         </c:otherwise>
                     </c:choose>
                     </td>
-                    <td>Maximun cannon:  <b class="values">${shipTemplates.getMaxCannonQuantity()}</b></td>
-                    <td>Start cannon:  <b class="values">${shipEquipments.get(status.index).getStartNumCannon()}</b></td>
+                    <td>Masts:  <b class="values">${shipEquipments.get(status.index).getStartNumMast()}/${shipTemplates.getMaxMastsQuantity()}</b></td>
+                    <td>Cannon:  <b class="values">${shipEquipments.get(status.index).getStartNumCannon()}/${shipTemplates.getMaxCannonQuantity()}</b></td>
                 </tr>
                 <tr>
-                    <td>Maximum masts:  <b class="values">${shipTemplates.getMaxMastsQuantity()}</b></td>
+                    <td>Masts type:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeMastName()}</b></td>
                     <td>Cannons type:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeCannonName()}</b></td>
                 </tr>
                 <tr>
-                    <td>Maximum sailors:  <b class="values">${shipTemplates.getMaxSailorsQuantity()}</b></td>
-                    <td>Start masts:  <b class="values">${shipEquipments.get(status.index).getStartNumMast()}</b></td>
-                </tr>
-                <tr>
-                    <td>Cost:  <b class="values">${shipTemplates.getCost()}</b></td>
-                    <td>MaxHealth:  <b class="values">${shipTemplates.getMaxHealth()}</b></td>
-                    <td>Masts type:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeMastName()}</b></td>
+                    <td>Crew:  <b class="values">${shipTemplates.getMaxSailorsQuantity()}</b></td>
+                    <td>Health:  <b class="values">${shipTemplates.getMaxHealth()}</b></td>
                 </tr>
                 </table>
         </td>

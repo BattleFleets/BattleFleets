@@ -24,9 +24,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
@@ -110,7 +110,8 @@ public class ShipTradeServiceTest {
         shipTradeService = (ShipTradeService) this.context.getBean("shipTradeService");
         moneyService = (MoneyService) this.context.getBean("moneyServiceSingleton");
         MockitoAnnotations.initMocks(this);
-
+        ArrayList<BigInteger> allships = new ArrayList<BigInteger>();
+        allships.add(blackPerl.getShipId());
         doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 Object[] args = invocation.getArguments();
@@ -125,7 +126,7 @@ public class ShipTradeServiceTest {
         when(shipDao.findShipTemplate(t_BlackPerl.getTemplateId())).thenReturn(t_BlackPerl);
         when(shipDao.findShip(blackPerl.getShipId())).thenReturn(blackPerl);
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(steve.getMoney());
-        when(playerDao.findAllShip(steve.getPlayerId())).thenReturn(null);
+        when(playerDao.findAllShip(steve.getPlayerId())).thenReturn(allships);
     }
 
     @Test
@@ -141,8 +142,8 @@ public class ShipTradeServiceTest {
         money = steve.getMoney();
         playerDao.addShip(steve.getPlayerId(), blackPerl.getShipId());
 
-        assertTrue(shipTradeService.sellShip(steve.getPlayerId(), blackPerl.getShipId()));
-        assertEquals(money + t_BlackPerl.getCost()/2, steve.getMoney());
+        assertEquals("You can not sell one ship!",shipTradeService.sellShip(steve.getPlayerId(), blackPerl.getShipId()));
+        assertEquals(money , steve.getMoney());
     }
 
     @Test
@@ -150,7 +151,6 @@ public class ShipTradeServiceTest {
         shipTradeService.getShipsCost(null);
         playerDao.addShip(steve.getPlayerId(), blackPerl.getShipId());
 
-        assertTrue(shipTradeService.sellShip(steve.getPlayerId(), blackPerl.getShipId()));
-        assertEquals(money + t_BlackPerl.getCost(), steve.getMoney());
+        assertEquals("You can not sell one ship!",shipTradeService.sellShip(steve.getPlayerId(), blackPerl.getShipId()));
     }
 }

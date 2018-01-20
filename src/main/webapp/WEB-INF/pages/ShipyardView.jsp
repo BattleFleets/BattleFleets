@@ -16,18 +16,6 @@
                 audio1.volume = 0.01;
             };
 
-            function conf(){
-            var shipTemplateId = $("#shipTemplateId").val();
-            $.ajax({
-                url:'/buy',
-                method:"GET",
-                data: { 'shipTemplateId' : shipTemplateId },
-                success: function(data) {
-                             $('#results').html(data);
-                             }
-                } );
-            }
-
             function showTemplates() {
             $.ajax({
             			method:"GET",
@@ -35,6 +23,9 @@
             			success : function(response) {
             				console.log("SUCCESS: ");
             				$('.shipContainer').html(response);
+            				$('html, body').animate({
+                                scrollTop: $(".shipContainer").offset().top
+                            }, 1000);
             			},
                         error : function(e) {
                             console.log("ERROR: ", e);
@@ -49,6 +40,9 @@
                         success : function(response) {
                             console.log("SUCCESS: ");
                             $('.shipContainer').html(response);
+                            $('html, body').animate({
+                                scrollTop: $(".shipContainer").offset().top
+                            }, 1000);
                         },
                         error : function(e) {
                             console.log("ERROR: ", e);
@@ -63,6 +57,9 @@
                         success : function(response) {
                             console.log("SUCCESS: ");
                             $('.shipContainer').html(response);
+                            $('html, body').animate({
+                                scrollTop: $(".shipContainer").offset().top
+                            }, 1000);
                         },
                         error : function(e) {
                             console.log("ERROR: ", e);
@@ -117,9 +114,8 @@
 		</tr>
 	</table>
 </div>
-<div class="shipContainer">
+<div class="shipContainer" align="center" >
 
 </div>
-
 </body>
 </html>

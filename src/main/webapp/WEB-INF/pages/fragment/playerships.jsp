@@ -18,14 +18,14 @@
              </tr>
             </table>
         </c:if>
-    <table>
+    <table class = "externalBorder">
     <tr>
     <c:forEach items="${playerShips}" var="shipTemplates" varStatus="status">
         <td>
             <table class ="tableClass">
             <tr>
                 <td>
-                <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getShipId()}" onclick="chooseOfAction(this,'${action}')">
+                <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getShipId()}" onclick="chooseOfAction(this,'${action}',${shipTemplates.getCost()}-${shipCosts.get(status.index)}*2, ${shipTemplates.curCarryingLimit})">
                 <span>${action} ${shipTemplates.getTName()}</span>
                 </button>
                 </td>
@@ -67,6 +67,10 @@
                     <td>Speed:  <b class="values">${shipsSpeed.get(status.index).maxSpeed}/${shipsSpeed.get(status.index).curSpeed} </b></td>
                 </c:if>
             </tr>
+            <tr>
+                <td></td>
+                <td>Carrying: <b class="values">${shipTemplates.curCarryingLimit}/${shipTemplates.maxCarryingLimit}</b></td>
+            </tr>
             </table>
             </td>
         </c:forEach>
@@ -81,24 +85,61 @@
     </div>
 </div>
 
+<div id="setConfirmModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>That ship have something in hold, captain. We will give it away.</p>
+            <button class="button capacity_for_background" id ="confirm" onclick="confirmSell()">
+                <span>Ok</span>
+            </button>
+            <button class="button capacity_for_background" id ="cancel" onclick="cancel()">
+                <span>Cancel</span>
+            </button>
+        </div>
+</div>
+
 <script>
 var modal = document.getElementById('myModal');
 var text = document.getElementById('text');
 var btn = document.getElementById("shipTemplateId");
 
-var span = document.getElementsByClassName("close")[0];
+var setConfirmModal = document.getElementById("setConfirmModal");
+var currentShipId = 0;
 
-function chooseOfAction(elem, action) {
+$( ".close" ).click(function() {
+  modal.style.display = "none";
+  setConfirmModal.style.display = "none";
+});
+
+function chooseOfAction(elem, action, diffcost, carringLimit) {
     if (action == 'Sell')
-        sellship(elem);
+        sellConfirm(elem, carringLimit);
     else if (action == 'Repair')
-        repairShip(elem);
+        repairShip(elem, diffcost);
     else
         console.log('Unnkown action');
 }
 
+function sellConfirm(elem, carringLimit) {
+    if (carringLimit > 0) {
+        currentShipId = elem.value;
+        setConfirmModal.style.display = "block";
+    }
+    else
+        sellship(elem.value);
+}
+
+function cancel() {
+    setConfirmModal.style.display = "none";
+}
+
+function confirmSell() {
+    setConfirmModal.style.display = "none";
+    sellship(currentShipId);
+}
+
 function sellship(elem) {
-var shipId = elem.value;
+var shipId = elem;
     $(function(){
         $.ajax({
             url:'/sell',
@@ -106,10 +147,7 @@ var shipId = elem.value;
             data: { 'shipId' : shipId },
             success: function(data) {
                          console.log("SUCCESS: ",data);
-                         if (data)
-                            text.innerHTML="You sold your ship";
-                         else
-                            text.innerHTML="This ship is not ours, captain!";
+                         text.innerHTML = data;
                          modal.style.display = "block";
                          },
                          error : function(e) {
@@ -119,7 +157,7 @@ var shipId = elem.value;
     });
 }
 
-function repairShip(elem) {
+function repairShip(elem, diffcost) {
 var shipId = elem.value;
     $(function(){
         $.ajax({
@@ -129,7 +167,10 @@ var shipId = elem.value;
             success: function(data) {
                          console.log("SUCCESS: ",data);
                          if (data)
-                            text.innerHTML="Ship repaired";
+                            if (diffcost == 0)
+                                text.innerHTML="Ship is already repaired";
+                            else
+                                text.innerHTML="Ship repaired";
                          else
                             text.innerHTML="We need more money, captain!";
                          modal.style.display = "block";
@@ -141,13 +182,12 @@ var shipId = elem.value;
     });
 }
 
-span.onclick = function() {
-    modal.style.display = "none";
-}
-
 window.onclick = function(event) {
     if (event.target == modal) {
         modal.style.display = "none";
+    }
+    if (event.target == setConfirmModal) {
+        setConfirmModal.style.display = "none";
     }
 }
 </script>
