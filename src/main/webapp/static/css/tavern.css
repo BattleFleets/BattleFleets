@@ -115,6 +115,14 @@ img{
     width: 550px;
 }
 
+#info {
+	font-size:40px;
+	height:10px;
+	margin-top:10px; 
+	font-family: tempus sans itc; 
+	color:white
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button{
     -webkit-appearance: none;

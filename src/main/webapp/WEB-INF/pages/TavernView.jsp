@@ -20,99 +20,98 @@
 <c:import url="/addHeader"/>
 <body>
 <form method="get">
+<table align="center"  id="oneShip" style="display: none; margin-top: 30px;" class="tableClass1"></table>
     <div align="center">
         <c:if test="${empty ships}">
             <table class="panelTavern">
                 <tr align="center">
                     <td >
-                        <p style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You don't have any ships</p>
+                        <p style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white;">You don't have any ships</p>
                     </td>
                 </tr>
             </table>
         </c:if>
         <c:if test="${not empty ships}">
-            <table class="panelTavern">
-                <tr align="center">
-                    <td>
-                        <c:if test="${completedShip!=ships.size() && money>=sailorCost}">
-                        <span id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You can hire sailors on your ships</span>
-                        </c:if>
-                        <c:if test="${completedShip==ships.size()}">
-                        <span id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">All your ships are staffed with sailors</span>
-                        </c:if>
-                        <c:if test="${money<sailorCost && completedShip!=ships.size()}">
-                        <span id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You need ${sailorCost-money} more money</span>
-                        </c:if>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div align="center" id="buy" style="display: none">
-                            <button  class="button" style="vertical-align:middle" id="shipId" type="submit" onclick="buySailors()">
-                                <span>Buy sailors</span>
-                            </button>
-                            <input style="width:35px" type="number" class="sailorsNumber" min="1" max="" autocomplete="off"  onkeyup="cost(${sailorCost})">
-                            <span id="spend" style="font-family: tempus sans itc; color:white"></span>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-
             <div id="cont" class="shipContainer">
-                <c:if test="${ships.size()==1}">
+              <c:if test="${ships.size()==1}">
                 <table class="tableClass1">
-                    </c:if>
-                    <c:if test="${ships.size()==2}">
-                    <table class="tableClass2">
-                        </c:if>
-                        <c:if test="${ships.size()>=3}">
-                        <table class="tableClass3">
-                            </c:if>
-                            <tr>
-                                <c:forEach items = "${ships}" var = "nextShip">
-                                    <c:if test="${nextShip.curSailorsQuantity==nextShip.maxSailorsQuantity ||(nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity && money<sailorCost)}">
-                                        <td class="listOfShips">
-                                    </c:if>
-                                    <c:if test="${nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity && money>=sailorCost}">
-                                        <td class="listOfShips" bgcolor="#8B0000" id="Id${nextShip.shipId}" value="${nextShip.shipId}" style="cursor: pointer" onclick="toggle(sailors,cont,buy,oneShip,${sailorCost},${money}),show(Id${nextShip.shipId}), maxValue(${nextShip.shipId}),btnSetValue(${nextShip.shipId})">
-                                    </c:if>
-                                    <c:choose>
-                                        <c:when test = "${nextShip.templateId == 1}">
-                                            <img src = "static/images/ships/Caravela.png">
-                                        </c:when>
-                                        <c:when test = "${nextShip.templateId == 2}">
-                                            <img src = "static\images\ships\Caracca.png">
-                                        </c:when>
-                                        <c:when test = "${nextShip.templateId == 3}">
-                                            <img src = "static/images/ships/Galion.png">
-                                        </c:when>
-                                        <c:when test = "${nextShip.templateId == 4}">
-                                            <img src = "static/images/ships/Clipper.png">
-                                        </c:when>
-                                        <c:when test = "${nextShip.templateId == 5}">
-                                            <img src = "static/images/ships/Fregata.png">
-                                        </c:when>
-                                    </c:choose>
-                                    <p>name ${nextShip.curName}</p>
-                                    <p>health ${nextShip.curHealth}</p>
-                                    <p>crew <span id="crew">${nextShip.curSailorsQuantity}</span>/${nextShip.maxSailorsQuantity}</p>
-                                    </td>
-                                    <%--<input type="hidden" id="currId${nextShip.shipId}"  value="${nextShip.curSailorsQuantity}">
-                                    <input type="hidden" id="maxcurrId${nextShip.shipId}"  value="${nextShip.maxSailorsQuantity}">--%>
-                                </c:forEach>
-                            </tr>
-                        </table>
-                            <%--<input type="hidden" id="moneyId"  value="${money}">
-                            <input type="hidden" id="complete"  value="${ships.size()-completedShip}">--%>
+              </c:if>
+              <c:if test="${ships.size()==2}">
+                <table class="tableClass2">
+              </c:if>
+              <c:if test="${ships.size()>=3}">
+                 <table class="tableClass3">
+              </c:if>
+                     <tr>
+                     <c:forEach items = "${ships}" var = "nextShip">
+                         <c:if test="${nextShip.curSailorsQuantity==nextShip.maxSailorsQuantity ||(nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity && money<sailorCost)}">
+                             <td class="listOfShips">
+                         </c:if>
+                         <c:if test="${nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity && money>=sailorCost}">
+                              <td class="listOfShips" bgcolor="#8B0000" id="Id${nextShip.shipId}" value="${nextShip.shipId}" style="cursor: pointer" onclick="toggle(sailors,cont,buy,oneShip,${sailorCost},${money}),show(Id${nextShip.shipId}), maxValue(${nextShip.shipId}),btnSetValue(${nextShip.shipId})">
+                         </c:if>
+                         <c:choose>
+                             <c:when test = "${nextShip.templateId == 1}">
+                                 <img src = "static/images/ships/Caravela.png">
+                             </c:when>
+                             <c:when test = "${nextShip.templateId == 2}">
+                                 <img src = "static\images\ships\Caracca.png">
+                             </c:when>
+                             <c:when test = "${nextShip.templateId == 3}">
+                                 <img src = "static/images/ships/Galion.png">
+                             </c:when>
+                             <c:when test = "${nextShip.templateId == 4}">
+                                 <img src = "static/images/ships/Clipper.png">
+                             </c:when>
+                             <c:when test = "${nextShip.templateId == 5}">
+                                 <img src = "static/images/ships/Fregata.png">
+                             </c:when>
+                         </c:choose>
+                         <p>Name: ${nextShip.curName}</p>
+                         <p>Health: ${nextShip.curHealth}</p>
+                         <p>Crew: <span id="crew">${nextShip.curSailorsQuantity}</span>/${nextShip.maxSailorsQuantity}</p>
+                         </td>
+                                    
+                     </c:forEach>
+                     </tr>
+              </table>
             </div>
         </c:if>
+        
+         <table class="panelTavern">
+            <tr align="center">
+                <td>
+                    <c:if test="${completedShip!=ships.size() && money>=sailorCost}">
+                    <span id="info">You can hire sailors on your ships</span>
+                    </c:if>
+                    <c:if test="${completedShip==ships.size()}">
+                    <span id="info">All your ships are staffed with sailors</span>
+                    </c:if>
+                    <c:if test="${money<sailorCost && completedShip!=ships.size()}">
+                    <span id="info">You need ${sailorCost-money} more money</span>
+                    </c:if>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div align="center" id="buy" style="display: none;">
+                        <button  class="button" style="vertical-align:middle; padding-right: 10%;" id="shipId" type="submit" onclick="buySailors()">
+                            <span>Hire</span>
+                        </button>
+                        <input style="width:35px;" type="number" class="sailorsNumber" min="1" max="" autocomplete="off"  onkeyup="cost(${sailorCost})">
+                        <span id="spend" style="font-family: tempus sans itc; color:white;"></span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    
     </div>
-   <table align="center"  id="oneShip" style="display: none; margin-top: 30px" class="tableClass1"></table>
+    
 </form>
-<div align="center" id="sailors"  style="display: none">
-    <button class="button" style="vertical-align:middle; margin-top:10px " id="btnShow" name="showShips" value="showShips" type="submit" onclick="toggle(sailors,cont,buy,oneShip,0,0)">
-        <span>show ships</span>
-    </button>
+<div align="center" id="sailors"  style="display: none;">
+    <button class="button" id="btnShow" style="vertical-align: middle; margin-top: 10px; padding-right: 10%;" name="showShips" value="showShips" type="submit" onclick="toggle(sailors,cont,buy,oneShip,0,0)">
+        <span>All ships</span>
+    </button> 
 </div>
 </body>
 <div id="myModal" class="modal">

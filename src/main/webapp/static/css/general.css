@@ -1,4 +1,4 @@
-body{
+html, body{
     background-attachment: fixed;
 }
 
@@ -120,4 +120,9 @@ header{
     padding: 5px 20px;
     text-decoration: none;
 
+}
+@media screen and (device-width: 800px) {
+  header {
+      font-size: 1.5vw;
+  }
 }
