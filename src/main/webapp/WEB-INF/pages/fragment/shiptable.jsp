@@ -3,6 +3,7 @@
 <head>
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
+    <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
 
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
@@ -73,16 +74,9 @@
     </div>
 </div>
 
-<div id="setNameModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p class="small_text">Maximum length: 20.Language - English.</p>
-            <p>How we can call our ship, captain?</p>
-            <input class = "capacity_for_background values" id="setNameText" autofocus>
-            <button class="button capacity_for_background" id ="setShipButton" onclick="confirmNewName()">
-                <span>Ok</span>
-            </button>
-        </div>
+<div id="setNameModal" >
+	<p class="big_text">Max length 20. You can use English letters, numbers, space and underscore.</p>
+    <input class = "capacity_for_background values" id="setNameText" autofocus="autofocus">
 </div>
 
 <script>
@@ -91,9 +85,19 @@ var answerModal = document.getElementById('answerModal');
 var text = document.getElementById('text');
 var btn = document.getElementById("shipTemplateId");
 
-var setNameModal = document.getElementById("setNameModal");
+var setNameModal = $("#setNameModal");
+setNameModal.dialog({
+    autoOpen: false,
+    resizable: false,
+    height: 300,
+    width: 550,
+    modal: true,
+    title: "How we can call our ship, captain?"
+});
 var setShipButton = document.getElementById("setShipButton");
 var setNewNameButton = document.getElementById("setShipButton");
+
+var small_text = $("p.big_text");
 
 var currentElem = 0;
 var currentDefaultName = "";
@@ -103,15 +107,34 @@ $( ".close" ).click(function() {
   setNameModal.style.display = "none";
 });
 
-function confirmNewName() {
-    var shipName = document.getElementById("setNameText").value;
-    setNameModal.style.display = "none";
-    buyShip(currentElem, shipName, currentDefaultName);
+function confirmNewName(shipName) {
+    if (shipName.search(/[^A-z,0-9,\s,_]/g) > -1 || shipName.length > 20 || shipName.length == 0) {
+        small_text.effect( "bounce", "slow" );
+        return false;
+    }
+    return true;
 }
 
 function setShipName(elem, defaultName) {
     document.getElementById("setNameText").value='';
-    setNameModal.style.display = "block";
+    setNameModal.dialog( "option", "buttons",
+        [{
+           text: "Ok",
+           click: function() {
+               var shipName = document.getElementById("setNameText").value;
+               if (confirmNewName(shipName)) {
+                   buyShip(currentElem, shipName, currentDefaultName);
+                   $(this).dialog('close');
+               }
+           }
+        }, {
+            text: "Cancel",
+            click: function() {
+                $(this).dialog('close');
+            }
+        }]
+    );
+    setNameModal.dialog( "open" );
     currentElem = elem.value;
     currentDefaultName = defaultName;
 }
@@ -143,7 +166,7 @@ window.onclick = function(event) {
         answerModal.style.display = "none";
     }
     if (event.target == setNameModal) {
-        setNameModal.style.display = "none";
+        setNameModal.dialog("close");
     }
 }
 </script>
