@@ -57,6 +57,11 @@ public class CannonDaoImpl implements CannonDao {
     }
 
     @Override
+    public int getTotalCurrentQuantity(BigInteger shipId){
+        return queryExecutor.getTotalEntitiesCountByType(DatabaseObject.CANNON_OBJTYPE_ID, shipId);
+    }
+
+    @Override
     public String getName(int cannonId) {
         // TODO implement here
         return "";
