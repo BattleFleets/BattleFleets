@@ -406,10 +406,10 @@ public class BattlesController {
         }
     }
     
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(value = RuntimeException.class)
     public ModelAndView handleCustomException(RuntimeException ex) {
         LOG.error("Intternal unexpected exception. ", ex);
-        ModelAndView model = new ModelAndView("/error");
+        ModelAndView model = new ModelAndView("ErrorView");
         model.addObject("reason", ex.getMessage());
 
         return model;

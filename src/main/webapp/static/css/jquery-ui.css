@@ -142,7 +142,7 @@
 	cursor: default;
 }
 .ui-button {
-	background-image:url("../images/general/button_background.jpg"); 
+	background-image:url("../images/general/button_background1.jpg");
     background-position: center;
     background-position: bottom;
     transition: all 0.5s;
@@ -456,7 +456,7 @@ button.ui-button::-moz-focus-inner {
 	overflow: auto;
 }
 .ui-dialog .ui-dialog-buttonpane {
-	text-align: left;
+	text-align: center;
 	border-width: 1px 0 0 0;
 	background-image: none;
 	margin-top: .5em;
@@ -883,10 +883,12 @@ body .ui-tooltip {
 	font-size: 1em;
 }
 .ui-widget-content {
-    border: .2em ridge black;
+
 	/*background: #ffffff url("images/ui-bg_flat_75_ffffff_40x100.png") 50% 50% repeat-x;*/
 	color: white;
-	background-image: url("../images/general/dialog_background.jpg");
+	background-image: url("../images/general/dialog_background.png");
+	background-size: 100% 100%;
+    background-repeat: no-repeat;
 	background-position: bottom left;
 }
 .ui-widget-content a {

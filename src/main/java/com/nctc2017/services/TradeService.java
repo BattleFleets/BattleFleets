@@ -24,14 +24,9 @@ public class TradeService {
     private static final Logger log = Logger.getLogger(TradeService.class);
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
     private MoneyService moneyService;
     @Autowired
     private MarketManager marketManager;
-    @Autowired
-    private CargoMovementService cargoMovementService;
 
     @Autowired
     private PlayerDao playerDao;
@@ -83,14 +78,25 @@ public class TradeService {
     public String buy(BigInteger playerId, BigInteger goodsTemplateId, int price, int quantity) {
         int totalCost = price * quantity;
 
+        if (quantity<=0) {
+            RuntimeException e = new IllegalArgumentException("The quantity can not be negative or zero!");
+            log.error("TradeService Exception while buying", e);
+            throw e;
+        }
         if (!moneyService.isEnoughMoney(playerId, totalCost)) {
-            MoneyLackException e = new MoneyLackException("Not enough money to pay " + totalCost);
+            MoneyLackException e = new MoneyLackException("Not enough money to pay " + totalCost + "!");
             log.error("TradeService Exception while buying goods", e);
             throw e;
         }
         BigInteger cityId = playerDao.getPlayerCity(playerId);
         if (!marketManager.isActualBuyingPrice(cityId, goodsTemplateId, price)) {
-            RuntimeException e = new IllegalArgumentException("Not actual price for goods");
+            RuntimeException e = new IllegalArgumentException("Not actual price for goods!");
+            log.error("TradeService Exception while buying", e);
+            throw e;
+        }
+
+        if(!marketManager.isActualBuyingQuantity(cityId, goodsTemplateId, quantity)){
+            GoodsLackException e = new GoodsLackException("Try to buy more goods than there is in the market!");
             log.error("TradeService Exception while buying", e);
             throw e;
         }
@@ -183,9 +189,15 @@ public class TradeService {
 
     public String sell(BigInteger playerId, BigInteger goodsId, BigInteger goodsTemplateId, int price, int quantity) {
 
+        if (quantity<=0) {
+            RuntimeException e = new IllegalArgumentException("The quantity can not be negative or zero!");
+            log.error("TradeService Exception while selling", e);
+            throw e;
+        }
+
         BigInteger cityId = playerDao.getPlayerCity(playerId);
         if (!marketManager.isActualSalePrice(cityId, goodsTemplateId, price)) {
-            RuntimeException e = new IllegalArgumentException("Not actual price for goods");
+            RuntimeException e = new IllegalArgumentException("Not actual price for goods!");
             log.error("TradeService Exception while selling", e);
             throw e;
         }
@@ -227,7 +239,7 @@ public class TradeService {
         }
 
         if (sellingGoods == null) {
-            RuntimeException e = new IllegalArgumentException("Not valid goods id");
+            RuntimeException e = new IllegalArgumentException("Not valid goods id!");
             log.error("TradeService Exception while selling", e);
             throw e;
         }
@@ -235,7 +247,7 @@ public class TradeService {
         int actualQuantity = sellingGoods.getQuantity();
 
         if (actualQuantity < sellingQuantity) {
-            GoodsLackException e = new GoodsLackException("Trying to sell more goods than have");
+            GoodsLackException e = new GoodsLackException("Trying to sell more goods than have!");
             log.error("TradeService Exception while selling", e);
             throw e;
         }
@@ -262,7 +274,7 @@ public class TradeService {
         }
 
         if (sellingGoods == null) {
-            RuntimeException e = new IllegalArgumentException("Not valid goods id");
+            RuntimeException e = new IllegalArgumentException("Not valid goods id!");
             log.error("TradeService Exception while selling", e);
             throw e;
         }
@@ -270,7 +282,7 @@ public class TradeService {
         int actualQuantity = sellingGoods.getQuantity();
 
         if (actualQuantity < sellingQuantity) {
-            GoodsLackException e = new GoodsLackException("Trying to sell more goods than have");
+            GoodsLackException e = new GoodsLackException("Trying to sell more goods than have!");
             log.error("TradeService Exception while selling", e);
             throw e;
         }
@@ -299,7 +311,7 @@ public class TradeService {
         }
 
         if (sellingGoods == null) {
-            RuntimeException e = new IllegalArgumentException("Not valid goods id");
+            RuntimeException e = new IllegalArgumentException("Not valid goods id!");
             log.error("TradeService Exception while selling", e);
             throw e;
         }
@@ -322,7 +334,7 @@ public class TradeService {
         }
 
         if (sellingGoods == null) {
-            RuntimeException e = new IllegalArgumentException("Not valid goods id");
+            RuntimeException e = new IllegalArgumentException("Not valid goods id!");
             log.error("TradeService Exception while selling", e);
             throw e;
         }

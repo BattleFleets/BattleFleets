@@ -20,11 +20,11 @@ body {
 td, th{
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
-    color: black;
+    color: white;
 }
 
 ul>li>a{
-    background:url("../images/general/button_background.jpg");
+    background:url("../images/general/button_background1.jpg");
     color:white;
     font-size: 18px;
     font-family: Arial, Helvetica, sans-serif;
@@ -79,15 +79,14 @@ footer{
     color:white;
 }
 
-.close:before{
+.close{
     font-family:Arial;
-    border:1px solid transparent;
-    font-size:20px;
-    font-weight:bold;
-    color:black;
+    color:white;
+    opacity: 0.7;
 }
 
 #messageSale,
 #messageBuy{
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: sans-serif, Helvetica;
+    font-size: 18px;
 }

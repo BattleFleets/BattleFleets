@@ -307,6 +307,13 @@ public class Query {
                     + " entity_obj.OBJECT_TYPE_ID = ?"
                     + " AND entity_obj.PARENT_ID = ?"
                     + " GROUP BY entity_obj.NAME";
+
+    public static final String GET_COUNT_OF_ALL_ENTITY_FROM_CONTAINER =
+            "SELECT count(entity_obj.OBJECT_ID)"
+                    + " FROM OBJECTS entity_obj"
+                    + " WHERE"
+                    + " entity_obj.OBJECT_TYPE_ID = ?"
+                    + " AND entity_obj.PARENT_ID = ?";
     
     public static final String GET_TEMPLATE_ID = "SELECT source_id FROM objects WHERE OBJECT_ID = ?";
 

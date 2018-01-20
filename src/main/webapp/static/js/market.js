@@ -5,20 +5,20 @@ var saleObject;
 var buyType;
 var saleType;
 var woodLink="/static/images/market/wood.png";
-var coffeeLink="/static/images/market/coffee.jpg";
+var coffeeLink="/static/images/market/coffee.png";
 var gemsLink="/static/images/market/gems.png";
-var rumLink="/static/images/market/rum.jpg";
+var rumLink="/static/images/market/rum.png";
 var silkLink="/static/images/market/silk.png";
 var spicesLink="/static/images/market/spices.png";
-var sugarcaneLink="/static/images/market/sugarcane.jpg";
-var teaLink="/static/images/market/tea.jpg";
-var tobaccoLink="/static/images/market/tobacco.jpg";
-var grainLink="/static/images/market/grain.jpg";
-var bombardLink="/static/images/market/bombard.jpg";
-var kulevrinLink="/static/images/market/kulevrin.jpg";
-var mortarLink="/static/images/market/mortar.jpg";
+var sugarcaneLink="/static/images/market/sugarcane.png";
+var teaLink="/static/images/market/tea.png";
+var tobaccoLink="/static/images/market/tobacco.png";
+var grainLink="/static/images/market/grain.png";
+var bombardLink="/static/images/market/bombard.png";
+var kulevrinLink="/static/images/market/kulevrin.png";
+var mortarLink="/static/images/market/mortar.png";
 var buckshotLink="/static/images/market/buckshot.png";
-var cannonballLink="/static/images/market/cannonball.jpg";
+var cannonballLink="/static/images/market/cannonball.png";
 var chainLink="/static/images/market/chain.png";
 var mast1Link="/static/images/market/mast_1.png";
 var mast2Link="/static/images/market/mast_2.png";
@@ -26,7 +26,7 @@ var mast3Link="/static/images/market/mast_3.png";
 var mast4Link="/static/images/market/mast_4.png";
 var mast5Link="/static/images/market/mast_5.png";
 function setHalfVolume() {
-    document.getElementById("myaudio").volume = 0.05;
+    document.getElementById("myaudio").volume = 0.1;
 }
 
 function updateMoney() {
@@ -48,6 +48,7 @@ function updateMarket(){
         dataType: "json",
         success: function(data){
             buyJson=data;
+            buildBuyTable(buyType);
         }
     });
 }
@@ -59,6 +60,7 @@ function updatePlayerStock(){
         dataType: "json",
         success: function(data){
             saleJson=data;
+            buildSaleTable(saleType);
         }
     });
 }
@@ -77,15 +79,10 @@ function buy(queryString){
             updateMarket();
             updatePlayerStock();
         },
-        /*complete: function (){
-
-            buildBuyTable(buyType);
-            buildSaleTable(saleType);
-        },*/
         error: function (msg) {
+            console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
             $("#messageBuy").css("color","#e54b4b");
             $("#messageBuy").html(msg.responseText);
-            console.error("Status: %s  Response text: %s",msg.status,msg.responseText);
         }
     });
 }
@@ -103,28 +100,37 @@ function sell(queryString){
             updateMoney();
             updateMarket();
             updatePlayerStock();
-            //buildBuyTable(buyType);
-            //buildSaleTable(saleType);
         },
         error: function (msg) {
+            console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
             $("#messageSale").css("color","#e54b4b");
             $("#messageSale").html(msg.responseText);
-            console.error("Status: %s  Response text: %s",msg.status,msg.responseText);
         }
     });
 }
 
 $(document).ready(function() {
+    buyType="GOODS";
+    saleType="GOODS";
     updateMoney();
     updateMarket();
     updatePlayerStock();
 });
 
 function buildBuyTable(type){
+
     var trHTML ="";
     $.each(buyJson,function(i,item){
         if(item.type==type){
             var picture;
+            function isAmmo(){
+                if(buyType=="AMMO"){
+                    return "&#8734;";
+                }
+                else{
+                    return item.quantity;
+                }
+            }
             switch(item.name){
                 case "Coffee":
                     picture=coffeeLink;
@@ -193,11 +199,11 @@ function buildBuyTable(type){
                     picture=mast1Link;
             }
             trHTML += "<tr><td>"
-                + "<img width=\"40\" height=\"40\" src="
+                + "<img width=\"60\" height=\"50\" src="
                 + picture+ "/>" + "</td><td>"
                 + item.name +"<br/>"+item.goodsDescription+"</td><td>"
                 + item.buyingPrice + "</td><td>"
-                + item.quantity + "</td><td>"
+                + isAmmo() + "</td><td>"
                 + "<button type=\"button\" class=\"btn buyButton\" id="
                 + item.templateId+">Buy</button>" + "</td></tr>";
         }
@@ -278,7 +284,7 @@ function buildSaleTable(type){
                     picture=mast1Link;
             }
             trHTML += "<tr><td>"
-                + "<img width=\"40\" height=\"40\" src="
+                + "<img width=\"60\" height=\"50\" src="
                 + picture+ "/>" + "</td><td>"
                 + item.name +"<br/>"+item.description+"</td><td>"
                 + item.salePrice + "</td><td>"
@@ -348,7 +354,9 @@ $(document).ready(function () {
             }
             $("#modalQuantity").prop('max',i);
         }*/
-        $("#modalQuantity").prop('max',buyObject.quantity);
+        if(buyType!="AMMO"){
+            $("#modalQuantity").prop('max',buyObject.quantity);
+        }
         $("#allCount").html(buyObject.buyingPrice);
     });
 });
@@ -363,17 +371,31 @@ $(document).ready(function () {
 $(document).ready(function() {
     $(".buyButton").click(function() {
         $("#messageBuy").empty();
-        if($("#modalQuantity").val()*$("#oneCount").html()>$("#money").html()){
+        var goodsTemplateId = buyObject.templateId;
+        var price = buyObject.buyingPrice;
+        var quantity = $("#modalQuantity").val();
+        if((quantity+price+goodsTemplateId) % 1 !== 0){
+            $("#messageBuy").css("color","#97b2e5");
+            $("#messageBuy").html("Quantity must be a natural number");
+        }
+        else if(quantity<=0){
+            $("#messageBuy").css("color","#e54b4b");
+            $("#messageBuy").html("The quantity can not be negative or zero");
+        }
+        else if($("#modalQuantity").val()*$("#oneCount").html()>$("#money").html())
+        {
             $("#messageBuy").css("color","#e54b4b");
             $("#messageBuy").html("Not enough money to pay");
         }
+        else if(quantity>buyObject.quantity){
+            $("#messageBuy").css("color","#e54b4b");
+            $("#messageBuy").html("Try to buy more goods than there is in the market");
+        }
         else{
-            var goodsTemplateId = buyObject.templateId;
-            var price = $("#oneCount").html();
-            var quantity = $("#modalQuantity").val();
             var string = "goodsTemplateId="+goodsTemplateId
                 +"&price="+price
                 +"&quantity="+quantity;
+            buyObject.quantity=buyObject.quantity-quantity;
             buy(string);
         }
 
@@ -446,18 +468,33 @@ $(document).ready(function() {
         var goodsTemplateId = saleObject.goodsTemplateId;
         var price = saleObject.salePrice;
         var quantity = $("#modalSaleQuantity").val();
-        var string = "goodsId="+goodId
-            +"&goodsTemplateId="+goodsTemplateId
-            +"&price="+price
-            +"&quantity="+quantity;
-        sell(string);
+        if((quantity+price+goodsTemplateId) % 1 !== 0){
+            $("#messageSale").css("color","#97b2e5");
+            $("#messageSale").html("Quantity must be a natural number");
+        }
+        else if(quantity<=0) {
+            $("#messageSale").css("color","#e54b4b");
+            $("#messageSale").html("The quantity can not be negative or zero");
+        }
+        else if(quantity>saleObject.quantity){
+            $("#messageSale").css("color","#e54b4b");
+            $("#messageSale").html("Trying to sell more goods than have");
+        }
+        else{
+            var string = "goodsId="+goodId
+                +"&goodsTemplateId="+goodsTemplateId
+                +"&price="+price
+                +"&quantity="+quantity;
+            saleObject.quantity=saleObject.quantity-quantity;
+            sell(string);
+        }
     });
 });
 
 //On modal close reload page
-$(document).ready(function() {
+/*$(document).ready(function() {
     $("#buyModal,#saleModal").on("hidden.bs.modal", function () {
         buildBuyTable(buyType);
         buildSaleTable(saleType);
     });
-});
+});*/

@@ -121,6 +121,15 @@ public class ShipService {
         return shipDao.getCurrentShipSailors(shipId);
     }
 
+    public int getCurrentShipCannonsQuantity(BigInteger shipId){
+        return cannonDao.getTotalCurrentQuantity(shipId);
+
+    }
+
+    public int getCurrentShipMastsQuantity(BigInteger shipId){
+        return mastDao.getTotalCurrentQuantity(shipId);
+    }
+
 
     public BigInteger createNewShip(BigInteger templateId, BigInteger playerId) {
         BigInteger shipId = shipDao.createNewShip(templateId, playerId);

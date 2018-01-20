@@ -12,8 +12,8 @@
             function setHalfVolume() {
                 var audio = document.getElementById("gavan");
                 var audio1 = document.getElementById("gavan1");
-                audio.volume = 0.01;
-                audio1.volume = 0.01;
+                audio.volume = 0.1;
+                audio1.volume = 0.1;
             };
 
             function showTemplates() {
@@ -106,10 +106,11 @@
 			</td>
 		</tr>
 		<tr align="center">
-			<td>
-			<button class="button" style="vertical-align:middle" name="tavern" type="submit" value="Tavern ${city}" formaction="/tavern">
-			<span>Distribute resources</span>
+			<td> <form action="<c:url value="/stock" />" method="GET">
+			<button class="button" name = "stock" value = "${city}" formaction="/stock" style="vertical-align:middle" type="submit" action="<c:url value="/stock" />" method="GET">
+			<span>Stock</span>
 			</button>
+			<form>
 			</td>
 		</tr>
 	</table>

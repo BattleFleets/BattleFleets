@@ -5843,10 +5843,10 @@ button.list-group-item-danger.active:focus {
   font-size: 21px;
   font-weight: bold;
   line-height: 1;
-  color: #000;
-  text-shadow: 0 1px 0 #fff;
+  color: #fff;
+  text-decoration: none;
   filter: alpha(opacity=20);
-  opacity: .2;
+  opacity: .7;
 }
 .close:hover,
 .close:focus {
@@ -5854,7 +5854,7 @@ button.list-group-item-danger.active:focus {
   text-decoration: none;
   cursor: pointer;
   filter: alpha(opacity=50);
-  opacity: .5;
+  opacity: 1.0;
 }
 button.close {
   -webkit-appearance: none;

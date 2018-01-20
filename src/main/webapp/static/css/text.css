@@ -40,3 +40,22 @@
     color: white;
     font-family: tempus sans itc;
 }
+
+.smallTitle{
+    background-image:url("../images/general/panel_background.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    border: 6px double black;
+
+    text-align: center;
+    color: white;
+    font-family: "Lucida Bright", Georgia, serif;
+    font-size: 26px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 500;
+	line-height: 100%;
+	margin: 0;
+	padding: 1%;
+}

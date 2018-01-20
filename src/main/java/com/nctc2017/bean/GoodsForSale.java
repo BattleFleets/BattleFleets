@@ -77,7 +77,7 @@ public class GoodsForSale {
         return this;
     }
 
-    @Override
+    /*@Override
     public String toString() {
         return "GoodsForSale{" +
                 "goodsId=" + goodsId +
@@ -88,5 +88,5 @@ public class GoodsForSale {
                 ", type=" + type +
                 ", salePrice=" + salePrice +
                 '}';
-    }
+    }*/
 }
