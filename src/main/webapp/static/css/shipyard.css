@@ -12,16 +12,23 @@ body {
 }
 
 .tableClass {
+    vertical-align:bottom
     position: relative;
     background-image:url("../images/general/panel_background.jpg");
     color: white;
     font-size: 17px;
     font-family: tempus sans itc;
     font-weight: 900;
-    text-align: left;
+    text-align: center;
     border: 6px double black;
     height: 400px;
     width: 700px;
+}
+
+TD, TH {
+padding: 3px; /* Поля вокруг содержимого таблицы */
+border: 1px solid maroon; /* Параметры рамки */
+text-align: left; /* Выравнивание по левому краю */
 }
 
 .externalBorder {

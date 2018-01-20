@@ -201,6 +201,5 @@ public class QueryExecutor {
                 new Object[]{JdbcConverter.toNumber(objectId)}, 
                 BigDecimal.class).toBigIntegerExact();
     }
-    
-    
+
 }

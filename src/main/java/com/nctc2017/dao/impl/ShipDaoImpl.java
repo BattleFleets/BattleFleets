@@ -44,8 +44,6 @@ public class ShipDaoImpl implements ShipDao {
     @Autowired
     HoldDao holdDao;
 
-    private static final String queryForObjectIdByNMame = "SELECT OBJECT_ID FROM OBJECTS WHERE NAME=? AND OBJECT_TYPE_ID=?";
-
     @Override
     public Ship findShip(BigInteger shipId) {
         Ship pickedUpShip = queryExecutor.findEntity(shipId, DatabaseObject.SHIP_OBJTYPE_ID,
@@ -57,9 +55,9 @@ public class ShipDaoImpl implements ShipDao {
     }
 
     @Override
-    public Ship findShipTemplate(BigInteger shipTemplId) {
-        Ship pickedUpShip = queryExecutor.findEntity(shipTemplId, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID,
-                new EntityExtractor<>(shipTemplId, new ShipVisitor()));
+    public ShipTemplate findShipTemplate(BigInteger shipTemplId) {
+        ShipTemplate pickedUpShip = queryExecutor.findEntity(shipTemplId, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID,
+                new EntityExtractor<>(shipTemplId, new ShipTemplateVisitor()));
         if (pickedUpShip == null) {
             throwIAExceptionWithLog("Cannot find Ship,wrong Ship object id =  ", shipTemplId);
         }
@@ -124,7 +122,7 @@ public class ShipDaoImpl implements ShipDao {
     @Override
     public BigInteger createNewShip(BigInteger shipTemplateId, BigInteger playerID) {
         BigInteger newId = queryExecutor.getNextval();
-        Ship shipT = findShipTemplate(shipTemplateId);
+        ShipTemplate shipT = findShipTemplate(shipTemplateId);
 
         PreparedStatementCreator psc = QueryBuilder
                 .insert(DatabaseObject.SHIP_OBJTYPE_ID, newId)
@@ -318,27 +316,7 @@ public class ShipDaoImpl implements ShipDao {
     private final class ShipVisitor implements ExtractingVisitor<Ship> {
         @Override
         public Ship visit(BigInteger entityId, Map<String, String> papamMap) {
-            BigInteger templateId = null;
-            String shipName = papamMap.get(ShipTemplate.T_SHIPNAME);
-            switch (shipName) {
-                case "T_Caravela":
-                    templateId = jdbcTemplate.queryForObject(queryForObjectIdByNMame, BigInteger.class, shipName, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID.longValueExact());
-                    break;
-                case "T_Caracca":
-                    templateId = jdbcTemplate.queryForObject(queryForObjectIdByNMame, BigInteger.class, shipName, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID.longValueExact());
-                    break;
-                case "T_Galion":
-                    templateId = jdbcTemplate.queryForObject(queryForObjectIdByNMame, BigInteger.class, shipName, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID.longValueExact());
-                    break;
-                case "T_Clipper":
-                    templateId = jdbcTemplate.queryForObject(queryForObjectIdByNMame, BigInteger.class, shipName, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID.longValueExact());
-                    break;
-                case "T_Fregata":
-                    templateId = jdbcTemplate.queryForObject(queryForObjectIdByNMame, BigInteger.class, shipName, DatabaseObject.SHIP_TEMPLATE_OBJTYPE_ID.longValueExact());
-                    break;
-                default:
-                    log.error("Not exists tamplate");
-            }
+            BigInteger templateId = queryExecutor.getTemplateId(entityId);
             ShipTemplate shipT = new ShipTemplate(
                     templateId,
                     papamMap.remove(ShipTemplate.T_SHIPNAME),
