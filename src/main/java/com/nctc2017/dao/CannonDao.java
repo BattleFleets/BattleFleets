@@ -10,6 +10,8 @@ public interface CannonDao {
 
     Cannon findById(BigInteger cannonId);
 
+    int getTotalCurrentQuantity(BigInteger shipId);
+
     String getName(int cannonId);
 
     int getCost(int cannonId);

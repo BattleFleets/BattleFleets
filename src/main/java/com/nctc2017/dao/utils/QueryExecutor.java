@@ -46,6 +46,15 @@ public class QueryExecutor {
                         JdbcConverter.toNumber(containerId)},
                 extractor);
     }
+
+    public int getTotalEntitiesCountByType(@NotNull BigInteger entityTypeId, @NotNull BigInteger containerId) {
+        return jdbcTemplate.queryForObject(Query.GET_COUNT_OF_ALL_ENTITY_FROM_CONTAINER,
+                new Object[] {
+                        JdbcConverter.toNumber(entityTypeId),
+                        JdbcConverter.toNumber(containerId)},
+                Integer.class);
+    }
+
     /**
      * Deletes entity which id is specified as {@code entityId} and type's id as {@code entityTypeId}.
      * @param entityId - id of entity

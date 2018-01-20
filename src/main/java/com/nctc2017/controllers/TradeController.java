@@ -112,7 +112,7 @@ public class TradeController {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<String> handleBadParameters(MethodArgumentTypeMismatchException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quantity must be a natural number");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quantity must be a natural number!");
     }
 
 }

@@ -135,6 +135,10 @@ public class MastDaoImpl implements MastDao {
         return getShipMastsFromAnywhere(holdId);
     }
 
+    @Override
+    public int getTotalCurrentQuantity(BigInteger shipId){
+        return queryExecutor.getTotalEntitiesCountByType(DatabaseObject.MAST_OBJTYPE_ID, shipId);
+    }
 
     @Override
     public int getCurMastSpeed(BigInteger mastId) {

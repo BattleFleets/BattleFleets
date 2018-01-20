@@ -21,6 +21,8 @@ public interface MastDao {
 
     List<Mast> getShipMastsFromHold(BigInteger holdId);
 
+    int getTotalCurrentQuantity(BigInteger shipId);
+
     int getCurMastSpeed(BigInteger mastId);
 
     String getMastName(BigInteger mastId);

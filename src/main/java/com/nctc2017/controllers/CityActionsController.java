@@ -68,7 +68,7 @@ public class CityActionsController {
     }
     
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/city**", method = RequestMethod.GET)
+    @RequestMapping(value = {"/","/city**"}, method = RequestMethod.GET)
     public ModelAndView getCity(@AuthenticationPrincipal PlayerUserDetails userDetails) {
         ModelAndView model = new ModelAndView();
         BigInteger playerId =userDetails.getPlayerId();

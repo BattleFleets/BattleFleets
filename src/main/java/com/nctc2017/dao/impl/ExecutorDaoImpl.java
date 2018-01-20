@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -46,7 +47,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
 
     @Override
     public void calculateDamage(int[][] ammoCannon, BigInteger playerShipId, BigInteger idEnemyShip, int dist) throws SQLException {
-        
+
         StringBuilder arrToStr = new StringBuilder();
         for (int i = 0; i < ammoCannon.length; i++) {
             for (int j = 0; j < ammoCannon[i].length; j++) {
@@ -81,7 +82,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
                 .addValue(ENEMY_SHIP_ID, JdbcConverter.toNumber(idEnemyShip))
                 .addValue(DIMENSION, ammoCannon.length)
                 .addValue(DISTANCE, dist);
-        
+
         try {
             call.execute(in);
         } catch (UncategorizedSQLException e) {
@@ -89,7 +90,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
                     + "or ammunition to quantity in hold", e);
             throw e.getSQLException();
         }
-        
+
     }
 
     @Override
@@ -102,7 +103,12 @@ public class ExecutorDaoImpl implements ExecutorDao {
     public String moveCargoTo(BigInteger cargoId, BigInteger destinationId, int quantity) {
         SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(MOVE_CARGO_TO_FUNCTION_NAME);
         String result = call.executeFunction(String.class, cargoId, destinationId, quantity);
-        return result;
+        if(result.endsWith("successfully!")) return result;
+        else {
+            IllegalArgumentException e = new IllegalArgumentException(result);
+            LOG.error("Exception while moving cargo " + e);
+            throw e;
+        }
     }
 
     @Override
@@ -111,8 +117,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
             SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(BOARDING_OR_SURRENDER_RESULT_FUNCTION_NAME);
             String result = call.executeFunction(String.class, shipWinnerId, shipLoserId);
             return result;
-        }
-        catch (UncategorizedSQLException e){
+        } catch (UncategorizedSQLException e) {
             LOG.error("Mistake on client side, may be you are trying to transfer goods not between ships", e);
             throw e.getSQLException();
         }
@@ -124,8 +129,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
             SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate).withFunctionName(DESTROYING_RESULT_FUNCTION_NAME);
             String result = call.executeFunction(String.class, shipWinnerId, shipLoserId);
             return result;
-        }
-        catch (UncategorizedSQLException e){
+        } catch (UncategorizedSQLException e) {
             LOG.error("may be you are trying to transfer goods not between ships source ship: " + shipWinnerId + " target: " + shipLoserId, e);
             throw e.getSQLException();
         }
@@ -137,7 +141,7 @@ public class ExecutorDaoImpl implements ExecutorDao {
         SimpleJdbcCall call = new SimpleJdbcCall(jdbcTemplate)
                 .withFunctionName(CREATE_CANNON_FUNCTION_NAME);
         SqlParameterSource in = new MapSqlParameterSource()
-                .addValue(CREATE_CANNON_PARAMETER_NAME, 
+                .addValue(CREATE_CANNON_PARAMETER_NAME,
                         JdbcConverter.toNumber(templateId));
         BigDecimal newCannonId = call.executeFunction(BigDecimal.class, in);
         if (newCannonId != null)

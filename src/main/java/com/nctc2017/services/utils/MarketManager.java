@@ -77,10 +77,7 @@ public class MarketManager {
 
     public boolean isActualBuyingQuantity(BigInteger cityId, BigInteger goodsId, int quantity)
     {
-        return ((goodsId == DatabaseObject.BUCKSHOT_TEMPLATE_OBJECT_ID)
-                || (goodsId == DatabaseObject.CHAIN_TEMPLATE_OBJECT_ID)
-                || (goodsId == DatabaseObject.CANNONBALL_TEMPLATE_OBJECT_ID)
-                || (quantity <= markets.get(cityId).getGoodsQuantity(goodsId)));
+        return quantity <= markets.get(cityId).getGoodsQuantity(goodsId);
     }
 
     private void generateMarketForCity(Market market) {
