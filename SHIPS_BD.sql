@@ -1397,7 +1397,7 @@ BEGIN
     THEN
       SELECT player.OBJECT_ID INTO PlayerCargoId FROM OBJECTS player, OBJECTS ship, OBJECTS hold WHERE hold.PARENT_ID=ship.OBJECT_ID AND ship.PARENT_ID=player.OBJECT_ID AND hold.OBJECT_ID=cargoParId;
   ELSE
-    RETURN 'Wrong cargoId';
+    RETURN 'Wrong container owner';
   END IF;
   IF  destObjType=stockObjType
   THEN
@@ -1408,8 +1408,10 @@ BEGIN
   ELSE
     RETURN 'Wrong destId';
   END IF;
+  DBMS_OUTPUT.PUT_LINE(PlayerCargoId || ' = ' || PlayerDestId);
   IF PlayerCargoId=PlayerDestId
   THEN
+  DBMS_OUTPUT.PUT_LINE('start');
     FOR myAmmo IN myAmmos LOOP
       IF src=myAmmo.SOURCE_ID
       THEN
@@ -1426,6 +1428,7 @@ BEGIN
     END LOOP;
     IF destObjType=holdObjType
     THEN
+      DBMS_OUTPUT.PUT_LINE('hold is dest');
       SELECT car.VALUE INTO carrying FROM ATTRIBUTES_VALUE car, OBJECTS t_ship ,OBJECTS ship, OBJECTS hold  WHERE car.OBJECT_ID=t_ship.OBJECT_ID AND t_ship.OBJECT_ID=ship.SOURCE_ID AND ship.OBJECT_ID=hold.PARENT_ID AND hold.OBJECT_ID=destinationId AND car.ATTR_ID=carLimitAttrId;
       SELECT COUNT(OBJECT_ID) INTO mastsAndCannons FROM OBJECTS WHERE (OBJECT_TYPE_ID=mastObjType OR OBJECT_TYPE_ID=canObjType) AND PARENT_ID=destinationId;
       SELECT NVL(SUM(VALUE),0) INTO ammoQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=ammoNumAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND PARENT_ID=destinationId;
@@ -1521,8 +1524,10 @@ BEGIN
       END IF;
     ELSIF destObjType=stockObjType
       THEN
+        DBMS_OUTPUT.PUT_LINE('stock is dest. Cargo type is ' || cargoObjType);
         IF cargoObjType=goodsObjType
         THEN
+          DBMS_OUTPUT.PUT_LINE('It is goods ');
           SELECT NVL(SUM(VALUE),0) INTO goodsStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
           IF quantity>goodsStart
           THEN
@@ -1557,6 +1562,7 @@ BEGIN
           END IF;
         ELSIF cargoObjType=ammoObjType
           THEN
+            DBMS_OUTPUT.PUT_LINE('It is ammo ');
             SELECT NVL(SUM(VALUE),0) INTO ammoStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
             IF quantity>ammoStart
             THEN
@@ -1590,17 +1596,20 @@ BEGIN
             END IF;
         ELSIF cargoObjType=mastObjType
           THEN
+            DBMS_OUTPUT.PUT_LINE('It is mast ');
             UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
             RETURN 'Mast is transferred successfully!';
+        ELSIF cargoObjType=canObjType
+          THEN
+            DBMS_OUTPUT.PUT_LINE('It is cannon ');
+            UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+            RETURN 'Cannon is transferred successfully!';
         END IF;
-    ElSIF cargoObjType=canObjType
-      THEN
-        UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
-        RETURN 'Cannon is transferred successfully!';
     END IF;
   ELSE
     RETURN 'Cargos can be transfered only between one player';
   END IF;
+  RETURN 'Unknown cargo for function';
 END;
 /
 
