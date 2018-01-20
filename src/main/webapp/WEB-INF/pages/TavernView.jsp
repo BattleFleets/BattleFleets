@@ -21,7 +21,6 @@
 <body>
 <form method="get">
     <div align="center">
-
         <c:if test="${empty ships}">
             <table class="panelTavern">
                 <tr align="center">
@@ -36,13 +35,13 @@
                 <tr align="center">
                     <td>
                         <c:if test="${completedShip!=ships.size() && money>=sailorCost}">
-                        <p id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You can hire sailors on your ships</p>
+                        <span id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You can hire sailors on your ships</span>
                         </c:if>
                         <c:if test="${completedShip==ships.size()}">
-                        <p id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">All your ships are staffed with sailors</p>
+                        <span id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">All your ships are staffed with sailors</span>
                         </c:if>
                         <c:if test="${money<sailorCost && completedShip!=ships.size()}">
-                        <p id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You need ${sailorCost-money} more money</p>
+                        <span id="info" style="font-size:40px;height:10px;margin-top:10px; font-family: tempus sans itc; color:white">You need ${sailorCost-money} more money</span>
                         </c:if>
                     </td>
                 </tr>
