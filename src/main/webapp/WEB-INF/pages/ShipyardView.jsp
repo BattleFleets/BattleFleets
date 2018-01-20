@@ -69,12 +69,12 @@
                     });
             }
     </script>
-    <div align="center">
-    	<h1 class="titleText">${city}</h1>
-    </div>
 </head>
 <c:import url= "/addHeader"/>
 <body>
+    <div align="center">
+        <h1 class="titleText">Shipyard ${city}</h1>
+    </div>
 <%@include file="fragment/footer.jsp"%>
 <audio autoplay id="gavan" onloadeddata="setHalfVolume()">
   <source src="static/audio/gavan-0-4.8.mp3" type="audio/mp3">
@@ -108,11 +108,13 @@
 			</td>
 		</tr>
 		<tr align="center">
-			<td> <form action="<c:url value="/stock" />" method="GET">
-			<button class="button" name = "stock" value = "${city}" formaction="/stock" style="vertical-align:middle" type="submit" action="<c:url value="/stock" />" method="GET">
-			<span>Stock</span>
-			</button>
-			<form>
+			<td> 
+                <form action="<c:url value="/stock" />" method="GET">
+                    <input hidden="true" name="page" value="shipyard">
+			        <button class="button" name = "city" value = "${city}" formaction="/stock" style="vertical-align:middle" type="submit" action="<c:url value="/stock" />" method="GET">
+			            <span>Stock</span>
+			        </button>
+			    </form>
 			</td>
 		</tr>
 	</table>

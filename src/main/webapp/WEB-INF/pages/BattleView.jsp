@@ -20,7 +20,7 @@
     <source src="static/audio/battle.mp3" type="audio/mp3">
 </audio>
 <div class="player_ship" align="left">
-    <img alt="5" src="static/images/ships/player_ship2.png" height="100%">
+    <img alt="5" src="static/images/ships/player_ship2.png" height="60%">
 </div>
 <div style="display: inline-block; width: 33.3%;">
     <div class="battle_info" align="center">
@@ -130,7 +130,7 @@
     </div>
 </div>
 <div class="enemy_ship" align="right">
-    <img alt="5" src="static/images/ships/enemy_ship2.png" height="100%">
+    <img alt="5" src="static/images/ships/enemy_ship2.png" height="60%">
 </div>
 <div class="wait" hidden="true">Wait...</div>
 

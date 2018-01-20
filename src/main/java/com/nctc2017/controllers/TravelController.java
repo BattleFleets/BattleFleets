@@ -38,7 +38,7 @@ public class TravelController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/world", method = RequestMethod.GET)
     public ModelAndView worldWelcome(@AuthenticationPrincipal PlayerUserDetails userDetails,
-            @RequestParam(value = "info", required = false) String info) {
+            @RequestParam(value = "city", required = false) String city) {
         BigInteger playerId = userDetails.getPlayerId();
         
         if (travelService.isPlayerInTravel(playerId)) {
@@ -48,7 +48,7 @@ public class TravelController {
         ModelAndView model = new ModelAndView();
         List<City> cities = travelService.getCities();
         model.addObject("cities", cities);
-        model.addObject("info", info);
+        model.addObject("city", city);
         model.setViewName("WorldView");
         return model;
     }

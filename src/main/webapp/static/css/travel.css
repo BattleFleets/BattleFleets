@@ -3,8 +3,8 @@
     animation-iteration-count: infinite;
     animation-timing-function: linear;
     animation-duration: 60s;
-    position: relative;
-    /*position: left;*/
+    position: fixed;
+    bottom: 15%;
     
 }
 .layer, .timer {
@@ -15,7 +15,7 @@
     from { left: -700px; }
     to { left: 1100px; }
 }
-body{
+html, body{
 	background-image: url("../images/travel/fog_sea.jpg");
     height: 100%;
     background-position: 50% 70%;
@@ -23,7 +23,7 @@ body{
     background-size: cover;
     background-attachment: fixed;
 	/*background: linear-gradient(to top, #5080b1, #004e8c) fixed;*/
-    /*display: block;*/
+    display: block;
    /* margin: auto;*/
     overflow: hidden;
 }
