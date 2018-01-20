@@ -29,7 +29,7 @@
         <td id="endOfUpdate">
             <c:if test="${lvl>=nextImprove}">
             <button id="btnShip" class="button"  style="vertical-align:middle" type="submit" onclick="shipUp()">
-                <span style="font-size:21px">Update max number of ships</span>
+                <span style="font-size:21px">Ship +1</span>
             </button>
             </c:if>
             <c:if test="${lvl<nextImprove}">
@@ -41,7 +41,7 @@
         <td>
             <c:if test="${lvl>=nextImprove}">
             <button id="btnIncome" class="button"  style="vertical-align:middle" type="submit" onclick="incomeUp()">
-                <span style="font-size:22px">Update passive income</span>
+                <span style="font-size:22px">Income +50</span>
             </button>
             </c:if>
         </td>
