@@ -223,7 +223,7 @@ h3 {
     margin-top: 1%;
 }
 
-tr th, tr td { width:25%; }
+tr th, tr td { width:25%; font-size: 1.5vw;}
 
 #ammo_tab {
     padding: 1%;
@@ -237,6 +237,7 @@ tr th, tr td { width:25%; }
 	display:inline-block;
 	width: 33.3%;
 	position: fixed;
+	bottom: 5px;
 }
 
 .player_ship {
