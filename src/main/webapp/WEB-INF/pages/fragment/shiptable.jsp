@@ -116,6 +116,20 @@ function setShipName(elem, defaultName) {
     currentDefaultName = defaultName;
 }
 
+function headerUpdate() {
+    $(function(){
+        $.ajax({
+            url:"/addHeader",
+            success: function() {
+                console.log("SUCCESS:header ");
+                },
+                error : function(e) {
+                 console.log("ERROR: ", e);
+                }
+            } );
+    });
+}
+
 
 function buyShip(elem, shipName, defaultName) {
     var shipTemplateId = elem;
@@ -132,6 +146,9 @@ function buyShip(elem, shipName, defaultName) {
                          error : function(e) {
                              console.log("ERROR: ", e);
                          }
+                         })
+             .done(function() {
+                headerUpdate();
             } );
     });
 }
