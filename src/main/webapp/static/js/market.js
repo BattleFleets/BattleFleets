@@ -67,46 +67,44 @@ function updatePlayerStock(){
 
 function buy(queryString){
     $.ajax({
-        async: false,
         type: "POST",
         url: "/market/buy",
         data: queryString,
         dataType: "text",
         success: function (msg) {
             $("#messageBuy").css("color","#47e05c");
-            $("#messageBuy").append(msg);
+            $("#messageBuy").html(msg);
             console.log(msg);
             updateMoney();
             updateMarket();
             updatePlayerStock();
         },
         error: function (msg) {
-            console.error("Status: %s  Response text: %s",msg.status,msg.responseText);
+            console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
             $("#messageBuy").css("color","#e54b4b");
-            $("#messageBuy").append(msg.responseText);
+            $("#messageBuy").html(msg.responseText);
         }
     });
 }
 
 function sell(queryString){
     $.ajax({
-        async: false,
         type: "POST",
         url: "/market/sell",
         data: queryString,
         dataType: "text",
         success: function (msg) {
             $("#messageSale").css("color","#47e05c");
-            $("#messageSale").append(msg);
+            $("#messageSale").html(msg);
             console.log(msg);
             updateMoney();
             updateMarket();
             updatePlayerStock();
         },
         error: function (msg) {
-            console.error("Status: %s  Response text: %s",msg.status,msg.responseText);
+            console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
             $("#messageSale").css("color","#e54b4b");
-            $("#messageSale").append(msg.responseText);
+            $("#messageSale").html(msg.responseText);
         }
     });
 }
@@ -376,27 +374,28 @@ $(document).ready(function() {
         var goodsTemplateId = buyObject.templateId;
         var price = buyObject.buyingPrice;
         var quantity = $("#modalQuantity").val();
-        if(quantity>buyObject.quantity && buyType!="AMMO"){
+        if(quantity>buyObject.quantity){
             $("#messageBuy").css("color","#e54b4b");
-            $("#messageBuy").append("Try to buy more goods than there is in the market!");
+            $("#messageBuy").html("Try to buy more goods than there is in the market");
         }
         else if(quantity<=0){
             $("#messageBuy").css("color","#e54b4b");
-            $("#messageBuy").append("The quantity can not be negative or zero!");
+            $("#messageBuy").html("The quantity can not be negative or zero");
         }
         else if($("#modalQuantity").val()*$("#oneCount").html()>$("#money").html())
         {
             $("#messageBuy").css("color","#e54b4b");
-            $("#messageBuy").append("Not enough money to pay");
+            $("#messageBuy").html("Not enough money to pay");
         }
         else if((quantity+price+goodsTemplateId) % 1 !== 0){
             $("#messageBuy").css("color","#97b2e5");
-            $("#messageBuy").append("Quantity must be a natural number");
+            $("#messageBuy").html("Quantity must be a natural number");
         }
         else{
             var string = "goodsTemplateId="+goodsTemplateId
                 +"&price="+price
                 +"&quantity="+quantity;
+            buyObject.quantity=buyObject.quantity-quantity;
             buy(string);
         }
 
@@ -471,21 +470,22 @@ $(document).ready(function() {
         var quantity = $("#modalSaleQuantity").val();
         if(quantity>saleObject.quantity){
             $("#messageSale").css("color","#e54b4b");
-            $("#messageSale").append("Trying to sell more goods than have");
+            $("#messageSale").html("Trying to sell more goods than have");
         }
-        else if(quantity<0) {
+        else if(quantity<=0) {
             $("#messageSale").css("color","#e54b4b");
-            $("#messageSale").append("The quantity can not be negative!");
+            $("#messageSale").html("The quantity can not be negative or zero");
         }
         else if((quantity+price+goodsTemplateId) % 1 !== 0){
             $("#messageSale").css("color","#97b2e5");
-            $("#messageSale").append("Quantity must be a natural number");
+            $("#messageSale").html("Quantity must be a natural number");
         }
         else{
             var string = "goodsId="+goodId
                 +"&goodsTemplateId="+goodsTemplateId
                 +"&price="+price
                 +"&quantity="+quantity;
+            saleObject.quantity=saleObject.quantity-quantity;
             sell(string);
         }
     });

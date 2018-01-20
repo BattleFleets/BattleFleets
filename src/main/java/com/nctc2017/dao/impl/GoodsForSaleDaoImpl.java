@@ -84,6 +84,7 @@ public class GoodsForSaleDaoImpl implements GoodsForSaleDao {
                     goods = new GoodsForBuying(entityId, name, description, type);
                     goods.setBuyingPrice(Integer.valueOf(papamMap.get("AmmoCost")));
                     goods.setSalePrice(goods.getBuyingPrice()/2);
+                    goods.setQuantity(Integer.MAX_VALUE);
                     break;
 
                 case MAST:
