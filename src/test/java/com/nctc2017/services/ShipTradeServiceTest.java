@@ -142,7 +142,7 @@ public class ShipTradeServiceTest {
         money = steve.getMoney();
         playerDao.addShip(steve.getPlayerId(), blackPerl.getShipId());
 
-        assertEquals("You can not sell one ship!",shipTradeService.sellShip(steve.getPlayerId(), blackPerl.getShipId()));
+        assertEquals("You can not sell single ship!",shipTradeService.sellShip(steve.getPlayerId(), blackPerl.getShipId()));
         assertEquals(money , steve.getMoney());
     }
 
@@ -151,6 +151,6 @@ public class ShipTradeServiceTest {
         shipTradeService.getShipsCost(null);
         playerDao.addShip(steve.getPlayerId(), blackPerl.getShipId());
 
-        assertEquals("You can not sell one ship!",shipTradeService.sellShip(steve.getPlayerId(), blackPerl.getShipId()));
+        assertEquals("You can not sell single ship!",shipTradeService.sellShip(steve.getPlayerId(), blackPerl.getShipId()));
     }
 }

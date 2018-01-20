@@ -16,8 +16,8 @@
         <td>
                 <table class ="tableClass">
                 <tr>
-                    <td>
-                    <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getTemplateId()}" onclick="setShipName(this,'${shipTemplates.getTName()}')">
+                    <td class="center">
+                    <button class="button capacity_for_background shipTemplateId" name="shipTemplateId" value="${shipTemplates.getTemplateId()}" onclick="setShipName(this,'${shipTemplates.getTName()}')">
                     <span>Buy ${shipTemplates.getTName()}</span>
                     </button>
                     </td>
