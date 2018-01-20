@@ -124,3 +124,8 @@ img{
     color: red;
     font-size: 12px;
 }
+
+.big_text {
+    color: white;
+    font-size: 22px;
+}
