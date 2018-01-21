@@ -101,6 +101,12 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     public TravelService travelServiceProt() {
         return new TravelService();
     }
+    
+    @Bean(name = "battleManagerPrototype")
+    @Scope("prototype")
+    public BattleManager battleManagerProt() {
+        return new BattleManager();
+    }
 
     @Bean(name = "moneyServiceSingleton")
     @Scope("singleton")

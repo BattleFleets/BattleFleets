@@ -12,7 +12,7 @@
 <script type="text/javascript">
     $(document).ready(function() { 
         $("#B_travel").click(function() { 
-            window.location.href = "/world?info="+$("#B_travel").val();
+            window.location.href = "/world?city="+$("#B_travel").val();
         }); 
     });
 </script>
@@ -31,14 +31,14 @@
 	<table class="panel">
 	<tr align="center">
 			<td>
-			<button class="button"  style="vertical-align:middle" name="market" type="submit" value="Market ${city}" formaction="/market">
+			<button class="button"  style="vertical-align:middle" name="city" type="submit" value="${city}" formaction="/market">
 			<span>Market</span>
 			</button>
 			</td>
 		</tr>
 		<tr align="center">
 			<td>
-			<button class="button" style="vertical-align:middle" name="shipyard" type="submit" value="Shipyard ${city}" formaction="/shipyard">
+			<button class="button" style="vertical-align:middle" name="city" type="submit" value="${city}" formaction="/shipyard">
 			<span>Shipyard</span>
 			</button>
 			</td>

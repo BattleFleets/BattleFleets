@@ -158,7 +158,6 @@ function animateWaitTask() {
     animateWait();
 }
     
-
 function waitReset() {
     console.log("wait animation stop");
     clearInterval(waitId);
@@ -217,7 +216,9 @@ function autoStepTask() {
 
 function enableSpinnerNotZero(selector, checkedData) {
     if (checkedData == 0) {
-        $( selector ).spinner({ disabled: true });
+        var elem = $( selector );
+        elem.spinner({ disabled: true });
+        elem.spinner("value", 0);
     }
 }
 
@@ -250,56 +251,59 @@ function infoTabUpdate(forcibly_) {
     $.get("/fire_results", {
         forcibly : forcibly_
     }).done(function(response, status, xhr) {
-                console.log("start get result - ship info " + response
-                        + " status " + xhr.status);
-                var json_obj = JSON.parse(response);
+        console.log("start get result - ship info " + response
+                + " status " + xhr.status);
+        
+        var n = response.search(/<html>/i);
+        if (n != -1) window.location.href = "/login";
+        
+        var json_obj = JSON.parse(response);
 
-                if (json_obj.end) {
-                    dialogBattleEnd(json_obj.title, json_obj.wonText);
-                    return;
-                }
-                if (json_obj.try_later) {
-                    fireResultTask();
-                    return;
-                }
+        if (json_obj.end) {
+            dialogBattleEnd(json_obj.title, json_obj.wonText);
+            return;
+        }
+        if (json_obj.try_later) {
+            fireResultTask();
+            return;
+        }
 
-                $surrender_time = $("#surrender_time");
-                auto_step = json_obj.auto_step_time;
-                if (auto_step > 0) {
-                    autoStepTask();
-                }
-                timeUpdate();
+        $surrender_time = $("#surrender_time");
+        auto_step = json_obj.auto_step_time;
+        if (auto_step > 0) {
+            autoStepTask();
+        }
+        timeUpdate();
 
-                tabResultFilling(json_obj);
+        tabResultFilling(json_obj);
 
-                if (json_obj.escape_avaliable) {
-                    enable("escape");
-                } else {
-                    disable("escape");
-                }
+        if (json_obj.escape_avaliable) {
+            enable("escape");
+        } else {
+            disable("escape");
+        }
                 
-                ammoCannonsTabDisableByDist(json_obj.player_ship.cannonsDist, json_obj.distance);
+        ammoCannonsTabDisableByDist(json_obj.player_ship.cannonsDist, json_obj.distance);
 
-                console.log("page reloaded after step was made "
-                        + json_obj.madeStep);
-                if (json_obj.madeStep) {
-                    infoTabUpdate(false);
-                    animateWaitTask();
-                } else {
-                    enable("fire");
-                    enable("surrender");
-                    waitReset();
-                }
-        }).fail(function(xhr, status, error) {
-            console.log("getting result ship info FAIL " + xhr.status + " "
-                    + status);
-            if (xhr.status == 405) {
-                window.location.href = "/battle_preparing";
-            } else {
-                $(".wait").html("Server error")
-            }
-            //waitReset();
-        });
+        console.log("page reloaded after step was made " + json_obj.madeStep);
+        if (json_obj.madeStep) {
+            infoTabUpdate(false);
+            animateWaitTask();
+        } else {
+            enable("fire");
+            enable("surrender");
+            waitReset();
+        }
+    }).fail(function(xhr, status, error) {
+        console.log("getting result ship info FAIL " + xhr.status + " "
+                + status);
+        if (xhr.status == 405) {
+            window.location.href = "/battle_preparing";
+        } else {
+            $(".wait").html("Server error")
+        }
+        //waitReset();
+    });
 }
 
 function warningMsg(msg) {
@@ -313,6 +317,10 @@ function isBattleEnd() {
     console.log("is battle end request");
     $.get("/is_battle_end").done(function(response, status, xhr) {
         console.log("is battle end response: " + response);
+
+        var n = response.search(/<html>/i);
+        if (n != -1) window.location.href = "/login";
+        
         var json_obj = JSON.parse(response);
         if (json_obj.end == "true") {
             clearInterval(battleEndId);
@@ -334,6 +342,9 @@ function boarding() {
     $.get("/boarding").done(function(response, status, xhr) {
         console.log("boarding response " + response);
 
+        var n = response.search(/<html>/i);
+        if (n != -1) window.location.href = "/login";
+        
         isBattleEnd();
     }).fail(function(xhr, status, error) {
         console.log("boarding FAIL" + error + " " + xhr.status);
@@ -401,6 +412,10 @@ function fire() {
         "decrease" : convergence
     }).done(function(response, status, xhr) {
         console.log("fire done, now need update table");
+
+        var n = response.search(/<html>/i);
+        if (n != -1) window.location.href = "/login";
+        
         infoTabUpdate();
         isBattleEnd();
     }).fail(function(xhr, status, error) {
@@ -421,11 +436,15 @@ function anotherEndCase(end_link) {
     console.log(end_link + " request");
     $.get(end_link).done(function(response, status, xhr) {
         console.log(end_link + " response " + response);
-        if (response.success) {
+        
+        var n = response.search(/<html>/i);
+        if (n != -1) window.location.href = "/login";
+        
+        var json_obj = JSON.parse(response);
+        if (json_obj.success) {
             isBattleEnd();
-        } else {
-            //window.location.href = "/error";
-        }
+        } 
+        //window.location.href = "/error";
     }).fail(function(xhr, status, error) {
         console.log(end_link + " FAIL " + error + " " + xhr.status);
         if (xhl.status == 405) {

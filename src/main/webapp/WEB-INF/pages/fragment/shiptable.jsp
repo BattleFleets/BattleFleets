@@ -3,23 +3,27 @@
 <head>
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
+
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/jquery-ui.min.js"></script>
+
 </head>
 <body>
 <div>
-    <table>
+    <table class="externalBorder">
     <tr>
         <c:forEach items="${shipTemplates}" var="shipTemplates" varStatus="status">
         <td>
                 <table class ="tableClass">
                 <tr>
-                    <td>
-                    <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getTemplateId()}" onclick="setShipName(this,'${shipTemplates.getTName()}')">
+                    <td class="center">
+                    <button class="button capacity_for_background shipTemplateId" name="shipTemplateId" value="${shipTemplates.getTemplateId()}" onclick="setShipName(this,'${shipTemplates.getTName()}')">
                     <span>Buy ${shipTemplates.getTName()}</span>
                     </button>
                     </td>
-                    <td colspan="2">CarryingLimit: <b class="values">${shipTemplates.getMaxCarryingLimit()}</b></td>
+                    <td>Cost:  <b class="values">${shipTemplates.getCost()}</b></td>
+                    <td>CarryingLimit: <b class="values">${shipTemplates.getMaxCarryingLimit()}</b></td>
                 </tr>
                 <tr>
                     <td rowspan="3" id = "shipimg">
@@ -44,21 +48,16 @@
                         </c:otherwise>
                     </c:choose>
                     </td>
-                    <td>Maximun cannon:  <b class="values">${shipTemplates.getMaxCannonQuantity()}</b></td>
-                    <td>Start cannon:  <b class="values">${shipEquipments.get(status.index).getStartNumCannon()}</b></td>
+                    <td>Masts:  <b class="values">${shipEquipments.get(status.index).getStartNumMast()}/${shipTemplates.getMaxMastsQuantity()}</b></td>
+                    <td>Cannon:  <b class="values">${shipEquipments.get(status.index).getStartNumCannon()}/${shipTemplates.getMaxCannonQuantity()}</b></td>
                 </tr>
                 <tr>
-                    <td>Maximum masts:  <b class="values">${shipTemplates.getMaxMastsQuantity()}</b></td>
+                    <td>Masts type:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeMastName()}</b></td>
                     <td>Cannons type:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeCannonName()}</b></td>
                 </tr>
                 <tr>
-                    <td>Maximum sailors:  <b class="values">${shipTemplates.getMaxSailorsQuantity()}</b></td>
-                    <td>Start masts:  <b class="values">${shipEquipments.get(status.index).getStartNumMast()}</b></td>
-                </tr>
-                <tr>
-                    <td>Cost:  <b class="values">${shipTemplates.getCost()}</b></td>
-                    <td>MaxHealth:  <b class="values">${shipTemplates.getMaxHealth()}</b></td>
-                    <td>Masts type:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeMastName()}</b></td>
+                    <td>Crew:  <b class="values">${shipTemplates.getMaxSailorsQuantity()}</b></td>
+                    <td>Health:  <b class="values">${shipTemplates.getMaxHealth()}</b></td>
                 </tr>
                 </table>
         </td>
@@ -75,16 +74,9 @@
     </div>
 </div>
 
-<div id="setNameModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p class="small_text">Maximum length: 20.Language - English.</p>
-            <p>How we can call our ship, captain?</p>
-            <input class = "capacity_for_background values" id="setNameText" autofocus>
-            <button class="button capacity_for_background" id ="setShipButton" onclick="confirmNewName()">
-                <span>Ok</span>
-            </button>
-        </div>
+<div id="setNameModal" >
+	<p class="big_text">Max length 20. You can use English letters, numbers, space and underscore.</p>
+    <input class = "capacity_for_background values" id="setNameText" autofocus="autofocus">
 </div>
 
 <script>
@@ -93,9 +85,19 @@ var answerModal = document.getElementById('answerModal');
 var text = document.getElementById('text');
 var btn = document.getElementById("shipTemplateId");
 
-var setNameModal = document.getElementById("setNameModal");
+var setNameModal = $("#setNameModal");
+setNameModal.dialog({
+    autoOpen: false,
+    resizable: false,
+    height: 300,
+    width: 550,
+    modal: true,
+    title: "How we can call our ship, captain?"
+});
 var setShipButton = document.getElementById("setShipButton");
 var setNewNameButton = document.getElementById("setShipButton");
+
+var small_text = $("p.big_text");
 
 var currentElem = 0;
 var currentDefaultName = "";
@@ -105,15 +107,34 @@ $( ".close" ).click(function() {
   setNameModal.style.display = "none";
 });
 
-function confirmNewName() {
-    var shipName = document.getElementById("setNameText").value;
-    setNameModal.style.display = "none";
-    buyShip(currentElem, shipName, currentDefaultName);
+function confirmNewName(shipName) {
+    if (shipName.search(/[^A-z,0-9,\s,_]/g) > -1 || shipName.length > 20 || shipName.length == 0) {
+        small_text.effect( "bounce", "slow" );
+        return false;
+    }
+    return true;
 }
 
 function setShipName(elem, defaultName) {
     document.getElementById("setNameText").value='';
-    setNameModal.style.display = "block";
+    setNameModal.dialog( "option", "buttons",
+        [{
+           text: "Ok",
+           click: function() {
+               var shipName = document.getElementById("setNameText").value;
+               if (confirmNewName(shipName)) {
+                   buyShip(currentElem, shipName, currentDefaultName);
+                   $(this).dialog('close');
+               }
+           }
+        }, {
+            text: "Cancel",
+            click: function() {
+                $(this).dialog('close');
+            }
+        }]
+    );
+    setNameModal.dialog( "open" );
     currentElem = elem.value;
     currentDefaultName = defaultName;
 }
@@ -145,7 +166,7 @@ window.onclick = function(event) {
         answerModal.style.display = "none";
     }
     if (event.target == setNameModal) {
-        setNameModal.style.display = "none";
+        setNameModal.dialog("close");
     }
 }
 </script>

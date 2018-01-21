@@ -12,6 +12,7 @@ body {
 }
 
 .tableClass {
+    vertical-align:bottom
     position: relative;
     background-image:url("../images/general/panel_background.jpg");
     color: white;
@@ -22,6 +23,14 @@ body {
     border: 6px double black;
     height: 400px;
     width: 700px;
+}
+
+.center {
+    text-align: center;
+}
+
+.externalBorder {
+    border: 3px solid black;
 }
 
 img{
@@ -80,7 +89,7 @@ img{
     text-shadow: 2px 8px 6px rgba(0,0,0,0.8),
                  0px -5px 35px rgba(255,255,255,0.3);
 	font: bold;
-	font-size: 32pt;
+	font-size: 30pt;
     color: white;
     font-weight:bold;
     font-family: Arial, Helvetica, sans-serif;
@@ -114,4 +123,9 @@ img{
 .small_text {
     color: red;
     font-size: 12px;
+}
+
+.big_text {
+    color: white;
+    font-size: 22px;
 }

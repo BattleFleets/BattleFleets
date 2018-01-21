@@ -5,8 +5,10 @@
     <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/jquery-ui.min.js"></script>
+
 
     <script type="text/javascript">
             function setHalfVolume() {
@@ -16,18 +18,6 @@
                 audio1.volume = 0.1;
             };
 
-            function conf(){
-            var shipTemplateId = $("#shipTemplateId").val();
-            $.ajax({
-                url:'/buy',
-                method:"GET",
-                data: { 'shipTemplateId' : shipTemplateId },
-                success: function(data) {
-                             $('#results').html(data);
-                             }
-                } );
-            }
-
             function showTemplates() {
             $.ajax({
             			method:"GET",
@@ -35,6 +25,9 @@
             			success : function(response) {
             				console.log("SUCCESS: ");
             				$('.shipContainer').html(response);
+            				$('html, body').animate({
+                                scrollTop: $(".shipContainer").offset().top
+                            }, 1000);
             			},
                         error : function(e) {
                             console.log("ERROR: ", e);
@@ -49,6 +42,9 @@
                         success : function(response) {
                             console.log("SUCCESS: ");
                             $('.shipContainer').html(response);
+                            $('html, body').animate({
+                                scrollTop: $(".shipContainer").offset().top
+                            }, 1000);
                         },
                         error : function(e) {
                             console.log("ERROR: ", e);
@@ -63,6 +59,9 @@
                         success : function(response) {
                             console.log("SUCCESS: ");
                             $('.shipContainer').html(response);
+                            $('html, body').animate({
+                                scrollTop: $(".shipContainer").offset().top
+                            }, 1000);
                         },
                         error : function(e) {
                             console.log("ERROR: ", e);
@@ -70,12 +69,12 @@
                     });
             }
     </script>
-    <div align="center">
-    	<h1 class="titleText">${city}</h1>
-    </div>
 </head>
 <c:import url= "/addHeader"/>
 <body>
+    <div align="center">
+        <h1 class="titleText">Shipyard ${city}</h1>
+    </div>
 <%@include file="fragment/footer.jsp"%>
 <audio autoplay id="gavan" onloadeddata="setHalfVolume()">
   <source src="static/audio/gavan-0-4.8.mp3" type="audio/mp3">
@@ -109,18 +108,19 @@
 			</td>
 		</tr>
 		<tr align="center">
-			<td> <form action="<c:url value="/stock" />" method="GET">
-			<button class="button" name = "stock" value = "${city}" formaction="/stock" style="vertical-align:middle" type="submit" action="<c:url value="/stock" />" method="GET">
-			<span>Stock</span>
-			</button>
-			<form>
+			<td> 
+                <form action="<c:url value="/stock" />" method="GET">
+                    <input hidden="true" name="page" value="shipyard">
+			        <button class="button" name = "city" value = "${city}" formaction="/stock" style="vertical-align:middle" type="submit" action="<c:url value="/stock" />" method="GET">
+			            <span>Stock</span>
+			        </button>
+			    </form>
 			</td>
 		</tr>
 	</table>
 </div>
-<div class="shipContainer">
+<div class="shipContainer" align="center" >
 
 </div>
-
 </body>
 </html>

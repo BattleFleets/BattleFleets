@@ -2,7 +2,6 @@ package com.nctc2017.services;
 
 import com.nctc2017.bean.*;
 import com.nctc2017.dao.*;
-import com.nctc2017.exception.UpdateException;
 import com.nctc2017.services.utils.CompBeans;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,84 +34,81 @@ public class ShipService {
 
 
     public List<Ship> getAllPlayerShips(BigInteger playerId) {
-         List<BigInteger> shipsId=playerDao.findAllShip(playerId);
-         List<Ship> ships=shipDao.findAllShips(shipsId);
-         return ships;
+        List<BigInteger> shipsId = playerDao.findAllShip(playerId);
+        List<Ship> ships = shipDao.findAllShips(shipsId);
+        return ships;
     }
 
-        public List<StartTypeOfShipEquip> getTypeOfShipEquipment() {
-            List<StartTypeOfShipEquip> result = shipDao.findStartShipsEqupMastType();
-            result.sort(new CompBeans().new StartTypeCompare());
-            List<StartTypeOfShipEquip> cannon = shipDao.findStartShipsEqupCannonType();
-            cannon.sort(new CompBeans().new StartTypeCompare());
-            for (int i = 0; i < result.size(); i++) {
-                result.get(i).setTypeCannonName(cannon.get(i).getTypeCannonName());
-            }
-            return result;
+    public List<StartTypeOfShipEquip> getTypeOfShipEquipment() {
+        List<StartTypeOfShipEquip> result = shipDao.findStartShipsEqupMastType();
+        result.sort(new CompBeans().new StartTypeCompare());
+        List<StartTypeOfShipEquip> cannon = shipDao.findStartShipsEqupCannonType();
+        cannon.sort(new CompBeans().new StartTypeCompare());
+        for (int i = 0; i < result.size(); i++) {
+            result.get(i).setTypeCannonName(cannon.get(i).getTypeCannonName());
         }
+        return result;
+    }
 
 
-    public int getSailorCost(){
+    public int getSailorCost() {
         return shipDao.getSailorCost();
     }
 
     public List<ShipSpeed> getSpeedShips(List<Ship> ships) {
         List<ShipSpeed> result = new ArrayList<>();
-        for (Ship ship:ships) {
+        for (Ship ship : ships) {
             int maxShipSpeed = 0;
             int curShipSpeed = 0;
             for (Mast mast : mastDao.getShipMastsFromShip(ship.getShipId())) {
                 maxShipSpeed += mast.getMaxSpeed();
                 curShipSpeed += mast.getCurSpeed();
             }
-            result.add(new ShipSpeed(maxShipSpeed,curShipSpeed));
+            result.add(new ShipSpeed(maxShipSpeed, curShipSpeed));
         }
         return result;
     }
 
-    public Ship findShip(BigInteger shipId){
+    public Ship findShip(BigInteger shipId) {
         return shipDao.findShip(shipId);
     }
 
-    public boolean updateShipSailorsNumber(BigInteger shipId, int newSailorsNumber){
-       // Ship ship = findShip(shipId);
-       // if(ship.getCurSailorsQuantity()!=ship.getMaxSailorsQuantity()) {
-            return shipDao.updateShipSailorsNumber(shipId, newSailorsNumber);
+    public boolean updateShipSailorsNumber(BigInteger shipId, int newSailorsNumber) {
+        // Ship ship = findShip(shipId);
+        // if(ship.getCurSailorsQuantity()!=ship.getMaxSailorsQuantity()) {
+        return shipDao.updateShipSailorsNumber(shipId, newSailorsNumber);
         //}
         //else{
-          //  UpdateException ex = new UpdateException("Level greater then next level update");
-            //log.error("Your current level should be greater or equal to level at which the update is possible",ex);
-            //throw ex;
+        //  UpdateException ex = new UpdateException("Level greater then next level update");
+        //log.error("Your current level should be greater or equal to level at which the update is possible",ex);
+        //throw ex;
         //}
     }
 
-    public boolean isAllShipsCompleted(BigInteger playerId){
+    public boolean isAllShipsCompleted(BigInteger playerId) {
         int complete = 0;
         List<Ship> ships = getAllPlayerShips(playerId);
-        for(int i=0; i<ships.size(); i++)
-        {
-            if(ships.get(i).getMaxSailorsQuantity()==ships.get(i).getCurSailorsQuantity()){
+        for (int i = 0; i < ships.size(); i++) {
+            if (ships.get(i).getMaxSailorsQuantity() == ships.get(i).getCurSailorsQuantity()) {
                 complete++;
             }
         }
-        if(ships.size()==complete){
+        if (ships.size() == complete) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
 
-    public int numShipsCompleted(BigInteger playerId){
+    public int numShipsCompleted(BigInteger playerId) {
         int complete = 0;
         List<Ship> ships = getAllPlayerShips(playerId);
-        for(int i=0; i<ships.size(); i++)
-        {
-            if(ships.get(i).getMaxSailorsQuantity()==ships.get(i).getCurSailorsQuantity()){
+        for (int i = 0; i < ships.size(); i++) {
+            if (ships.get(i).getMaxSailorsQuantity() == ships.get(i).getCurSailorsQuantity()) {
                 complete++;
             }
         }
-       return complete;
+        return complete;
     }
 
     public List<StartShipEquipment> getStartShipEquipment() {
@@ -121,7 +117,7 @@ public class ShipService {
         return result;
     }
 
-    public int getSailorsNumber(BigInteger shipId){
+    public int getSailorsNumber(BigInteger shipId) {
         return shipDao.getCurrentShipSailors(shipId);
     }
 
@@ -135,13 +131,13 @@ public class ShipService {
     }
 
 
-    public BigInteger createNewShip(BigInteger templateId, BigInteger playerId){
+    public BigInteger createNewShip(BigInteger templateId, BigInteger playerId) {
         BigInteger shipId = shipDao.createNewShip(templateId, playerId);
         StartShipEquipment startShipEquipment = shipDao.findStartShipEquip(templateId);
-        for(int i = 0; i < startShipEquipment.getStartNumCannon(); i++){
+        for (int i = 0; i < startShipEquipment.getStartNumCannon(); i++) {
             cannonDao.createCannon(startShipEquipment.getStartCannonType(), shipId);
         }
-        for(int i = 0; i < startShipEquipment.getStartNumMast(); i++){
+        for (int i = 0; i < startShipEquipment.getStartNumMast(); i++) {
             mastDao.createNewMast(startShipEquipment.getStartMastType(), shipId);
         }
         holdDao.createHold(shipId);
@@ -150,9 +146,9 @@ public class ShipService {
 
     public boolean setShipName(BigInteger shipId, String newShipName) {
         try {
-            shipDao.updateShipName(shipId,newShipName);
+            shipDao.updateShipName(shipId, newShipName);
             return true;
-        }catch (Exception e) {
+        } catch (Exception e) {
             RuntimeException ex = new IllegalArgumentException("ship does not exist. can not set name");
             log.error("ShipService Exception while set name.", ex);
             throw ex;

@@ -59,18 +59,20 @@ public class ShipTradeService {
         return costOfShip;
     }
 
-    public boolean sellShip(BigInteger playerId, BigInteger shipId) {
+    public String sellShip(BigInteger playerId, BigInteger shipId) {
         try {
+            if (playerDao.findAllShip(playerId).size() == 1)
+                return "You can not sell single ship!";
             Ship ship = shipDao.findShip(shipId);
             int halfOfCost = ship.getCost() / 2;
             int costOfShip = halfOfCost - shipRepairService.countRepairCost(shipId);
             moneyService.addMoney(playerId, costOfShip);
             shipDao.deleteShip(shipId);
-            return true;
+            return "You sold your ship!";
         } catch (RuntimeException e) {
             RuntimeException ex = new IllegalArgumentException("Can not sell ship with that id: " + shipId);
             log.error("ShipTradeService Exception while selling a ship", ex);
-            return false;
+            return "This ship is not ours, captain!";
         }
     }
 

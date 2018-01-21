@@ -74,7 +74,7 @@
             curMasts = data.curMasts;
             setHoldLimit();
             setInventoryLimit();
-            $("#ships b#shipDescription").html(curCarryingLimit + "/" + maxCarryingLimit);
+            $("#ships #"+pressedShipId+" b#shipDescription").html(curCarryingLimit + "/" + maxCarryingLimit);
         },
         error: function(data){
             $("#dialogInfoContent").html("<b>"+ data.msg +"</b>");
@@ -84,7 +84,6 @@
     }
 
     function moveToStock(goodId, quantity, from){
-    console.log("move to stock goodId = " + goodId + " quantity = "+ quantity);
     $.ajax({
         url:'/tostock',
         dataType: "json",
@@ -104,7 +103,7 @@
             curMasts = data.curMasts;
             setHoldLimit();
             setInventoryLimit();
-            $("#ships b#shipDescription").html(curCarryingLimit + "/" + maxCarryingLimit);
+            $("#ships #"+pressedShipId+" b#shipDescription").html(curCarryingLimit + "/" + maxCarryingLimit);
         },
         error: function(data){
             $("#dialogInfoContent").html("<b>"+ data.msg +"</b>");
@@ -133,7 +132,7 @@
             curMasts = data.curMasts;
             setHoldLimit();
             setInventoryLimit();
-            $("#ships b#shipDescription").html(curCarryingLimit + "/" + maxCarryingLimit);
+            $("#ships #"+pressedShipId+" b#shipDescription").html(curCarryingLimit + "/" + maxCarryingLimit);
         },
         error: function(data){
             $("#dialogInfoContent").html("<b>"+ data.msg +"</b>");
@@ -219,17 +218,19 @@ function checkQuantityForHold(){
 }
 
 function moveDialog(event){
+console.log("move dialog initiated type:" + event.data.type + " name:" + event.data.name + " from:" + event.data.from);
     if (typeof pressedShipId === 'undefined'){
         $( "#dialogInfo" ).dialog( "open" );
         return;
     }
     if(event.data.type == "GOODS" || event.data.type == "AMMO"){
-
+console.log("move dialog for goods and ammos");
         var dialogGoods = $( "#dialogGoods");
 
         dialogGoods.dialog( "option", "title", "Move "+ event.data.name +"!" );
         $("#totalQuantity").html("" + event.data.quantity);
         if(event.data.from == "stock"){
+        console.log("move goods and ammos from stock");
         dialogGoods.dialog( "option", "buttons",
                 [{
                     text: "To Hold!" +" (free space: "+(maxCarryingLimit-curCarryingLimit)+")",
@@ -251,6 +252,7 @@ function moveDialog(event){
                 );
 
         } else {
+        console.log("move goods and ammos from hold");
         dialogGoods.dialog( "option", "buttons",
             [{
                 text: "To Stock!",
@@ -276,21 +278,25 @@ function moveDialog(event){
 
     }
     if(event.data.type == "CANNON" || event.data.type == "MAST"){
+    console.log("move dialog for cannons and masts");
         var dialogInventory = $( "#dialogInventory");
         dialogInventory.dialog( "option", "title", "Move "+ event.data.name +"!" );
 
         var equipText = "Equip!"
         var equipLimit;
         if(event.data.type == "CANNON"){
+        console.log("move cannon");
             equipText = equipText + " (cannons " + curCannons + "/" + maxCannons + ")";
             equipLimit = maxCannons - curCannons;
         } else {
+        console.log("move mast");
             equipText = equipText + " (masts " + curMasts + "/" + maxMasts + ")"
             equipLimit = maxMasts - curMasts;
         }
         var equipLimit
 
          if(event.data.from == "stock"){
+         console.log("move cannons and mast from stock");
                 dialogInventory.dialog( "option", "buttons",
                         [{
                             text: "To Hold! " +"(free space: "+(maxCarryingLimit-curCarryingLimit)+")",
@@ -327,6 +333,7 @@ function moveDialog(event){
                 return;
          }
          if(event.data.from == "hold"){
+         console.log("move cannons and mast from hold");
                 dialogInventory.dialog( "option", "buttons",
                         [{
                             text: "To Stock!",
@@ -360,6 +367,7 @@ function moveDialog(event){
                 return;
          }
          if(event.data.from == "inventory"){
+         console.log("move cannons and mast from inventory");
                 dialogInventory.dialog( "option", "buttons",
                         [{
                             text: "To Hold!" +"(free space:"+(maxCarryingLimit-curCarryingLimit)+")",
@@ -414,7 +422,7 @@ function getGoodsImage(goodsType, goodsTemplateId){
             switch(goodsTemplateId){
                 case 17: returnValue = "static/images/market/wood.png"; break;
                 case 18: returnValue = "static/images/market/grain.png"; break;
-                case 19: returnValue = "static/images/market/tea.jpg"; break;
+                case 19: returnValue = "static/images/market/tea.png"; break;
                 case 20: returnValue = "static/images/market/coffee.png"; break;
                 case 21: returnValue = "static/images/market/sugarcane.png"; break;
                 case 22: returnValue = "static/images/market/spices.png"; break;
@@ -464,7 +472,6 @@ function fillShips(playerShips){
     $("#ships").empty();
 
     $.each(JSON.parse(playerShips), function(index, element){
-    console.log('ship element is' + element);
     var image = getShipImage(element.templateId);
     var ship = getShipHtml(element.shipId,
                            element.curName,
@@ -485,12 +492,12 @@ function fillWithGoods(playerGoods, whatToFillId){
     if(playerGoods.length == 0){
         if (typeof pressedShipId === 'undefined'){ return; }
             else {
-                $("#"+whatToFillId).empty();
+                $("#"+whatToFillId).children().remove();
                 $("#"+whatToFillId).append("<td class=\"noElements\">Thousand devils! It's empty here!</td>");
                 return;
             }
     }
-    $("#"+whatToFillId).empty();
+    $("#"+whatToFillId).children().remove();
     $.each(playerGoods, function( index, element ) {
 
     var image = getGoodsImage(element.type, element.goodsTemplateId);
@@ -501,20 +508,23 @@ function fillWithGoods(playerGoods, whatToFillId){
                                  element.quantity,
                                  element.type,
                                  image);
-    console.log("good " + good);
+
     $("#"+whatToFillId).append(good);
-    $("#"+element.goodsId).on("click",{"goodsId" : element.goodsId,
+    });
+    $.each(playerGoods, function( index, element ) {
+    $("#" + whatToFillId +" #"+element.goodsId).on("click",{"goodsId" : element.goodsId,
                                         "name" : element.name,
                                         "description" : element.description,
                                         "quantity" : element.quantity,
                                         "type" : element.type,
                                         "from" : whatToFillId}, moveDialog);
     });
+
 }
 
 
 
-console.log("script start");
+
 var playerStock = '${playerStock}';
 var playerShips = '${playerShips}';
 
@@ -533,7 +543,7 @@ $(document).ready(function () {
 	<h1 class="titleText">Stock</h1>
 </div>
 <c:import url="/addHeader"/>
-<a id="returnLink" href='/'+${page} class="logOutBottom">Return to ${page}</a>
+<a id="returnLink" href="/${page}?city=${city}" class="logOutBottom">Return to ${page}</a>
 
 <table style=" table-layout: fixed; width: 70%; margin-left: auto; margin-right: auto;" cellspacing="10" cellpadding="5">
     <tbody>

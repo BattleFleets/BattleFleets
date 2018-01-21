@@ -50,6 +50,7 @@ public class ShipDaoImplTest {
         BigInteger createdID = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, null);
         Ship s = shipDao.findShip(createdID);
         assertEquals(SHIP_TEMPALTE_CARAVELA_NAME, s.getTName());
+        assertTrue(s.getTemplateId().intValue() > 0);
         assertTrue(s.getMaxHealth() > 0);
         assertTrue(s.getMaxCarryingLimit() > 0);
         assertTrue(s.getMaxCannonQuantity() > 0);
@@ -69,6 +70,8 @@ public class ShipDaoImplTest {
         assertTrue(0 == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
+
+        assertEquals(DatabaseObject.T_CARAVELLA_OBJECT_ID, s.getTemplateId());
         assertEquals(SHIP_TEMPALTE_CARAVELA_NAME, s.getTName());
     }
 
@@ -85,7 +88,7 @@ public class ShipDaoImplTest {
         assertTrue(0 == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
-
+        assertEquals(DatabaseObject.T_CARАССА_OBJECT_ID , s.getTemplateId());
         assertEquals(SHIP_TEMPALTE_CARRACA_NAME, s.getTName());
     }
 
@@ -101,6 +104,7 @@ public class ShipDaoImplTest {
         assertTrue(0 == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
+        assertEquals(DatabaseObject.T_GALION_OBJECT_ID, s.getTemplateId());
         assertEquals(SHIP_TEMPALTE_GALION_NAME, s.getTName());
     }
 
@@ -122,6 +126,7 @@ public class ShipDaoImplTest {
         assertTrue(0 == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
+        assertEquals(DatabaseObject.T_CLIPPER_OBJECT_ID, s.getTemplateId());
         assertEquals(SHIP_TEMPALTE_CLIPPER_NAME, s.getTName());
     }
 
@@ -137,6 +142,7 @@ public class ShipDaoImplTest {
         assertTrue(0 == s.getCurCarryingLimit());
         assertTrue(s.getMaxSailorsQuantity() == s.getCurSailorsQuantity());
 
+        assertEquals(DatabaseObject.T_FREGATA_OBJECT_ID, s.getTemplateId());
         assertEquals(SHIP_TEMPALTE_FREGATA_NAME, s.getTName());
     }
 

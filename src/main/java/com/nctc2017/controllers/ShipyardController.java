@@ -26,25 +26,25 @@ public class ShipyardController {
     private static final Logger LOG = Logger.getLogger(ShipyardController.class);
 
     @Autowired
-    ShipService shipService;
+    private ShipService shipService;
 
     @Autowired
-    TradeService tradeService;
+    private TradeService tradeService;
 
     @Autowired
-    CargoMovementService cargoMovementService;
+    private CargoMovementService cargoMovementService;
 
     @Autowired
-    ShipTradeService shipTradeService;
+    private ShipTradeService shipTradeService;
 
     @Autowired
-    ShipRepairService shipRepairService;
+    private ShipRepairService shipRepairService;
 
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/shipyard", method = RequestMethod.GET)
     public ModelAndView shipyardWelcome(
-            @RequestParam(value = "shipyard", required = false) String city) {
+            @RequestParam(value = "city", required = false) String city) {
         ModelAndView model = new ModelAndView();
         model.addObject("msg", "This is protected page - Only for Users!");
         model.addObject("city", city);
@@ -109,7 +109,7 @@ public class ShipyardController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/sell", method = RequestMethod.GET)
     @ResponseBody
-    public boolean sellShip(@RequestParam(value = "shipId") BigInteger shipId,
+    public String sellShip(@RequestParam(value = "shipId") BigInteger shipId,
                             @AuthenticationPrincipal PlayerUserDetails userDetails) {
         BigInteger playerId = userDetails.getPlayerId();
         return shipTradeService.sellShip(playerId, shipId);
@@ -155,18 +155,13 @@ public class ShipyardController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/stock", method = RequestMethod.GET)
     public ModelAndView distributeResources(@AuthenticationPrincipal PlayerUserDetails userDetails,
-                                            @RequestParam(value = "stock", required = false) String city) throws JsonProcessingException {
-        LOG.debug("stock welcome " + city);
-        String page = null;
-        if (city != null) {
-            int i = city.indexOf(' ');
-            page = city.substring(0, i).toLowerCase();
-            city = city.substring(i + 1);
-        }
-
+                                            @RequestParam(value = "city", required = false) String city,
+                                            @RequestParam(value = "page", required = false) String page) throws JsonProcessingException {
         BigInteger playerId = userDetails.getPlayerId();
-        ModelAndView model = new ModelAndView();
-        model.setViewName("StockView");
+        ModelAndView model = new ModelAndView("StockView");  
+        
+        LOG.debug("stock welcome " + city);
+
         ObjectMapper mapper = new ObjectMapper();
         model.addObject("playerShips", mapper.writeValueAsString(shipService.getAllPlayerShips(playerId)));
         model.addObject("playerStock", mapper.writeValueAsString(cargoMovementService.getCargoFromStock(playerId)));

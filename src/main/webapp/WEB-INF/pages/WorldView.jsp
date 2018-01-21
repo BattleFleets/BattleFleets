@@ -12,7 +12,7 @@
     <script type="text/javascript" src="static/js/WorldView.js"></script>
 </head>
 
-<body curCityName="${info}">
+<body curCityName="${city}">
 <a href="/city" class="logOutBottom">Return to city</a>
 	<div align="center">
 		<h1 class="titleText">World Map</h1>

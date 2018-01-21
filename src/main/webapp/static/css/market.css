@@ -11,6 +11,11 @@ body {
     background-size: cover;
 }
 
+h1 > a {
+	color: white;
+    text-decoration: underline;
+}
+
 .panels{
     background:url("../images/general/panel_background.jpg");
     height: 75%;

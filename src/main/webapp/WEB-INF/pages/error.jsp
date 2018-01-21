@@ -11,6 +11,7 @@
         background-repeat: no-repeat; 
         background-size: cover; 
         background-attachment: fixed;
+        height: 100%;
 	}
 	</style>
 </head>
@@ -18,10 +19,10 @@
 <body>
     <c:choose>
         <c:when test="${empty reason or reason.length() == 0}">
-            <c:set var = "errorMes" scope = "session" value = "Sorry, application error. ${reason}"/>
+            <c:set var = "errorMes" scope = "session" value = "Sorry, application error."/>
         </c:when>
         <c:otherwise>
-            <c:set var = "errorMes" scope = "session" value = "Sorry, application error."/>
+            <c:set var = "errorMes" scope = "session" value = "Sorry, application error. ${reason}"/>
         </c:otherwise>
     </c:choose>
     
