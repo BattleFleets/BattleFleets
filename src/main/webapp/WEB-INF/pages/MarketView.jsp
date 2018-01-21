@@ -39,8 +39,8 @@
                     <div class="col-6 col-md-4"></div>
                 </div>
                 <div class="row">
-                    <p class="col-6 col-md-4 modalText">Quantity:</p>
-                    <input type="number" id="modalQuantity" min="0" max="" class="col-6 col-md-4">
+                    <p class="col-6 col-md-4 modalText quantityLimit"></p>
+                    <div class="col-6 col-md-4"><input type="number" id="modalQuantity" min="0" max=""></div>
                     <div class="col-6 col-md-4"></div>
                 </div>
                 <div class="row">
@@ -73,8 +73,8 @@
                     <div class="col-6 col-md-4"></div>
                 </div>
                 <div class="row">
-                    <p class="col-6 col-md-4 modalText">Quantity:</p>
-                    <input type="number" id="modalSaleQuantity" min="0" max="" class="col-6 col-md-4">
+                    <p class="col-6 col-md-4 modalText quantityLimit"></p>
+                    <div class="col-6 col-md-4"><input type="number" id="modalSaleQuantity" min="0" max=""></div>
                     <div class="col-6 col-md-4"></div>
                 </div>
                 <div class="row">
@@ -92,7 +92,7 @@
 </div>
 
 <div class="col-sm-5 panels">
-    <h1 class="messageText"><a href="/stock?page=market&city=${city}">Stock</a></h1>
+    <h1 class="messageText"><a href="/stock?page=market&city=${city}"  id="toStock">Stock</a></h1>
     <div class="table">
         <ul class="nav nav-tabs center-block">
             <li><a href="#" class="saleJson" id="goodSaleJson">Goods</a></li>
