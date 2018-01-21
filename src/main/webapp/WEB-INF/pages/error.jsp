@@ -22,7 +22,8 @@
             <c:set var = "errorMes" scope = "session" value = "Sorry, application error."/>
         </c:when>
         <c:otherwise>
-            <c:set var = "errorMes" scope = "session" value = "Sorry, application error. ${reason}"/>
+            <c:set var = "errorMes" scope = "session" value = "Sorry, application error."/>
+            <c:set var = "errTitle" scope = "session" value = "${reason}"/>
         </c:otherwise>
     </c:choose>
     

@@ -3,6 +3,7 @@
 <head>
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
+    <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
 
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
@@ -26,11 +27,16 @@
             <table class ="tableClass">
             <tr>
                 <td class="center">
-                <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getShipId()}" onclick="chooseOfAction(this,'${action}',${shipTemplates.getCost()}-${shipCosts.get(status.index)}*2, ${shipTemplates.curCarryingLimit})">
+                <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getShipId()}" onclick="chooseOfAction(this,'${action}',${shipTemplates.getCost()-shipCosts.get(status.index)*2}, ${shipTemplates.curCarryingLimit})">
                 <span>${action} ${shipTemplates.getTName()}</span>
                 </button>
                 </td>
-                <td class="price">SellingCost:  <b class="values">${shipCosts.get(status.index)}</b></td>
+                <c:if test = "${action == 'Sell'}">
+                    <td class="price">SellingCost:  <b class="values">${shipCosts.get(status.index)}</b></td>
+                </c:if>
+                <c:if test = "${action == 'Repair'}">
+                    <td class="price">RepairCost:  <b class="values"><c:out value = "${shipTemplates.getCost()-shipCosts.get(status.index)*2}"/></b></td>
+                </c:if>
             </tr>
             <tr>
                 <td rowspan="3" id = "shipimg">
@@ -58,14 +64,14 @@
                 <td>Name:  <b class="values">${shipTemplates.getCurName()}</b></td>
             </tr>
             <tr>
-                <td>Health:  <b class="values">${shipTemplates.getMaxHealth()}/${shipTemplates.getCurHealth()}</b></td>
+                <td>Health:  <b class="values">${shipTemplates.getCurHealth()}/${shipTemplates.getMaxHealth()}</b></td>
             </tr>
             <tr>
                 <c:if test = "${action == 'Sell'}">
-                    <td>Crew:  <b class="values">${shipTemplates.getMaxSailorsQuantity()}/${shipTemplates.getCurSailorsQuantity()} </b></td>
+                    <td>Crew:  <b class="values">${shipTemplates.getCurSailorsQuantity()}/${shipTemplates.getMaxSailorsQuantity()}</b></td>
                 </c:if>
                 <c:if test = "${action == 'Repair'}">
-                    <td>Speed:  <b class="values">${shipsSpeed.get(status.index).maxSpeed}/${shipsSpeed.get(status.index).curSpeed} </b></td>
+                    <td>Speed:  <b class="values">${shipsSpeed.get(status.index).curSpeed}/${shipsSpeed.get(status.index).maxSpeed}</b></td>
                 </c:if>
             </tr>
             <tr>
@@ -86,17 +92,8 @@
     </div>
 </div>
 
-<div id="setConfirmModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p>That ship have something in hold, captain. We will give it away.</p>
-            <button class="button capacity_for_background" id ="confirm" onclick="confirmSell()">
-                <span>Ok</span>
-            </button>
-            <button class="button capacity_for_background" id ="cancel" onclick="cancel()">
-                <span>Cancel</span>
-            </button>
-        </div>
+<div id="setConfirmModal" >
+    <p class="big_text">That ship have something in hold, captain. We will give it away.</p>
 </div>
 
 <script>
@@ -104,8 +101,16 @@ var modal = document.getElementById('myModal');
 var text = document.getElementById('text');
 var btn = document.getElementById("shipTemplateId");
 
-var setConfirmModal = document.getElementById("setConfirmModal");
-var currentShipId = 0;
+var setConfirmModal = $("#setConfirmModal");
+
+setConfirmModal.dialog({
+    autoOpen: false,
+    resizable: false,
+    height: 300,
+    width: 550,
+    modal: true,
+});
+
 
 $( ".close" ).click(function() {
   modal.style.display = "none";
@@ -123,20 +128,24 @@ function chooseOfAction(elem, action, diffcost, carringLimit) {
 
 function sellConfirm(elem, carringLimit) {
     if (carringLimit > 0) {
-        currentShipId = elem.value;
-        setConfirmModal.style.display = "block";
+        setConfirmModal.dialog( "option", "buttons",
+            [{
+               text: "Ok",
+               click: function() {
+                   sellship(elem.value);
+                   $(this).dialog('close');
+               }
+            }, {
+                text: "Cancel",
+                click: function() {
+                    $(this).dialog('close');
+                }
+            }]
+        );
+        setConfirmModal.dialog( "open" );
     }
     else
         sellship(elem.value);
-}
-
-function cancel() {
-    setConfirmModal.style.display = "none";
-}
-
-function confirmSell() {
-    setConfirmModal.style.display = "none";
-    sellship(currentShipId);
 }
 
 function sellship(elem) {
@@ -188,7 +197,7 @@ window.onclick = function(event) {
         modal.style.display = "none";
     }
     if (event.target == setConfirmModal) {
-        setConfirmModal.style.display = "none";
+        setConfirmModal.dialog("close");
     }
 }
 </script>

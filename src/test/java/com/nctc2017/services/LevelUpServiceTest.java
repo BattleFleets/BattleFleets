@@ -34,7 +34,7 @@ public class LevelUpServiceTest {
 
     @InjectMocks
     private LevelUpService levelUpService;
-    
+
     @Mock
     private ScoreService score;
 
@@ -60,7 +60,7 @@ public class LevelUpServiceTest {
         when(playerDao.getCurrentPassiveIncome(steve.getPlayerId())).thenReturn(100).thenReturn(150);
         when(playerDao.getCurrentMaxShips(steve.getPlayerId())).thenReturn(3).thenReturn(4);
         when(score.getMaxLvl()).thenReturn(61);
-        
+
         doNothing().when(playerDao).updatePoints(steve.getPlayerId(),200);
         doNothing().when(playerDao).updateLevel(steve.getPlayerId(),10);
         doNothing().when(playerDao).updatePassiveIncome(steve.getPlayerId(),200);
@@ -70,8 +70,8 @@ public class LevelUpServiceTest {
 
     @Test
     public void getCurrentLevel() throws Exception {
-      int lvl = levelUpService.getCurrentLevel(steve.getPlayerId());
-      assertEquals(lvl,steve.getLevel());
+        int lvl = levelUpService.getCurrentLevel(steve.getPlayerId());
+        assertEquals(lvl,steve.getLevel());
     }
 
     @Test
