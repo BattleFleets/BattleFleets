@@ -14,4 +14,13 @@ public class ControllerAdvisor {
         view.addObject("errorMes", "Arrr!!! Page not found");
         return view;
     }
+    
+    
+    @ExceptionHandler(value = RuntimeException.class)
+    public ModelAndView handleCustomException(RuntimeException ex) {
+        ModelAndView model = new ModelAndView("error");
+        model.addObject("reason", ex.getMessage());
+
+        return model;
+    }
 }

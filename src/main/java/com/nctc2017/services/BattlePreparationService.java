@@ -15,6 +15,7 @@ import com.nctc2017.services.utils.Visitor;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ public class BattlePreparationService {
     private static final int DELAY = 60000;
     
     @Autowired
+    @Qualifier("battleManager")
     protected BattleManager battles;    
     
     @Autowired
@@ -59,21 +61,25 @@ public class BattlePreparationService {
     }
     
     public List<ShipWrapper> getShipsExtraInfo(BigInteger playerId) {
-        List<BigInteger> listShipsId = playerDao.findAllShip(playerId);
+        List<Ship> listShipsId = getShips(playerId);
         List<ShipWrapper> shipInfo = new ArrayList<ShipWrapper>();
-        for (BigInteger shipId : listShipsId) {
+        for (Ship ship : listShipsId) {
             shipInfo.add(new ShipWrapper(
-                    shipDao.findShip(shipId), 
-                    cannonDao.getCurrentQuantity(shipId),
-                    mastDao.getShipMastsFromShip(shipId),
-                    shipDao.getMaxShotDistance(shipId)));
+                    ship, 
+                    cannonDao.getCurrentQuantity(ship.getShipId()),
+                    mastDao.getShipMastsFromShip(ship.getShipId()),
+                    shipDao.getMaxShotDistance(ship.getShipId())));
+            if (ship.getCurSailorsQuantity() == 0) {
+                ship.setShipId(null);
+            }
         }
         return shipInfo;
     }
     
-    public List<Ship> getShips(BigInteger playerId) {
+    private List<Ship> getShips(BigInteger playerId) {
         List<BigInteger> listShipsId = playerDao.findAllShip(playerId);
-        return shipDao.findAllShips(listShipsId);
+        List<Ship> listShips = shipDao.findAllShips(listShipsId);
+        return listShips;
     }
 
     public List<Ship> getEnemyShips(BigInteger playerId) throws BattleEndException {

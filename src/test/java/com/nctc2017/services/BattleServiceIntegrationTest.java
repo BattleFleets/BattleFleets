@@ -18,6 +18,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nctc2017.bean.Ammo;
@@ -37,6 +38,7 @@ import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
 import com.nctc2017.exception.BattleStartException;
 import com.nctc2017.exception.PlayerNotFoundException;
+import com.nctc2017.services.utils.BattleManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -112,7 +114,12 @@ public class BattleServiceIntegrationTest {
     
     @Before
     public void setUpCombatant() throws PlayerNotFoundException, BattleStartException, BattleEndException {
-        travelService = (TravelService)this.context.getBean("travelServicePrototype");
+        BattleManager battleManager = (BattleManager)context.getBean("battleManagerPrototype");
+        travelService = (TravelService)context.getBean("travelServicePrototype");
+        ReflectionTestUtils.setField(travelService, "battleManager", battleManager);
+        ReflectionTestUtils.setField(prepService, "battles", battleManager);
+        ReflectionTestUtils.setField(battleService, "battles", battleManager);
+        
         String loginNik = "Nik";
         String emailNik = "q@q.q";
         String loginSteve = "Steve";
