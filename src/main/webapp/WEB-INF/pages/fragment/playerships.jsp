@@ -127,7 +127,7 @@ function chooseOfAction(elem, action, diffcost, carringLimit) {
 }
 
 function sellConfirm(elem, carringLimit) {
-    if (carringLimit >= 0) {
+    if (carringLimit > 0) {
         setConfirmModal.dialog( "option", "buttons",
             [{
                text: "Ok",
