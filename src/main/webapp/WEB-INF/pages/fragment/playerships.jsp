@@ -3,6 +3,7 @@
 <head>
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
+    <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
 
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
@@ -91,17 +92,8 @@
     </div>
 </div>
 
-<div id="setConfirmModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p>That ship have something in hold, captain. We will give it away.</p>
-            <button class="button capacity_for_background" id ="confirm" onclick="confirmSell()">
-                <span>Ok</span>
-            </button>
-            <button class="button capacity_for_background" id ="cancel" onclick="cancel()">
-                <span>Cancel</span>
-            </button>
-        </div>
+<div id="setConfirmModal" >
+    <p class="big_text">That ship have something in hold, captain. We will give it away.</p>
 </div>
 
 <script>
@@ -109,8 +101,16 @@ var modal = document.getElementById('myModal');
 var text = document.getElementById('text');
 var btn = document.getElementById("shipTemplateId");
 
-var setConfirmModal = document.getElementById("setConfirmModal");
-var currentShipId = 0;
+var setConfirmModal = $("#setConfirmModal");
+
+setConfirmModal.dialog({
+    autoOpen: false,
+    resizable: false,
+    height: 300,
+    width: 550,
+    modal: true,
+});
+
 
 $( ".close" ).click(function() {
   modal.style.display = "none";
@@ -127,21 +127,25 @@ function chooseOfAction(elem, action, diffcost, carringLimit) {
 }
 
 function sellConfirm(elem, carringLimit) {
-    if (carringLimit > 0) {
-        currentShipId = elem.value;
-        setConfirmModal.style.display = "block";
+    if (carringLimit >= 0) {
+        setConfirmModal.dialog( "option", "buttons",
+            [{
+               text: "Ok",
+               click: function() {
+                   sellship(elem.value);
+                   $(this).dialog('close');
+               }
+            }, {
+                text: "Cancel",
+                click: function() {
+                    $(this).dialog('close');
+                }
+            }]
+        );
+        setConfirmModal.dialog( "open" );
     }
     else
         sellship(elem.value);
-}
-
-function cancel() {
-    setConfirmModal.style.display = "none";
-}
-
-function confirmSell() {
-    setConfirmModal.style.display = "none";
-    sellship(currentShipId);
 }
 
 function sellship(elem) {
@@ -193,7 +197,7 @@ window.onclick = function(event) {
         modal.style.display = "none";
     }
     if (event.target == setConfirmModal) {
-        setConfirmModal.style.display = "none";
+        setConfirmModal.dialog("close");
     }
 }
 </script>

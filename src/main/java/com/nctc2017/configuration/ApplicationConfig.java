@@ -1,6 +1,7 @@
 package com.nctc2017.configuration;
 
 import com.nctc2017.services.*;
+import com.nctc2017.services.utils.BattleManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;

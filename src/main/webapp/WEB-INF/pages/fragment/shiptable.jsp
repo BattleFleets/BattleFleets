@@ -94,6 +94,7 @@ setNameModal.dialog({
     modal: true,
     title: "How we can call our ship, captain?"
 });
+
 var setShipButton = document.getElementById("setShipButton");
 var setNewNameButton = document.getElementById("setShipButton");
 
@@ -116,7 +117,6 @@ function confirmNewName(shipName) {
 }
 
 function setShipName(elem, defaultName) {
-    document.getElementById("setNameText").value='';
     setNameModal.dialog( "option", "buttons",
         [{
            text: "Ok",
@@ -124,12 +124,14 @@ function setShipName(elem, defaultName) {
                var shipName = document.getElementById("setNameText").value;
                if (confirmNewName(shipName)) {
                    buyShip(elem, shipName, defaultName);
+                   $("#setNameText").val("");
                    $(this).dialog('close');
                }
            }
         }, {
             text: "Cancel",
             click: function() {
+                $("#setNameText").val("");
                 $(this).dialog('close');
             }
         }]
@@ -158,7 +160,6 @@ function buyShip(elem, shipName, defaultName) {
                          }
                          })
              .done(function() {
-                headerUpdate();
             } );
     });
 }
