@@ -26,11 +26,16 @@
             <table class ="tableClass">
             <tr>
                 <td class="center">
-                <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getShipId()}" onclick="chooseOfAction(this,'${action}',${shipTemplates.getCost()}-${shipCosts.get(status.index)}*2, ${shipTemplates.curCarryingLimit})">
+                <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getShipId()}" onclick="chooseOfAction(this,'${action}',${shipTemplates.getCost()-shipCosts.get(status.index)*2}, ${shipTemplates.curCarryingLimit})">
                 <span>${action} ${shipTemplates.getTName()}</span>
                 </button>
                 </td>
-                <td class="price">SellingCost:  <b class="values">${shipCosts.get(status.index)}</b></td>
+                <c:if test = "${action == 'Sell'}">
+                    <td class="price">SellingCost:  <b class="values">${shipCosts.get(status.index)}</b></td>
+                </c:if>
+                <c:if test = "${action == 'Repair'}">
+                    <td class="price">RepairCost:  <b class="values"><c:out value = "${shipTemplates.getCost()-shipCosts.get(status.index)*2}"/></b></td>
+                </c:if>
             </tr>
             <tr>
                 <td rowspan="3" id = "shipimg">
@@ -58,14 +63,14 @@
                 <td>Name:  <b class="values">${shipTemplates.getCurName()}</b></td>
             </tr>
             <tr>
-                <td>Health:  <b class="values">${shipTemplates.getMaxHealth()}/${shipTemplates.getCurHealth()}</b></td>
+                <td>Health:  <b class="values">${shipTemplates.getCurHealth()}/${shipTemplates.getMaxHealth()}</b></td>
             </tr>
             <tr>
                 <c:if test = "${action == 'Sell'}">
-                    <td>Crew:  <b class="values">${shipTemplates.getMaxSailorsQuantity()}/${shipTemplates.getCurSailorsQuantity()} </b></td>
+                    <td>Crew:  <b class="values">${shipTemplates.getCurSailorsQuantity()}/${shipTemplates.getMaxSailorsQuantity()}</b></td>
                 </c:if>
                 <c:if test = "${action == 'Repair'}">
-                    <td>Speed:  <b class="values">${shipsSpeed.get(status.index).maxSpeed}/${shipsSpeed.get(status.index).curSpeed} </b></td>
+                    <td>Speed:  <b class="values">${shipsSpeed.get(status.index).curSpeed}/${shipsSpeed.get(status.index).maxSpeed}</b></td>
                 </c:if>
             </tr>
             <tr>
