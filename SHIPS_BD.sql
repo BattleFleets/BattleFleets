@@ -1469,7 +1469,7 @@ BEGIN
             RETURN 'Goods are transferred successfully!';
           ELSE
             UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
-            UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE OBJECT_ID=j;
+            UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=j;
             RETURN 'Goods are transferred successfully!';
           END IF;
         END IF;
@@ -1506,7 +1506,7 @@ BEGIN
               RETURN 'Ammo are transferred successfully!';
             ELSE
               UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
-              UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE OBJECT_ID=j;
+              UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=j;
               RETURN 'Ammo are transferred successfully!';
             END IF;
           END IF;
@@ -1556,7 +1556,7 @@ BEGIN
               RETURN 'Goods are transferred successfully!';
             ELSE
               UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
-              UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE OBJECT_ID=j;
+              UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=j;
               RETURN 'Goods are transferred successfully!';
             END IF;
           END IF;
@@ -1590,7 +1590,7 @@ BEGIN
                 RETURN 'Ammo are transferred successfully!';
               ELSE
                 UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
-                UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE OBJECT_ID=j;
+                UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=j;
                 RETURN 'Ammo are transferred successfully!';
               END IF;
             END IF;
