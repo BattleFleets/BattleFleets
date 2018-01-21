@@ -39,6 +39,7 @@ import com.nctc2017.exception.BattleStartException;
 import com.nctc2017.exception.DeadEndException;
 import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.utils.BattleEndVisitor;
+import com.nctc2017.services.utils.BattleManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -137,8 +138,14 @@ public class BattleIntegrationScenarioTest {
     
     @Before
     public void setUpCombatant() throws PlayerNotFoundException, BattleStartException, BattleEndException {
+        BattleManager battleManager = (BattleManager)context.getBean("battleManagerPrototype");
         travelService = (TravelService)context.getBean("travelServicePrototype");
         ReflectionTestUtils.setField(battleEnd, "travelService", travelService);
+        ReflectionTestUtils.setField(battleEnd, "battles", battleManager);
+        ReflectionTestUtils.setField(travelService, "battleManager", battleManager);
+        ReflectionTestUtils.setField(prepService, "battles", battleManager);
+        ReflectionTestUtils.setField(battleService, "battles", battleManager);
+        
         String loginNik = "Nik";
         String emailNik = "q@q.q";
         String loginSteve = "Steve";

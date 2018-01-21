@@ -6,6 +6,7 @@ import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,7 @@ public class BattleService {
     private static final String WIN_BOARDING_MESSAGE = "Good boarding Captain!";
     private static final String LOSE_BOARDING_MESSAGE = "All who were alive were thrown overboard, and you lost your cargo.";
     @Autowired
+    @Qualifier("battleManager")
     protected BattleManager battles;
     @Autowired
     protected BattleEndingService battleEnd;

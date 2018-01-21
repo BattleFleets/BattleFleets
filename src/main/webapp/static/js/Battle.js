@@ -216,7 +216,9 @@ function autoStepTask() {
 
 function enableSpinnerNotZero(selector, checkedData) {
     if (checkedData == 0) {
-        $( selector ).spinner({ disabled: true });
+        var elem = $( selector );
+        elem.spinner({ disabled: true });
+        elem.spinner("value", 0);
     }
 }
 
