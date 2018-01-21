@@ -62,24 +62,24 @@
         <table id="ammo_tab" class="panel messageText" width="100%" style="table-layout: fixed;">
             <tr>
                 <th></th>
-                <th id="cball">Cannonballs</th>
-                <th id="bshot">Buckshot</th>
-                <th id="chains">Chains</th>
+                <th><div class = "icon icon_cannonball"></div><span id="cball"></span></th>
+                <th><div class = "icon icon_buckshot"></div><span id="bshot"></span></th>
+                <th><div class = "icon icon_chain"></div><span id="chains"></span></th>
             </tr>
             <tr>
-                <th id="mortar">Mortar</th>
+                <th><div class = "icon icon_mortar"></div><span id="mortar"></span></th>
                 <td><input class = "spinner s_mortar s_ball" id = "mBall"></td>
                 <td><input class = "spinner s_mortar s_bshot" id = "mBshot"></td> 
                 <td><input class = "spinner s_mortar s_chains" id = "mChains"></td>
             </tr>
             <tr>
-                <th id="bombard">Bombard</th> 
+                <th><div class = "icon icon_bombard"></div><span id="bombard"></span></th> 
                 <td><input class = "spinner s_bombard s_ball" id = "bBall"></td>
                 <td><input class = "spinner s_bombard s_bshot" id = "bBshot"></td> 
                 <td><input class = "spinner s_bombard s_chains" id = "bChains"></td>
             </tr>
             <tr>
-                <th id="kulevrin">Kulevrin</th>
+                <th><div class = "icon icon_kulevrin"></div><span id="kulevrin"></span></th>
                 <td><input class = "spinner s_kulevrin s_ball" id = "kBall"></td>
                 <td><input class = "spinner s_kulevrin s_bshot" id = "kBshot"></td> 
                 <td><input class = "spinner s_kulevrin s_chains" id = "kChains"></td>
@@ -94,29 +94,34 @@
         <table id="button_tab" class="panel messageText" width="100%" style="table-layout: fixed;">
             <tr>
                 <td>
-                    <button id="fire" disabled="disabled" class="button_pick" style="vertical-align:middle" name="fire" type="submit">
+                    <button id="fire" disabled="disabled" class="button_pick" style="vertical-align:middle" name="fire" type="submit"
+                    title="A volley of all cannons!">
                         <span class="icon_fire_disable"></span><span style="float: none">Fire</span>
                     </button>
                 </td>
                 <td>
-                    <button id="boarding" disabled="disabled" class="button_pick" style="vertical-align:middle" name="boarding" type="submit">
+                    <button id="boarding" disabled="disabled" class="button_pick" style="vertical-align:middle" name="boarding" type="submit"
+                    title="Distance between ships should be 0">
                         <span class="icon_boarding_disable"></span><span style="float: none">Boarding</span>
                     </button>
                 </td> 
                 <td>
-                    <button id="escape" class="button_pick" disabled="disabled" style="vertical-align:middle" name="escape" type="submit">
+                    <button id="escape" class="button_pick" disabled="disabled" style="vertical-align:middle" name="escape" type="submit"  
+                    title="Your speed should be greater than the enemy's by 5 knots">
                         <span class="icon_escape_disable"></span><span style="float: none">Escape</span>
                     </button>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <button id="payoff" class="button_pick" disabled="disabled" style="vertical-align:middle" name="payoff" type="submit" title="${payoff}">
+                    <button id="payoff" class="button_pick" disabled="disabled" style="vertical-align:middle" name="payoff" type="submit" 
+                    title="You will lose ${payoff} doublons">
                         <span class="icon_payoff_disable"></span><span style="float: none">Payoff</span>
                     </button>
                 </td>
                 <td>
-                    <button id="surrender" class="button_pick" style="vertical-align:middle" name="surrender" type="submit">
+                    <button id="surrender" class="button_pick" style="vertical-align:middle" name="surrender" type="submit"
+                    title="You will lose your cargo">
                         <span class="icon_surrender"></span><span style="float: none">Surrender</span>
                     </button>
                 </td>

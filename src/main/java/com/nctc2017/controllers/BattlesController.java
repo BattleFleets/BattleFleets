@@ -319,7 +319,7 @@ public class BattlesController {
         try {
             LOG.debug("Exit battlefield request");
             boolean exit = battleEndServ.leaveBattleField(playerId);
-            LOG.debug("Exit battlefield : " + exit);
+            LOG.debug("Exit battlefield done: " + exit);
             return String.valueOf(exit);
         } finally {
             MDC.remove("userName");
@@ -337,7 +337,7 @@ public class BattlesController {
         try {
             LOG.debug("Request is_enemy_leave_battlefield ");
             boolean exit = battleEndServ.isEnemyLeaveBattlefield(playerId);
-            LOG.debug("Exit battlefield : " + exit);
+            LOG.debug("Enemy leave : " + exit);
             return String.valueOf(exit);
         } finally {
             MDC.remove("userName");

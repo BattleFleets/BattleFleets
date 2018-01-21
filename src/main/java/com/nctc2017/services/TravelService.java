@@ -169,11 +169,8 @@ public class TravelService {
         return travelManager.isParticipated(playerId);
     }
     
-    public void deleteStock(BigInteger playerId) {
+    public void clearStock(BigInteger playerId) {
         stockDao.deleteStock(playerId);
-    }
-    
-    public void createStock(BigInteger playerId) {
         stockDao.createStock(playerId);
     }
 
