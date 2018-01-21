@@ -1177,6 +1177,8 @@ IS
   loseObjType NUMBER;
   put NUMBER;
   j NUMBER;
+  price NUMBER;
+  priceCargo NUMBER;
   i NUMBER:=0;
   q NUMBER:=0;
   quantValue NUMBER:=0;
@@ -1231,6 +1233,7 @@ IS
         ELSIF cargo.OBJECT_TYPE_ID=goodsObjTypeId
           THEN
             SELECT VALUE INTO valGoodsQuant FROM ATTRIBUTES_VALUE WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargo.OBJECT_ID;
+            SELECT VALUE INTO priceCargo FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=cargo.OBJECT_ID;
             freePlace:=carrying-quantValue;
             diff:=valGoodsQuant-freePlace;
             IF diff>=0
@@ -1242,7 +1245,8 @@ IS
             IF freeplace>0
             THEN
               FOR myGood IN myGoods LOOP
-                IF myGood.SOURCE_ID=cargo.SOURCE_ID
+                SELECT VALUE INTO price FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=myGood.OBJECT_ID;
+                IF myGood.SOURCE_ID=cargo.SOURCE_ID AND price=priceCargo
                 THEN
                   q:=q+1;
                   j:=myGood.OBJECT_ID;
@@ -1341,194 +1345,107 @@ IS
 
 CREATE OR REPLACE FUNCTION MOVE_CARGO_TO(cargoId NUMBER, destinationId NUMBER, quantity NUMBER) RETURN VARCHAR2
 IS
-cargoParId NUMBER;
-cargoParObjType NUMBER;
-destObjType NUMBER;
-PlayerCargoId NUMBER;
-PlayerDestId NUMBER;
-cargoObjType NUMBER;
-carrying NUMBER;
-mastsAndCannons NUMBER;
-ammoQuant NUMBER;
-goodsStart NUMBER;
-curLimir NUMBER;
-goodsStock NUMBER;
-carValue NUMBER;
-ammoStart NUMBER;
-canMax NUMBER;
-mastMax NUMBER;
-curMast NUMBER;
-curCan NUMBER;
-goodsQuant NUMBER;
-mastAndCannons NUMBER;
-freePlace NUMBER;
-curLimit NUMBER;
-quant NUMBER;
-ammos NUMBER;
-src NUMBER;
-j NUMBER;
-i NUMBER:=0;
-canLimitAttrId NUMBER:=3;
-mastLimitAttrId NUMBER:=4;
-shipObjType NUMBER:=6;
-holdObjType NUMBER:=9;
-stockObjType NUMBER:=12;
-playerObjType NUMBER:=10;
-goodsObjType NUMBER:=14;
-ammoObjType NUMBER:=11;
-canObjType NUMBER:=8;
-mastObjType NUMBER:=7;
-carLimitAttrId NUMBER:=2;
-ammoNumAttrId NUMBER:=34;
-quantityGoodsAttrId NUMBER:=37;
-costGoodsAttrId NUMBER:=36;
-CURSOR myAmmos IS SELECT SOURCE_ID, OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=ammoObjType AND PARENT_ID=destinationId;
-CURSOR myGoods IS SELECT SOURCE_ID, OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=goodsObjType AND PARENT_ID=destinationId;
-BEGIN
-  SELECT PARENT_ID INTO cargoParId FROM OBJECTS WHERE OBJECT_ID=cargoId;
-  SELECT SOURCE_ID INTO src FROM OBJECTS WHERE OBJECT_ID=cargoId;
-  SELECT OBJECT_TYPE_ID INTO cargoParObjType FROM OBJECTS WHERE OBJECT_ID=cargoParId;
-  SELECT OBJECT_TYPE_ID INTO destObjType FROM OBJECTS WHERE OBJECT_ID=destinationId;
-  SELECT OBJECT_TYPE_ID INTO cargoObjType FROM OBJECTS WHERE OBJECT_ID=cargoId;
-  IF  cargoParObjType=stockObjType
-  THEN
-    SELECT player.OBJECT_ID INTO PlayerCargoId FROM OBJECTS player, OBJECTS dest WHERE dest.PARENT_ID=player.OBJECT_ID AND dest.OBJECT_ID=cargoParId;
-  ELSIF cargoParObjType=holdObjType
+  cargoParId NUMBER;
+  cargoParObjType NUMBER;
+  destObjType NUMBER;
+  PlayerCargoId NUMBER;
+  PlayerDestId NUMBER;
+  cargoObjType NUMBER;
+  carrying NUMBER;
+  mastsAndCannons NUMBER;
+  ammoQuant NUMBER;
+  goodsStart NUMBER;
+  curLimir NUMBER;
+  goodsStock NUMBER;
+  carValue NUMBER;
+  ammoStart NUMBER;
+  canMax NUMBER;
+  mastMax NUMBER;
+  curMast NUMBER;
+  curCan NUMBER;
+  goodsQuant NUMBER;
+  mastAndCannons NUMBER;
+  freePlace NUMBER;
+  curLimit NUMBER;
+  quant NUMBER;
+  ammos NUMBER;
+  src NUMBER;
+  j NUMBER;
+  price NUMBER;
+  priceCargo NUMBER;
+  i NUMBER:=0;
+  canLimitAttrId NUMBER:=3;
+  mastLimitAttrId NUMBER:=4;
+  shipObjType NUMBER:=6;
+  holdObjType NUMBER:=9;
+  stockObjType NUMBER:=12;
+  playerObjType NUMBER:=10;
+  goodsObjType NUMBER:=14;
+  ammoObjType NUMBER:=11;
+  canObjType NUMBER:=8;
+  mastObjType NUMBER:=7;
+  carLimitAttrId NUMBER:=2;
+  ammoNumAttrId NUMBER:=34;
+  quantityGoodsAttrId NUMBER:=37;
+  costGoodsAttrId NUMBER:=36;
+  CURSOR myAmmos IS SELECT SOURCE_ID, OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=ammoObjType AND PARENT_ID=destinationId;
+  CURSOR myGoods IS SELECT SOURCE_ID, OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=goodsObjType AND PARENT_ID=destinationId;
+  BEGIN
+    SELECT PARENT_ID INTO cargoParId FROM OBJECTS WHERE OBJECT_ID=cargoId;
+    SELECT SOURCE_ID INTO src FROM OBJECTS WHERE OBJECT_ID=cargoId;
+    SELECT OBJECT_TYPE_ID INTO cargoParObjType FROM OBJECTS WHERE OBJECT_ID=cargoParId;
+    SELECT OBJECT_TYPE_ID INTO destObjType FROM OBJECTS WHERE OBJECT_ID=destinationId;
+    SELECT OBJECT_TYPE_ID INTO cargoObjType FROM OBJECTS WHERE OBJECT_ID=cargoId;
+    IF  cargoParObjType=stockObjType
     THEN
-      SELECT player.OBJECT_ID INTO PlayerCargoId FROM OBJECTS player, OBJECTS ship, OBJECTS hold WHERE hold.PARENT_ID=ship.OBJECT_ID AND ship.PARENT_ID=player.OBJECT_ID AND hold.OBJECT_ID=cargoParId;
-  ELSE
-    RETURN 'Wrong container owner';
-  END IF;
-  IF  destObjType=stockObjType
-  THEN
-    SELECT player.OBJECT_ID INTO PlayerDestId FROM OBJECTS player, OBJECTS dest WHERE dest.PARENT_ID=player.OBJECT_ID AND dest.OBJECT_ID=destinationId;
-  ELSIF destObjType=holdObjType
+      SELECT player.OBJECT_ID INTO PlayerCargoId FROM OBJECTS player, OBJECTS dest WHERE dest.PARENT_ID=player.OBJECT_ID AND dest.OBJECT_ID=cargoParId;
+    ELSIF cargoParObjType=holdObjType
+      THEN
+        SELECT player.OBJECT_ID INTO PlayerCargoId FROM OBJECTS player, OBJECTS ship, OBJECTS hold WHERE hold.PARENT_ID=ship.OBJECT_ID AND ship.PARENT_ID=player.OBJECT_ID AND hold.OBJECT_ID=cargoParId;
+    ELSE
+      RETURN 'Wrong container owner';
+    END IF;
+    IF  destObjType=stockObjType
     THEN
-      SELECT player.OBJECT_ID INTO PlayerDestId FROM OBJECTS player, OBJECTS ship, OBJECTS hold WHERE hold.PARENT_ID=ship.OBJECT_ID AND ship.PARENT_ID=player.OBJECT_ID AND hold.OBJECT_ID=destinationId;
-  ELSE
-    RETURN 'Wrong destId';
-  END IF;
-  DBMS_OUTPUT.PUT_LINE(PlayerCargoId || ' = ' || PlayerDestId);
-  IF PlayerCargoId=PlayerDestId
-  THEN
-  DBMS_OUTPUT.PUT_LINE('start');
-    FOR myAmmo IN myAmmos LOOP
-      IF src=myAmmo.SOURCE_ID
+      SELECT player.OBJECT_ID INTO PlayerDestId FROM OBJECTS player, OBJECTS dest WHERE dest.PARENT_ID=player.OBJECT_ID AND dest.OBJECT_ID=destinationId;
+    ELSIF destObjType=holdObjType
       THEN
-        i:=i+1;
-        j:=myAmmo.OBJECT_ID;
-      END IF;
-    END LOOP;
-    FOR myGood IN myGoods LOOP
-      IF src=myGood.SOURCE_ID
-      THEN
-        i:=i+1;
-        j:=myGood.OBJECT_ID;
-      END IF;
-    END LOOP;
-    IF destObjType=holdObjType
+        SELECT player.OBJECT_ID INTO PlayerDestId FROM OBJECTS player, OBJECTS ship, OBJECTS hold WHERE hold.PARENT_ID=ship.OBJECT_ID AND ship.PARENT_ID=player.OBJECT_ID AND hold.OBJECT_ID=destinationId;
+    ELSE
+      RETURN 'Wrong destId';
+    END IF;
+    DBMS_OUTPUT.PUT_LINE(PlayerCargoId || ' = ' || PlayerDestId);
+    IF PlayerCargoId=PlayerDestId
     THEN
-      DBMS_OUTPUT.PUT_LINE('hold is dest');
-      SELECT car.VALUE INTO carrying FROM ATTRIBUTES_VALUE car, OBJECTS t_ship ,OBJECTS ship, OBJECTS hold  WHERE car.OBJECT_ID=t_ship.OBJECT_ID AND t_ship.OBJECT_ID=ship.SOURCE_ID AND ship.OBJECT_ID=hold.PARENT_ID AND hold.OBJECT_ID=destinationId AND car.ATTR_ID=carLimitAttrId;
-      SELECT COUNT(OBJECT_ID) INTO mastsAndCannons FROM OBJECTS WHERE (OBJECT_TYPE_ID=mastObjType OR OBJECT_TYPE_ID=canObjType) AND PARENT_ID=destinationId;
-      SELECT NVL(SUM(VALUE),0) INTO ammoQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=ammoNumAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND PARENT_ID=destinationId;
-      SELECT NVL(SUM(VALUE),0) INTO goodsQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=quantityGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND PARENT_ID=destinationId;
-      curLimit:=mastsAndCannons+ammoQuant+goodsQuant;
-      freePlace:=carrying-curLimit;
-      IF cargoObjType=goodsObjType
-      THEN
-        SELECT NVL(SUM(VALUE),0) INTO goodsStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
-        IF quantity>goodsStart
+      DBMS_OUTPUT.PUT_LINE('start');
+      FOR myAmmo IN myAmmos LOOP
+        IF src=myAmmo.SOURCE_ID
         THEN
-          quant:=goodsStart;
-        ELSE
-          quant:=quantity;
+          i:=i+1;
+          j:=myAmmo.OBJECT_ID;
         END IF;
-        IF i=0
+      END LOOP;
+      FOR myGood IN myGoods LOOP
+        SELECT VALUE INTO price FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=myGood.OBJECT_ID;
+        IF src=myGood.SOURCE_ID AND priceCargo=price
         THEN
-          IF quant>freePlace
-          THEN
-            quant:=freePlace;
-          END IF;
-          IF quant=goodsStart
-          THEN
-            UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
-            RETURN 'Goods are transferred successfully!';
-          ELSE
-            UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
-            INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL,destinationId,cargoObjType,(SELECT SOURCE_ID FROM OBJECTS WHERE OBJECT_ID=cargoId),(SELECT NAME FROM OBJECTS WHERE OBJECT_ID=cargoId));
-            INSERT INTO ATTRIBUTES_VALUE VALUES(costGoodsAttrId, obj_sq.CURRVAL, (SELECT VALUE FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=cargoId), null);
-            INSERT INTO ATTRIBUTES_VALUE VALUES(quantityGoodsAttrId, obj_sq.CURRVAL, quant, null);
-            RETURN 'Goods are transferred successfully!';
-          END IF;
-        ELSE
-          IF quant=goodsStart
-          THEN
-            UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE OBJECT_ID=j;
-            DELETE FROM OBJECTS WHERE OBJECT_ID=cargoId;
-            RETURN 'Goods are transferred successfully!';
-          ELSE
-            UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
-            UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=j;
-            RETURN 'Goods are transferred successfully!';
-          END IF;
+          i:=i+1;
+          j:=myGood.OBJECT_ID;
         END IF;
-      ELSIF cargoObjType=ammoObjType
-        THEN
-          SELECT NVL(SUM(VALUE),0) INTO ammoStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
-          IF quantity>ammoStart
-          THEN
-            quant:=ammoStart;
-          ELSE
-            quant:=quantity;
-          END IF;
-          IF quant>freePlace
-          THEN
-            quant:=freePlace;
-          END IF;
-          IF i=0
-          THEN
-            IF quant=ammoStart
-            THEN
-              UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
-              RETURN 'Ammo are transferred successfully!';
-            ELSE
-              UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
-              INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL,destinationId,cargoObjType,(SELECT SOURCE_ID FROM OBJECTS WHERE OBJECT_ID=cargoId),(SELECT NAME FROM OBJECTS WHERE OBJECT_ID=cargoId));
-              INSERT INTO ATTRIBUTES_VALUE VALUES(ammoNumAttrId, obj_sq.CURRVAL, quant, null);
-              RETURN 'Ammo are transferred successfully!';
-            END IF;
-          ELSE
-            IF quant=ammoStart
-            THEN
-              UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE OBJECT_ID=j;
-              DELETE FROM OBJECTS WHERE OBJECT_ID=cargoId;
-              RETURN 'Ammo are transferred successfully!';
-            ELSE
-              UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
-              UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=j;
-              RETURN 'Ammo are transferred successfully!';
-            END IF;
-          END IF;
-      ELSIF cargoObjType=mastObjType
-        THEN
-          IF curLimit+1<=freePlace
-          THEN
-            UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
-            RETURN 'Mast is transferred successfully!';
-          END IF;
-      ELSIF cargoObjType=canObjType
-        THEN
-          UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
-          RETURN 'Cannon is transferred successfully!';
-      END IF;
-    ELSIF destObjType=stockObjType
+      END LOOP;
+      IF destObjType=holdObjType
       THEN
-        DBMS_OUTPUT.PUT_LINE('stock is dest. Cargo type is ' || cargoObjType);
+        DBMS_OUTPUT.PUT_LINE('hold is dest');
+        SELECT car.VALUE INTO carrying FROM ATTRIBUTES_VALUE car, OBJECTS t_ship ,OBJECTS ship, OBJECTS hold  WHERE car.OBJECT_ID=t_ship.OBJECT_ID AND t_ship.OBJECT_ID=ship.SOURCE_ID AND ship.OBJECT_ID=hold.PARENT_ID AND hold.OBJECT_ID=destinationId AND car.ATTR_ID=carLimitAttrId;
+        SELECT COUNT(OBJECT_ID) INTO mastsAndCannons FROM OBJECTS WHERE (OBJECT_TYPE_ID=mastObjType OR OBJECT_TYPE_ID=canObjType) AND PARENT_ID=destinationId;
+        SELECT NVL(SUM(VALUE),0) INTO ammoQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=ammoNumAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND PARENT_ID=destinationId;
+        SELECT NVL(SUM(VALUE),0) INTO goodsQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=quantityGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND PARENT_ID=destinationId;
+        curLimit:=mastsAndCannons+ammoQuant+goodsQuant;
+        freePlace:=carrying-curLimit;
         IF cargoObjType=goodsObjType
         THEN
-          DBMS_OUTPUT.PUT_LINE('It is goods ');
           SELECT NVL(SUM(VALUE),0) INTO goodsStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
+          SELECT VALUE INTO priceCargo FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=cargoId;
           IF quantity>goodsStart
           THEN
             quant:=goodsStart;
@@ -1537,6 +1454,10 @@ BEGIN
           END IF;
           IF i=0
           THEN
+            IF quant>freePlace
+            THEN
+              quant:=freePlace;
+            END IF;
             IF quant=goodsStart
             THEN
               UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
@@ -1562,7 +1483,6 @@ BEGIN
           END IF;
         ELSIF cargoObjType=ammoObjType
           THEN
-            DBMS_OUTPUT.PUT_LINE('It is ammo ');
             SELECT NVL(SUM(VALUE),0) INTO ammoStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
             IF quantity>ammoStart
             THEN
@@ -1570,17 +1490,21 @@ BEGIN
             ELSE
               quant:=quantity;
             END IF;
+            IF quant>freePlace
+            THEN
+              quant:=freePlace;
+            END IF;
             IF i=0
             THEN
               IF quant=ammoStart
               THEN
                 UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
-                RETURN 'Ammos are transferred successfully!';
+                RETURN 'Ammo are transferred successfully!';
               ELSE
                 UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
                 INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL,destinationId,cargoObjType,(SELECT SOURCE_ID FROM OBJECTS WHERE OBJECT_ID=cargoId),(SELECT NAME FROM OBJECTS WHERE OBJECT_ID=cargoId));
                 INSERT INTO ATTRIBUTES_VALUE VALUES(ammoNumAttrId, obj_sq.CURRVAL, quant, null);
-                RETURN 'Ammos are transferred successfully!';
+                RETURN 'Ammo are transferred successfully!';
               END IF;
             ELSE
               IF quant=ammoStart
@@ -1596,35 +1520,105 @@ BEGIN
             END IF;
         ELSIF cargoObjType=mastObjType
           THEN
-            DBMS_OUTPUT.PUT_LINE('It is mast ');
-            UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
-            RETURN 'Mast is transferred successfully!';
+            IF curLimit+1<=freePlace
+            THEN
+              UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+              RETURN 'Mast is transferred successfully!';
+            END IF;
         ELSIF cargoObjType=canObjType
           THEN
-            DBMS_OUTPUT.PUT_LINE('It is cannon ');
             UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
             RETURN 'Cannon is transferred successfully!';
         END IF;
+      ELSIF destObjType=stockObjType
+        THEN
+          DBMS_OUTPUT.PUT_LINE('stock is dest. Cargo type is ' || cargoObjType);
+          IF cargoObjType=goodsObjType
+          THEN
+            DBMS_OUTPUT.PUT_LINE('It is goods ');
+            SELECT NVL(SUM(VALUE),0) INTO goodsStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
+            SELECT VALUE INTO priceCargo FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=cargoId;
+            IF quantity>goodsStart
+            THEN
+              quant:=goodsStart;
+            ELSE
+              quant:=quantity;
+            END IF;
+            IF i=0
+            THEN
+              IF quant=goodsStart
+              THEN
+                UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+                RETURN 'Goods are transferred successfully!';
+              ELSE
+                UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
+                INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL,destinationId,cargoObjType,(SELECT SOURCE_ID FROM OBJECTS WHERE OBJECT_ID=cargoId),(SELECT NAME FROM OBJECTS WHERE OBJECT_ID=cargoId));
+                INSERT INTO ATTRIBUTES_VALUE VALUES(costGoodsAttrId, obj_sq.CURRVAL, (SELECT VALUE FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=cargoId), null);
+                INSERT INTO ATTRIBUTES_VALUE VALUES(quantityGoodsAttrId, obj_sq.CURRVAL, quant, null);
+                RETURN 'Goods are transferred successfully!';
+              END IF;
+            ELSE
+              IF quant=goodsStart
+              THEN
+                UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE OBJECT_ID=j;
+                DELETE FROM OBJECTS WHERE OBJECT_ID=cargoId;
+                RETURN 'Goods are transferred successfully!';
+              ELSE
+                UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
+                UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=j;
+                RETURN 'Goods are transferred successfully!';
+              END IF;
+            END IF;
+          ELSIF cargoObjType=ammoObjType
+            THEN
+              DBMS_OUTPUT.PUT_LINE('It is ammo ');
+              SELECT NVL(SUM(VALUE),0) INTO ammoStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
+              IF quantity>ammoStart
+              THEN
+                quant:=ammoStart;
+              ELSE
+                quant:=quantity;
+              END IF;
+              IF i=0
+              THEN
+                IF quant=ammoStart
+                THEN
+                  UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+                  RETURN 'Ammos are transferred successfully!';
+                ELSE
+                  UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
+                  INSERT INTO OBJECTS VALUES(obj_sq.NEXTVAL,destinationId,cargoObjType,(SELECT SOURCE_ID FROM OBJECTS WHERE OBJECT_ID=cargoId),(SELECT NAME FROM OBJECTS WHERE OBJECT_ID=cargoId));
+                  INSERT INTO ATTRIBUTES_VALUE VALUES(ammoNumAttrId, obj_sq.CURRVAL, quant, null);
+                  RETURN 'Ammos are transferred successfully!';
+                END IF;
+              ELSE
+                IF quant=ammoStart
+                THEN
+                  UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE OBJECT_ID=j;
+                  DELETE FROM OBJECTS WHERE OBJECT_ID=cargoId;
+                  RETURN 'Ammo are transferred successfully!';
+                ELSE
+                  UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=cargoId;
+                  UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE ATTR_ID=ammoNumAttrId AND OBJECT_ID=j;
+                  RETURN 'Ammo are transferred successfully!';
+                END IF;
+              END IF;
+          ELSIF cargoObjType=mastObjType
+            THEN
+              DBMS_OUTPUT.PUT_LINE('It is mast ');
+              UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+              RETURN 'Mast is transferred successfully!';
+          ELSIF cargoObjType=canObjType
+            THEN
+              DBMS_OUTPUT.PUT_LINE('It is cannon ');
+              UPDATE OBJECTS SET PARENT_ID=destinationId WHERE OBJECT_ID=cargoId;
+              RETURN 'Cannon is transferred successfully!';
+          END IF;
+      END IF;
+    ELSE
+      RETURN 'Cargos can be transfered only between one player';
     END IF;
-  ELSE
-    RETURN 'Cargos can be transfered only between one player';
-  END IF;
-  RETURN 'Unknown cargo for function';
-END;
-/
-
-CREATE OR REPLACE PROCEDURE UPDATE_MONEY
-IS
-  pssiveMoneyAttr_Id NUMBER:=42;
-  moneyAttr_Id NUMBER:=29;
-  BEGIN
-    UPDATE ATTRIBUTES_VALUE money
-    SET money.VALUE=money.VALUE+
-                    (SELECT passiveMoney.VALUE
-                     FROM ATTRIBUTES_VALUE passiveMoney
-                     WHERE passiveMoney.ATTR_ID=pssiveMoneyAttr_Id
-                           AND money.OBJECT_ID=passiveMoney.OBJECT_ID)
-    WHERE money.ATTR_ID=moneyAttr_Id;
+    RETURN 'Unknown cargo for function';
   END;
 /
 EXEC DBMS_SCHEDULER.DROP_JOB(job_name=>'UPDATEMONEY', force=>true);

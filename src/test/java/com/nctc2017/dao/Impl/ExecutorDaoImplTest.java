@@ -4,6 +4,7 @@ import com.nctc2017.bean.*;
 import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.*;
+import oracle.sql.BINARY_DOUBLE;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +46,8 @@ public class ExecutorDaoImplTest {
     CannonDao cannonDao;
     @Autowired
     MastDao mastDao;
+    @Autowired
+    StockDao stockDao;
 
     @Test
     @Rollback(true)
@@ -75,7 +78,7 @@ public class ExecutorDaoImplTest {
         List<Ammo> myAmmos = ammoDao.getAllAmmoFromHold(myHoldId);
         List<Goods> enemyGoods = goodsDao.getAllGoodsFromHold(enemyHoldId);
         List<Ammo> enemyAmmos = ammoDao.getAllAmmoFromHold(enemyHoldId);
-        assertEquals(myGoods.size(),2);
+        assertEquals(myGoods.size(),3);
         assertEquals(myAmmos.size(), 3);
         assertEquals(enemyGoods.size(), 0);
         assertEquals(enemyAmmos.size(), 0);
@@ -112,7 +115,7 @@ public class ExecutorDaoImplTest {
         List<Goods> enemyGoods = goodsDao.getAllGoodsFromHold(enemyHoldId);
         List<Ammo> enemyAmmos = ammoDao.getAllAmmoFromHold(enemyHoldId);
         assertEquals(myAmmos.size(), 3);
-        assertEquals(myGoods.size(),2);
+        assertEquals(myGoods.size(),3);
         assertEquals(enemyGoods.size(), 0);
         assertEquals(enemyAmmos.size(), 1);
         assertEquals(holdDao.getOccupiedVolume(myShipId),100);
@@ -238,6 +241,45 @@ public class ExecutorDaoImplTest {
         assertEquals(cargo1Quant, 31);
         assertEquals(cargo2Quant, 11);
     }
+
+    @Test
+    @Rollback(true)
+    public void moveCargoFromStock() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player = playerDao.findPlayerByLogin("Steve");
+        BigInteger myShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());
+        BigInteger myHoldId = holdDao.createHold(myShipId);
+        BigInteger myStockId = stockDao.createStock(player.getPlayerId());
+        BigInteger bombardId =  cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, myStockId);
+        BigInteger mastId = mastDao.createNewMast(DatabaseObject.MAST1_TEMPLATE_OBJECT_ID, myStockId);
+        holdDao.addCargo(bombardId, myHoldId);
+        holdDao.addCargo(mastId, myHoldId);
+        List<Cannon> cannons = cannonDao.getAllCannonFromHold(myHoldId);
+        List<Mast> masts = mastDao.getShipMastsFromHold(myHoldId);
+        assertEquals(cannons.size(), 1);
+        assertEquals(masts.size(), 1);
+    }
+
+    @Test
+    @Rollback(true)
+    public void moveCargoFromHold() throws Exception{
+        playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
+        Player player = playerDao.findPlayerByLogin("Steve");
+        BigInteger myShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());
+        BigInteger myHoldId = holdDao.createHold(myShipId);
+        BigInteger myStockId = stockDao.createStock(player.getPlayerId());
+        BigInteger bombardId =  cannonDao.createCannon(DatabaseObject.BOMBARD_TEMPLATE_ID, myHoldId);
+        BigInteger mastId = mastDao.createNewMast(DatabaseObject.MAST1_TEMPLATE_OBJECT_ID, myHoldId);
+        stockDao.addCargo(bombardId, player.getPlayerId());
+        stockDao.addCargo(mastId, player.getPlayerId());
+        List<Cannon> cannons = cannonDao.getAllCannonFromStock(myStockId);
+        List<Mast> masts = mastDao.getShipMastsFromStock(myStockId);
+        assertEquals(cannons.size(), 1);
+        assertEquals(masts.size(), 1);
+    }
+
+
+
     @Test(expected = IllegalArgumentException.class)
     @Rollback(true)
     public void moveCargoToFailed() throws Exception {
