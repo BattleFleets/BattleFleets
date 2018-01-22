@@ -1,25 +1,28 @@
 package com.nctc2017.services.utils;
 
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.nctc2017.bean.City;
 import com.nctc2017.dao.PlayerDao;
+import com.nctc2017.exception.BattleStartException;
 import com.nctc2017.exception.PlayerNotFoundException;
 
 @Component
@@ -30,27 +33,47 @@ public class TravelManager {
     @Autowired
     private PlayerDao playerDao;
     
-    private final int lvlDiff = 5;
-    private final int maxTime = 300000;
-    private final int minTime = 60000;
-    private final long managerWakeUp = 2000;
+    @Autowired
+    @Qualifier("scheduledExecutorService")
+    private ScheduledExecutorService executor;
+    
+    @Autowired
+    private BattleManager battleManager;
+    
+    private static final int LVL_DIFF = 5;
+    private static final int MAX_RELOC_TIME = 300000;
+    private static final int MIN_RELOC_TIME = 60000;
+    private static final long MANAGER_WAKE_UP = 2000;
+    private static final long ENEMY_FIND_WAKE_UP = 30000;
+    private static final int DELAY = 50000;
     
     private Map<BigInteger, TravelBook> journals = new ConcurrentHashMap<BigInteger, TravelBook>();
     private Random rand = new Random(new GregorianCalendar().getTimeInMillis());
-    private Thread manager;
+    private Map<BigInteger, Thread> playerAutoDecision = new ConcurrentHashMap<>();
     
-    public TravelManager(){
+    private ScheduledFuture<?> managerTaskFuture;
+    private ScheduledFuture<?> enemyFindTaskFuture;
+    
+    @PostConstruct
+    public void invokeTravelManager(){
         Runnable managerTask = new TravelManagerTask();
-        manager = new Thread(managerTask);
+        Runnable enemyFindTask = new EnemyFindTask();
         
         LOG.debug("TravelManager starting");
-        manager.start();
+        managerTaskFuture = 
+                executor.scheduleWithFixedDelay(managerTask, 0, MANAGER_WAKE_UP, TimeUnit.MILLISECONDS);
         LOG.debug("TravelManager running");
+        
+        LOG.debug("EnemyFind starting");
+        enemyFindTaskFuture = 
+                executor.scheduleWithFixedDelay(enemyFindTask, 0, ENEMY_FIND_WAKE_UP, TimeUnit.MILLISECONDS);
+        LOG.debug("EnemyFind running");
     }
     
     @PreDestroy
     private void interruptManager() {
-        manager.interrupt();
+        managerTaskFuture.cancel(false);
+        enemyFindTaskFuture.cancel(false);
     }
     
     public boolean prepareEnemyFor(BigInteger playerId) throws PlayerNotFoundException {
@@ -71,13 +94,8 @@ public class TravelManager {
         }
 
         if (playerJornal.getEnemyId() != null) {
-            LOG.debug("Already have enemy");
-            if (playerJornal.isFriendly()) {
-                LOG.debug("But this player friendly");
-                return false;
-            }
-            
-            return true;
+            LOG.debug("Already have enemy");            
+            return false;
         }
 
         for (Map.Entry<BigInteger, TravelBook> enemy : journals.entrySet()) {
@@ -90,10 +108,14 @@ public class TravelManager {
                 continue;
             int enemyLvl = enemyJornal.getPlayerLevel();
 
-            if (Math.abs(lvl - enemyLvl) <= lvlDiff) {
+            if (Math.abs(lvl - enemyLvl) <= LVL_DIFF) {
                 playerJornal.setEnemyId(enemy.getKey());
                 enemyJornal.setEnemyId(playerId);
-                LOG.debug("Enemy for found - Player_" + playerJornal.getEnemyId());
+                
+                if (LOG.isDebugEnabled())
+                    LOG.debug("Enemy for Player_" + playerId 
+                            + " found - Player_" + playerJornal.getEnemyId());
+                
                 playerJornal.pause();
                 enemyJornal.pause();
 
@@ -117,7 +139,7 @@ public class TravelManager {
                     + timeToArrival/60000 + " min");
         }
         
-        long timeLeft = minTime + rand.nextInt(maxTime - minTime);
+        long timeLeft = MIN_RELOC_TIME + rand.nextInt(MAX_RELOC_TIME - MIN_RELOC_TIME);
         timeToArrival = timeNow + timeLeft;
         cityTime = new TravelBook(city, timeToArrival, lvl);
         journals.put(playerId, cityTime);
@@ -135,8 +157,8 @@ public class TravelManager {
         return (int) (timeToArrival - timeNow) / 1000;
     }
     
-    public BigInteger getEnemyId(BigInteger playerId) {
-        return journals.get(playerId).getEnemyId();
+    public BigInteger getEnemyId(BigInteger playerId) throws PlayerNotFoundException {
+        return getPlayersJournal(playerId).getEnemyId();
     }
 
     public void friendly(BigInteger playerId) throws PlayerNotFoundException {
@@ -146,10 +168,10 @@ public class TravelManager {
         BigInteger enemyId = playerBook.getEnemyId();
         playerBook.resume();
         if (enemyId == null) {
-            RuntimeException ex = 
-                    new IllegalStateException(".friendly() was called when no enemy was written down in travel book.");
-            LOG.error("No enemy found ", ex);
-            throw ex;
+            LOG.warn(".friendly() was called when no enemy was written down in travel book.");
+            playerBook.setFriendly(false);
+            playerBook.setDecisionMade(false);
+            return;
         }
         
         TravelBook enemyBook = journals.get(enemyId);
@@ -163,15 +185,17 @@ public class TravelManager {
             LOG.debug(" and Player_" + enemyId + " - Both Friendly");
             playerBook.setEnemyId(null);
             playerBook.setFriendly(false);
-            playerBook.setDecisionMade(false);
             
             enemyBook.setEnemyId(null);
             enemyBook.setFriendly(false);
-            enemyBook.setDecisionMade(false);
         } else {
             playerBook.setFriendly(true);
             LOG.debug("Is friendly now.");
         }
+    }
+    
+    public boolean isFriendly(BigInteger playerId) throws PlayerNotFoundException {
+        return getPlayersJournal(playerId).isFriendly();
     }
     
     public int continueTravel(BigInteger playerId) throws PlayerNotFoundException {
@@ -194,7 +218,9 @@ public class TravelManager {
     
     public boolean isDecisionWasMade(BigInteger playerId) throws PlayerNotFoundException {
         TravelBook playerBook = getPlayersJournal(playerId);
-        return playerBook.isDecisionWasMade();
+        boolean wasMade = playerBook.isDecisionWasMade();
+        playerBook.setDecisionMade(false);
+        return wasMade;
     }
 
     public void setParticipated(BigInteger playerId) throws PlayerNotFoundException {
@@ -209,6 +235,31 @@ public class TravelManager {
     public boolean isParticipated(BigInteger playerId) throws PlayerNotFoundException {
         return getPlayersJournal(playerId).isParticipated();
     }
+
+    public void stopRelocationTimer(BigInteger playerId) throws PlayerNotFoundException {
+        TravelBook travelBook = getPlayersJournal(playerId);
+        travelBook.pause();
+    }
+    
+    public void confirmAttack(BigInteger playerId, boolean decision) throws PlayerNotFoundException, BattleStartException {
+        stopAutoDecisionTimer(playerId);
+        decisionWasMade(playerId);
+        LOG.debug("Made decision. Confirm Attack - " + decision);
+        if (decision) {
+            BigInteger enemyId = getEnemyId(playerId);
+            stopAutoDecisionTimer(enemyId);
+            battleManager.newBattleBetween(playerId, enemyId);
+            LOG.debug("Stop relocation timer for enemy");
+            stopRelocationTimer(enemyId);
+            setParticipated(playerId);
+            setParticipated(enemyId);
+            LOG.debug("     --==battle created!==--");
+        } else {
+            LOG.debug("Attack rejecting ...");
+            friendly(playerId);
+            LOG.debug("Attack rejected.");
+        }
+    }
     
     private TravelBook getPlayersJournal(BigInteger playerId) throws PlayerNotFoundException {
         TravelBook travelBook = journals.get(playerId);
@@ -219,10 +270,24 @@ public class TravelManager {
         }
         return travelBook;
     }
-
-    public void stopRelocationTimer(BigInteger playerId) throws PlayerNotFoundException {
-        TravelBook travelBook = getPlayersJournal(playerId);
-        travelBook.pause();
+    
+    private void autoDecisionTimer(BigInteger playerId) {
+        if (playerAutoDecision.get(playerId) != null) return;
+        Runnable decisionTask = new AutoDecisionTask(new DecisionVisitor(playerId), DELAY);
+        Thread decisionThread = new Thread(decisionTask);
+        decisionThread.start();
+        playerAutoDecision.put(playerId, decisionThread);
+        LOG.debug("Auto decision timer started");
+    }
+    
+    private void stopAutoDecisionTimer(BigInteger playerId) {
+        Thread timer = playerAutoDecision.get(playerId);
+        LOG.debug("Auto Decision timer stoping. timer = null ? " + (timer == null));
+        if (timer != null) {
+            timer.interrupt();
+            playerAutoDecision.remove(playerId);
+            LOG.debug("Auto Decision timer stoped");
+        }
     }
     
     private class TravelBook {
@@ -326,42 +391,56 @@ public class TravelManager {
         
     }
     
+    private void forEachPlayerInTravel(ForOnePlayerVisitor visitor) {
+            
+        Iterator<Entry<BigInteger, TravelBook>> mapIterator = journals.entrySet().iterator();
+        Map.Entry<BigInteger, TravelBook> player;
+            
+        while (mapIterator.hasNext()) {
+            player = mapIterator.next();
+            TravelBook travelBook = player.getValue();
+            
+            boolean remove = visitor.doForPlayer(player.getKey(), travelBook);
+            
+            if (remove) mapIterator.remove();
+        }
+    }
+    
+    private interface ForOnePlayerVisitor {
+        /** return true if want to delete player from map*/
+        boolean doForPlayer(BigInteger playerId, TravelBook travelBook);
+    }
+    
     private class TravelManagerTask implements Runnable{
         
         @Override
         public void run() {
             MDC.put("userName", "TravelManager");
+            LOG.trace("Awoke");
             
-            while (true) {
-                GregorianCalendar clock = new GregorianCalendar();
-                long now = clock.getTimeInMillis();
-                
-                Iterator<Entry<BigInteger, TravelBook>> mapIterator = journals.entrySet().iterator();
-                Map.Entry<BigInteger, TravelBook> player;
-                
-                while (mapIterator.hasNext()) {
-                    player = mapIterator.next();
-                    TravelBook travelBook = player.getValue();
+            GregorianCalendar clock = new GregorianCalendar();
+            long now = clock.getTimeInMillis();
+            
+            forEachPlayerInTravel(new ForOnePlayerVisitor() {
+
+                @Override
+                public boolean doForPlayer(BigInteger playerId, TravelBook travelBook) {
                     long timeToLeft = travelBook.getTime();
                     if (now >= timeToLeft) {
-                        playerDao.movePlayerToCity(player.getKey(), travelBook.getCityId());
+                        playerDao.movePlayerToCity(playerId, travelBook.getCityId());
                         BigInteger enemyId = travelBook.getEnemyId();
                         if (enemyId != null) {
-                            new Thread(new EnemyJournalFixTask(enemyId, player.getKey())).start();
+                            new Thread(new EnemyJournalFixTask(enemyId, playerId)).start();
                         }
-                        mapIterator.remove();
+                        return true;
                     }
+                    return false;
                 }
-                try {
-                    LOG.trace("Sleep");
-                    Thread.sleep(managerWakeUp);
-                } catch (InterruptedException e) {
-                    LOG.error("Was interapted", e);
-                    MDC.remove("userName");
-                    return;
-                }
-                LOG.trace("Awoke");
-            }
+                
+            });
+            
+            LOG.trace("Sleep");
+            MDC.remove("userName");
         }
     }
     
@@ -389,5 +468,64 @@ public class TravelManager {
         }
         
     }
+    
+    private class EnemyFindTask implements Runnable{
+        @Override
+        public void run() {
+            MDC.put("userName", "EnemyFindTask");
+            LOG.trace("Awoke");
+            
+            long now = System.currentTimeMillis();
+            
+            forEachPlayerInTravel(new ForOnePlayerVisitor() {
 
+                @Override
+                public boolean doForPlayer(BigInteger playerId, TravelBook travelBook) {
+                    long timeToLeft = travelBook.getTime();
+                    if (timeToLeft - now > 5000) {
+                        try {
+                            if(prepareEnemyFor(playerId)) {
+                                LOG.debug("Two player's decision timers start if not started yet.");
+                                autoDecisionTimer(playerId);
+                                BigInteger enemyId = getEnemyId(playerId);
+                                autoDecisionTimer(enemyId);
+                            }
+                        } catch (PlayerNotFoundException e) {
+                            if (LOG.isDebugEnabled())
+                                LOG.debug("Task cannot find a player with id = " + playerId);
+                        }
+                    }
+                    return false;
+                }
+                
+            });
+        }
+    }
+    
+    private class DecisionVisitor implements Visitor{
+        BigInteger playerId;
+        Object userName;
+        
+        public DecisionVisitor(BigInteger playerId) {
+            this.playerId = playerId;
+            this.userName = MDC.get("userName");
+        }
+
+        @Override
+        public void visit() {
+            MDC.put("userName", userName);
+            
+            LOG.debug("Reject attack by TIMEOUT Player_" + playerId);
+            try {
+                confirmAttack(playerId, false);
+            } catch (PlayerNotFoundException | BattleStartException e) {
+                LOG.warn("Timer could not do rejecting attack", e);
+                return;
+                
+            } finally {
+                MDC.remove("userName");
+            }
+        }
+        
+    }
 }

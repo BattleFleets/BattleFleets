@@ -45,11 +45,12 @@
                      <tr>
                      <c:forEach items = "${ships}" var = "nextShip">
                          <c:if test="${nextShip.curSailorsQuantity==nextShip.maxSailorsQuantity ||(nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity && money<sailorCost)}">
-                             <td class="listOfShips">
+                             <td class="listOfShips" valign="top">
                          </c:if>
                          <c:if test="${nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity && money>=sailorCost}">
-                              <td class="listOfShips" bgcolor="#8B0000" id="Id${nextShip.shipId}" value="${nextShip.shipId}" style="cursor: pointer" onclick="toggle(sailors,cont,buy,oneShip,${sailorCost},${money}),show(Id${nextShip.shipId}), maxValue(${nextShip.shipId}),btnSetValue(${nextShip.shipId})">
+                              <td class="listOfShips" valign="top" bgcolor="#8B0000" id="Id${nextShip.shipId}" value="${nextShip.shipId}" style="cursor: pointer" onclick="toggle(sailors,cont,buy,oneShip,${sailorCost},${money}),show(Id${nextShip.shipId}), maxValue(${nextShip.shipId}),btnSetValue(${nextShip.shipId})">
                          </c:if>
+                         <p align="center">${nextShip.curName}</p>
                          <c:choose>
                              <c:when test = "${nextShip.templateId == 1}">
                                  <img src = "static/images/ships/Caravela.png">
@@ -67,8 +68,7 @@
                                  <img src = "static/images/ships/Fregata.png">
                              </c:when>
                          </c:choose>
-                         <p>Name: ${nextShip.curName}</p>
-                         <p>Health: ${nextShip.curHealth}</p>
+                         <p>Health: ${nextShip.curHealth}/${nextShip.maxHealth}</p>
                          <p>Crew: <span id="crew">${nextShip.curSailorsQuantity}</span>/${nextShip.maxSailorsQuantity}</p>
                          </td>
                                     
