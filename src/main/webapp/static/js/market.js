@@ -288,7 +288,7 @@ function buildSaleTable(type){
                 + picture+ "/>" + "</td><td>"
                 + item.name +"<br/>"+item.description+"</td><td>"
                 + item.salePrice + "</td><td>"
-                + item.quantity + "</td><td>"
+                + item.quantity +"</td><td>"
                 + "<button type=\"button\" class=\"btn saleButton\" id="
                 + item.goodsId +">Sell</button>" + "</td></tr>";
         }
@@ -335,6 +335,12 @@ $(document).ready(function () {
         $("#buyModal").modal();
         $(".modal-title").html(mHead);
         $("#oneCount").html(buyObject.buyingPrice);
+        if(buyObject.type=="AMMO"){
+            $(".quantityLimit").html("Quantity(max: &#8734;):");
+        }
+        else{
+            $(".quantityLimit").html("Quantity(max: "+buyObject.quantity+"):");
+        }
         $("#messageBuy").empty();
         if(buyObject.quantity>0){
             $("#modalQuantity").val(1);
@@ -442,6 +448,7 @@ $(document).ready(function () {
         $("#saleModal").modal();
         $(".modal-title").html(mHead);
         $("#oneSaleCount").html(saleObject.salePrice);
+        $(".quantityLimit").html("Quantity(max: "+saleObject.quantity+"):");
         $("#messageSale").empty();
         if(saleObject.quantity>0){
             $("#modalSaleQuantity").val(1);

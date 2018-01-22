@@ -99,3 +99,14 @@ footer{
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
     background-color: #150f0f;
 }
+
+#modalSaleQuantity,
+#modalQuantity{
+    display: block;
+    margin : 0 auto;
+}
+
+#toStock:hover,
+#toStock:focus{
+    color: #d18a4d;
+}
