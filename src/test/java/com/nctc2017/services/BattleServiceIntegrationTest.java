@@ -39,6 +39,7 @@ import com.nctc2017.exception.BattleEndException;
 import com.nctc2017.exception.BattleStartException;
 import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.utils.BattleManager;
+import com.nctc2017.services.utils.TravelManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -170,9 +171,9 @@ public class BattleServiceIntegrationTest {
                 ? cities.get(1).getCityId() 
                 : cities.get(0).getCityId());
         
-        testIsEnemyOnHorizon(nik);
-        
-        travelService.confirmAttack(nikId, true);
+        //testIsEnemyOnHorizon(nik);
+        battleManager.newBattleBetween(nikId, steveId);
+        //travelService.confirmAttack(nikId, true);
         
         boolean start = travelService.isBattleStart(nikId);
         assertTrue(start); 

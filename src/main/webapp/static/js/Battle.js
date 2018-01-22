@@ -442,20 +442,19 @@ function anotherEndCase(end_link) {
     $.get(end_link).done(function(response, status, xhr) {
         console.log(end_link + " response " + response);
         
-        var n = response.search(/<html>/i);
+        var n = xhr.responseText.search(/<html>/i);
         if (n != -1) window.location.href = "/login";
         
-        var json_obj = JSON.parse(response);
-        if (json_obj.success) {
+        if (response.success) {
             isBattleEnd();
         } 
         //window.location.href = "/error";
     }).fail(function(xhr, status, error) {
         console.log(end_link + " FAIL " + error + " " + xhr.status);
-        if (xhl.status == 405) {
+        if (xhr.status == 405) {
             isBattleEnd();
         }
-        window.location.href = "/error";
+        window.location.href = "/error?reason=" + end_link + " " + xhr.status;
     });
 }
 

@@ -172,7 +172,7 @@ public class BattleEndingService {
         BigInteger playerShipId = battle.getShipId(playerId);
         int playerShipSpeed = shipDao.getSpeed(playerShipId);
         int enemyShipSpeed = shipDao.getSpeed(enemyShipId);
-        return playerShipSpeed - enemyShipSpeed > SPEED_DIFFERENCE_FOR_ESCAPE;
+        return playerShipSpeed - enemyShipSpeed >= SPEED_DIFFERENCE_FOR_ESCAPE;
     }
     
     public boolean escapeBattleLocation(BigInteger playerId, BattleEndVisitor visitor) throws BattleEndException {

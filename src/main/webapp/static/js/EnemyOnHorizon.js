@@ -46,6 +46,7 @@ function lookout() {
         }
         if (response == "true") {
             clearInterval(timerId);
+            clearInterval(lookoutId);
             isDecisionAcceptTask();
             $dialog_hint = $( "#warning_info" ).dialog({
                 modal: true,
@@ -84,7 +85,7 @@ function lookout() {
         } else if (response == "false"){
             lookoutTask();
         } else {
-                window.location.href = "/login";
+            window.location.href = "/login";
         }
     })
     .fail(function(xhr, status, error) {
