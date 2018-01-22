@@ -1621,6 +1621,22 @@ IS
     RETURN 'Unknown cargo for function';
   END;
 /
+
+CREATE OR REPLACE PROCEDURE UPDATE_MONEY
+IS
+  pssiveMoneyAttr_Id NUMBER:=42;
+  moneyAttr_Id NUMBER:=29;
+  BEGIN
+    UPDATE ATTRIBUTES_VALUE money
+    SET money.VALUE=money.VALUE+
+                    (SELECT passiveMoney.VALUE
+                     FROM ATTRIBUTES_VALUE passiveMoney
+                     WHERE passiveMoney.ATTR_ID=pssiveMoneyAttr_Id
+                           AND money.OBJECT_ID=passiveMoney.OBJECT_ID)
+    WHERE money.ATTR_ID=moneyAttr_Id;
+  END;
+/
+
 EXEC DBMS_SCHEDULER.DROP_JOB(job_name=>'UPDATEMONEY', force=>true);
 
 BEGIN DBMS_SCHEDULER.CREATE_JOB

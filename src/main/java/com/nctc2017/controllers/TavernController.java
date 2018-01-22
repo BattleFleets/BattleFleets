@@ -5,9 +5,7 @@ import java.math.BigInteger;
 
 import com.nctc2017.bean.PlayerUserDetails;
 import com.nctc2017.bean.Ship;
-import com.nctc2017.services.LevelUpService;
-import com.nctc2017.services.MoneyService;
-import com.nctc2017.services.ShipService;
+import com.nctc2017.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,16 +25,22 @@ public class TavernController {
     private ShipService shipService;
     @Autowired
     private MoneyService moneyService;
+    @Autowired
+    private TravelService travelService;
+    @Autowired
+    private BattleService battleService;
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/tavern", method = RequestMethod.GET)
     public ModelAndView tavernWelcome(
             @RequestParam(value = "tavern", required = false) String city,
             @AuthenticationPrincipal PlayerUserDetails userDetails) {
-        ModelAndView model=new ModelAndView();
         BigInteger playerId = userDetails.getPlayerId();
+        if(travelService.isPlayerInTravel(playerId)){
+           return new ModelAndView("redirect:/trip");
+        }
+        ModelAndView model=new ModelAndView();
         List<Ship> ships = shipService.getAllPlayerShips(playerId);
-
         int sailorCost = shipService.getSailorCost();
         int money = moneyService.getPlayersMoney(playerId);
         int completedShip = shipService.numShipsCompleted(playerId);
