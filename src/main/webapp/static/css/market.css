@@ -44,9 +44,15 @@ footer{
     text-align: center !important;
 }
 
-.buyButton{
+.buyButton,
+.saleButton{
     background-color: #7a4f1e;
     color:white;
+}
+
+.buyRow,
+.saleRow{
+    cursor: pointer;
 }
 
 .modal {
@@ -77,11 +83,6 @@ footer{
     font-size: 18px;
     font-family: Arial, Helvetica, sans-serif;
     text-align: center;
-}
-
-.saleButton{
-    background-color: #7a4f1e;
-    color:white;
 }
 
 .close{

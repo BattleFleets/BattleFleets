@@ -8,6 +8,7 @@ import com.nctc2017.exception.GoodsLackException;
 import com.nctc2017.exception.MoneyLackException;
 import com.nctc2017.services.MoneyService;
 import com.nctc2017.services.TradeService;
+import com.nctc2017.services.TravelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +30,15 @@ public class TradeController {
     @Autowired
     TradeService tradeService;
 
+    @Autowired
+    TravelService travelService;
+
     @Secured("ROLE_USER")
     @RequestMapping(value = "/market", method = RequestMethod.GET)
     public ModelAndView marketWelcome(
-            @RequestParam(value = "city", required = false) String city) {
+            @RequestParam(value = "city", required = false) String city,
+            @AuthenticationPrincipal PlayerUserDetails userDetails) {
+        if(travelService.isPlayerInTravel(userDetails.getPlayerId()))  return new ModelAndView("redirect:/trip");
         ModelAndView model = new ModelAndView();
         model.addObject("msg", "This is protected page - Only for Users!");
         model.addObject("city", city);
@@ -49,7 +55,7 @@ public class TradeController {
                                       @AuthenticationPrincipal PlayerUserDetails userDetails) {
         try{
             return ResponseEntity.status(HttpStatus.OK).body(tradeService
-                    .buy(userDetails.getPlayerId(),goodsTemplateId,price,quantity));
+                        .buy(userDetails.getPlayerId(), goodsTemplateId, price, quantity));
         }
         catch(GoodsLackException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
