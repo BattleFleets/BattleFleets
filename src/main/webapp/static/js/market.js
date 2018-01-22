@@ -80,9 +80,13 @@ function buy(queryString){
             updatePlayerStock();
         },
         error: function (msg) {
-            console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
-            $("#messageBuy").css("color","#e54b4b");
-            $("#messageBuy").html(msg.responseText);
+            if(msg.getResponseHeader("Location")){
+                window.location.href = "/trip";
+            }else{
+                console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
+                $("#messageBuy").css("color","#e54b4b");
+                $("#messageBuy").html(msg.responseText);
+            }
         }
     });
 }

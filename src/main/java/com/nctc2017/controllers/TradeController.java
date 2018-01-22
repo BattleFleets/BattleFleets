@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.method.annotation.*;
 
 import java.math.BigInteger;
+import java.net.URI;
 
 @Controller
 public class TradeController {
@@ -54,6 +55,10 @@ public class TradeController {
                                       @RequestParam(value = "quantity") int quantity,
                                       @AuthenticationPrincipal PlayerUserDetails userDetails) {
         try{
+            if(travelService.isPlayerInTravel(userDetails.getPlayerId())){
+                return ResponseEntity.status(HttpStatus.LOCKED).header("Location","/trip")
+                        .body("Go to trip");
+            }
             return ResponseEntity.status(HttpStatus.OK).body(tradeService
                         .buy(userDetails.getPlayerId(), goodsTemplateId, price, quantity));
         }
