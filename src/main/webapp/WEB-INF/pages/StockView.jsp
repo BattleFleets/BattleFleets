@@ -156,6 +156,7 @@ function showShipResources(event){
             success: function(data) {
             fillWithGoods(data.hold, "hold");
             fillWithGoods(data.inventory, "inventory");
+            curCarryingLimit = data.curCarryingLimit;
             setHoldLimit();
             curCannons = data.curCannons;
             curMasts = data.curMasts;
