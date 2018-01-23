@@ -6,7 +6,6 @@ import com.nctc2017.bean.*;
 import com.nctc2017.services.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -59,7 +58,7 @@ public class ShipyardController {
                           @RequestParam(value = "shipName") String shipName,
                           @RequestParam(value = "defaultName", required = false) String defaultName,
                           @AuthenticationPrincipal PlayerUserDetails userDetails) {
-        int maxShipNameLength = 15;
+        int maxShipNameLength = 20;
         BigInteger debugPlayerId = userDetails.getPlayerId();
         String result = shipTradeService.buyShip(debugPlayerId, shipTemplateId);
         if (ShipyardController.isNumeric(result)) {
