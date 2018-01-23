@@ -7,12 +7,16 @@ import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.exception.BattleStartException;
 import com.nctc2017.exception.PlayerNotFoundException;
+import com.nctc2017.services.utils.BattleManager;
+import com.nctc2017.services.utils.TravelManager;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,6 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 
 import static org.junit.Assert.*;
@@ -47,6 +52,9 @@ public class TravelServiceTest {
 
     @Mock
     private CityDao mockCityDao;
+    
+    @Spy
+    private TravelManager travelManager;
     
     private static int playerIdCounter = 1;
     
@@ -82,10 +90,14 @@ public class TravelServiceTest {
     public void initMocks() {
         createPlayerNik();
         createPlayerSteve();
-        travelService = (TravelService)this.context.getBean("travelServicePrototype");
-        MockitoAnnotations.initMocks(this);
+        BattleManager battleManager = (BattleManager)context.getBean("battleManagerPrototype");
+        travelService = (TravelService)context.getBean("travelServicePrototype");
+        MockitoAnnotations.initMocks(this);        
         ReflectionTestUtils.setField(travelService, "playerDao", mockPlayerDao);
         ReflectionTestUtils.setField(travelService, "cityDao", mockCityDao);
+        ReflectionTestUtils.setField(travelService, "travelManager", travelManager);
+        ReflectionTestUtils.setField(travelManager, "battleManager", battleManager);
+        ReflectionTestUtils.setField(travelService, "battleManager", battleManager);
 
         when(mockCityDao.find(vataArt.getCityId())).thenReturn(vataArt);
         when(mockCityDao.find(netcracken.getCityId())).thenReturn(netcracken);
@@ -127,6 +139,12 @@ public class TravelServiceTest {
     }
 
     private void testIsEnemyOnHorizon(Player player) {
+        try {
+            travelManager.prepareEnemyFor(player.getPlayerId());
+        } catch (PlayerNotFoundException e1) {
+            e1.printStackTrace();
+            fail();
+        }
         boolean ret = false;
         try {
             ret = travelService.isEnemyOnHorizon(player.getPlayerId());

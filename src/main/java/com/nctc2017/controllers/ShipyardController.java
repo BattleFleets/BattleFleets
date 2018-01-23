@@ -179,6 +179,7 @@ public class ShipyardController {
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("hold", cargoMovementService.getCargoFromHold(userDetails.getPlayerId(), shipId));
         hashMap.put("inventory", cargoMovementService.getCargoFromShip(userDetails.getPlayerId(), shipId));
+        hashMap.put("curCarryingLimit", shipService.findShip(shipId).getCurCarryingLimit());
         hashMap.put("curCannons", shipService.getCurrentShipCannonsQuantity(shipId));
         hashMap.put("curMasts", shipService.getCurrentShipMastsQuantity(shipId));
         return mapper.writeValueAsString(hashMap);

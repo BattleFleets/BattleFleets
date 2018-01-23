@@ -21,6 +21,8 @@ import javax.mail.Session;
 import javax.sql.DataSource;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 
 @EnableWebMvc
@@ -133,6 +135,13 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     @Scope("prototype")
     public ShipTradeService shipTradeServiceTest() {
         return new ShipTradeService();
+    }
+    
+    @Bean(name = "scheduledExecutorService")
+    @Scope("singleton")
+    public ScheduledExecutorService scheduledExecutorService() {
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(16);
+        return executor;
     }
 
 }

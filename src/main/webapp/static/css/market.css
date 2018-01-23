@@ -44,9 +44,15 @@ footer{
     text-align: center !important;
 }
 
-.buyButton{
+.buyButton,
+.saleButton{
     background-color: #7a4f1e;
     color:white;
+}
+
+.buyRow,
+.saleRow{
+    cursor: pointer;
 }
 
 .modal {
@@ -79,11 +85,6 @@ footer{
     text-align: center;
 }
 
-.saleButton{
-    background-color: #7a4f1e;
-    color:white;
-}
-
 .close{
     font-family:Arial;
     color:white;
@@ -98,4 +99,15 @@ footer{
 
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
     background-color: #150f0f;
+}
+
+#modalSaleQuantity,
+#modalQuantity{
+    display: block;
+    margin : 0 auto;
+}
+
+#toStock:hover,
+#toStock:focus{
+    color: #d18a4d;
 }

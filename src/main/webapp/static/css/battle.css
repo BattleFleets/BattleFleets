@@ -20,6 +20,15 @@ body {
     background-attachment: fixed;
 }
 
+th > div.icon {
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    padding: 25%;
+    padding-left: 35%;
+    display: inline;
+}
+
 td > button.button_pick {
     width: 100%;
 }
@@ -138,6 +147,25 @@ input:focus {outline:0;}
 	background-image:url("../images/battle/icon_exit_disable.png");
 }
 
+.icon_cannonball {
+	background-image:url("../images/market/cannonball.png");
+}
+.icon_buckshot {
+	background-image:url("../images/market/buckshot.png");
+}
+.icon_chain {
+	background-image:url("../images/market/chain.png");
+}
+
+.icon_bombard {
+	background-image:url("../images/market/bombard.png");
+}
+.icon_mortar {
+	background-image:url("../images/market/mortar.png");
+}
+.icon_kulevrin {
+	background-image:url("../images/market/kulevrin.png");
+}
 
 h1.up_title {
     text-align: center;
@@ -223,10 +251,11 @@ h3 {
     margin-top: 1%;
 }
 
-tr th, tr td { width:25%; font-size: 1.5vw;}
+tr th, tr td { width:25%; font-size: 1.5vw; height:100%}
 
 #ammo_tab {
     padding: 1%;
+    padding-top: 3%;
 }
 #info_tab {
     padding: 1%;

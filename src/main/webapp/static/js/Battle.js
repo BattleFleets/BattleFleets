@@ -124,12 +124,17 @@ function ammoCannonQuantity(shipWrapper) {
     cannons_limit = [ mortars, bombards, kulevrins ];
     ammo_limit = [ cannonballs, buckshots, chains ];
     var tab = $("#ammo_tab");
-    tab.find("#mortar").html("Mortars<br>(" + mortars + ")");
-    tab.find("#bombard").html("Bombards<br>(" + bombards + ")");
-    tab.find("#kulevrin").html("Kulevrins<br>(" + kulevrins + ")");
-    tab.find("#cball").html("Cannonball<br>(" + cannonballs + ")");
-    tab.find("#bshot").html("Buckshot<br>(" + buckshots + ")");
-    tab.find("#chains").html("Chain<br>(" + chains + ")");
+    tab.find("#mortar").html("(" + mortars + ")");
+    tab.find("#bombard").html("(" + bombards + ")");
+    tab.find("#kulevrin").html("(" + kulevrins + ")");
+    
+    tab.find("#kulevrin, .icon_kulevrin").attr({title: "Distance: " + shipWrapper.cannonsDist.Kulevrin});
+    tab.find("#bombard, .icon_bombard").attr({title: "Distance: " + shipWrapper.cannonsDist.Bombard});
+    tab.find("#mortar, .icon_mortar").attr({title: "Distance: " + shipWrapper.cannonsDist.Mortar});
+    
+    tab.find("#cball").html("(" + cannonballs + ")");
+    tab.find("#bshot").html("(" + buckshots + ")");
+    tab.find("#chains").html("(" + chains + ")");
 
     ammo_cannon.slideDown("slow");
 }
@@ -437,20 +442,19 @@ function anotherEndCase(end_link) {
     $.get(end_link).done(function(response, status, xhr) {
         console.log(end_link + " response " + response);
         
-        var n = response.search(/<html>/i);
+        var n = xhr.responseText.search(/<html>/i);
         if (n != -1) window.location.href = "/login";
         
-        var json_obj = JSON.parse(response);
-        if (json_obj.success) {
+        if (response.success) {
             isBattleEnd();
         } 
         //window.location.href = "/error";
     }).fail(function(xhr, status, error) {
         console.log(end_link + " FAIL " + error + " " + xhr.status);
-        if (xhl.status == 405) {
+        if (xhr.status == 405) {
             isBattleEnd();
         }
-        window.location.href = "/error";
+        window.location.href = "/error?reason=" + end_link + " " + xhr.status;
     });
 }
 

@@ -146,7 +146,7 @@ public class TravelController {
                 
                 try {
                     travelService.relocate(playerId, cityId);
-                    
+                    travelService.clearStock(playerId);
                 } catch (IllegalAccessError e) {
                     LOG.warn("Player try to relocate to another city while is already traveling."
                             + " Player continue his last trip.");
@@ -202,9 +202,6 @@ public class TravelController {
             } catch (PlayerNotFoundException e) {
                 return new ModelAndView("redirect:/city");
             }
-            
-            travelService.deleteStock(playerId);
-            travelService.createStock(playerId);
             
             model.addObject("time", relocateTime);
             model.setStatus(HttpStatus.OK);

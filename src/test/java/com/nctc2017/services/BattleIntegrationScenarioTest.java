@@ -9,7 +9,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.Rollback;
@@ -19,9 +18,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.nctc2017.bean.Ammo;
 import com.nctc2017.bean.City;
-import com.nctc2017.bean.Mast;
 import com.nctc2017.bean.Player;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.configuration.ApplicationConfig;
@@ -31,7 +28,6 @@ import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.CityDao;
 import com.nctc2017.dao.GoodsDao;
 import com.nctc2017.dao.HoldDao;
-import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
@@ -62,8 +58,6 @@ public class BattleIntegrationScenarioTest {
     private CityDao cityDao;
     @Autowired
     private  AmmoDao ammoDao;
-    @Autowired
-    private  MastDao mastDao;
     @Autowired
     private  CannonDao cannonDao;
     @Autowired
@@ -193,15 +187,10 @@ public class BattleIntegrationScenarioTest {
                 ? cities.get(1).getCityId() 
                 : cities.get(0).getCityId());
         
-        boolean ret = false;
-        try {
-            ret = travelService.isEnemyOnHorizon(nikId);
-        } catch (PlayerNotFoundException e1) {
-            fail("Player must be in travel");
-        }
-        assertTrue(ret);
+
+        battleManager.newBattleBetween(nikId, steveId);
         
-        travelService.confirmAttack(nikId, true);
+        //travelService.confirmAttack(nikId, true);
         
         boolean start = travelService.isBattleStart(nikId);
         assertTrue(start); 

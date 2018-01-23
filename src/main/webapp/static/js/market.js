@@ -80,9 +80,13 @@ function buy(queryString){
             updatePlayerStock();
         },
         error: function (msg) {
-            console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
-            $("#messageBuy").css("color","#e54b4b");
-            $("#messageBuy").html(msg.responseText);
+            if(msg.getResponseHeader("Location")){
+                window.location.href = "/trip";
+            }else{
+                console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
+                $("#messageBuy").css("color","#e54b4b");
+                $("#messageBuy").html(msg.responseText);
+            }
         }
     });
 }
@@ -198,14 +202,13 @@ function buildBuyTable(type){
                 default:
                     picture=mast1Link;
             }
-            trHTML += "<tr><td>"
+            trHTML += "<tr class=\"buyRow\" id="
+                + item.templateId + ">" + "<td>"
                 + "<img width=\"60\" height=\"50\" src="
                 + picture+ "/>" + "</td><td>"
                 + item.name +"<br/>"+item.goodsDescription+"</td><td>"
                 + item.buyingPrice + "</td><td>"
-                + isAmmo() + "</td><td>"
-                + "<button type=\"button\" class=\"btn buyButton\" id="
-                + item.templateId+">Buy</button>" + "</td></tr>";
+                + isAmmo() + "</td></tr>";
         }
     });
     $("#buyTable").html(trHTML);
@@ -283,14 +286,13 @@ function buildSaleTable(type){
                 default:
                     picture=mast1Link;
             }
-            trHTML += "<tr><td>"
+            trHTML += "<tr class=\"saleRow\" id="
+                +item.goodsId+">"+"<td>"
                 + "<img width=\"60\" height=\"50\" src="
                 + picture+ "/>" + "</td><td>"
                 + item.name +"<br/>"+item.description+"</td><td>"
                 + item.salePrice + "</td><td>"
-                + item.quantity + "</td><td>"
-                + "<button type=\"button\" class=\"btn saleButton\" id="
-                + item.goodsId +">Sell</button>" + "</td></tr>";
+                + item.quantity +"</td></tr>";
         }
     });
     $("#saleTable").html(trHTML);
@@ -323,7 +325,7 @@ $(document).ready(function() {
 
 
 $(document).ready(function () {
-    $('#buyTable').on('click', '.buyButton', function () {
+    $('#buyTable').on('click', '.buyRow', function () {
         var buyTemp=this.id;
         updateMarket();
         $.each(buyJson,function(i,item){
@@ -335,12 +337,20 @@ $(document).ready(function () {
         $("#buyModal").modal();
         $(".modal-title").html(mHead);
         $("#oneCount").html(buyObject.buyingPrice);
+        if(buyObject.type=="AMMO"){
+            $(".quantityLimit").html("Quantity(max: &#8734;):");
+        }
+        else{
+            $(".quantityLimit").html("Quantity(max: "+buyObject.quantity+"):");
+        }
         $("#messageBuy").empty();
         if(buyObject.quantity>0){
             $("#modalQuantity").val(1);
+            $("#allCount").html(buyObject.buyingPrice);
         }
         else{
             $("#modalQuantity").val(0);
+            $("#allCount").html(0);
         }
 
         /*var myMoney = +document.getElementById("money").value;
@@ -357,7 +367,6 @@ $(document).ready(function () {
         if(buyType!="AMMO"){
             $("#modalQuantity").prop('max',buyObject.quantity);
         }
-        $("#allCount").html(buyObject.buyingPrice);
     });
 });
 
@@ -380,7 +389,7 @@ $(document).ready(function() {
         }
         else if(quantity<=0){
             $("#messageBuy").css("color","#e54b4b");
-            $("#messageBuy").html("The quantity can not be negative or zero");
+            $("#messageBuy").html("You cannot buy a negative or zero quantity of goods");
         }
         else if($("#modalQuantity").val()*$("#oneCount").html()>$("#money").html())
         {
@@ -430,7 +439,7 @@ $(document).ready(function() {
 });
 
 $(document).ready(function () {
-    $('#saleTable').on('click', '.saleButton', function () {
+    $('#saleTable').on('click', '.saleRow', function () {
         var saleTemp=this.id;
         updatePlayerStock();
         $.each(saleJson,function(i,item){
@@ -442,6 +451,7 @@ $(document).ready(function () {
         $("#saleModal").modal();
         $(".modal-title").html(mHead);
         $("#oneSaleCount").html(saleObject.salePrice);
+        $(".quantityLimit").html("Quantity(max: "+saleObject.quantity+"):");
         $("#messageSale").empty();
         if(saleObject.quantity>0){
             $("#modalSaleQuantity").val(1);
@@ -474,7 +484,7 @@ $(document).ready(function() {
         }
         else if(quantity<=0) {
             $("#messageSale").css("color","#e54b4b");
-            $("#messageSale").html("The quantity can not be negative or zero");
+            $("#messageSale").html("You cannot sale a negative or zero quantity of goods");
         }
         else if(quantity>saleObject.quantity){
             $("#messageSale").css("color","#e54b4b");

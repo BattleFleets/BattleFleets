@@ -45,11 +45,12 @@
                      <tr>
                      <c:forEach items = "${ships}" var = "nextShip">
                          <c:if test="${nextShip.curSailorsQuantity==nextShip.maxSailorsQuantity ||(nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity && money<sailorCost)}">
-                             <td class="listOfShips">
+                             <td class="listOfShips" valign="top">
                          </c:if>
                          <c:if test="${nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity && money>=sailorCost}">
-                              <td class="listOfShips" bgcolor="#8B0000" id="Id${nextShip.shipId}" value="${nextShip.shipId}" style="cursor: pointer" onclick="toggle(sailors,cont,buy,oneShip,${sailorCost},${money}),show(Id${nextShip.shipId}), maxValue(${nextShip.shipId}),btnSetValue(${nextShip.shipId})">
+                              <td class="listOfShips" valign="top" bgcolor="#8B0000" id="Id${nextShip.shipId}" value="${nextShip.shipId}" style="cursor: pointer" onclick="toggle(sailors,cont,buy,oneShip,${sailorCost},${money}),show(Id${nextShip.shipId}), maxValue(${nextShip.shipId}),btnSetValue(${nextShip.shipId})">
                          </c:if>
+                         <p align="center">${nextShip.curName}</p>
                          <c:choose>
                              <c:when test = "${nextShip.templateId == 1}">
                                  <img src = "static/images/ships/Caravela.png">
@@ -67,8 +68,7 @@
                                  <img src = "static/images/ships/Fregata.png">
                              </c:when>
                          </c:choose>
-                         <p>Name: ${nextShip.curName}</p>
-                         <p>Health: ${nextShip.curHealth}</p>
+                         <p>Health: ${nextShip.curHealth}/${nextShip.maxHealth}</p>
                          <p>Crew: <span id="crew">${nextShip.curSailorsQuantity}</span>/${nextShip.maxSailorsQuantity}</p>
                          </td>
                                     
@@ -106,12 +106,12 @@
         </table>
     
     </div>
-    
+
 </form>
 <div align="center" id="sailors"  style="display: none;">
-    <button class="button" id="btnShow" style="vertical-align: middle; margin-top: 10px; padding-right: 10%;" name="showShips" value="showShips" type="submit" onclick="toggle(sailors,cont,buy,oneShip,0,0)">
+    <button class="button" id="btnShow" style="vertical-align:middle;  padding-right: 10%;" name="showShips" value="showShips" type="submit" onclick="toggle(sailors,cont,buy,oneShip,0,0)">
         <span>All ships</span>
-    </button> 
+    </button>
 </div>
 </body>
 <div id="myModal" class="modal">
@@ -122,6 +122,9 @@
 </div>
 <a href="/city" class="logOutBottom">Return to city</a>
 <%@include file="fragment/footer.jsp"%>
+<audio autoplay id="piratesSong" onloadeddata="setHalfVolume()">
+    <source src="static/audio/pirates_song.mp3" type="audio/mp3">
+</audio>
 <script>
     function toggle(el1,el2,el3,el4,cost,money) {
         el1.style.display = (el1.style.display == 'none') ? '' : 'none';
@@ -227,5 +230,9 @@
     $('.close').click(function() {
         $('.modal').css('display', 'none');
     });
+    function setHalfVolume() {
+        var audio = document.getElementById("piratesSong");
+        audio.volume = 0.1;
+    };
 </script>
 </html>
