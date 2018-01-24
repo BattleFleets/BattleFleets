@@ -1,144 +1,144 @@
-.woodImage{
+.WoodImage{
     width: 60px;
     height: 50px;
     background:url("/static/images/market/wood.png");
     background-size: 60px 50px;
 }
 
-.coffeeImage {
+.CoffeeImage {
     width: 60px;
     height: 50px;
     background-image: url("/static/images/market/coffee.png");
     background-size: 60px 50px;
 }
 
-.gemsImage {
+.GemsImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/gems.png");
 }
 
-.rumImage {
+.RumImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/rum.png");
 }
 
-.silkImage {
+.SilkImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/silk.png");
 }
 
-.spicesImage {
+.SpicesImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/spices.png");
 }
 
-.sugarcaneImage {
+.SugarcaneImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/sugarcane.png");
 }
 
-.teaImage {
+.TeaImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/tea.png");
 }
 
-.tobaccoImage {
+.TobaccoImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/tobacco.png");
 }
 
-.grainImage {
+.GrainImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/grain.png");
 }
 
-.bombardImage {
+.BombardImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/bombard.png");
 }
 
-.kulevrinImage {
+.KulevrinImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/kulevrin.png");
 }
 
-.mortarImage {
+.MortarImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/mortar.png");
 }
 
-.buckshotImage {
+.BuckshotImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/buckshot.png");
 }
 
-.cannonballImage {
+.CannonballImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/cannonball.png");
 }
 
-.chainImage {
+.ChainImage {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/chain.png");
 }
 
-.mast1Image {
+.T_Mast1Image {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/mast_1.png");
 }
 
-.mast2Image {
+.T_Mast2Image {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/mast_2.png");
 }
 
-.mast3Image {
+.T_Mast3Image {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/mast_3.png");
 }
 
-.mast4Image {
+.T_Mast4Image {
     width: 60px;
     height: 50px;
     background-size: 60px 50px;
     background-image: url("/static/images/market/mast_4.png");
 }
 
-.mast5Image{
+.T_Mast5Image{
     width: 60px;
     height: 50px;
     background-size: 60px 50px;

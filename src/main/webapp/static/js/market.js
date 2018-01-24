@@ -4,6 +4,8 @@ var buyObject;
 var saleObject;
 var buyType;
 var saleType;
+var buyQuantity;
+var saleQuantity;
 
 function setHalfVolume() {
     document.getElementById("myaudio").volume = 0.1;
@@ -52,12 +54,16 @@ function buy(queryString){
         data: queryString,
         dataType: "text",
         success: function (msg) {
+            buyObject.quantity=buyObject.quantity-buyQuantity;
             if(buyObject.quantity==0){
                 $("#buyModal").modal("toggle");
             }
             else{
                 $("#messageBuy").css("color","#47e05c");
                 $("#messageBuy").html(msg);
+                if(buyObject.type!=="AMMO"){
+                    $(".quantityLimit").html("Quantity(max: "+buyObject.quantity+"):");
+                }
             }
             console.log(msg);
             updateMoney();
@@ -83,12 +89,15 @@ function sell(queryString){
         data: queryString,
         dataType: "text",
         success: function (msg) {
+            saleObject.quantity=saleObject.quantity-saleQuantity;
             if(saleObject.quantity==0){
                 $("#saleModal").modal("toggle");
             }
             else{
                 $("#messageSale").css("color","#47e05c");
                 $("#messageSale").html(msg);
+                $(".quantityLimit").html("Quantity(max: "+saleObject.quantity+"):");
+
             }
             console.log(msg);
             updateMoney();
@@ -115,7 +124,7 @@ function buildBuyTable(type){
     var trHTML ="";
     $.each(buyJson,function(i,item){
         if(item.type==type){
-            var picture;
+            var picture=item.name+"Image";
             function isAmmo(){
                 if(buyType=="AMMO"){
                     return "&#8734;";
@@ -123,73 +132,6 @@ function buildBuyTable(type){
                 else{
                     return item.quantity;
                 }
-            }
-            switch(item.name){
-                case "Coffee":
-                    picture="coffeeImage";
-                    break;
-                case "Gems":
-                    picture="gemsImage";
-                    break;
-                case "Grain":
-                    picture="grainImage";
-                    break;
-                case "Rum":
-                    picture="rumImage";
-                    break;
-                case "Silk":
-                    picture="silkImage";
-                    break;
-                case "Spices":
-                    picture="spicesImage";
-                    break;
-                case "Sugarcane":
-                    picture="sugarcaneImage";
-                    break;
-                case "Tea":
-                    picture="teaImage";
-                    break;
-                case "Tobacco":
-                    picture="tobaccoImage";
-                    break;
-                case "Wood":
-                    picture="woodImage";
-                    break;
-                case "Chain":
-                    picture="chainImage";
-                    break;
-                case "Cannonball":
-                    picture="cannonballImage";
-                    break;
-                case "Buckshot":
-                    picture="buckshotImage";
-                    break;
-                case "Kulevrin":
-                    picture="kulevrinImage";
-                    break;
-                case "Bombard":
-                    picture="bombardImage";
-                    break;
-                case "Mortar":
-                    picture="mortarImage";
-                    break;
-                case "T_Mast1":
-                    picture="mast1Image";
-                    break;
-                case "T_Mast2":
-                    picture="mast2Image";
-                    break;
-                case "T_Mast3":
-                    picture="mast3Image";
-                    break;
-                case "T_Mast4":
-                    picture="mast4Image";
-                    break;
-                case "T_Mast5":
-                    picture="mast5Image";
-                    break;
-                default:
-                    picture="mast1Image";
             }
             trHTML += "<tr class=\"buyRow\" id="
                 + item.templateId + ">"+"<td>"
@@ -207,74 +149,7 @@ function buildSaleTable(type){
     var trHTML ="";
     $.each(saleJson,function(i,item){
         if(item.type==type){
-            var picture;
-            switch(item.name){
-                case "Coffee":
-                    picture="coffeeImage";
-                    break;
-                case "Gems":
-                    picture="gemsImage";
-                    break;
-                case "Grain":
-                    picture="grainImage";
-                    break;
-                case "Rum":
-                    picture="rumImage";
-                    break;
-                case "Silk":
-                    picture="silkImage";
-                    break;
-                case "Spices":
-                    picture="spicesImage";
-                    break;
-                case "Sugarcane":
-                    picture="sugarcaneImage";
-                    break;
-                case "Tea":
-                    picture="teaImage";
-                    break;
-                case "Tobacco":
-                    picture="tobaccoImage";
-                    break;
-                case "Wood":
-                    picture="woodImage";
-                    break;
-                case "Chain":
-                    picture="chainImage";
-                    break;
-                case "Cannonball":
-                    picture="cannonballImage";
-                    break;
-                case "Buckshot":
-                    picture="buckshotImage";
-                    break;
-                case "Kulevrin":
-                    picture="kulevrinImage";
-                    break;
-                case "Bombard":
-                    picture="bombardImage";
-                    break;
-                case "Mortar":
-                    picture="mortarImage";
-                    break;
-                case "T_Mast1":
-                    picture="mast1Image";
-                    break;
-                case "T_Mast2":
-                    picture="mast2Image";
-                    break;
-                case "T_Mast3":
-                    picture="mast3Image";
-                    break;
-                case "T_Mast4":
-                    picture="mast4Image";
-                    break;
-                case "T_Mast5":
-                    picture="mast5Image";
-                    break;
-                default:
-                    picture="mast1Image";
-            }
+            var picture=item.name+"Image";
             trHTML += "<tr class=\"saleRow\" id="
                 +item.goodsId+">"+"<td>"
                 + "<div class="+picture+">"+"</div>"+"</td><td>"
@@ -370,12 +245,12 @@ $(document).ready(function() {
         $("#messageBuy").empty();
         var goodsTemplateId = buyObject.templateId;
         var price = buyObject.buyingPrice;
-        var quantity = $("#modalQuantity").val();
-        if((quantity+price+goodsTemplateId) % 1 !== 0){
+        buyQuantity = $("#modalQuantity").val();
+        if((buyQuantity+price+goodsTemplateId) % 1 !== 0){
             $("#messageBuy").css("color","#97b2e5");
             $("#messageBuy").html("Quantity must be a natural number");
         }
-        else if(quantity<=0){
+        else if(buyQuantity<=0){
             $("#messageBuy").css("color","#e54b4b");
             $("#messageBuy").html("You cannot buy a negative or zero quantity of goods");
         }
@@ -384,18 +259,14 @@ $(document).ready(function() {
             $("#messageBuy").css("color","#e54b4b");
             $("#messageBuy").html("Not enough money to pay");
         }
-        else if(quantity>buyObject.quantity){
+        else if(buyQuantity>buyObject.quantity){
             $("#messageBuy").css("color","#e54b4b");
             $("#messageBuy").html("Try to buy more goods than there is in the market");
         }
         else{
             var string = "goodsTemplateId="+goodsTemplateId
                 +"&price="+price
-                +"&quantity="+quantity;
-            buyObject.quantity=buyObject.quantity-quantity;
-            if(buyObject.type!=="AMMO"){
-                $(".quantityLimit").html("Quantity(max: "+buyObject.quantity+"):");
-            }
+                +"&quantity="+buyQuantity;
             buy(string);
         }
 
@@ -468,16 +339,16 @@ $(document).ready(function() {
         var goodId = saleObject.goodsId;
         var goodsTemplateId = saleObject.goodsTemplateId;
         var price = saleObject.salePrice;
-        var quantity = $("#modalSaleQuantity").val();
-        if((quantity+price+goodsTemplateId) % 1 !== 0){
+        saleQuantity = $("#modalSaleQuantity").val();
+        if((saleQuantity+price+goodsTemplateId) % 1 !== 0){
             $("#messageSale").css("color","#97b2e5");
             $("#messageSale").html("Quantity must be a natural number");
         }
-        else if(quantity<=0) {
+        else if(saleQuantity<=0) {
             $("#messageSale").css("color","#e54b4b");
             $("#messageSale").html("You cannot sale a negative or zero quantity of goods");
         }
-        else if(quantity>saleObject.quantity){
+        else if(saleQuantity>saleObject.quantity){
             $("#messageSale").css("color","#e54b4b");
             $("#messageSale").html("Trying to sell more goods than have");
         }
@@ -485,9 +356,7 @@ $(document).ready(function() {
             var string = "goodsId="+goodId
                 +"&goodsTemplateId="+goodsTemplateId
                 +"&price="+price
-                +"&quantity="+quantity;
-            saleObject.quantity=saleObject.quantity-quantity;
-            $(".quantityLimit").html("Quantity(max: "+saleObject.quantity+"):");
+                +"&quantity="+saleQuantity;
             sell(string);
         }
     });
