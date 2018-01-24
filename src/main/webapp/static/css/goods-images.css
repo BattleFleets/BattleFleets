@@ -1,0 +1,146 @@
+.WoodImage{
+    width: 60px;
+    height: 50px;
+    background:url("/static/images/market/wood.png");
+    background-size: 60px 50px;
+}
+
+.CoffeeImage {
+    width: 60px;
+    height: 50px;
+    background-image: url("/static/images/market/coffee.png");
+    background-size: 60px 50px;
+}
+
+.GemsImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/gems.png");
+}
+
+.RumImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/rum.png");
+}
+
+.SilkImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/silk.png");
+}
+
+.SpicesImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/spices.png");
+}
+
+.SugarcaneImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/sugarcane.png");
+}
+
+.TeaImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/tea.png");
+}
+
+.TobaccoImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/tobacco.png");
+}
+
+.GrainImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/grain.png");
+}
+
+.BombardImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/bombard.png");
+}
+
+.KulevrinImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/kulevrin.png");
+}
+
+.MortarImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/mortar.png");
+}
+
+.BuckshotImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/buckshot.png");
+}
+
+.CannonballImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/cannonball.png");
+}
+
+.ChainImage {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/chain.png");
+}
+
+.T_Mast1Image {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/mast_1.png");
+}
+
+.T_Mast2Image {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/mast_2.png");
+}
+
+.T_Mast3Image {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/mast_3.png");
+}
+
+.T_Mast4Image {
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image: url("/static/images/market/mast_4.png");
+}
+
+.T_Mast5Image{
+    width: 60px;
+    height: 50px;
+    background-size: 60px 50px;
+    background-image:url("/static/images/market/mast_5.png");
+}

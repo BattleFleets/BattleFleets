@@ -6,6 +6,7 @@ import com.nctc2017.exception.UpdateException;
 import com.nctc2017.services.LevelUpService;
 import com.nctc2017.services.MoneyService;
 import com.nctc2017.services.ScoreService;
+import com.nctc2017.services.TravelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,13 +25,18 @@ public class UpdateController {
     private LevelUpService lvlUpService;
     @Autowired
     private ScoreService scoreService;
+    @Autowired
+    private TravelService travelService;
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/update", method = RequestMethod.GET)
     public ModelAndView update(@AuthenticationPrincipal PlayerUserDetails userDetails){
+        BigInteger playerId = userDetails.getPlayerId();
+        if(travelService.isPlayerInTravel(playerId)){
+            return new ModelAndView("redirect:/trip");
+        }
         ModelAndView model = new ModelAndView();
         model.setViewName("UpdateView");
-        BigInteger playerId = userDetails.getPlayerId();
         int nextImprove = lvlUpService.getNextLevel(playerId);
         int lvl = lvlUpService.getCurrentLevel(playerId);
         int maxLvl = scoreService.getMaxLvl();

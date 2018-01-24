@@ -4,27 +4,9 @@ var buyObject;
 var saleObject;
 var buyType;
 var saleType;
-var woodLink="/static/images/market/wood.png";
-var coffeeLink="/static/images/market/coffee.png";
-var gemsLink="/static/images/market/gems.png";
-var rumLink="/static/images/market/rum.png";
-var silkLink="/static/images/market/silk.png";
-var spicesLink="/static/images/market/spices.png";
-var sugarcaneLink="/static/images/market/sugarcane.png";
-var teaLink="/static/images/market/tea.png";
-var tobaccoLink="/static/images/market/tobacco.png";
-var grainLink="/static/images/market/grain.png";
-var bombardLink="/static/images/market/bombard.png";
-var kulevrinLink="/static/images/market/kulevrin.png";
-var mortarLink="/static/images/market/mortar.png";
-var buckshotLink="/static/images/market/buckshot.png";
-var cannonballLink="/static/images/market/cannonball.png";
-var chainLink="/static/images/market/chain.png";
-var mast1Link="/static/images/market/mast_1.png";
-var mast2Link="/static/images/market/mast_2.png";
-var mast3Link="/static/images/market/mast_3.png";
-var mast4Link="/static/images/market/mast_4.png";
-var mast5Link="/static/images/market/mast_5.png";
+var buyQuantity;
+var saleQuantity;
+
 function setHalfVolume() {
     document.getElementById("myaudio").volume = 0.1;
 }
@@ -72,17 +54,30 @@ function buy(queryString){
         data: queryString,
         dataType: "text",
         success: function (msg) {
-            $("#messageBuy").css("color","#47e05c");
-            $("#messageBuy").html(msg);
+            buyObject.quantity=buyObject.quantity-buyQuantity;
+            if(buyObject.quantity==0){
+                $("#buyModal").modal("toggle");
+            }
+            else{
+                $("#messageBuy").css("color","#47e05c");
+                $("#messageBuy").html(msg);
+                if(buyObject.type!=="AMMO"){
+                    $(".quantityLimit").html("Quantity(max: "+buyObject.quantity+"):");
+                }
+            }
             console.log(msg);
             updateMoney();
             updateMarket();
             updatePlayerStock();
         },
         error: function (msg) {
-            console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
-            $("#messageBuy").css("color","#e54b4b");
-            $("#messageBuy").html(msg.responseText);
+            if(msg.getResponseHeader("Location")){
+                window.location.href = "/trip";
+            }else{
+                console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
+                $("#messageBuy").css("color","#e54b4b");
+                $("#messageBuy").html(msg.responseText);
+            }
         }
     });
 }
@@ -94,8 +89,16 @@ function sell(queryString){
         data: queryString,
         dataType: "text",
         success: function (msg) {
-            $("#messageSale").css("color","#47e05c");
-            $("#messageSale").html(msg);
+            saleObject.quantity=saleObject.quantity-saleQuantity;
+            if(saleObject.quantity==0){
+                $("#saleModal").modal("toggle");
+            }
+            else{
+                $("#messageSale").css("color","#47e05c");
+                $("#messageSale").html(msg);
+                $(".quantityLimit").html("Quantity(max: "+saleObject.quantity+"):");
+
+            }
             console.log(msg);
             updateMoney();
             updateMarket();
@@ -118,11 +121,10 @@ $(document).ready(function() {
 });
 
 function buildBuyTable(type){
-
     var trHTML ="";
     $.each(buyJson,function(i,item){
         if(item.type==type){
-            var picture;
+            var picture=item.name+"Image";
             function isAmmo(){
                 if(buyType=="AMMO"){
                     return "&#8734;";
@@ -131,166 +133,29 @@ function buildBuyTable(type){
                     return item.quantity;
                 }
             }
-            switch(item.name){
-                case "Coffee":
-                    picture=coffeeLink;
-                    break;
-                case "Gems":
-                    picture=gemsLink;
-                    break;
-                case "Grain":
-                    picture=grainLink;
-                    break;
-                case "Rum":
-                    picture=rumLink;
-                    break;
-                case "Silk":
-                    picture=silkLink;
-                    break;
-                case "Spices":
-                    picture=spicesLink;
-                    break;
-                case "Sugarcane":
-                    picture=sugarcaneLink;
-                    break;
-                case "Tea":
-                    picture=teaLink;
-                    break;
-                case "Tobacco":
-                    picture=tobaccoLink;
-                    break;
-                case "Wood":
-                    picture=woodLink;
-                    break;
-                case "Chain":
-                    picture=chainLink;
-                    break;
-                case "Cannonball":
-                    picture=cannonballLink;
-                    break;
-                case "Buckshot":
-                    picture=buckshotLink;
-                    break;
-                case "Kulevrin":
-                    picture=kulevrinLink;
-                    break;
-                case "Bombard":
-                    picture=bombardLink;
-                    break;
-                case "Mortar":
-                    picture=mortarLink;
-                    break;
-                case "T_Mast1":
-                    picture=mast1Link;
-                    break;
-                case "T_Mast2":
-                    picture=mast2Link;
-                    break;
-                case "T_Mast3":
-                    picture=mast3Link;
-                    break;
-                case "T_Mast4":
-                    picture=mast4Link;
-                    break;
-                case "T_Mast5":
-                    picture=mast5Link;
-                    break;
-                default:
-                    picture=mast1Link;
-            }
-            trHTML += "<tr><td>"
-                + "<img width=\"60\" height=\"50\" src="
-                + picture+ "/>" + "</td><td>"
+            trHTML += "<tr class=\"buyRow\" id="
+                + item.templateId + ">"+"<td>"
+                + "<div class="+picture+">"+"</div>"+"</td><td>"
                 + item.name +"<br/>"+item.goodsDescription+"</td><td>"
                 + item.buyingPrice + "</td><td>"
-                + isAmmo() + "</td><td>"
-                + "<button type=\"button\" class=\"btn buyButton\" id="
-                + item.templateId+">Buy</button>" + "</td></tr>";
-        }
+                + isAmmo() + "</td></tr>";
+            }
     });
     $("#buyTable").html(trHTML);
+
 }
 
 function buildSaleTable(type){
     var trHTML ="";
     $.each(saleJson,function(i,item){
         if(item.type==type){
-            var picture;
-            switch(item.name){
-                case "Coffee":
-                    picture=coffeeLink;
-                    break;
-                case "Gems":
-                    picture=gemsLink;
-                    break;
-                case "Grain":
-                    picture=grainLink;
-                    break;
-                case "Rum":
-                    picture=rumLink;
-                    break;
-                case "Silk":
-                    picture=silkLink;
-                    break;
-                case "Spices":
-                    picture=spicesLink;
-                    break;
-                case "Sugarcane":
-                    picture=sugarcaneLink;
-                    break;
-                case "Tea":
-                    picture=teaLink;
-                    break;
-                case "Tobacco":
-                    picture=tobaccoLink;
-                    break;
-                case "Wood":
-                    picture=woodLink;
-                    break;
-                case "Chain":
-                    picture=chainLink;
-                    break;
-                case "Cannonball":
-                    picture=cannonballLink;
-                    break;
-                case "Buckshot":
-                    picture=buckshotLink;
-                    break;
-                case "Kulevrin":
-                    picture=kulevrinLink;
-                    break;
-                case "Bombard":
-                    picture=bombardLink;
-                    break;
-                case "Mortar":
-                    picture=mortarLink;
-                    break;
-                case "T_Mast1":
-                    picture=mast1Link;
-                    break;
-                case "T_Mast2":
-                    picture=mast2Link;
-                    break;
-                case "T_Mast3":
-                    picture=mast3Link;
-                    break;
-                case "T_Mast4":
-                    picture=mast4Link;
-                    break;
-                case "T_Mast5":
-                    picture=mast5Link;
-                    break;
-                default:
-                    picture=mast1Link;
-            }
-            trHTML += "<tr><td>"
-                + "<img width=\"60\" height=\"50\" src="
-                + picture+ "/>" + "</td><td>"
+            var picture=item.name+"Image";
+            trHTML += "<tr class=\"saleRow\" id="
+                +item.goodsId+">"+"<td>"
+                + "<div class="+picture+">"+"</div>"+"</td><td>"
                 + item.name +"<br/>"+item.description+"</td><td>"
                 + item.salePrice + "</td><td>"
-                + item.quantity +"</td><td>"
-                + "<button type=\"button\" class=\"btn saleButton\" id="
-                + item.goodsId +">Sell</button>" + "</td></tr>";
+                + item.quantity +"</td></tr>";
         }
     });
     $("#saleTable").html(trHTML);
@@ -323,7 +188,7 @@ $(document).ready(function() {
 
 
 $(document).ready(function () {
-    $('#buyTable').on('click', '.buyButton', function () {
+    $('#buyTable').on('click', '.buyRow', function () {
         var buyTemp=this.id;
         updateMarket();
         $.each(buyJson,function(i,item){
@@ -344,9 +209,11 @@ $(document).ready(function () {
         $("#messageBuy").empty();
         if(buyObject.quantity>0){
             $("#modalQuantity").val(1);
+            $("#allCount").html(buyObject.buyingPrice);
         }
         else{
             $("#modalQuantity").val(0);
+            $("#allCount").html(0);
         }
 
         /*var myMoney = +document.getElementById("money").value;
@@ -363,7 +230,6 @@ $(document).ready(function () {
         if(buyType!="AMMO"){
             $("#modalQuantity").prop('max',buyObject.quantity);
         }
-        $("#allCount").html(buyObject.buyingPrice);
     });
 });
 
@@ -379,29 +245,28 @@ $(document).ready(function() {
         $("#messageBuy").empty();
         var goodsTemplateId = buyObject.templateId;
         var price = buyObject.buyingPrice;
-        var quantity = $("#modalQuantity").val();
-        if((quantity+price+goodsTemplateId) % 1 !== 0){
+        buyQuantity = $("#modalQuantity").val();
+        if((buyQuantity+price+goodsTemplateId) % 1 !== 0){
             $("#messageBuy").css("color","#97b2e5");
             $("#messageBuy").html("Quantity must be a natural number");
         }
-        else if(quantity<=0){
+        else if(buyQuantity<=0){
             $("#messageBuy").css("color","#e54b4b");
-            $("#messageBuy").html("The quantity can not be negative or zero");
+            $("#messageBuy").html("You cannot buy a negative or zero quantity of goods");
         }
         else if($("#modalQuantity").val()*$("#oneCount").html()>$("#money").html())
         {
             $("#messageBuy").css("color","#e54b4b");
             $("#messageBuy").html("Not enough money to pay");
         }
-        else if(quantity>buyObject.quantity){
+        else if(buyQuantity>buyObject.quantity){
             $("#messageBuy").css("color","#e54b4b");
             $("#messageBuy").html("Try to buy more goods than there is in the market");
         }
         else{
             var string = "goodsTemplateId="+goodsTemplateId
                 +"&price="+price
-                +"&quantity="+quantity;
-            buyObject.quantity=buyObject.quantity-quantity;
+                +"&quantity="+buyQuantity;
             buy(string);
         }
 
@@ -436,7 +301,7 @@ $(document).ready(function() {
 });
 
 $(document).ready(function () {
-    $('#saleTable').on('click', '.saleButton', function () {
+    $('#saleTable').on('click', '.saleRow', function () {
         var saleTemp=this.id;
         updatePlayerStock();
         $.each(saleJson,function(i,item){
@@ -474,16 +339,16 @@ $(document).ready(function() {
         var goodId = saleObject.goodsId;
         var goodsTemplateId = saleObject.goodsTemplateId;
         var price = saleObject.salePrice;
-        var quantity = $("#modalSaleQuantity").val();
-        if((quantity+price+goodsTemplateId) % 1 !== 0){
+        saleQuantity = $("#modalSaleQuantity").val();
+        if((saleQuantity+price+goodsTemplateId) % 1 !== 0){
             $("#messageSale").css("color","#97b2e5");
             $("#messageSale").html("Quantity must be a natural number");
         }
-        else if(quantity<=0) {
+        else if(saleQuantity<=0) {
             $("#messageSale").css("color","#e54b4b");
-            $("#messageSale").html("The quantity can not be negative or zero");
+            $("#messageSale").html("You cannot sale a negative or zero quantity of goods");
         }
-        else if(quantity>saleObject.quantity){
+        else if(saleQuantity>saleObject.quantity){
             $("#messageSale").css("color","#e54b4b");
             $("#messageSale").html("Trying to sell more goods than have");
         }
@@ -491,8 +356,7 @@ $(document).ready(function() {
             var string = "goodsId="+goodId
                 +"&goodsTemplateId="+goodsTemplateId
                 +"&price="+price
-                +"&quantity="+quantity;
-            saleObject.quantity=saleObject.quantity-quantity;
+                +"&quantity="+saleQuantity;
             sell(string);
         }
     });

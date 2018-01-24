@@ -106,12 +106,12 @@
         </table>
     
     </div>
-    
+
 </form>
 <div align="center" id="sailors"  style="display: none;">
-    <button class="button" id="btnShow" style="vertical-align: middle; margin-top: 10px; padding-right: 10%;" name="showShips" value="showShips" type="submit" onclick="toggle(sailors,cont,buy,oneShip,0,0)">
+    <button class="button" id="btnShow" style="vertical-align:middle;  padding-right: 10%;" name="showShips" value="showShips" type="submit" onclick="toggle(sailors,cont,buy,oneShip,0,0)">
         <span>All ships</span>
-    </button> 
+    </button>
 </div>
 </body>
 <div id="myModal" class="modal">
@@ -122,6 +122,9 @@
 </div>
 <a href="/city" class="logOutBottom">Return to city</a>
 <%@include file="fragment/footer.jsp"%>
+<audio autoplay id="piratesSong" onloadeddata="setHalfVolume()">
+    <source src="static/audio/pirates_song.mp3" type="audio/mp3">
+</audio>
 <script>
     function toggle(el1,el2,el3,el4,cost,money) {
         el1.style.display = (el1.style.display == 'none') ? '' : 'none';
@@ -227,5 +230,9 @@
     $('.close').click(function() {
         $('.modal').css('display', 'none');
     });
+    function setHalfVolume() {
+        var audio = document.getElementById("piratesSong");
+        audio.volume = 0.1;
+    };
 </script>
 </html>
