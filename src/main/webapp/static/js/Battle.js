@@ -499,6 +499,7 @@ $(document).ready(function() {
 
     infoTabUpdate(true);
     battleEndTask();
+    soundButton("#audio");
 });
 
 function enable(id) {

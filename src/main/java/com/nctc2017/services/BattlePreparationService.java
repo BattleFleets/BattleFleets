@@ -8,6 +8,7 @@ import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
 import com.nctc2017.exception.BattleEndException;
+import com.nctc2017.exception.PlayerNotFoundException;
 import com.nctc2017.services.utils.AutoDecisionTask;
 import com.nctc2017.services.utils.BattleManager;
 import com.nctc2017.services.utils.Visitor;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 
 @Service
 @Transactional
@@ -134,7 +136,7 @@ public class BattlePreparationService {
 
         ThreadStorage existing = playerChoiceShipTimer.get(playerId);
         if (existing != null) {
-            return (int)existing.decisionTask.getTimeLeft()/1000;
+            return (int)(existing.decisionTask.getTimeLeft()/1000L);
         }
         AutoDecisionTask decisionTask = new AutoDecisionTask(new ShipVisitor(playerId), DELAY);
         Thread decisionThread = new Thread(decisionTask);
@@ -143,6 +145,16 @@ public class BattlePreparationService {
         playerChoiceShipTimer.put(playerId, storage);
         LOG.debug("Auto choose ship timer started");
         return DELAY/1000;
+    }
+    
+    public int getAutoChoiceShipTime(BigInteger playerId) throws TimeoutException {
+        ThreadStorage existing = playerChoiceShipTimer.get(playerId);
+        if (existing != null) {
+            return (int)(existing.decisionTask.getTimeLeft()/1000L);
+        }
+        TimeoutException ex = new TimeoutException("Player auto pick time is up");
+        LOG.debug("Player's timer not found", ex);
+        throw ex;
     }
     
     public List<BigInteger> getShipsLeftBattle(BigInteger playerId) throws BattleEndException {

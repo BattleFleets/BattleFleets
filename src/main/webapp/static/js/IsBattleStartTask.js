@@ -18,6 +18,11 @@ function isBattleStart() {
         } else {
             window.location.href = "/login";
         }
+    }).fail(function() {
+        if (xhr.status == 405) {
+            clearInterval(battleStartId);
+            window.location.href = "/city";
+        }
     });
     
 };

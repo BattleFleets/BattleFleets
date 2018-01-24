@@ -137,7 +137,10 @@
 <div class="enemy_ship" align="right">
     <img alt="5" src="static/images/ships/enemy_ship2.png" height="60%">
 </div>
-<div class="wait" hidden="true">Wait...</div>
+
+<button id="audio" class="icon_sound" type="submit" title="Mute" style="vertical-align:middle; position: absolute;"></button>
+
+<div class="wait" hidden="true">Wait for opponent...</div>
 
 <div id="dialog"></div>
 

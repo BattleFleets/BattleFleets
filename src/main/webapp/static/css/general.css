@@ -66,6 +66,30 @@ input[type=submit] {
     margin: 5px;
 }
 
+.icon_mute, .icon_sound {
+    background-color: transparent;
+    border: none;
+    background-size: contain;
+    background-repeat:no-repeat;
+    background-position: center;
+    padding: 2%;
+}
+
+.icon_sound {
+	background-image: url("../images/general/sound.png");
+}
+
+.icon_mute {
+	background-image: url("../images/general/mute.png");
+}
+
+#audio {
+	width: 2.32vw;
+	height: 2.32vw;
+	z-index: 100;
+	position: absolute;
+	cursor: pointer
+}
 
 .button span {
   font-size: 80%;
