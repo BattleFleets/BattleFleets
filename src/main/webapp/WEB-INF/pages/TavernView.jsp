@@ -11,6 +11,7 @@
     <link href="static/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet">
     <link href="static/bootstrap-3.3.7/css/bootstrap-theme.css" rel="stylesheet">
     <script src="static/bootstrap-3.3.7/js/bootstrap.js"></script>
+    <script src="static/js/volume.js" type="text/javascript"></script>
 </head>
 
 
@@ -114,6 +115,7 @@
     </button>
 </div>
 </body>
+<button id="audio" class="icon_sound" type="submit" title="Mute" style="vertical-align:middle"></button>
 <div id="myModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
@@ -122,7 +124,7 @@
 </div>
 <a href="/city" class="logOutBottom">Return to city</a>
 <%@include file="fragment/footer.jsp"%>
-<audio autoplay id="piratesSong" onloadeddata="setHalfVolume()">
+<audio autoplay loop id="piratesSong" onloadeddata="setHalfVolume()">
     <source src="static/audio/pirates_song.mp3" type="audio/mp3">
 </audio>
 <script>
@@ -234,5 +236,8 @@
         var audio = document.getElementById("piratesSong");
         audio.volume = 0.1;
     };
+    $(document).ready(function() {
+        soundButton("#audio");
+    });
 </script>
 </html>
