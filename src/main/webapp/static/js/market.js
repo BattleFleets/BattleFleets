@@ -54,17 +54,17 @@ function buy(queryString){
         data: queryString,
         dataType: "text",
         success: function (msg) {
-            buyObject.quantity=buyObject.quantity-buyQuantity;
-            if(buyObject.quantity==0){
+            //buyObject.quantity=buyObject.quantity-buyQuantity;
+            //if(buyObject.quantity==0){
                 $("#buyModal").modal("toggle");
-            }
-            else{
-                $("#messageBuy").css("color","#47e05c");
-                $("#messageBuy").html(msg);
-                if(buyObject.type!=="AMMO"){
-                    $(".quantityLimit").html("Quantity(max: "+buyObject.quantity+"):");
-                }
-            }
+            //}
+            //else{
+                //$("#messageBuy").css("color","#47e05c");
+                //$("#messageBuy").html(msg);
+                //if(buyObject.type!=="AMMO"){
+                    //$(".quantityLimit").html("Quantity(max: "+buyObject.quantity+"):");
+                //}
+            //}
             console.log(msg);
             updateMoney();
             updateMarket();
@@ -89,16 +89,16 @@ function sell(queryString){
         data: queryString,
         dataType: "text",
         success: function (msg) {
-            saleObject.quantity=saleObject.quantity-saleQuantity;
-            if(saleObject.quantity==0){
+            //saleObject.quantity=saleObject.quantity-saleQuantity;
+            //if(saleObject.quantity==0){
                 $("#saleModal").modal("toggle");
-            }
-            else{
-                $("#messageSale").css("color","#47e05c");
-                $("#messageSale").html(msg);
-                $(".quantityLimit").html("Quantity(max: "+saleObject.quantity+"):");
+            //}
+            //else{
+                //$("#messageSale").css("color","#47e05c");
+                //$("#messageSale").html(msg);
+                //$(".quantityLimit").html("Quantity(max: "+saleObject.quantity+"):");
 
-            }
+            //}
             console.log(msg);
             updateMoney();
             updateMarket();
