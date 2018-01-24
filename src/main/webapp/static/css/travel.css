@@ -5,7 +5,7 @@
     animation-duration: 60s;
     position: fixed;
     bottom: 15%;
-    
+    z-index: 10;
 }
 .layer, .timer {
 	position: absolute;
@@ -27,6 +27,7 @@ html, body{
    /* margin: auto;*/
     overflow: hidden;
 }
+
 main {
     width: 50%;
     min-height: 411px;

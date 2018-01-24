@@ -2,14 +2,14 @@ var seconds;
 var timerId;
 var enemyReadyId;
 function shipChooseTimer() {
-    seconds = seconds - 1;
-    $("#timer").html("Auto pick: " + seconds + " sec");
-    if (seconds == 0) {
+    pick_time = pick_time - 1;
+    $("#timer").html("Auto pick: " + pick_time + " sec");
+    if (pick_time == 0) {
         console.log("Timer choose stop");
         clearInterval(timerId);
         disablePickButtons();
         $("#timer").html("Timeout!");
-        $( "#warning_info" ).html("Wait...");/*wait msg*/
+        $( "#warning_info" ).html("Wait for enemy pick...");/*wait msg*/
         waitEnemyReady();
     }
 };
@@ -30,10 +30,6 @@ function waitEnemyReady() {
     }).fail(function(xhr, status, error) {
         console.log("Wait enemy response fail " + xhr.status);
         if (xhr.status == 405) {
-            $( "#warning_info" ).html(xhr.responseText);/*wait msg*/
-            $('html, body').animate({
-                scrollTop: $("#warning_info").offset().top
-            }, 1000);
             battleExit();
         } else {
             // window.location.href = "/error";
@@ -78,10 +74,24 @@ function isEnemyLeave() {
 function enemyLeaveCheckTask() {
     isEnemyLeaveTaskId = setInterval(function() {isEnemyLeave();}, 2000);
 }
+
+function getRealPickTime() {
+    console.log("Request /get_auto_pick_time");
+    var time = performance.now();
+    $.get("/get_auto_pick_time")
+    .done(function(response, status, xhr) {
+        console.log(response);
+        time = (performance.now() - time) / 2.0;
+        console.log("Request time = " + time);
+        pick_time = pick_time - Math.round(time / 1000.0);
+    }).fail(function(xhr, status, error) {
+        console.log("get_auto_pick_time FAIL " + xhr.status);
+    });
+}
     
 $(document).ready(function() {
-    seconds = $("body").attr("timer");
-    $("#timer").html("Auto pick: " + seconds + " sec");
+    pick_time = $("body").attr("timer");
+    $("#timer").html("Auto pick: " + pick_time + " sec");
     pickTimerTask();
     $(".button_pick").click(function() { 
         $( this ).find(".icon_pick").addClass( "icon_pick_select" );
@@ -117,7 +127,10 @@ $(document).ready(function() {
         });
         disablePickButtons();
     });
+    getRealPickTime(); 
+    soundButton("#audio");
 });
+
 function battleExit() {
     clearInterval(timerId);
     console.log("request for battlefield exit");

@@ -89,6 +89,10 @@ function lookout() {
         }
     })
     .fail(function(xhr, status, error) {
+        if (xhr.status == 405) {
+            clearInterval(lookoutId);
+            window.location.href = "/city";
+        }
         lookoutTask();/*already arrived*/
     });
 }

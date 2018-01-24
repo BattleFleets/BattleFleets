@@ -41,7 +41,7 @@ public class TravelManager {
     private BattleManager battleManager;
     
     private static final int LVL_DIFF = 5;
-    private static final int MAX_RELOC_TIME = 300000;
+    private static final int MAX_RELOC_TIME = 61000;
     private static final int MIN_RELOC_TIME = 60000;
     private static final long MANAGER_WAKE_UP = 2000;
     private static final long ENEMY_FIND_WAKE_UP = 30000;
@@ -129,8 +129,7 @@ public class TravelManager {
     
     public void startJourney(BigInteger playerId, int lvl, BigInteger city) {
         TravelBook cityTime = journals.get(playerId);
-        GregorianCalendar clock = new GregorianCalendar();
-        long timeNow = clock.getTimeInMillis();
+        long timeNow = System.currentTimeMillis();
         long timeToArrival;
         if (cityTime != null) {
             timeToArrival = cityTime.getTime() - timeNow;
