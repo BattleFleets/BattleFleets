@@ -4,27 +4,7 @@ var buyObject;
 var saleObject;
 var buyType;
 var saleType;
-var woodLink="/static/images/market/wood.png";
-var coffeeLink="/static/images/market/coffee.png";
-var gemsLink="/static/images/market/gems.png";
-var rumLink="/static/images/market/rum.png";
-var silkLink="/static/images/market/silk.png";
-var spicesLink="/static/images/market/spices.png";
-var sugarcaneLink="/static/images/market/sugarcane.png";
-var teaLink="/static/images/market/tea.png";
-var tobaccoLink="/static/images/market/tobacco.png";
-var grainLink="/static/images/market/grain.png";
-var bombardLink="/static/images/market/bombard.png";
-var kulevrinLink="/static/images/market/kulevrin.png";
-var mortarLink="/static/images/market/mortar.png";
-var buckshotLink="/static/images/market/buckshot.png";
-var cannonballLink="/static/images/market/cannonball.png";
-var chainLink="/static/images/market/chain.png";
-var mast1Link="/static/images/market/mast_1.png";
-var mast2Link="/static/images/market/mast_2.png";
-var mast3Link="/static/images/market/mast_3.png";
-var mast4Link="/static/images/market/mast_4.png";
-var mast5Link="/static/images/market/mast_5.png";
+
 function setHalfVolume() {
     document.getElementById("myaudio").volume = 0.1;
 }
@@ -72,8 +52,13 @@ function buy(queryString){
         data: queryString,
         dataType: "text",
         success: function (msg) {
-            $("#messageBuy").css("color","#47e05c");
-            $("#messageBuy").html(msg);
+            if(buyObject.quantity==0){
+                $("#buyModal").modal("toggle");
+            }
+            else{
+                $("#messageBuy").css("color","#47e05c");
+                $("#messageBuy").html(msg);
+            }
             console.log(msg);
             updateMoney();
             updateMarket();
@@ -98,8 +83,13 @@ function sell(queryString){
         data: queryString,
         dataType: "text",
         success: function (msg) {
-            $("#messageSale").css("color","#47e05c");
-            $("#messageSale").html(msg);
+            if(saleObject.quantity==0){
+                $("#saleModal").modal("toggle");
+            }
+            else{
+                $("#messageSale").css("color","#47e05c");
+                $("#messageSale").html(msg);
+            }
             console.log(msg);
             updateMoney();
             updateMarket();
@@ -122,7 +112,6 @@ $(document).ready(function() {
 });
 
 function buildBuyTable(type){
-
     var trHTML ="";
     $.each(buyJson,function(i,item){
         if(item.type==type){
@@ -137,81 +126,81 @@ function buildBuyTable(type){
             }
             switch(item.name){
                 case "Coffee":
-                    picture=coffeeLink;
+                    picture="coffeeImage";
                     break;
                 case "Gems":
-                    picture=gemsLink;
+                    picture="gemsImage";
                     break;
                 case "Grain":
-                    picture=grainLink;
+                    picture="grainImage";
                     break;
                 case "Rum":
-                    picture=rumLink;
+                    picture="rumImage";
                     break;
                 case "Silk":
-                    picture=silkLink;
+                    picture="silkImage";
                     break;
                 case "Spices":
-                    picture=spicesLink;
+                    picture="spicesImage";
                     break;
                 case "Sugarcane":
-                    picture=sugarcaneLink;
+                    picture="sugarcaneImage";
                     break;
                 case "Tea":
-                    picture=teaLink;
+                    picture="teaImage";
                     break;
                 case "Tobacco":
-                    picture=tobaccoLink;
+                    picture="tobaccoImage";
                     break;
                 case "Wood":
-                    picture=woodLink;
+                    picture="woodImage";
                     break;
                 case "Chain":
-                    picture=chainLink;
+                    picture="chainImage";
                     break;
                 case "Cannonball":
-                    picture=cannonballLink;
+                    picture="cannonballImage";
                     break;
                 case "Buckshot":
-                    picture=buckshotLink;
+                    picture="buckshotImage";
                     break;
                 case "Kulevrin":
-                    picture=kulevrinLink;
+                    picture="kulevrinImage";
                     break;
                 case "Bombard":
-                    picture=bombardLink;
+                    picture="bombardImage";
                     break;
                 case "Mortar":
-                    picture=mortarLink;
+                    picture="mortarImage";
                     break;
                 case "T_Mast1":
-                    picture=mast1Link;
+                    picture="mast1Image";
                     break;
                 case "T_Mast2":
-                    picture=mast2Link;
+                    picture="mast2Image";
                     break;
                 case "T_Mast3":
-                    picture=mast3Link;
+                    picture="mast3Image";
                     break;
                 case "T_Mast4":
-                    picture=mast4Link;
+                    picture="mast4Image";
                     break;
                 case "T_Mast5":
-                    picture=mast5Link;
+                    picture="mast5Image";
                     break;
                 default:
-                    picture=mast1Link;
+                    picture="mast1Image";
             }
             trHTML += "<tr class=\"buyRow\" id="
-                + item.templateId + ">" + "<td>"
-                + "<img width=\"60\" height=\"50\" src="
-                + picture+ "/>" + "</td><td>"
+                + item.templateId + ">"+"<td>"
+                + "<div class="+picture+">"+"</div>"+"</td><td>"
                 + item.name +"<br/>"+item.goodsDescription+"</td><td>"
                 + item.buyingPrice + "</td><td>"
                 + isAmmo() + "</td></tr>";
-        }
+            }
     });
     $("#buyTable").html(trHTML);
+
 }
 
 function buildSaleTable(type){
@@ -221,75 +210,74 @@ function buildSaleTable(type){
             var picture;
             switch(item.name){
                 case "Coffee":
-                    picture=coffeeLink;
+                    picture="coffeeImage";
                     break;
                 case "Gems":
-                    picture=gemsLink;
+                    picture="gemsImage";
                     break;
                 case "Grain":
-                    picture=grainLink;
+                    picture="grainImage";
                     break;
                 case "Rum":
-                    picture=rumLink;
+                    picture="rumImage";
                     break;
                 case "Silk":
-                    picture=silkLink;
+                    picture="silkImage";
                     break;
                 case "Spices":
-                    picture=spicesLink;
+                    picture="spicesImage";
                     break;
                 case "Sugarcane":
-                    picture=sugarcaneLink;
+                    picture="sugarcaneImage";
                     break;
                 case "Tea":
-                    picture=teaLink;
+                    picture="teaImage";
                     break;
                 case "Tobacco":
-                    picture=tobaccoLink;
+                    picture="tobaccoImage";
                     break;
                 case "Wood":
-                    picture=woodLink;
+                    picture="woodImage";
                     break;
                 case "Chain":
-                    picture=chainLink;
+                    picture="chainImage";
                     break;
                 case "Cannonball":
-                    picture=cannonballLink;
+                    picture="cannonballImage";
                     break;
                 case "Buckshot":
-                    picture=buckshotLink;
+                    picture="buckshotImage";
                     break;
                 case "Kulevrin":
-                    picture=kulevrinLink;
+                    picture="kulevrinImage";
                     break;
                 case "Bombard":
-                    picture=bombardLink;
+                    picture="bombardImage";
                     break;
                 case "Mortar":
-                    picture=mortarLink;
+                    picture="mortarImage";
                     break;
                 case "T_Mast1":
-                    picture=mast1Link;
+                    picture="mast1Image";
                     break;
                 case "T_Mast2":
-                    picture=mast2Link;
+                    picture="mast2Image";
                     break;
                 case "T_Mast3":
-                    picture=mast3Link;
+                    picture="mast3Image";
                     break;
                 case "T_Mast4":
-                    picture=mast4Link;
+                    picture="mast4Image";
                     break;
                 case "T_Mast5":
-                    picture=mast5Link;
+                    picture="mast5Image";
                     break;
                 default:
-                    picture=mast1Link;
+                    picture="mast1Image";
             }
             trHTML += "<tr class=\"saleRow\" id="
                 +item.goodsId+">"+"<td>"
-                + "<img width=\"60\" height=\"50\" src="
-                + picture+ "/>" + "</td><td>"
+                + "<div class="+picture+">"+"</div>"+"</td><td>"
                 + item.name +"<br/>"+item.description+"</td><td>"
                 + item.salePrice + "</td><td>"
                 + item.quantity +"</td></tr>";
@@ -405,6 +393,9 @@ $(document).ready(function() {
                 +"&price="+price
                 +"&quantity="+quantity;
             buyObject.quantity=buyObject.quantity-quantity;
+            if(buyObject.type!=="AMMO"){
+                $(".quantityLimit").html("Quantity(max: "+buyObject.quantity+"):");
+            }
             buy(string);
         }
 
@@ -496,6 +487,7 @@ $(document).ready(function() {
                 +"&price="+price
                 +"&quantity="+quantity;
             saleObject.quantity=saleObject.quantity-quantity;
+            $(".quantityLimit").html("Quantity(max: "+saleObject.quantity+"):");
             sell(string);
         }
     });
