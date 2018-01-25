@@ -37,6 +37,7 @@ public class BoardingDefaultBattleEnd implements BattleEndVisitor {
         }
         
         int points = score.getScoreForBoarding(winnerId);
+        points = score.calculateScores(winnerId, loserId, points);
         levelUp.pointsUp(winnerId, points);
     }
 

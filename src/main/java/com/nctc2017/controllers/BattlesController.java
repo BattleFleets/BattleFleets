@@ -27,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nctc2017.bean.Player;
 import com.nctc2017.bean.PlayerUserDetails;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.exception.BattleEndException;
@@ -74,6 +75,7 @@ public class BattlesController {
         LOG.debug("Request battle_preparing");
         List<Ship> enemyFleet;
         int time;
+        Player player;
         try {
             try {
                 if (battleService.isBattleStart(playerId)) {
@@ -81,6 +83,7 @@ public class BattlesController {
                 }
                 enemyFleet = prepService.getEnemyShips(playerId);
                 time = prepService.autoChoiceShipTimer(playerId);
+                player = prepService.getEnemyInfo(playerId);
             } catch (BattleEndException e) {
                 return new ModelAndView("redirect:/trip");
             }
@@ -89,7 +92,8 @@ public class BattlesController {
             ModelAndView model = new ModelAndView("BattlePreparingView");
             model.addObject("fleet", fleet);
             model.addObject("enemy_fleet", enemyFleet);
-            model.addObject("timer", time);
+            model.addObject("timer", time < 0 ? 0 : time);
+            model.addObject("enemy", player);
             return model;
         } finally {
             MDC.remove("userName");
@@ -105,12 +109,15 @@ public class BattlesController {
         
         LOG.debug("Request get_auto_pick_time");
         try {
-            int time = prepService.getAutoChoiceShipTime(playerId);
+            int time = prepService.autoChoiceShipTimer(playerId);
+            if (time == -1) {
+                ResponseEntity.status(HttpStatus.LOCKED).build();
+            }
             Map<String, Integer> body = Collections.singletonMap("time", time);
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(body);
             return ResponseEntity.ok().body(json);
-        } catch (TimeoutException e) {
+        } catch (BattleEndException e) {
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
         } finally {
             MDC.remove("userName");

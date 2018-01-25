@@ -12,7 +12,7 @@
 
 </head>
 
-<body class="battle_view">
+<body class="battle_view" payoffAvailable="${payoffAvailable}">
 <audio autoplay loop id="back_audio_ship" onloadeddata="setVolume('back_audio_ship', 0.04)">
     <source src="static/audio/Paluba_skripit.mp3" type="audio/mp3">
 </audio>

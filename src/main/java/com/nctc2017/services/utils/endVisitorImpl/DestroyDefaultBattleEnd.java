@@ -37,6 +37,7 @@ public class DestroyDefaultBattleEnd implements BattleEndVisitor {
         battleEndServ.destroyShip(loserShipId);
         
         int points = score.getScoreForDestroy(winnerId);
+        points = score.calculateScores(winnerId, loserId, points);
         levelUp.pointsUp(winnerId, points);
     }
 

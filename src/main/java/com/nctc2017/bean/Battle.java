@@ -321,7 +321,9 @@ public class Battle {
         }
 
         private void addShipLeftBattle(BigInteger shipsLeftBattle) {
-            this.shipsLeftBattle.add(shipsLeftBattle);
+            if (shipsLeftBattle != null) {
+                this.shipsLeftBattle.add(shipsLeftBattle);
+            }
         }
 
         public BigInteger getPlayerId() {
