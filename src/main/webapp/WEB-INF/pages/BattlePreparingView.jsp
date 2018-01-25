@@ -96,7 +96,7 @@
 	</div>
 	
 	<div class="enemy_side">
-	<h1 class="up_title enemy_style">Enemy fleet</h1>
+	<h1 class="up_title enemy_style">${enemy.login}'s fleet</h1>
     <div class="ship_accordion" style="float: left">
 		<c:forEach var="shipInfo" items="${enemy_fleet}" varStatus="status">
 		    <c:set var = "ship" scope = "session" value = "${shipInfo}"/>

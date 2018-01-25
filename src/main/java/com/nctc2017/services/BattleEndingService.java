@@ -97,15 +97,20 @@ public class BattleEndingService {
         return battles.getBattle(playerId).getShipId(playerId) == null;
     }
     
+    private int fleetSpeed(BigInteger playerId) {
+        return playerDao.getFleetSpeed(playerId);
+    }
+    
     public boolean isLeaveBattleFieldAvailable(BigInteger playerId) throws BattleEndException {
         Battle battle = battles.getBattle(playerId);
         List<BigInteger> playerShipsLeft = battle.getShipsLeftBattle(playerId);
         BigInteger enemyId = battle.getEnemyId(playerId);
-        List<BigInteger> enemyShipsLeft = battle.getShipsLeftBattle(enemyId);
         List<BigInteger> playerFactShips = playerDao.findAllShip(playerId);
-        List<BigInteger> enemyFactShips = playerDao.findAllShip(enemyId);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Ships was in battle: " + playerShipsLeft.size() + " Ship all: " + playerFactShips.size());
+        }
         return playerShipsLeft.size() >= playerFactShips.size() 
-                || enemyShipsLeft.size() >= enemyFactShips.size();
+                || fleetSpeed(playerId) > fleetSpeed(enemyId);
     }
     
     public boolean leaveBattleField (BigInteger playerId) throws BattleEndException {

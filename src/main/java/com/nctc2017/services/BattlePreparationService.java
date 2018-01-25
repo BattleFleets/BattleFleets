@@ -2,6 +2,7 @@ package com.nctc2017.services;
 
 import com.nctc2017.bean.Battle;
 import com.nctc2017.bean.Mast;
+import com.nctc2017.bean.Player;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.dao.CannonDao;
 import com.nctc2017.dao.MastDao;
@@ -48,19 +49,6 @@ public class BattlePreparationService {
     
     private Random randomShip = new Random(System.currentTimeMillis());
     private Map<BigInteger, ThreadStorage> playerChoiceShipTimer = new ConcurrentHashMap<>();
-    
-    public boolean escape(BigInteger playerId) {
-        BigInteger enemyId = battles.getEnemyId(playerId);
-        if (fleetSpeed(playerId) > fleetSpeed(enemyId)) {
-            battles.endBattle(playerId);
-            return true;
-        }
-        return false;
-    }
-    
-    private int fleetSpeed(BigInteger playerId) {
-        return playerDao.getFleetSpeed(playerId);
-    }
     
     public List<ShipWrapper> getShipsExtraInfo(BigInteger playerId) {
         List<Ship> listShipsId = getShips(playerId);
@@ -132,11 +120,13 @@ public class BattlePreparationService {
     }
 
     public int autoChoiceShipTimer(BigInteger playerId) throws BattleEndException {
-        battles.getBattle(playerId);
+        Battle battle = battles.getBattle(playerId);
 
         ThreadStorage existing = playerChoiceShipTimer.get(playerId);
         if (existing != null) {
             return (int)(existing.decisionTask.getTimeLeft()/1000L);
+        } else if (battle.getShipId(playerId) != null) {
+            return -1;
         }
         AutoDecisionTask decisionTask = new AutoDecisionTask(new ShipVisitor(playerId), DELAY);
         Thread decisionThread = new Thread(decisionTask);
@@ -147,18 +137,14 @@ public class BattlePreparationService {
         return DELAY/1000;
     }
     
-    public int getAutoChoiceShipTime(BigInteger playerId) throws TimeoutException {
-        ThreadStorage existing = playerChoiceShipTimer.get(playerId);
-        if (existing != null) {
-            return (int)(existing.decisionTask.getTimeLeft()/1000L);
-        }
-        TimeoutException ex = new TimeoutException("Player auto pick time is up");
-        LOG.debug("Player's timer not found", ex);
-        throw ex;
-    }
-    
     public List<BigInteger> getShipsLeftBattle(BigInteger playerId) throws BattleEndException {
         return battles.getBattle(playerId).getShipsLeftBattle(playerId);
+    }
+    
+    public Player getEnemyInfo(BigInteger playerId) throws BattleEndException {
+        Battle battle = battles.getBattle(playerId);
+        BigInteger enemyId = battle.getEnemyId(playerId);
+        return playerDao.findPlayerById(enemyId);
     }
     
     private class ThreadStorage {
@@ -240,4 +226,5 @@ public class BattlePreparationService {
         }
         
     }
+
 }

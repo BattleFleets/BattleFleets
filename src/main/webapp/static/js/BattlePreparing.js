@@ -5,14 +5,18 @@ function shipChooseTimer() {
     pick_time = pick_time - 1;
     $("#timer").html("Auto pick: " + pick_time + " sec");
     if (pick_time == 0) {
-        console.log("Timer choose stop");
-        clearInterval(timerId);
-        disablePickButtons();
-        $("#timer").html("Timeout!");
-        $( "#warning_info" ).html("Wait for enemy pick...");/*wait msg*/
-        waitEnemyReady();
+        timeout();
     }
 };
+
+function timeout() {
+    console.log("Timer choose stop");
+    clearInterval(timerId);
+    disablePickButtons();
+    $("#timer").html("Timeout!");
+    $( "#warning_info" ).html("Wait for enemy pick...");/*wait msg*/
+    waitEnemyReady();
+}
     
 function waitEnemyReady() {
     console.log("Wait enemy request");
@@ -84,7 +88,13 @@ function getRealPickTime() {
         time = (performance.now() - time) / 2.0;
         console.log("Request time = " + time);
         pick_time = pick_time - Math.round(time / 1000.0);
+        if (pick_time <= 0) {
+            timeout();
+        }
     }).fail(function(xhr, status, error) {
+        if (xhr.status == 423) {
+            timeout();
+        }
         console.log("get_auto_pick_time FAIL " + xhr.status);
     });
 }
