@@ -2,8 +2,10 @@
 <html>
 <head>
     <link href="static/css/regis.css" rel="stylesheet" media="screen">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link href="static/css/general.css" rel="stylesheet" media="screen">
+    <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/jquery-ui.min.js"></script>
     <script type="text/javascript">
     var reglog = '${tabType}';
     $(document).ready(function () {
@@ -19,6 +21,8 @@
                 });
 
     function register(){
+    $("#regisBtn").val('Please wait ...')
+    .prop("disabled",true);
     var username = $("#username_reg").val();
     var email = $("#email").val();
     var password = $("#password_reg").val();
@@ -34,6 +38,8 @@
                      if($('#results').children(".success").length != 0){
                         $("#registration_form")[0].reset();
                      }
+                     $("#regisBtn").val('Register')
+                         .prop("disabled",false);
 
                      }
         } );
@@ -44,15 +50,21 @@
 </head>
 
 <body onload='document.login_form.username.focus();'>
+<div style = "padding: 5%"><div>
 
-<div id="tabs">
+<table
+style="table-layout: fixed; padding: 4%; width: 40%; min-width: 550px; max-height: 800px; min-height: 800px; margin-left: auto; margin-right: auto; margin-top: auto;"
+class = "panel">
+<tr align="center"> <td><div class = "logo"></div> </td> </tr>
+<tr align="center"><td>
+<div id="tabs" class="ui-tabs">
 
-    <ul class="tabs">
-        <li id="e1" class="tab"><a href="#login" class="active">Sign in</a></li>
-        <li id="e2" class="tab1"><a href="#registration">Sign up</a></li>
+    <ul class="ui-tabs-nav">
+        <li><a href="#login" class="active">Sign in</a></li>
+        <li><a href="#registration">Sign up</a></li>
     </ul>
 
-    <div class="tabs-content">
+    <div style= "height: 300px;">
         <div id="login">
 
         <c:if test="${not empty error}">
@@ -65,25 +77,15 @@
 
         <form name='login_form'
             action="<c:url value="/login" />" method="POST">
-
-                <div class="form__group">
-
-                    <input type="text" name="username" placeholder="Username" class="form__input"/>
-                </div>
-
-                <div class="form__group">
-                    <input type="password" name="password" placeholder="Password" class="form__input"/>
-                </div>
-
-                <input class="btn" name="submit" type="submit" style="cursor: pointer" value="Login"/>
-
+            <input type="text" name="username" placeholder="Username" class="form__input"/>
+            <input type="password" name="password" placeholder="Password" class="form__input"/>
+            <div><button class="ui-button" style="color:white; cursor: pointer;"
+                            name="submit" type="submit" value="Login">Login</button></div>
             </form>
         </div>
 
-            <div id="registration">
+        <div id="registration">
                 <form id = 'registration_form' action="/registration" method = "GET">
-
-                    <div class="form__group">
                         <c:if test="${not empty reg_error}">
                             <div class="error">${reg_error}</div>
                         </c:if>
@@ -93,25 +95,16 @@
 
                         <div id = "results"></div>
 
-                        <input id = "username_reg"  type="text" name="username_reg" placeholder="Username" class="form__input"/>
-                    </div>
-
-                    <div class="form__group">
-                        <input id = "email" type="text" name="email" placeholder="Email" class="form__input"/>
-                    </div>
-
-                    <div class="form__group">
-                        <input id = "password_reg" type="password" name="password_reg" placeholder="Password" class="form__input"/>
-                    </div>
-
-                    <div class="form__group">
-                        <input id = "password_confirm" type="password" name="password_confirm" placeholder="Confirm password" class="form__input" />
-                    </div>
-
-                    <input class="btn" name="button" style="cursor: pointer" type="button" value="Register" onclick="register()"/>
+                        <input id = "username_reg"  type="text" name="username_reg" placeholder="Username"/>
+                        <input id = "email" type="text" name="email" placeholder="Email"/>
+                        <input id = "password_reg" type="password" name="password_reg" placeholder="Password" />
+                        <input id = "password_confirm" type="password" name="password_confirm" placeholder="Confirm password"/>
+                        <div><input id = "regisBtn" class="ui-button" style="color:white; cursor: pointer"
+                                    name="button" type="button" value="Register" onclick="register()"/></div>
             </form>
         </div>
     </div>
 </div>
+</td> </tr></table>
 </body>
 </html>
