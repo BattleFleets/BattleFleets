@@ -582,7 +582,7 @@ CREATE OR REPLACE FUNCTION CREATE_PLAYER(login VARCHAR, password VARCHAR, email 
 is
   CURSOR players_logins IS SELECT VALUE FROM ATTRIBUTES_VALUE WHERE ATTR_ID=27;
   CURSOR players_emails IS SELECT VALUE FROM ATTRIBUTES_VALUE WHERE ATTR_ID=41;
-  start_money NUMBER:=100;
+  start_money NUMBER:=9000;
   start_passive_income NUMBER:=100;
   start_max_ships NUMBER:=3;
   player_object_type_id NUMBER:=10;
