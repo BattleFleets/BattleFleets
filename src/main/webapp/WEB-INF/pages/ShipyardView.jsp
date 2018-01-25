@@ -84,6 +84,10 @@
 </audio>
 
 <a href="/city" class="logOutBottom">Return to city</a>
+<div class="header">
+
+</div>
+
 <div align="center">
 	<table class="panel">
 	<tr align="center">

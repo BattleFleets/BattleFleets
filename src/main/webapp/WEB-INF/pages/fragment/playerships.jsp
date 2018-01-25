@@ -100,6 +100,8 @@
 var modal = document.getElementById('myModal');
 var text = document.getElementById('text');
 var btn = document.getElementById("shipTemplateId");
+var currentAction = '';
+var needUpdate = false;
 
 var setConfirmModal = $("#setConfirmModal");
 
@@ -114,14 +116,30 @@ setConfirmModal.dialog({
 
 $( ".close" ).click(function() {
   modal.style.display = "none";
-  setConfirmModal.style.display = "none";
+  refresh(currentAction);
 });
 
-function chooseOfAction(elem, action, diffcost, carringLimit) {
+function refresh(action) {
+    if (!needUpdate)
+        return;
+    headerUpdate();
     if (action == 'Sell')
-        sellConfirm(elem, carringLimit);
+        showPlayerShips();
     else if (action == 'Repair')
+        repairShips();
+    else
+        console.log('Unnkown action');
+}
+
+function chooseOfAction(elem, action, diffcost, carringLimit) {
+    if (action == 'Sell') {
+        sellConfirm(elem, carringLimit);
+        currentAction = 'Sell';
+    }
+    else if (action == 'Repair') {
         repairShip(elem, diffcost);
+        currentAction = 'Repair';
+    }
     else
         console.log('Unnkown action');
 }
@@ -134,11 +152,13 @@ function sellConfirm(elem, carringLimit) {
                click: function() {
                    sellship(elem.value);
                    $(this).dialog('close');
+                   needUpdate = true;
                }
             }, {
                 text: "Cancel",
                 click: function() {
                     $(this).dialog('close');
+                    needUpdate = false;
                 }
             }]
         );
@@ -156,7 +176,11 @@ var shipId = elem;
             method:"GET",
             data: { 'shipId' : shipId },
             success: function(data) {
-                         console.log("SUCCESS: ",data);
+                         console.log("SUCCESS: ");
+                         if (data == 'You sold your ship!')
+                            needUpdate = true;
+                         else
+                            needUpdate = false;
                          text.innerHTML = data;
                          modal.style.display = "block";
                          },
@@ -177,12 +201,18 @@ var shipId = elem.value;
             success: function(data) {
                          console.log("SUCCESS: ",data);
                          if (data)
-                            if (diffcost == 0)
+                            if (diffcost == 0) {
                                 text.innerHTML="Ship is already repaired";
-                            else
+                                needUpdate = false;
+                            }
+                            else {
                                 text.innerHTML="Ship repaired";
-                         else
+                                needUpdate = true;
+                            }
+                         else {
                             text.innerHTML="We need more money, captain!";
+                            needUpdate = false;
+                         }
                          modal.style.display = "block";
                          },
                          error : function(e) {
@@ -195,6 +225,7 @@ var shipId = elem.value;
 window.onclick = function(event) {
     if (event.target == modal) {
         modal.style.display = "none";
+        refresh(currentAction);
     }
     if (event.target == setConfirmModal) {
         setConfirmModal.dialog("close");

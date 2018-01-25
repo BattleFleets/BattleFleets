@@ -4,12 +4,14 @@
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
-
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
 
 </head>
 <body>
+
+
+
 <div>
     <table class="externalBorder">
     <tr>
@@ -76,8 +78,10 @@
 
 <div id="setNameModal" >
 	<p class="big_text">Max length 20. You can use English letters, numbers, space and underscore.</p>
-    <input class = "capacity_for_background values" id="setNameText" autofocus="autofocus">
+    <input class = "capacity_for_background values" id="setNameText" autofocus="autofocus" name="inputShipName">
 </div>
+
+
 
 <script>
 
@@ -105,7 +109,6 @@ var currentDefaultName = "";
 
 $( ".close" ).click(function() {
   answerModal.style.display = "none";
-  setNameModal.style.display = "none";
 });
 
 function confirmNewName(shipName) {
@@ -115,13 +118,13 @@ function confirmNewName(shipName) {
     }
     return true;
 }
-
+var shipName = '';
 function setShipName(elem, defaultName) {
     setNameModal.dialog( "option", "buttons",
         [{
            text: "Ok",
            click: function() {
-               var shipName = document.getElementById("setNameText").value;
+               shipName = $('input[name="inputShipName"]').val();
                if (confirmNewName(shipName)) {
                    buyShip(elem, shipName, defaultName);
                    $("#setNameText").val("");
@@ -143,6 +146,8 @@ function setShipName(elem, defaultName) {
 
 
 
+
+
 function buyShip(elem, shipName, defaultName) {
     var shipTemplateId = elem.value;
     $(function(){
@@ -160,11 +165,21 @@ function buyShip(elem, shipName, defaultName) {
                          }
                          })
              .done(function() {
+                headerUpdate();
             } );
     });
 }
 
-
+function headerUpdate() {
+    $.ajax({
+        url:'/addHeader',
+        method:"GET",
+        success: function(data) {
+                     console.log("SUCCESS: ");
+                     $('.header').html(data);
+                     }
+        });
+}
 
 window.onclick = function(event) {
     if (event.target == answerModal) {
