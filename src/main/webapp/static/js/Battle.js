@@ -488,7 +488,7 @@ $(document).ready(function() {
         anotherEndCase("/escape");
     });
 
-    var payoffAvailable = "${payoffAvailable}";
+    var payoffAvailable = $("body").attr("payoffAvailable");
     console.log("payoffAvailable: " + payoffAvailable);
     if (payoffAvailable == "true") {
         enable("payoff");
@@ -499,6 +499,7 @@ $(document).ready(function() {
 
     infoTabUpdate(true);
     battleEndTask();
+    soundButton("#audio");
 });
 
 function enable(id) {

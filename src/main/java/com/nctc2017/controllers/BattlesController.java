@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
@@ -17,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nctc2017.bean.Player;
 import com.nctc2017.bean.PlayerUserDetails;
 import com.nctc2017.bean.Ship;
 import com.nctc2017.exception.BattleEndException;
@@ -43,7 +44,7 @@ import com.nctc2017.services.utils.endVisitorImpl.SurrenderDefaultBattleEnd;
 @Controller
 public class BattlesController {
     private static final int checkingCounter = 5; 
-    private static final int checkingInterval = 3000;
+    private static final int checkingInterval = 2000;
     private static final Logger LOG = Logger.getLogger(BattlesController.class);
     
     @Autowired
@@ -74,6 +75,7 @@ public class BattlesController {
         LOG.debug("Request battle_preparing");
         List<Ship> enemyFleet;
         int time;
+        Player player;
         try {
             try {
                 if (battleService.isBattleStart(playerId)) {
@@ -81,6 +83,7 @@ public class BattlesController {
                 }
                 enemyFleet = prepService.getEnemyShips(playerId);
                 time = prepService.autoChoiceShipTimer(playerId);
+                player = prepService.getEnemyInfo(playerId);
             } catch (BattleEndException e) {
                 return new ModelAndView("redirect:/trip");
             }
@@ -89,8 +92,33 @@ public class BattlesController {
             ModelAndView model = new ModelAndView("BattlePreparingView");
             model.addObject("fleet", fleet);
             model.addObject("enemy_fleet", enemyFleet);
-            model.addObject("timer", time);
+            model.addObject("timer", time < 0 ? 0 : time);
+            model.addObject("enemy", player);
             return model;
+        } finally {
+            MDC.remove("userName");
+        }
+    }
+    
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/get_auto_pick_time", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<String> getAutoChoiceShipTime(@AuthenticationPrincipal PlayerUserDetails userDetails) throws JsonProcessingException {
+        BigInteger playerId = userDetails.getPlayerId();
+        MDC.put("userName", userDetails.getUsername());
+        
+        LOG.debug("Request get_auto_pick_time");
+        try {
+            int time = prepService.autoChoiceShipTimer(playerId);
+            if (time == -1) {
+                ResponseEntity.status(HttpStatus.LOCKED).build();
+            }
+            Map<String, Integer> body = Collections.singletonMap("time", time);
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(body);
+            return ResponseEntity.ok().body(json);
+        } catch (BattleEndException e) {
+            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
         } finally {
             MDC.remove("userName");
         }
@@ -145,11 +173,11 @@ public class BattlesController {
         
         LOG.debug("Wait for enemy ready request");
         try {
-            boolean ready = prepService.waitForEnemyReady(playerId);
+            boolean ready = false;
             for (int i = 0; i < checkingCounter; i++) {
-                Thread.sleep(checkingInterval);
                 ready = prepService.waitForEnemyReady(playerId);
                 if (ready) break;
+                Thread.sleep(checkingInterval);
             }
             
             return String.valueOf(ready);

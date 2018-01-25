@@ -12,7 +12,7 @@
 
 </head>
 
-<body class="battle_view">
+<body class="battle_view" payoffAvailable="${payoffAvailable}">
 <audio autoplay loop id="back_audio_ship" onloadeddata="setVolume('back_audio_ship', 0.04)">
     <source src="static/audio/Paluba_skripit.mp3" type="audio/mp3">
 </audio>
@@ -137,7 +137,10 @@
 <div class="enemy_ship" align="right">
     <img alt="5" src="static/images/ships/enemy_ship2.png" height="60%">
 </div>
-<div class="wait" hidden="true">Wait...</div>
+
+<button id="audio" class="icon_sound" type="submit" title="Mute" style="vertical-align:middle; position: absolute;"></button>
+
+<div class="wait" hidden="true">Wait for opponent...</div>
 
 <div id="dialog"></div>
 

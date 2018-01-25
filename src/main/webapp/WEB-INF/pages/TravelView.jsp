@@ -5,6 +5,7 @@
     <title>Trip</title>
     <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/travel.css" rel="stylesheet" media="screen">
+    <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <script src="static/js/jquery.min.js"></script>
@@ -34,11 +35,13 @@
         $(document).ready(function() {
 	        $("#timer").html("Arrival in " + city + ": " + seconds + " sec");
             arrivalTimerTask();
+            soundButton("#audio");
         });
     </script>
     <script src="static/js/EnemyOnHorizon.js" type="text/javascript"></script>
 </head>
 <body>
+<button id="audio" class="icon_sound" type="submit" title="Mute" style="vertical-align:middle"></button>
 <div id="ship" class="layer">
     <img alt="10" src="static/images/travel/ship.png">
 </div>

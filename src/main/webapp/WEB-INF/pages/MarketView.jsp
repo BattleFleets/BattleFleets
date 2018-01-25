@@ -5,6 +5,7 @@
     <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/market.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
+    <link href="static/css/goods-images.css" rel="stylesheet" media="screen">
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/market.js"></script>
     <link href="static/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet">

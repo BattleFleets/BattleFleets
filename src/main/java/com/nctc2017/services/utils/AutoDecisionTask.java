@@ -1,7 +1,5 @@
 package com.nctc2017.services.utils;
 
-import java.util.GregorianCalendar;
-
 public class AutoDecisionTask implements Runnable {
     private int delay;
     private Visitor decisionVisitor;
@@ -10,11 +8,15 @@ public class AutoDecisionTask implements Runnable {
     public AutoDecisionTask(Visitor decisionVisitor, int delay) {
             this.decisionVisitor = decisionVisitor;
             this.delay = delay;
-            this.endTimePoint = new GregorianCalendar().getTimeInMillis() + delay;
+            this.endTimePoint = System.currentTimeMillis() + delay;
     }
     
     public long getTimeLeft() {
-        return endTimePoint - new GregorianCalendar().getTimeInMillis();
+        return endTimePoint - System.currentTimeMillis();
+    }
+
+    public long getEndTimePoint() {
+        return endTimePoint;
     }
 
     @Override

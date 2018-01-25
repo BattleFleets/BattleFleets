@@ -5,17 +5,18 @@
     <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
     <link href="static/css/battle.css" rel="stylesheet" media="screen">
+    <link href="static/css/general.css" rel="stylesheet" media="screen">
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <script src="static/js/HoverButton.js"></script>
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
-
-    <script src="static/js/volume.js" type="text/javascript"></script>
+	<script src="static/js/volume.js" type="text/javascript"></script>
 	<script src="static/js/BattlePreparing.js" type="text/javascript"></script>
     <title>Battle Preparing</title>
 </head>
 
 <body timer="${timer}">
+    <button id="audio" class="icon_sound" type="submit" title="Mute" style="vertical-align:middle"></button>
     <audio autoplay id="back_audio" onloadeddata="setVolume('back_audio', 0.1)">
         <source src="static/audio/battle_preparing.mp3" type="audio/mp3">
     </audio>
@@ -95,7 +96,7 @@
 	</div>
 	
 	<div class="enemy_side">
-	<h1 class="up_title enemy_style">Enemy fleet</h1>
+	<h1 class="up_title enemy_style">${enemy.login}'s fleet</h1>
     <div class="ship_accordion" style="float: left">
 		<c:forEach var="shipInfo" items="${enemy_fleet}" varStatus="status">
 		    <c:set var = "ship" scope = "session" value = "${shipInfo}"/>

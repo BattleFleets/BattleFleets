@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.sql.DataSource;
 
@@ -83,5 +85,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         authProvider.setUserDetailsService(authRegService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
+    }
+    
+    @Controller
+    static class FaviconController {
+        @RequestMapping("favicon.ico")
+        String favicon() {
+            return "forward:/static/images/favicon.ico";
+        }
     }
 }

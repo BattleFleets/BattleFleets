@@ -37,6 +37,7 @@ public class SurrenderDefaultBattleEnd implements BattleEndVisitor {
         }
         
         int points = score.getScoreForSurrender(winnerId);
+        points = score.calculateScores(winnerId, loserId, points);
         levelUp.pointsUp(winnerId, points);
     }
 
