@@ -81,7 +81,7 @@ public class PlayerDaoImplTest {
     public void findPlayerByLogin() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer1 = playerDao.findPlayerByLogin("Steve");
-        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,0,1,5);
+        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",9000,0,1,5);
         assertEquals(topPlayer1.getLogin(), topPlayer2.getLogin());
         assertEquals(topPlayer1.getEmail(), topPlayer2.getEmail());
         assertEquals(topPlayer1.getLevel(), topPlayer2.getLevel());
@@ -221,7 +221,7 @@ public class PlayerDaoImplTest {
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer = playerDao.findPlayerByLogin("Steve");
         Player topPlayer1 = playerDao.findPlayerById(topPlayer.getPlayerId());
-        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,0,1, 5);
+        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",9000,0,1, 5);
         assertEquals(topPlayer1.getLogin(), topPlayer2.getLogin());
         assertEquals(topPlayer1.getEmail(), topPlayer2.getEmail());
         assertEquals(topPlayer1.getLevel(), topPlayer2.getLevel());
@@ -253,7 +253,7 @@ public class PlayerDaoImplTest {
         assertEquals(topPlayer.getEmail(),"Rogers@gmail.com");
         assertEquals(topPlayer.getLevel(),1);
         assertEquals(topPlayer.getPoints(),0);
-        assertEquals(topPlayer.getMoney(),100);
+        assertEquals(topPlayer.getMoney(),9000);
     }
 
     @Test
@@ -317,7 +317,7 @@ public class PlayerDaoImplTest {
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer = playerDao.findPlayerByLogin("Steve");
         int money = playerDao.getPlayerMoney(topPlayer.getPlayerId());
-        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1, 5);
+        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",9000,1,1, 5);
         assertEquals(money, topPlayer2.getMoney());
     }
     @Test(expected = IllegalArgumentException.class)
