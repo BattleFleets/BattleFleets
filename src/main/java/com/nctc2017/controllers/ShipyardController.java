@@ -32,6 +32,9 @@ public class ShipyardController {
     private TradeService tradeService;
 
     @Autowired
+    private TravelService travelService;
+
+    @Autowired
     private CargoMovementService cargoMovementService;
 
     @Autowired
@@ -158,8 +161,11 @@ public class ShipyardController {
                                             @RequestParam(value = "city", required = false) String city,
                                             @RequestParam(value = "page", required = false) String page) throws JsonProcessingException {
         BigInteger playerId = userDetails.getPlayerId();
-        ModelAndView model = new ModelAndView("StockView");  
-        
+        if (travelService.isPlayerInTravel(playerId)) {
+            return new ModelAndView("redirect:/trip");
+        }
+        ModelAndView model = new ModelAndView("StockView");
+
         LOG.debug("stock welcome " + city);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -217,7 +223,7 @@ public class ShipyardController {
     }
 
     @Secured("ROLE_USER")
-    @RequestMapping(value = "tohold", method = RequestMethod.POST)
+    @RequestMapping(value = "/tohold", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> moveCargoToHold(@RequestParam(value = "cargoId") BigInteger cargoId,
                                                   @RequestParam(value = "cargoQuantity") int quantity,

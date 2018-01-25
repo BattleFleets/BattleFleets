@@ -61,8 +61,6 @@
         method: "POST",
         data: { 'cargoId' : goodId, 'cargoQuantity' : quantity, 'shipId' : pressedShipId, 'source': from},
         success: function(data) {
-            $("#dialogInfoContent").html("<b>"+data.msg+"</b>");
-            $("#dialogInfo").dialog( "open" );
             fillWithGoods(data.hold, "hold");
             if(from == "stock"){
                 fillWithGoods(data.stock, "stock");
@@ -90,8 +88,6 @@
         method:"POST",
         data: { 'cargoId' : goodId, 'cargoQuantity' : quantity, 'shipId' : pressedShipId, 'source': from},
         success: function(data) {
-            $("#dialogInfoContent").html("<b>"+data.msg+"</b>");
-            $("#dialogInfo").dialog( "open" );
             fillWithGoods(data.stock, "stock");
             if(from == "hold"){
                 fillWithGoods(data.hold, "hold");
@@ -119,8 +115,6 @@
         method:"POST",
         data: { 'cargoId' : goodId, 'shipId' : pressedShipId, 'cargoType': type, 'source': from},
         success: function(data) {
-            $("#dialogInfoContent").html("<b>"+data.msg+"</b>");
-            $("#dialogInfo").dialog( "open" );
             fillWithGoods(data.inventory, "inventory");
             if(from == "stock"){
                 fillWithGoods(data.stock, "stock");
@@ -227,6 +221,7 @@ console.log("move dialog initiated type:" + event.data.type + " name:" + event.d
     if(event.data.type == "GOODS" || event.data.type == "AMMO"){
 console.log("move dialog for goods and ammos");
         var dialogGoods = $( "#dialogGoods");
+        $("#moveQuantity").prop('max',event.data.quantity);
 
         dialogGoods.dialog( "option", "title", "Move "+ event.data.name +"!" );
         $("#totalQuantity").html("" + event.data.quantity);
@@ -598,7 +593,7 @@ $(document).ready(function () {
 
 <div id="dialogGoods">
   <div id = "dialogGoodsContent" align="center">
-  <p><b>You have <u id = "totalQuantity"></u> units! <p/> How many you want to move?<b><p>
+  <p><b>You have <u id = "totalQuantity"></u> units! <p/> How many you want to move?</b></p>
   <input type="number" name="moveQuantity" id = "moveQuantity" min=1 size="4" value="1"/>
   <p id="msgGoods" style = "color: aqua; font-size: 1em;"></p>
   </div>
