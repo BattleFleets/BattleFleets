@@ -48,7 +48,7 @@ img{
 }
 
 .shipContainer {
-    position: absolute;
+    position: relative;
     margin-top: 3%;
     margin-left: 10%;
     overflow: auto;

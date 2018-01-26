@@ -1,5 +1,6 @@
 body, html {
     height: 100%;
+    overflow: hidden;
 }
 
 body {
@@ -52,6 +53,7 @@ width: 100px;
     overflow-y: hidden;
     max-width: 100%;
     width: 100%;
+    overflow: auto;
 }
 
 .element{

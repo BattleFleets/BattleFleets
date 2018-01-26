@@ -5,7 +5,7 @@
     <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
     <script src="static/js/jquery.min.js"></script>
-    <script src="static/js/jquery-ui.min.js"></script>
+    <script src="static/js/jquery-ui.min.js"></script> 
 
 </head>
 <body>

@@ -79,7 +79,7 @@ img{
     margin-top: 10%;
     width:56vw;
     position: relative;
-    overflow: auto;
+    overflow: hidden;
 }
 
 .tableClass1 {
