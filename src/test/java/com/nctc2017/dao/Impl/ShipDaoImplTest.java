@@ -38,11 +38,11 @@ public class ShipDaoImplTest {
     @Autowired
     PlayerDao playerDao;
 
-    private static String SHIP_TEMPALTE_CARAVELA_NAME = "T_Caravela";
-    private static String SHIP_TEMPALTE_CARRACA_NAME = "T_Caracca";
-    private static String SHIP_TEMPALTE_GALION_NAME = "T_Galion";
-    private static String SHIP_TEMPALTE_CLIPPER_NAME = "T_Clipper";
-    private static String SHIP_TEMPALTE_FREGATA_NAME = "T_Fregata";
+    private static String SHIP_TEMPALTE_CARAVELA_NAME = "Caravela";
+    private static String SHIP_TEMPALTE_CARRACA_NAME = "Caracca";
+    private static String SHIP_TEMPALTE_GALION_NAME = "Galion";
+    private static String SHIP_TEMPALTE_CLIPPER_NAME = "Clipper";
+    private static String SHIP_TEMPALTE_FREGATA_NAME = "Fregata";
 
     @Test
     @Rollback(true)

@@ -31,7 +31,7 @@ public class CityDaoImplTest {
     @Rollback(true)
     public void find() throws Exception {
         City city = cityDao.find(new BigInteger("69"));
-        assertEquals(city.getCityName(),"Nassau");
+        assertEquals(city.getCityName(),"Tortuga");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -48,9 +48,7 @@ public class CityDaoImplTest {
         assertEquals(cities.get(1).getCityName(),"Inesville");
         assertEquals(cities.get(2).getCityName(),"Santo Domingo");
         assertEquals(cities.get(3).getCityName(),"Port Royal");
-        assertEquals(cities.get(4).getCityName(),"Nassau");
-
-
+        assertEquals(cities.get(4).getCityName(),"Tortuga");
     }
 
 }
