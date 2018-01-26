@@ -44,7 +44,7 @@ public class TravelManager {
     private static final int MAX_RELOC_TIME = 61000;
     private static final int MIN_RELOC_TIME = 60000;
     private static final long MANAGER_WAKE_UP = 2000;
-    private static final long ENEMY_FIND_WAKE_UP = 30000;
+    private static final long ENEMY_FIND_WAKE_UP = 10000;
     private static final int DELAY = 50000;
     
     private Map<BigInteger, TravelBook> journals = new ConcurrentHashMap<BigInteger, TravelBook>();

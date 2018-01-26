@@ -88,7 +88,6 @@ public class BattlesController {
                 return new ModelAndView("redirect:/trip");
             }
             List<ShipWrapper> fleet = prepService.getShipsExtraInfo(playerId);
-            
             ModelAndView model = new ModelAndView("BattlePreparingView");
             model.addObject("fleet", fleet);
             model.addObject("enemy_fleet", enemyFleet);

@@ -4,21 +4,22 @@
     <link href="static/css/regis.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
+    <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
     <script type="text/javascript">
     var reglog = '${tabType}';
     $(document).ready(function () {
 
-                     $( "#tabs" ).tabs();
-                     if (reglog == "reg") {
-
-                     $( "#tabs" ).tabs( "option", "active", 1 );
-                     } else {
-                     $( "#tabs" ).tabs( "option", "active", 0 );
-                     }
-
-                });
+        $( "#tabs" ).tabs();
+        if (reglog == "reg") {
+            $( "#tabs" ).tabs( "option", "active", 1 );
+        } else {
+            $( "#tabs" ).tabs( "option", "active", 0 );
+        }
+        scrollBars();
+    });
 
     function register(){
     $("#regisBtn").val('Please wait ...')
@@ -44,7 +45,13 @@
                      }
         } );
     }
-
+    
+    function scrollBars() {
+        $("body").mCustomScrollbar({
+            axis:"y", // vertical scrollbar
+            theme:"minimal-dark"
+        });
+    }
 
     </script>
 </head>

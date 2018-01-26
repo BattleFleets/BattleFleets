@@ -139,7 +139,15 @@ $(document).ready(function() {
     });
     getRealPickTime(); 
     soundButton("#audio");
+    scrollBars();
 });
+
+function scrollBars() {
+    $("body").mCustomScrollbar({
+        axis:"y", // vertical scrollbar
+        theme:"minimal-dark"
+    });
+}
 
 function battleExit() {
     clearInterval(timerId);

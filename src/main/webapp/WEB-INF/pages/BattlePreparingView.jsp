@@ -6,12 +6,14 @@
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
     <link href="static/css/battle.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <script src="static/js/HoverButton.js"></script>
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
 	<script src="static/js/volume.js" type="text/javascript"></script>
 	<script src="static/js/BattlePreparing.js" type="text/javascript"></script>
+    <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
     <title>Battle Preparing</title>
 </head>
 
@@ -35,7 +37,7 @@
     <h1 class="up_title player_style">Your fleet</h1>
     <div class="ship_accordion" style="float: right">
 		<c:forEach var="shipInfo" items="${fleet}" varStatus="status">
-		    <c:set var = "ship" scope = "session" value = "${shipInfo.ship}"/>
+		    <c:set var = "ship" scope = "page" value = "${shipInfo.ship}"/>
 			<h3 class="player_style ship_accordion_header" style="float: right;">
 				<c:out value="${status.index + 1}."/>
 				<c:out value="${ship.getTName()} : ${ship.getCurName()}"/>
@@ -70,16 +72,28 @@
 					<table style="width: 100%">
 						<tr><td>Health:</td><td>${ship.curHealth}/${ship.maxHealth}</td></tr>
 		                <tr><td>Crew:</td><td>${ship.curSailorsQuantity}/${ship.maxSailorsQuantity}</td></tr>
-		                <%-- c:forEach var="cannon" items="${shipInfo.cannons}">
-                            <p>${cannon.key}: ${cannon.value}</p>
-                        </c:forEach--%>
-		                <tr><td>Damage:</td><td>${ship.curDamage}</td></tr>
-		                <%-- c:forEach var="mast" items="${shipInfo.masts}">
-                            <p>${mast.templateName}: ${mast.curSpeed}/${mast.maxSpeed}</p>
-                        </c:forEach--%>
-		                <tr><td>Speed:</td><td>${ship.curSpeed}</td></tr>
+                        <c:set var = "cannonsPopup" scope = "page" value = "Cannons amount:"/>
+		                <c:forEach var="cannon" items="${shipInfo.cannons}">
+                            <c:set var = "cannonsPopup" scope = "page">
+                                ${cannonsPopup}&#13${cannon.key}: ${cannon.value}
+                            </c:set>
+                        </c:forEach>
+		                <tr><td title="${cannonsPopup}">Damage:</td><td>${ship.curDamage}</td></tr>
+                        <c:set var = "mastPopup" scope = "page" value = "Mast speed:"/>
+		                <c:forEach var="mast" items="${shipInfo.masts}">
+                            <c:set var = "mastPopup" scope = "page">
+                                ${mastPopup}&#13${mast.templateName}: ${mast.curSpeed}/${mast.maxSpeed}
+                            </c:set>
+                        </c:forEach>
+		                <tr><td title="${mastPopup}">Speed:</td><td>${ship.curSpeed}</td></tr>
 		                <tr><td>Max dist:</td><td>${shipInfo.maxShotDistance}</td></tr>
-		                <tr><td>Carrying:</td><td>${ship.curCarryingLimit}/${ship.maxCarryingLimit}</td></tr>
+                        <c:set var = "ammoPopup" scope = "page" value = "Ammo amount:"/>
+                        <c:forEach var="ammo" items="${shipInfo.ammo}">
+                            <c:set var = "ammoPopup" scope = "page">
+                                ${ammoPopup}&#13${ammo.name}: ${ammo.quantity}
+                            </c:set>
+                        </c:forEach>
+		                <tr><td title="${ammoPopup}">Carrying:</td><td>${ship.curCarryingLimit}/${ship.maxCarryingLimit}</td></tr>
 		                <tr><td>Cost:</td><td>${ship.cost}</td></tr>
 		            </table>
 	                </div>
@@ -99,7 +113,7 @@
 	<h1 class="up_title enemy_style">${enemy.login}'s fleet</h1>
     <div class="ship_accordion" style="float: left">
 		<c:forEach var="shipInfo" items="${enemy_fleet}" varStatus="status">
-		    <c:set var = "ship" scope = "session" value = "${shipInfo}"/>
+		    <c:set var = "ship" scope = "page" value = "${shipInfo}"/>
 			<h3 class="enemy_style ship_accordion_header" style="float: left;">
 				<c:out value="${status.index + 1}."/>
 				<c:out value="${ship.getTName()} : ${ship.getCurName()}"/>
@@ -130,11 +144,13 @@
 						</c:choose>
 					</div>
 					<div class="ship_info" style="float:left;">
-                        <p>Health: ${ship.curHealth}/${ship.maxHealth}</p>
-		                <p>Crew: ${ship.curSailorsQuantity}/${ship.maxSailorsQuantity}</p>
-		                <p>Damage: ${ship.curDamage}</p>
-		                <p>Speed: ${ship.curSpeed}</p>
-		                <p>Carrying: ${ship.curCarryingLimit}/${ship.maxCarryingLimit}</p>
+                    <table style="width: 100%">
+                        <tr><td>Health:</td><td>${ship.curHealth}/${ship.maxHealth}</td></tr>
+                        <tr><td>Crew:</td><td>${ship.curSailorsQuantity}/${ship.maxSailorsQuantity}</td></tr>
+                        <tr><td>Damage:</td><td>${ship.curDamage}</td></tr>
+                        <tr><td>Speed:</td><td>${ship.curSpeed}</td></tr>
+                        <tr><td>Carrying:</td><td>${ship.curCarryingLimit}/${ship.maxCarryingLimit}</td></tr>
+                    </table>
 	                </div>
                 </div>
             </div>

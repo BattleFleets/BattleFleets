@@ -69,6 +69,7 @@ function isCorrectAmmoCannon(ammoCannon, dim) {
 	    var warn = "You cannot shoot ammo greater than cannons.\n" + sum
 		    + " > " + cannons_limit[i]
 	    warningMsg(warn);
+	    $("#r" + (i + 1)).effect( "bounce", "slow" );
 	    return false;
 	}
 	console.log("horizontal: " + sum);
@@ -85,6 +86,7 @@ function isCorrectAmmoCannon(ammoCannon, dim) {
 	    var warn = "You cannot shoot ammo greater than you have.\n" + sum
 		    + " > " + ammo_limit[i]
 	    warningMsg(warn);
+	    $(".c" + (i + 1)).effect( "bounce", "slow" );
 	    return false;
 	}
 	console.log("vertical: " + sum);
@@ -185,10 +187,10 @@ function dialogBattleEnd(title_msg, msg) {
 }
 
 var fireResultId;
-function fireResultTask() {
+function fireResultTask(audioPlay) {
     console.log("Task fire result timer start ");
     fireResultId = setInterval(function() {
-        infoTabUpdate(false);
+        infoTabUpdate(false, audioPlay);
     }, 2000);
 }
 
@@ -250,7 +252,7 @@ function ammoCannonsTabDisableByDist(cannonsDist, dist) {
     }
 }
 
-function infoTabUpdate(forcibly_) {
+function infoTabUpdate(forcibly_, audioPlay) {
     clearInterval(fireResultId);
     console.log("request for fire result");
     $.get("/fire_results", {
@@ -269,8 +271,12 @@ function infoTabUpdate(forcibly_) {
             return;
         }
         if (json_obj.try_later) {
-            fireResultTask();
+            fireResultTask(audioPlay);
             return;
+        } else {
+            if (audioPlay) {
+                shotSoundPaly();
+            }
         }
 
         $surrender_time = $("#surrender_time");
@@ -292,7 +298,7 @@ function infoTabUpdate(forcibly_) {
 
         console.log("page reloaded after step was made " + json_obj.madeStep);
         if (json_obj.madeStep) {
-            infoTabUpdate(false);
+            infoTabUpdate(true);
             animateWaitTask();
         } else {
             enable("fire");
@@ -329,6 +335,7 @@ function isBattleEnd() {
         var json_obj = JSON.parse(response);
         if (json_obj.end == "true") {
             clearInterval(battleEndId);
+            clearInterval(timerId);
             dialogBattleEnd(json_obj.title, json_obj.wonText);
         }
     }).fail(function(xhr, status, error) {
@@ -349,7 +356,7 @@ function boarding() {
 
         var n = response.search(/<html>/i);
         if (n != -1) window.location.href = "/login";
-        
+        boardingSoundPaly();
         isBattleEnd();
     }).fail(function(xhr, status, error) {
         console.log("boarding FAIL" + error + " " + xhr.status);
@@ -382,8 +389,6 @@ function fire() {
     disable("fire");
     disable("surrender");
 
-    clearInterval(timerId);
-
     $("#warning_info").attr("hidden", "true");
     console.log("fire start !!!");
     animateWaitTask();
@@ -394,6 +399,7 @@ function fire() {
         ammoCannon[i] = parseInt(spinner[i].value);
         if (isNaN(ammoCannon[i]) || ammoCannon[i] < 0) {
             var warn = spinner[i].value + " is not allowed value";
+            $(spinner[i]).effect( "bounce", "slow" );
             warningMsg(warn);
             waitReset();
             enable("fire");
@@ -421,8 +427,10 @@ function fire() {
         var n = response.search(/<html>/i);
         if (n != -1) window.location.href = "/login";
         
-        infoTabUpdate();
+        infoTabUpdate(false, true);
         isBattleEnd();
+        clearInterval(timerId);
+        shotSoundPaly();
     }).fail(function(xhr, status, error) {
         console.log("fire FAIL" + error + " " + xhr.status);
         if (xhr.status == 405) {
@@ -435,7 +443,21 @@ function fire() {
         waitReset();
     });
 }
+
+function soundPaly(selector) {
+    $(selector).each(function(){
+        this.currentTime = 0; // Reset time
+        this.play();
+    }); 
+}
     
+function shotSoundPaly() {
+    soundPaly('#shot_audio');
+}
+
+function boardingSoundPaly() {
+    soundPaly('#boarding_audio');
+}
 
 function anotherEndCase(end_link) {
     console.log(end_link + " request");
@@ -500,7 +522,15 @@ $(document).ready(function() {
     infoTabUpdate(true);
     battleEndTask();
     soundButton("#audio");
+    scrollBars();
 });
+
+function scrollBars() {
+    $("body").mCustomScrollbar({
+        axis:"y", // vertical scrollbar
+        theme:"minimal-dark"
+    });
+}
 
 function enable(id) {
     console.log("enable #" + id);

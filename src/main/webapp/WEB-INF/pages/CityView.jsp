@@ -6,14 +6,21 @@
 <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
 <link href="static/css/city.css" rel="stylesheet" media="screen">
 <link href="static/css/general.css" rel="stylesheet" media="screen">
+<link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
 <script src="static/js/jquery.min.js"></script>
 <script src="static/js/jquery-ui.min.js"></script>
+<script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
 
 <script type="text/javascript">
     $(document).ready(function() { 
         $("#B_travel").click(function() { 
             window.location.href = "/world?city="+$("#B_travel").val();
         }); 
+
+        $("body").mCustomScrollbar({
+            axis:"y", // vertical scrollbar
+            theme:"minimal-dark"
+        });
     });
 </script>
 </head>
@@ -69,10 +76,6 @@
 	</table>
 </div>
 </form>
-<div id="warning_info">
-
-</div>
-
 </body>
 <%@include file="fragment/footer.jsp"%>
 

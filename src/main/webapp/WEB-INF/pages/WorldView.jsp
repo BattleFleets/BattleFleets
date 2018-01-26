@@ -7,9 +7,11 @@
     <link href="static/css/world.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="static/js/WorldView.js"></script>
+    <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
 </head>
 
 <body curCityName="${city}">
@@ -27,10 +29,7 @@
 		</c:forEach>
 			
 	</div>
-	<div id="warning_info">
-
-	</div>
-	<div id="dialog_info">
+	<div id="dialog_info" hidden="hidden">
 
 	</div>
 </body>

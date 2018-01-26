@@ -5,6 +5,7 @@
     <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/tavern.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
+    <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
     <link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
@@ -48,7 +49,7 @@
                              <td class="listOfShips" valign="top">
                          </c:if>
                          <c:if test="${nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity && money>=sailorCost}">
-                              <td class="listOfShips" valign="top" bgcolor="#8B0000" id="Id${nextShip.shipId}" value="${nextShip.shipId}" style="cursor: pointer" onclick="toggle(sailors,cont,buy,oneShip,${sailorCost},${money}),show(Id${nextShip.shipId}), maxValue(${nextShip.shipId}),btnSetValue(${nextShip.shipId})">
+                              <td class="listOfShips" valign="top" id="Id${nextShip.shipId}" value="${nextShip.shipId}" style="cursor: pointer; background: linear-gradient(to top, #520000 , #030009)" onclick="toggle(sailors,cont,buy,oneShip,${sailorCost},${money}),show(Id${nextShip.shipId}), maxValue(${nextShip.shipId}),btnSetValue(${nextShip.shipId})">
                          </c:if>
                          <p align="center">${nextShip.curName}</p>
                          <c:choose>
@@ -115,11 +116,7 @@
 </div>
 </body>
 <button id="audio" class="icon_sound" type="submit" title="Mute" style="vertical-align:middle"></button>
-<div id="myModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <p id="text"></p>
-    </div>
+<div id="myModal">
 </div>
 <a href="/city" class="logOutBottom">Return to city</a>
 <%@include file="fragment/footer.jsp"%>
@@ -218,8 +215,19 @@
         } );
         }
         else{
-            text.innerHTML="Error, incorrect data, value should be grater then 0";
-            $('.modal').css('display', 'block');
+            $('#myModal').html("Value should be grater then 0");
+            $('#myModal').dialog({
+                resizable: false,
+                height: "auto",
+                width: "auto",
+                modal: true,
+                buttons: [{
+                      text: "OK",
+                      click: function() {
+                        $( this ).dialog( "close" );
+                      }
+                }]
+            });
             maxValue(id);
         }
     }
