@@ -130,14 +130,14 @@ public class ExecutorDaoImplTest {
         Player player = playerDao.findPlayerByLogin("Steve");
         BigInteger myShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, player.getPlayerId());
         BigInteger myHoldId = holdDao.createHold(myShipId);
-        BigInteger myWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,100,40);
+        BigInteger myWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,20,40);
         holdDao.addCargo(myWoodId, myHoldId);
         playerDao.addNewPlayer("Iogan","1111","Shmidt@gmail.com");
         Player enemy = playerDao.findPlayerByLogin("Iogan");
         BigInteger enemyShipId = shipDao.createNewShip(DatabaseObject.T_CARAVELLA_OBJECT_ID, enemy.getPlayerId());
         BigInteger enemyHoldId = holdDao.createHold(enemyShipId);
-        BigInteger enemyWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,80,30);
-        BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,700,50);
+        BigInteger enemyWoodId = goodsDao.createNewGoods(DatabaseObject.WOOD_TEMPLATE_ID,30,30);
+        BigInteger enemyTeaId = goodsDao.createNewGoods(DatabaseObject.TEA_TEMPLATE_ID,40,50);
         holdDao.addCargo(enemyWoodId, enemyHoldId);
         holdDao.addCargo(enemyTeaId, enemyHoldId);
         shipDao.updateShipHealth(enemyShipId,0);

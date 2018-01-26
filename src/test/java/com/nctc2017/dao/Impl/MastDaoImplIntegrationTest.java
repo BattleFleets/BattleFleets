@@ -34,7 +34,7 @@ public class MastDaoImplIntegrationTest {
 
     private static final BigInteger TEST_MASt_OBJECT_ID_INCORRECT = BigInteger.valueOf(12);
     private static final BigInteger EXC_VALUE = new BigInteger("9223372036854775809");
-    private static final String NAME_OF_MAST1_TEMPLATE = "T_Mast1";
+    private static final String NAME_OF_MAST1_TEMPLATE = "Sprit topmast";
 
     @Test
 

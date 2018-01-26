@@ -1148,6 +1148,10 @@ IS
   winObjType NUMBER;
   loseObjType NUMBER;
   put NUMBER;
+  price NUMBER;
+  priceGood NUMBER;
+  j NUMBER;
+  q NUMBER:=0;
   i NUMBER:=0;
   quantValue NUMBER:=0;
   HealthAttrId NUMBER:=24;
@@ -1160,7 +1164,8 @@ IS
   canObjType NUMBER:=8;
   mastObjType NUMBER:=7;
   shipObjType NUMBER:=6;
-  CURSOR goodsId IS SELECT OBJECT_ID FROM (SELECT OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=goodsObjTypeId AND PARENT_ID=holdIdLose ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM<=ROUND(DBMS_RANDOM.VALUE(3,5));
+  CURSOR goodsId IS SELECT OBJECT_ID, SOURCE_ID FROM (SELECT OBJECT_ID, SOURCE_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=goodsObjTypeId AND PARENT_ID=holdIdLose ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM<=ROUND(DBMS_RANDOM.VALUE(3,5));
+  CURSOR myGoods IS SELECT OBJECT_ID, SOURCE_ID FROM OBJECTS WHERE PARENT_ID=holdIdWin AND OBJECT_TYPE_ID=goodsObjTypeId;
   BEGIN
     BEGIN
       SELECT OBJECT_TYPE_ID INTO winObjType FROM OBJECTS WHERE OBJECT_ID=shipWinId;
@@ -1187,17 +1192,46 @@ IS
       SELECT NVL(SUM(VALUE),0) INTO goodsQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=quantityGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND PARENT_ID=holdIdWin;
       quantValue:=mastsAndCannons+ammoQuant+goodsQuant;
       FOR goodId IN goodsId LOOP
+        SELECT VALUE INTO priceGood FROM ATTRIBUTES_VALUE WHERE OBJECT_ID=goodId.OBJECT_ID AND ATTR_ID=costGoodsAttrId;
+        FOR myGood IN myGoods LOOP
+          SELECT VALUE INTO price FROM ATTRIBUTES_VALUE WHERE OBJECT_ID=myGood.OBJECT_ID AND ATTR_ID=costGoodsAttrId;
+          IF goodId.SOURCE_ID=myGood.SOURCE_ID AND price=priceGood
+          THEN
+            q:=q+1;
+            j:=myGood.OBJECT_ID;
+          END IF;
+        END LOOP;
         i:=i+1;
-        UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE PARENT_ID=holdIdLose AND OBJECT_TYPE_ID=goodsObjTypeId AND OBJECT_ID=goodId.OBJECT_ID;
-        SELECT ROUND(VALUE*DBMS_RANDOM.VALUE(0.4,0.6)) INTO valGoodsQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=quantityGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND OBJECTS.OBJECT_ID=goodId.OBJECT_ID;
-        freePlace:=carrying-quantValue;
-        diff:=valGoodsQuant-freePlace;
-        IF diff>0
+        IF q=0
         THEN
-          valGoodsQuant:=freePlace;
+          SELECT ROUND(VALUE*DBMS_RANDOM.VALUE(0.4,0.6)) INTO valGoodsQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=quantityGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND OBJECTS.OBJECT_ID=goodId.OBJECT_ID;
+          freePlace:=carrying-quantValue;
+          diff:=valGoodsQuant-freePlace;
+          IF diff>0
+          THEN
+            valGoodsQuant:=freePlace;
+          END IF;
+          IF freePlace>0
+          THEN
+            UPDATE OBJECTS SET PARENT_ID=holdIdWin WHERE PARENT_ID=holdIdLose AND OBJECT_TYPE_ID=goodsObjTypeId AND OBJECT_ID=goodId.OBJECT_ID;
+            UPDATE ATTRIBUTES_VALUE SET VALUE=valGoodsQuant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=goodId.OBJECT_ID;
+          END IF;
+          quantValue:=quantValue+valGoodsQuant;
+        ELSE
+          SELECT ROUND(VALUE*DBMS_RANDOM.VALUE(0.4,0.6)) INTO valGoodsQuant FROM ATTRIBUTES_VALUE, OBJECTS WHERE ATTR_ID=quantityGoodsAttrId AND ATTRIBUTES_VALUE.OBJECT_ID=OBJECTS.OBJECT_ID AND OBJECTS.OBJECT_ID=goodId.OBJECT_ID;
+          freePlace:=carrying-quantValue;
+          diff:=valGoodsQuant-freePlace;
+          IF diff>0
+          THEN
+            valGoodsQuant:=freePlace;
+          END IF;
+          IF freePlace>0
+          THEN
+            UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE-valGoodsQuant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=goodId.OBJECT_ID;
+            UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+valGoodsQuant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=j;
+          END IF;
+          quantValue:=quantValue+valGoodsQuant;
         END IF;
-        UPDATE ATTRIBUTES_VALUE SET VALUE=valGoodsQuant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=goodId.OBJECT_ID;
-        quantValue:=quantValue+valGoodsQuant;
       END LOOP;
       IF i!=0
       THEN
@@ -1478,6 +1512,10 @@ IS
           j:=myAmmo.OBJECT_ID;
         END IF;
       END LOOP;
+      IF cargoObjType=goodsObjType
+      THEN
+        SELECT VALUE INTO priceCargo FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=cargoId;
+      END IF;
       FOR myGood IN myGoods LOOP
         SELECT VALUE INTO price FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=myGood.OBJECT_ID;
         IF src=myGood.SOURCE_ID AND priceCargo=price
@@ -1498,7 +1536,6 @@ IS
         IF cargoObjType=goodsObjType
         THEN
           SELECT NVL(SUM(VALUE),0) INTO goodsStart FROM ATTRIBUTES_VALUE WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=cargoId;
-          SELECT VALUE INTO priceCargo FROM ATTRIBUTES_VALUE WHERE ATTR_ID=costGoodsAttrId AND OBJECT_ID=cargoId;
           IF quantity>goodsStart
           THEN
             quant:=goodsStart;
@@ -1525,7 +1562,7 @@ IS
           ELSE
             IF quant=goodsStart
             THEN
-              UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE OBJECT_ID=j;
+              UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=j;
               DELETE FROM OBJECTS WHERE OBJECT_ID=cargoId;
               RETURN 'Goods are transferred successfully!';
             ELSE
@@ -1613,7 +1650,7 @@ IS
             ELSE
               IF quant=goodsStart
               THEN
-                UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE OBJECT_ID=j;
+                UPDATE ATTRIBUTES_VALUE SET VALUE=VALUE+quant WHERE  ATTR_ID=quantityGoodsAttrId AND OBJECT_ID=j;
                 DELETE FROM OBJECTS WHERE OBJECT_ID=cargoId;
                 RETURN 'Goods are transferred successfully!';
               ELSE
@@ -1674,6 +1711,7 @@ IS
     RETURN 'Unknown cargo for function';
   END;
 /
+
 
 CREATE OR REPLACE PROCEDURE UPDATE_MONEY
 IS
