@@ -5,6 +5,7 @@ import com.nctc2017.services.utils.BattleManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
+import org.springframework.http.CacheControl;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.resource.GzipResourceResolver;
+import org.springframework.web.servlet.resource.PathResourceResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -23,6 +26,7 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 @EnableWebMvc
@@ -41,7 +45,12 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
                 .addResourceHandler("/static/**")
-                .addResourceLocations("/static/");
+                .addResourceLocations("/static/")
+                .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
+                /*.setCachePeriod(3600)
+                .resourceChain(true)
+                .addResolver(new GzipResourceResolver())
+                .addResolver(new PathResourceResolver());*/
     }
 
     @Bean

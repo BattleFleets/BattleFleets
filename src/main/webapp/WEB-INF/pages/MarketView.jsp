@@ -2,17 +2,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link href="static/css/text.css" rel="stylesheet" media="screen">
-    <link href="static/css/market.css" rel="stylesheet" media="screen">
-    <link href="static/css/general.css" rel="stylesheet" media="screen">
-    <link href="static/css/goods-images.css" rel="stylesheet" media="screen">
-    <script src="static/js/jquery.min.js"></script>
-    <script src="static/js/market.js"></script>
-    <link href="static/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet">
-    <link href="static/bootstrap-3.3.7/css/bootstrap-theme.css" rel="stylesheet">
-    <script src="static/bootstrap-3.3.7/js/bootstrap.js"></script>
+    <link href="<c:url value="/static/css/text.css" />" rel="stylesheet" />
+    <link href="<c:url value="/static/css/market.css" />" rel="stylesheet" />
+    <link href="<c:url value="/static/css/general.css" />" rel="stylesheet" />
+    <link href="<c:url value="/static/css/goods-images.css" />" rel="stylesheet" />
+    <link href="<c:url value="/static/bootstrap-3.3.7/css/bootstrap.css" />" rel="stylesheet" />
+    <link href="<c:url value="/static/bootstrap-3.3.7/css/bootstrap-theme.css" />" rel="stylesheet" />
+    <script type="text/javascript"  src="<c:url value="/static/js/jquery.min.js" />"></script>
+    <script type="text/javascript"  src="<c:url value="/static/js/market.js" />"></script>
+    <script type="text/javascript"  src="<c:url value="/static/bootstrap-3.3.7/js/bootstrap.js" />"></script>
     <audio autoplay id="myaudio" onloadeddata="setHalfVolume()">
-        <source src="static/audio/market.mp3" type="audio/mp3">
+        <source src="<c:url value="/static/audio/market.mp3" />" type="audio/mp3">
     </audio>
 </head>
 <body>
