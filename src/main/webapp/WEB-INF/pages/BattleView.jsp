@@ -4,11 +4,13 @@
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/battle.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
     <script src="static/js/HoverButton.js"></script>
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
     <script src="static/js/Battle.js" type="text/javascript"></script>
     <script src="static/js/volume.js" type="text/javascript"></script>
+    <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
 
 </head>
 
@@ -18,6 +20,12 @@
 </audio>
 <audio autoplay id="back_audio" onloadeddata="setVolume('back_audio', 0.1)">
     <source src="static/audio/battle.mp3" type="audio/mp3">
+</audio>
+<audio id="shot_audio" onloadeddata="setVolume('back_audio_ship', 0.04)">
+    <source src="static/audio/shot.mp3" type="audio/mp3">
+</audio>
+<audio id="boarding_audio" onloadeddata="setVolume('back_audio_ship', 0.04)">
+    <source src="static/audio/boarding.mp3" type="audio/mp3">
 </audio>
 <div class="player_ship" align="left">
     <img alt="5" src="static/images/ships/player_ship2.png" height="60%">
@@ -60,29 +68,29 @@
     </div>
     <div class="ammo_cannon" align="center">
         <table id="ammo_tab" class="panel messageText" width="100%" style="table-layout: fixed;">
-            <tr>
+            <tr id="r0">
                 <th></th>
-                <th><div class = "icon icon_cannonball"></div><span id="cball"></span></th>
-                <th><div class = "icon icon_buckshot"></div><span id="bshot"></span></th>
-                <th><div class = "icon icon_chain"></div><span id="chains"></span></th>
+                <th class="c1"><div class = "icon icon_cannonball"></div><span id="cball"></span></th>
+                <th class="c2"><div class = "icon icon_buckshot"></div><span id="bshot"></span></th>
+                <th class="c3"><div class = "icon icon_chain"></div><span id="chains"></span></th>
             </tr>
-            <tr>
+            <tr id="r1">
                 <th><div class = "icon icon_mortar"></div><span id="mortar"></span></th>
-                <td><input class = "spinner s_mortar s_ball" id = "mBall"></td>
-                <td><input class = "spinner s_mortar s_bshot" id = "mBshot"></td> 
-                <td><input class = "spinner s_mortar s_chains" id = "mChains"></td>
+                <td class="c1"><input class = "spinner s_mortar s_ball" id = "mBall"></td>
+                <td class="c2"><input class = "spinner s_mortar s_bshot" id = "mBshot"></td> 
+                <td class="c3"><input class = "spinner s_mortar s_chains" id = "mChains"></td>
             </tr>
-            <tr>
+            <tr id="r2">
                 <th><div class = "icon icon_bombard"></div><span id="bombard"></span></th> 
-                <td><input class = "spinner s_bombard s_ball" id = "bBall"></td>
-                <td><input class = "spinner s_bombard s_bshot" id = "bBshot"></td> 
-                <td><input class = "spinner s_bombard s_chains" id = "bChains"></td>
+                <td class="c1"><input class = "spinner s_bombard s_ball" id = "bBall"></td>
+                <td class="c2"><input class = "spinner s_bombard s_bshot" id = "bBshot"></td> 
+                <td class="c3"><input class = "spinner s_bombard s_chains" id = "bChains"></td>
             </tr>
-            <tr>
+            <tr id="r3">
                 <th><div class = "icon icon_kulevrin"></div><span id="kulevrin"></span></th>
-                <td><input class = "spinner s_kulevrin s_ball" id = "kBall"></td>
-                <td><input class = "spinner s_kulevrin s_bshot" id = "kBshot"></td> 
-                <td><input class = "spinner s_kulevrin s_chains" id = "kChains"></td>
+                <td class="c1"><input class = "spinner s_kulevrin s_ball" id = "kBall"></td>
+                <td class="c2"><input class = "spinner s_kulevrin s_bshot" id = "kBshot"></td> 
+                <td class="c3"><input class = "spinner s_kulevrin s_chains" id = "kChains"></td>
             </tr>
             <tr class="titleText"  style="background-color: darkred">
                 <td id="warning_info" hidden="true" colspan="4"> </td>

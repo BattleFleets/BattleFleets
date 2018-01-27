@@ -1,10 +1,13 @@
 package com.nctc2017.services;
 
+import com.nctc2017.bean.Ammo;
 import com.nctc2017.bean.Battle;
 import com.nctc2017.bean.Mast;
 import com.nctc2017.bean.Player;
 import com.nctc2017.bean.Ship;
+import com.nctc2017.dao.AmmoDao;
 import com.nctc2017.dao.CannonDao;
+import com.nctc2017.dao.HoldDao;
 import com.nctc2017.dao.MastDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.dao.ShipDao;
@@ -43,6 +46,10 @@ public class BattlePreparationService {
     @Autowired
     private MastDao mastDao;
     @Autowired
+    private AmmoDao ammoDao;
+    @Autowired
+    private HoldDao holdDao;
+    @Autowired
     private CannonDao cannonDao;
     @Autowired
     private BattleEndingService battleEnd;
@@ -56,6 +63,7 @@ public class BattlePreparationService {
         for (Ship ship : listShipsId) {
             shipInfo.add(new ShipWrapper(
                     ship, 
+                    ammoDao.getAllAmmoFromHold(holdDao.findHold(ship.getShipId())),
                     cannonDao.getCurrentQuantity(ship.getShipId()),
                     mastDao.getShipMastsFromShip(ship.getShipId()),
                     shipDao.getMaxShotDistance(ship.getShipId())));
@@ -200,13 +208,15 @@ public class BattlePreparationService {
     public class ShipWrapper {
         private Ship ship;
         private Map<String, String> cannons;
+        private List<Ammo> ammo;
         private List<Mast> masts;
         private int maxShotDistance;
-        public ShipWrapper(Ship ship, Map<String, String> cannons, List<Mast> curMasts, int dist) {
+        public ShipWrapper(Ship ship, List<Ammo> ammo, Map<String, String> cannons, List<Mast> curMasts, int dist) {
             this.ship = ship;
             this.cannons = cannons;
             this.masts = curMasts;
             this.maxShotDistance = dist;
+            this.ammo = ammo;
         }
         
         public Ship getShip() {
@@ -223,6 +233,10 @@ public class BattlePreparationService {
 
         public int getMaxShotDistance() {
             return maxShotDistance;
+        }
+
+        public List<Ammo> getAmmo() {
+            return ammo;
         }
         
     }

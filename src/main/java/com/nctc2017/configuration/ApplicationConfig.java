@@ -46,7 +46,7 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         registry
                 .addResourceHandler("/static/**")
                 .addResourceLocations("/static/")
-                .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
+                .setCacheControl(CacheControl.maxAge(12, TimeUnit.HOURS));
                 /*.setCachePeriod(3600)
                 .resourceChain(true)
                 .addResolver(new GzipResourceResolver())

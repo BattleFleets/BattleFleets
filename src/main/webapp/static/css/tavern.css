@@ -76,7 +76,7 @@ img{
 }
 
 .shipContainer {
-    margin-top: 10%;
+    /*margin-top: 10%;*/
     width:56vw;
     position: relative;
     overflow: hidden;
@@ -112,7 +112,7 @@ img{
     font-weight: 900;
     text-align: left;
     border: 6px double black;
-    width: 550px;
+    /*width: 550px;*/
 }
 
 #info {
@@ -147,7 +147,8 @@ img{
     height: 2.32vw;
     z-index: 100;
     position: relative;
-    cursor: pointer
+    cursor: pointer;
+    visibility: hidden;
 }
 
 input::-webkit-outer-spin-button,

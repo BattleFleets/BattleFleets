@@ -1,3 +1,15 @@
+
+function myDialog(title_, mes, buttons_) {
+    var $wDialog =$( "#dialog_info" ).html(mes);
+    $wDialog.dialog({
+        modal: true,
+        width: 470,
+        height: 210,
+        title: title_,
+        buttons: buttons_
+    });
+}
+
 function animateCityByClick() {
     $( ".city" ).click(function() {
         var img = $( this ).find("img");
@@ -5,9 +17,29 @@ function animateCityByClick() {
         img.animate({width: "100%", height: "100%"}, 50);
     });
 }
+
+function error423(response) {
+    var errMessage = $(response).find('.titleText').text();
+    var errTitle = $(response).find('.titleText').attr('title');
+    
+    buttons = [ {
+        text: "World Map",
+        click: function() {
+            $(this).dialog('close');
+        }
+    }, {
+        text: "City",
+        click: function() {
+            window.location.href = "/city";
+            $(this).dialog('close');
+        }
+    }];
+    
+    myDialog(errTitle, errMessage, buttons);
+}
     
 function tripAvailable(cityId) {
-    $("#warning_info").load("travel", function(response, status, xhr){
+    $("#dialog_info").load("travel", function(response, status, xhr){
         if (xhr.status == 200){
             
             var n = response.search(/<html>/i);
@@ -15,35 +47,28 @@ function tripAvailable(cityId) {
             
             setUpJourney(cityId);
         } else if (xhr.status == 423){
-            $("#warning_info").html(response);
-            $('html, body').animate({
-                scrollTop: $("#warning_info").offset().top
-            }, 1000);
+            error423(response);
         } else if (xhr.status == 202) {
             var errMessage = $(response).find('.titleText').text();
             var errTitle = $(response).find('.titleText').attr('title');
-            $( "#dialog_info" ).html(errMessage);
-            $( "#dialog_info" ).dialog({
-                modal: true,
-                title: errTitle,
-                width: 470,
-                height: 210,
-                buttons: [ {
-                    id: "Delete",
-                    text: "It's rubbish! ... Raise the sails!",
-                    click: function () {
-                        setUpJourney(cityId);
-                        $(this).dialog('close');
-                    }
-                }, {
-                    id: "Cancel",
-                    text: "Back",
-                    click: function () {
-                        window.location.href = "/stock?page=world&city=" + curCity;
-                        $(this).dialog('close');
-                    }
-                }]
-            });
+            
+            buttons = [ {
+                id: "Delete",
+                text: "It's rubbish! ... Raise the sails!",
+                click: function () {
+                    setUpJourney(cityId);
+                    $(this).dialog('close');
+                }
+            }, {
+                id: "Cancel",
+                text: "Back",
+                click: function () {
+                    window.location.href = "/stock?page=world&city=" + curCity;
+                    $(this).dialog('close');
+                }
+            }];
+            
+            myDialog(errTitle, errMessage, buttons);
         }
         return;
     });
@@ -59,8 +84,7 @@ function setUpJourney(cityId) {
     })
     .fail(function(xhr, status, error) {
         if (xhr.status == 423) {
-            $( "#warning_info" ).html(xhr.responseText);
-            scrollToWorning()
+            error423(xhr.responseText);
         }
     });
 }
@@ -91,8 +115,9 @@ function animateTask() {
 
 var curCityAnimId;
 var curCity;
+var curCityName;
 $(document).ready(function() {
-    var curCityName = $("body").attr("curCityName");
+    curCityName = $("body").attr("curCityName");
     curCity = $(".city:contains('" + curCityName + "')");
     animateTask();
     animateCityByClick();
@@ -106,6 +131,11 @@ $(document).ready(function() {
         $( this ).find("img").animate({width: "110%", height: "110%"}, 100);
     }, function() {
         $( this ).find("img").animate({width: "100%", height: "100%"}, 100);
+    });
+    
+    $("body").mCustomScrollbar({
+        axis:"yx", 
+        theme:"minimal-dark"
     });
     
     animateCurCity();

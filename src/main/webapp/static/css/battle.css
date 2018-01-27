@@ -186,8 +186,8 @@ h1.up_title {
 }
 
 .ship_accordion_content {
-    width: 80%;  
-    padding: 5% 5% 7% !important;
+    width: 85%;  
+    padding: 4% 4% 12% !important;
     display: block; 
 }
 
@@ -251,7 +251,7 @@ h3 {
     margin-top: 1%;
 }
 
-tr th, tr td { width:25%; font-size: 1.5vw; height:100%}
+tr th, tr td { width:25%; font-size: 1.8vw; height:100%}
 
 #ammo_tab {
     padding: 1%;
