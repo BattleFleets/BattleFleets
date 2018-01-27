@@ -3,14 +3,18 @@
 <html>
 <head>
     <link href="static/css/text.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
 
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
+    <script src="static/js/jquery.mCustomScrollbar.min.js"></script>
+    <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
 
 
     <script type="text/javascript">
+    
             function setHalfVolume() {
                 var audio = document.getElementById("gavan");
                 var audio1 = document.getElementById("gavan1");
@@ -25,9 +29,9 @@
             			success : function(response) {
             				console.log("SUCCESS: ");
             				$('.shipContainer').html(response);
-            				$('html, body').animate({
-                                scrollTop: $(".shipContainer").offset().top
-                            }, 1000);
+                            body.mCustomScrollbar("scrollTo","bottom",{
+                                scrollEasing:"easeOut"
+                            });
             			},
                         error : function(e) {
                             console.log("ERROR: ", e);
@@ -42,9 +46,9 @@
                         success : function(response) {
                             console.log("SUCCESS: ");
                             $('.shipContainer').html(response);
-                            $('html, body').animate({
-                                scrollTop: $(".shipContainer").offset().top
-                            }, 1000);
+                            body.mCustomScrollbar("scrollTo","bottom",{
+                                scrollEasing:"easeOut"
+                            });
                         },
                         error : function(e) {
                             console.log("ERROR: ", e);
@@ -59,15 +63,31 @@
                         success : function(response) {
                             console.log("SUCCESS: ");
                             $('.shipContainer').html(response);
-                            $('html, body').animate({
-                                scrollTop: $(".shipContainer").offset().top
-                            }, 1000);
+
+                            body.mCustomScrollbar("scrollTo","bottom",{
+                                scrollEasing:"easeOut"
+                            });
                         },
                         error : function(e) {
                             console.log("ERROR: ", e);
                         }
                     });
             }
+            var body;
+            var shipContainer;
+            function scrollBars() {
+                body = $("body").mCustomScrollbar({
+                    axis:"y", // vertical scrollbar
+                    theme:"minimal-dark"
+                })
+            }
+            
+            $(document).ready(function () {
+                $("#repair").click(function(){
+                    repairShips();
+                });
+                scrollBars();
+            });
     </script>
 </head>
 <c:import url= "/addHeader"/>
@@ -106,7 +126,7 @@
 		</tr>
 		<tr align="center">
 			<td>
-			<button class="button" onclick="repairShips()">
+			<button id="repair" class="button" >
 			<span>Repair ship</span>
 			</button>
 			</td>

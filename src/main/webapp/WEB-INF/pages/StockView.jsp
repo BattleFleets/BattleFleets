@@ -7,9 +7,11 @@
 <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
 <link href="static/css/stock.css" rel="stylesheet" media="screen">
 <link href="static/css/general.css" rel="stylesheet" media="screen">
+<link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
 
 <script src="static/js/jquery.min.js"></script>
 <script src="static/js/jquery-ui.min.js"></script>
+<script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
 
 
 <script type="text/javascript">
@@ -518,7 +520,16 @@ function fillWithGoods(playerGoods, whatToFillId){
 
 }
 
-
+function scrollBars() {
+    $("body").mCustomScrollbar({
+        axis:"y", // vertical scrollbar
+        theme:"minimal-dark"
+    });
+    $(".container").mCustomScrollbar({
+        axis:"x", // horizontal scrollbar
+        theme:"minimal-dark"
+    });
+}
 
 
 var playerStock = '${playerStock}';
@@ -526,6 +537,7 @@ var playerShips = '${playerShips}';
 
 $(document).ready(function () {
 
+    scrollBars();
     fillWithGoods(JSON.parse(playerStock), "stock");
     fillShips(playerShips);
 
@@ -556,7 +568,7 @@ $(document).ready(function () {
     </tr>
     <tr>
     <td >
-        <h3 class="smallTitle">Hold <b style="font-size: 16px; font-weight: 300;" id = "holdLimit"></b></h3><div class = "container">
+        <h3 class="smallTitle">Hold<br><b style="font-size: 16px; font-weight: 300;" id = "holdLimit"></b></h3><div class = "container">
         <table class="tableClass" cellspacing="10" cellpadding="5">
         <tbody >
         <tr id = "hold" align="center">
@@ -566,7 +578,7 @@ $(document).ready(function () {
         </table></div>
     </td>
     <td >
-        <h3 class="smallTitle">Equipment <b style="font-size: 16px; font-weight: 300;" id = "inventoryLimit"></b></h3><div class = "container">
+        <h3 class="smallTitle">Equipment<br><b style="font-size: 16px; font-weight: 300;" id = "inventoryLimit"></b></h3><div class = "container">
         <table class="tableClass" cellspacing="10" cellpadding="5">
         <tbody>
         <tr id = "inventory" align="center">

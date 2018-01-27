@@ -154,7 +154,7 @@ public class CargoMovementService {
                         mast.getTamplateId(), 
                         mast.getQuantity(), 
                         GoodsType.MAST)
-                    .setName("Mast. Just a Mast!")
+                    .setName(mast.getTemplateName())
                     .setSalePrice(mast.getCost()/2)
                     .appendDescription("speed: " + mast.getCurSpeed() + "/" + mast.getMaxSpeed()));
             }

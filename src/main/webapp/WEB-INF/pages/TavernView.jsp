@@ -5,13 +5,12 @@
     <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/tavern.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
-    <link href="static/bootstrap-3.3.7/css/bootstrap.css" rel="stylesheet">
-    <link href="static/bootstrap-3.3.7/css/bootstrap-theme.css" rel="stylesheet">
-    <script src="static/bootstrap-3.3.7/js/bootstrap.js"></script>
     <script src="static/js/volume.js" type="text/javascript"></script>
+    <script src="static/js/jquery.mCustomScrollbar.min.js"></script>
+    <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
 </head>
 
 
@@ -236,7 +235,20 @@
         var audio = document.getElementById("piratesSong");
         audio.volume = 0.1;
     };
+    
+    function scrollBars() {
+        $("body").mCustomScrollbar({
+            axis:"y", // vertical scrollbar
+            theme:"minimal-dark"
+        });
+        $(".shipContainer").mCustomScrollbar({
+            axis:"x", // horizontal scrollbar
+            theme:"minimal-dark"
+        });
+    }
+
     $(document).ready(function() {
+        scrollBars();
         soundButton("#audio");
     });
 </script>
