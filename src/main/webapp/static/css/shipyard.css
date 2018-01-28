@@ -22,7 +22,7 @@ body {
     text-align: left;
     border: 6px double black;
     height: 400px;
-    width: 700px;
+    width: 750px;
 }
 
 .center {
@@ -33,7 +33,7 @@ body {
     border: 3px solid black;
 }
 
-img{
+img {
     height: 100%;
 }
 
@@ -47,15 +47,13 @@ img{
     width: 175 px;
 }
 
-.shipContainer {
+#shipContainer {
     position: relative;
     margin-top: 3%;
-    margin-left: 10%;
+    margin-left: 20%;
     overflow: auto;
-    width: 80%;
+    width: 60%;
 }
-
-
 
 .close {
     color: #aaa;
@@ -112,12 +110,6 @@ img{
     text-decoration: underline;
     text-shadow: 2px 8px 6px rgba(0,0,0,0.8),
                      0px -5px 35px rgba(255,255,255,0.3);
-}
-
-#prompt-form input[name="text"] {
-  display: block;
-  margin: 5px;
-  width: 180px;
 }
 
 .small_text {

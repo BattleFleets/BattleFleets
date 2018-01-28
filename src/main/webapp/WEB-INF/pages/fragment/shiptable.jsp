@@ -5,8 +5,7 @@
     <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
     <script src="static/js/jquery.min.js"></script>
-    <script src="static/js/jquery-ui.min.js"></script> 
-
+    <script src="static/js/jquery-ui.min.js"></script>
 </head>
 <body>
 
@@ -76,9 +75,12 @@
     </div>
 </div>
 
-<div id="setNameModal" >
+<div id="setNameModal">
 	<p class="big_text">Max length 20. You can use English letters, numbers, space and underscore.</p>
     <input class = "capacity_for_background values" id="setNameText" autofocus="autofocus" name="inputShipName">
+</div>
+
+<div id="message">
 </div>
 
 
@@ -89,16 +91,6 @@ var answerModal = document.getElementById('answerModal');
 var text = document.getElementById('text');
 var btn = document.getElementById("shipTemplateId");
 
-var setNameModal = $("#setNameModal");
-setNameModal.dialog({
-    autoOpen: false,
-    resizable: false,
-    height: 300,
-    width: 550,
-    modal: true,
-    title: "How we can call our ship, captain?"
-});
-
 var setShipButton = document.getElementById("setShipButton");
 var setNewNameButton = document.getElementById("setShipButton");
 
@@ -106,6 +98,55 @@ var small_text = $("p.big_text");
 
 var currentElem = 0;
 var currentDefaultName = "";
+
+var opt = {
+    autoOpen: false,
+    resizable: false,
+    height: 300,
+    width: 550,
+    modal: true,
+    title: "How we can call our ship, captain?"
+};
+
+$(document).ready(function () {
+    document.getElementById('setNameModal').style.display="none";
+
+    $( "#dialogInfo" ).dialog({
+        autoOpen: false,
+        resizable: false,
+        height: "auto",
+        width: "auto",
+        modal: true,
+        buttons: [{
+              text: "OK",
+              click: function() {
+                $( this ).dialog( "close" );
+              }
+        }]
+    });
+});
+
+function inizializeDialog() {
+    $("#setNameModal").dialog(opt).dialog( "option", "buttons",
+        [{
+           text: "Ok",
+           click: function() {
+               var shipName = $('#setNameText').val();
+               if (confirmNewName(shipName)) {
+                   buyShip(currentElem, shipName, currentDefaultName);
+                   $("#setNameText").val("");
+                   $(this).dialog('destroy');
+               }
+           }
+        }, {
+            text: "Cancel",
+            click: function() {
+                $("#setNameText").val("");
+                $(this).dialog('destroy');
+            }
+        }]
+    );
+}
 
 $( ".close" ).click(function() {
   answerModal.style.display = "none";
@@ -118,38 +159,16 @@ function confirmNewName(shipName) {
     }
     return true;
 }
-var shipName = '';
+
 function setShipName(elem, defaultName) {
-    setNameModal.dialog( "option", "buttons",
-        [{
-           text: "Ok",
-           click: function() {
-               shipName = $('input[name="inputShipName"]').val();
-               if (confirmNewName(shipName)) {
-                   buyShip(elem, shipName, defaultName);
-                   $("#setNameText").val("");
-                   $(this).dialog('close');
-               }
-           }
-        }, {
-            text: "Cancel",
-            click: function() {
-                $("#setNameText").val("");
-                $(this).dialog('close');
-            }
-        }]
-    );
-    setNameModal.dialog( "open" );
     currentElem = elem.value;
     currentDefaultName = defaultName;
+    inizializeDialog();
+    $("#setNameModal").dialog(opt).dialog( "open" );
 }
 
-
-
-
-
 function buyShip(elem, shipName, defaultName) {
-    var shipTemplateId = elem.value;
+    var shipTemplateId = elem;
     $(function(){
         $.ajax({
             url:'/buy',
@@ -157,8 +176,8 @@ function buyShip(elem, shipName, defaultName) {
             data: { 'shipTemplateId' : shipTemplateId, 'shipName' : shipName , 'defaultName' : defaultName },
             success: function(data) {
                          console.log("SUCCESS: ",data);
-                         text.innerHTML=data;
-                         answerModal.style.display = "block";
+                         $("#dialogInfoContent").text(data);
+                         $("#dialogInfo").dialog("open");
                          },
                          error : function(e) {
                              console.log("ERROR: ", e);
@@ -184,9 +203,6 @@ function headerUpdate() {
 window.onclick = function(event) {
     if (event.target == answerModal) {
         answerModal.style.display = "none";
-    }
-    if (event.target == setNameModal) {
-        setNameModal.dialog("close");
     }
 }
 </script>
