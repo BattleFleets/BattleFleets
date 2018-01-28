@@ -9,8 +9,6 @@
 </head>
 <body>
 
-
-
 <div>
     <table class="externalBorder">
     <tr>
@@ -53,7 +51,7 @@
                     <td>Cannon:  <b class="values">${shipEquipments.get(status.index).getStartNumCannon()}/${shipTemplates.getMaxCannonQuantity()}</b></td>
                 </tr>
                 <tr>
-                    <td>Masts type:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeMastName()}</b></td>
+                    <td>Masts type:  <br><b class="values">${startTypeOfShipEquips.get(status.index).getTypeMastName()}</b></td>
                     <td>Cannons type:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeCannonName()}</b></td>
                 </tr>
                 <tr>
@@ -65,14 +63,6 @@
         </c:forEach>
     </tr>
     </table>
-
-</div>
-
-<div id="answerModal" class="modal">
-    <div class="modal-content">
-    <span class="close">&times;</span>
-    <p id="text"></p>
-    </div>
 </div>
 
 <div id="setNameModal">
@@ -87,8 +77,6 @@
 
 <script>
 
-var answerModal = document.getElementById('answerModal');
-var text = document.getElementById('text');
 var btn = document.getElementById("shipTemplateId");
 
 var setShipButton = document.getElementById("setShipButton");
@@ -148,10 +136,6 @@ function inizializeDialog() {
     );
 }
 
-$( ".close" ).click(function() {
-  answerModal.style.display = "none";
-});
-
 function confirmNewName(shipName) {
     if (shipName.search(/[^A-z,0-9,\s,_]/g) > -1 || shipName.length > 20 || shipName.length == 0) {
         small_text.effect( "bounce", "slow" );
@@ -187,23 +171,6 @@ function buyShip(elem, shipName, defaultName) {
                 headerUpdate();
             } );
     });
-}
-
-function headerUpdate() {
-    $.ajax({
-        url:'/addHeader',
-        method:"GET",
-        success: function(data) {
-                     console.log("SUCCESS: ");
-                     $('.header').html(data);
-                     }
-        });
-}
-
-window.onclick = function(event) {
-    if (event.target == answerModal) {
-        answerModal.style.display = "none";
-    }
 }
 </script>
 </body>

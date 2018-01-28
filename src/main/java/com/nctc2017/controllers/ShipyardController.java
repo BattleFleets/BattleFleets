@@ -42,11 +42,17 @@ public class ShipyardController {
     @Autowired
     private ShipRepairService shipRepairService;
 
-
     @Secured("ROLE_USER")
     @RequestMapping(value = "/shipyard", method = RequestMethod.GET)
     public ModelAndView shipyardWelcome(
-            @RequestParam(value = "city", required = false) String city) {
+            @RequestParam(value = "city", required = false) String city,
+            @AuthenticationPrincipal PlayerUserDetails userDetails) {
+        BigInteger playerId = userDetails.getPlayerId();
+
+        if (travelService.isPlayerInTravel(playerId)) {
+            return new ModelAndView("redirect:/trip");
+        }
+
         ModelAndView model = new ModelAndView();
         model.addObject("msg", "This is protected page - Only for Users!");
         model.addObject("city", city);

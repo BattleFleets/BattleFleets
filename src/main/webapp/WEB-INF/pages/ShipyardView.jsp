@@ -74,6 +74,17 @@
                     });
             }
 
+            function headerUpdate() {
+                $.ajax({
+                    url:'/addHeader',
+                    method:"GET",
+                    success: function(data) {
+                                 console.log("SUCCESS: ");
+                                 $('.header').html(data);
+                                 }
+                    });
+            }
+
             var body;
             var shipContainer;
             function scrollBars() {
@@ -85,19 +96,6 @@
             
             $(document).ready(function () {
                 scrollBars();
-                $( "#dialogInfo" ).dialog({
-                    autoOpen: false,
-                    resizable: false,
-                    height: "auto",
-                    width: "auto",
-                    modal: true,
-                    buttons: [{
-                          text: "OK",
-                          click: function() {
-                            $( this ).dialog( "close" );
-                          }
-                    }]
-                });
             });
     </script>
 </head>
