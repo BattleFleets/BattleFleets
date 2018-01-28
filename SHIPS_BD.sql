@@ -1280,6 +1280,7 @@ IS
   mastObjType NUMBER:=7;
   shipObjType NUMBER:=6;
   ammoObjType NUMBER:=11;
+  curNumSailors NUMBER:=25;
   CURSOR cargos IS SELECT OBJECT_ID, OBJECT_TYPE_ID, SOURCE_ID, NAME FROM OBJECTS WHERE PARENT_ID=holdIdLose;
   CURSOR myAmmos IS SELECT SOURCE_ID, OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=ammoObjType AND PARENT_ID=holdIdWin;
   CURSOR myGoods IS SELECT SOURCE_ID, OBJECT_ID FROM OBJECTS WHERE OBJECT_TYPE_ID=goodsObjTypeId AND PARENT_ID=holdIdWin;
@@ -1420,6 +1421,7 @@ IS
       THEN
         RETURN 'You received part of goods from enemy ship as a result of boarding';
       ELSE
+        UPDATE ATTRIBUTES_VALUE SET VALUE=0 WHERE OBJECT_ID=shipLoseId AND ATTR_ID=curNumSailors;
         RETURN 'Karamba captain, the enemy hold was empty';
       END IF;
     ELSE
