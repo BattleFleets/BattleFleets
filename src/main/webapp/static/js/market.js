@@ -26,7 +26,7 @@ function updateMoney() {
 function updateMarket(){
     $.ajax({
         type: "GET",
-        url: "/market/getBuyGoods",
+        url: "/market/buy",
         dataType: "json",
         success: function(data){
             buyJson=data;
@@ -38,7 +38,7 @@ function updateMarket(){
 function updatePlayerStock(){
     $.ajax({
         type: "GET",
-        url: "/market/getSellGoods",
+        url: "/market/sell",
         dataType: "json",
         success: function(data){
             saleJson=data;
@@ -124,7 +124,7 @@ function buildBuyTable(type){
     var trHTML ="";
     $.each(buyJson,function(i,item){
         if(item.type==type){
-            var picture=item.name+"Image";
+            var picture="Image"+item.templateId;
             function isAmmo(){
                 if(buyType=="AMMO"){
                     return "&#8734;";
@@ -135,7 +135,8 @@ function buildBuyTable(type){
             }
             trHTML += "<tr class=\"buyRow\" id="
                 + item.templateId + ">"+"<td>"
-                + "<div class="+picture+">"+"</div>"+"</td><td>"
+                + "<div style=\"width: 60px;  height: 50px; background-size: 60px 50px;\" class="+picture+">"
+                + "</div>"+"</td><td>"
                 + item.name +"<br/>"+item.goodsDescription+"</td><td>"
                 + item.buyingPrice + "</td><td>"
                 + isAmmo() + "</td></tr>";
@@ -149,10 +150,11 @@ function buildSaleTable(type){
     var trHTML ="";
     $.each(saleJson,function(i,item){
         if(item.type==type){
-            var picture=item.name+"Image";
+            var picture="Image"+item.goodsTemplateId;
             trHTML += "<tr class=\"saleRow\" id="
                 +item.goodsId+">"+"<td>"
-                + "<div class="+picture+">"+"</div>"+"</td><td>"
+                + "<div style=\"width: 60px;  height: 50px; background-size: 60px 50px;\" class="+picture+">"
+                + "</div>"+"</td><td>"
                 + item.name +"<br/>"+item.description+"</td><td>"
                 + item.salePrice + "</td><td>"
                 + item.quantity +"</td></tr>";
