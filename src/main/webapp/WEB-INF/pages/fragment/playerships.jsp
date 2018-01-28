@@ -26,7 +26,7 @@
         <td>
             <table class ="tableClass">
             <tr>
-                <td>
+                <td align="center">
                 <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getShipId()}" onclick="chooseOfAction(this,'${action}',${shipTemplates.getCost()-shipCosts.get(status.index)*2}, ${shipTemplates.curCarryingLimit})">
                 <span>${action} ${shipTemplates.getTName()}</span>
                 </button>

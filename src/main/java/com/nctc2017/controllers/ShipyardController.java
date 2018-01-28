@@ -72,7 +72,7 @@ public class ShipyardController {
         String result = shipTradeService.buyShip(debugPlayerId, shipTemplateId);
         if (ShipyardController.isNumeric(result)) {
             BigInteger createdShipId = new BigInteger(result);
-            if (shipName.length() > maxShipNameLength || shipName.equals("") || ShipyardController.isExistRussianSymbol(shipName))
+            if (shipName.length() > maxShipNameLength || shipName.equals("") || ShipyardController.isNotEnglSymbol(shipName))
                 shipName = defaultName;
             shipService.setShipName(createdShipId, shipName);
             result = "Congratulation! One more ship is already armed.";
@@ -319,8 +319,8 @@ public class ShipyardController {
         return str.matches("-?\\d+(\\.\\d+)?");
     }
 
-    private static boolean isExistRussianSymbol(String str) {
-        return str.matches(".*[А-я]+.*");
+    private static boolean isNotEnglSymbol(String str) {
+        return str.matches("[^A-z,0-9,\\s,_]");
     }
 
 }
