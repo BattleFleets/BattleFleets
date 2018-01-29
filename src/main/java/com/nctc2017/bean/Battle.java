@@ -193,6 +193,7 @@ public class Battle {
             element.setMadeStep(false);
             element.setReady(false);
             element.setShipId(null);
+            distance = 0;
         }
     }
 

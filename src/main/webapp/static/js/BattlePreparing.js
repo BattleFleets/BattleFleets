@@ -143,7 +143,7 @@ $(document).ready(function() {
 });
 
 function scrollBars() {
-    $("body").mCustomScrollbar({
+    $("#myScroll").mCustomScrollbar({
         axis:"y", // vertical scrollbar
         theme:"minimal-dark"
     });

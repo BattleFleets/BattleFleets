@@ -140,16 +140,6 @@ img{
     background-image: url("../images/general/mute.png");
 }
 
-#audio {
-    margin-top:-560px;
-    margin-left:200px;
-    width: 2.32vw;
-    height: 2.32vw;
-    z-index: 100;
-    position: relative;
-    cursor: pointer;
-    visibility: hidden;
-}
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button{

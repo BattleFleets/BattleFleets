@@ -203,6 +203,7 @@ public class BattleEndingService {
         
         BigInteger winnerShipId = battle.getShipId(winnerId);
         BigInteger loserShipId = battle.getShipId(playerId);
+        if (winnerShipId == null || loserShipId == null) return false;
         int payoff = passPayOffToEnemy(playerId);
         if (payoff == -1) return false;
         battle.setWinner(winnerId, 

@@ -6,28 +6,38 @@ function hoverConveyor() {
     hoverInit("surrender");
 }
 
+var old_enemy_ship;
+var old_player_ship
+
 function tabResultFilling (ships) {
     var tab = $("#info_tab");
     var battle_info =$(".battle_info");
     
     battle_info.slideUp("slow");
+    
+    var cur_player_health = ships.player_ship.ship.curHealth;
+    var cur_enemy_health = ships.enemy_ship.curHealth;
+    var cur_player_crew = ships.player_ship.ship.curSailorsQuantity;
+    var cur_enemy_crew = ships.enemy_ship.curSailorsQuantity;
+    var cur_player_speed = ships.player_ship.ship.curSpeed;
+    var cur_enemy_speed= ships.enemy_ship.curSpeed;
         
     tab.find("#P_health")
-    .html(ships.player_ship.ship.curHealth +"/" + ships.player_ship.ship.maxHealth)
+    .html(cur_player_health +"/" + ships.player_ship.ship.maxHealth);
     tab.find("#E_health")
-    .html(ships.enemy_ship.curHealth +"/" + ships.enemy_ship.maxHealth)
+    .html(cur_enemy_health +"/" + ships.enemy_ship.maxHealth);
     tab.find("#P_crew")
-    .html(ships.player_ship.ship.curSailorsQuantity + "/" + ships.player_ship.ship.maxSailorsQuantity)
+    .html(cur_player_crew + "/" + ships.player_ship.ship.maxSailorsQuantity);
     tab.find("#E_crew")
-    .html(ships.enemy_ship.curSailorsQuantity + "/" + ships.enemy_ship.maxSailorsQuantity)
+    .html(cur_enemy_crew + "/" + ships.enemy_ship.maxSailorsQuantity);
     tab.find("#P_speed")
-    .html(ships.player_ship.ship.curSpeed)
+    .html(cur_player_speed);
     tab.find("#E_speed")
-    .html(ships.enemy_ship.curSpeed)
+    .html(cur_enemy_speed);
     tab.find("#P_damage")
-    .html(ships.player_ship.ship.curDamage)
+    .html(ships.player_ship.ship.curDamage);
     tab.find("#E_damage")
-    .html(ships.enemy_ship.curDamage)
+    .html(ships.enemy_ship.curDamage);
     tab.find("#distance")
     .html(ships.distance);
     if (ships.distance == "0") {
@@ -37,6 +47,22 @@ function tabResultFilling (ships) {
     battle_info.slideDown("slow");
     
     ammoCannonQuantity(ships.player_ship);
+    if (old_player_ship !== undefined && old_enemy_ship !== undefined) {
+        var p_dec = $("#p_dec");
+        var e_dec = $("#e_dec");
+        p_dec.find("#p_health_dec").html(cur_player_health - old_player_ship.curHealth);
+        e_dec.find("#e_health_dec").html(cur_enemy_health - old_enemy_ship.curHealth);
+        
+        p_dec.find("#p_crew_dec").html(cur_player_crew - old_player_ship.curSailorsQuantity);
+        e_dec.find("#e_crew_dec").html(cur_enemy_crew - old_enemy_ship.curSailorsQuantity);
+
+        p_dec.find("#p_speed_dec").html(cur_player_speed - old_player_ship.curSpeed);
+        e_dec.find("#e_speed_dec").html(cur_enemy_speed - old_enemy_ship.curSpeed);
+        
+        animateLostParam();
+    }
+    old_player_ship = ships.player_ship.ship;
+    old_enemy_ship = ships.enemy_ship;
 }
 
 var mortars;
@@ -58,7 +84,6 @@ function isCorrectAmmoCannon(ammoCannon, dim) {
         }
     }
         
-
     console.log(arr2);
     var sum = 0;
     for (i = 0; i < dim; i++) {
@@ -126,19 +151,29 @@ function ammoCannonQuantity(shipWrapper) {
     cannons_limit = [ mortars, bombards, kulevrins ];
     ammo_limit = [ cannonballs, buckshots, chains ];
     var tab = $("#ammo_tab");
-    tab.find("#mortar").html("(" + mortars + ")");
-    tab.find("#bombard").html("(" + bombards + ")");
-    tab.find("#kulevrin").html("(" + kulevrins + ")");
+    tab.find("#mortar").html(mortars);
+    tab.find("#bombard").html(bombards);
+    tab.find("#kulevrin").html(kulevrins);
     
     tab.find("#kulevrin, .icon_kulevrin").attr({title: "Distance: " + shipWrapper.cannonsDist.Kulevrin});
     tab.find("#bombard, .icon_bombard").attr({title: "Distance: " + shipWrapper.cannonsDist.Bombard});
     tab.find("#mortar, .icon_mortar").attr({title: "Distance: " + shipWrapper.cannonsDist.Mortar});
     
-    tab.find("#cball").html("(" + cannonballs + ")");
-    tab.find("#bshot").html("(" + buckshots + ")");
-    tab.find("#chains").html("(" + chains + ")");
+    tab.find("#cball").html(cannonballs);
+    tab.find("#bshot").html(buckshots);
+    tab.find("#chains").html(chains);
 
     ammo_cannon.slideDown("slow");
+}
+
+function animateLostParam() {
+    var divs = $("#p_dec, #e_dec");
+    divs.removeAttr("hidden");
+    
+    $(".dec_val").fadeIn(0);
+    divs.css("top", "100px");
+    divs.animate({top: "-100px"},3000);
+    $(".dec_val").fadeOut(4000);
 }
 
 function animateWait() {
@@ -275,7 +310,7 @@ function infoTabUpdate(forcibly_, audioPlay) {
             return;
         } else {
             if (audioPlay) {
-                shotSoundPaly();
+                enemyShotSoundPaly();
             }
         }
 
@@ -303,6 +338,9 @@ function infoTabUpdate(forcibly_, audioPlay) {
         } else {
             enable("fire");
             enable("surrender");
+            if (payoffAvailable) {
+                enable("payoff");
+            }
             waitReset();
         }
     }).fail(function(xhr, status, error) {
@@ -337,7 +375,9 @@ function isBattleEnd() {
             clearInterval(battleEndId);
             clearInterval(timerId);
             dialogBattleEnd(json_obj.title, json_obj.wonText);
+            disableAllButtons();
         }
+        
     }).fail(function(xhr, status, error) {
         console.log("is_battle_end checking FAIL" + error + " " + xhr.status);
         if (xhr.status == 405) {
@@ -385,10 +425,17 @@ function battleEndTask() {
     }, 2000);
 }
 
+function disableAllButtons() {
+    var ids = $(".button_pick");
+    for(var i = 0; i < ids.length; i++) {
+        disable($(ids[i]).attr("id"));
+    }
+}
+
 function fire() {
     disable("fire");
     disable("surrender");
-
+    
     $("#warning_info").attr("hidden", "true");
     console.log("fire start !!!");
     animateWaitTask();
@@ -426,11 +473,12 @@ function fire() {
 
         var n = response.search(/<html>/i);
         if (n != -1) window.location.href = "/login";
-        
+
+        disableAllButtons();
         infoTabUpdate(false, true);
         isBattleEnd();
         clearInterval(timerId);
-        shotSoundPaly();
+        playerShotSoundPaly();
     }).fail(function(xhr, status, error) {
         console.log("fire FAIL" + error + " " + xhr.status);
         if (xhr.status == 405) {
@@ -451,8 +499,12 @@ function soundPaly(selector) {
     }); 
 }
     
-function shotSoundPaly() {
-    soundPaly('#shot_audio');
+function playerShotSoundPaly() {
+    soundPaly('#p_shot_audio');
+}
+
+function enemyShotSoundPaly() {
+    soundPaly('#e_shot_audio');
 }
 
 function boardingSoundPaly() {
@@ -469,8 +521,9 @@ function anotherEndCase(end_link) {
         
         if (response.success) {
             isBattleEnd();
-        } 
-        //window.location.href = "/error";
+        } else {
+             window.location.href = "/error";
+        }
     }).fail(function(xhr, status, error) {
         console.log(end_link + " FAIL " + error + " " + xhr.status);
         if (xhr.status == 405) {
@@ -486,6 +539,7 @@ function payoff() {
 }
 
 var checkBox;
+var payoffAvailable;
 $(document).ready(function() {
     animateWaitTask();
     var spinner = $(".spinner").spinner();
@@ -510,7 +564,7 @@ $(document).ready(function() {
         anotherEndCase("/escape");
     });
 
-    var payoffAvailable = $("body").attr("payoffAvailable");
+    payoffAvailable = $("body").attr("payoffAvailable");
     console.log("payoffAvailable: " + payoffAvailable);
     if (payoffAvailable == "true") {
         enable("payoff");
@@ -526,7 +580,7 @@ $(document).ready(function() {
 });
 
 function scrollBars() {
-    $("body").mCustomScrollbar({
+    $("#myScroll").mCustomScrollbar({
         axis:"y", // vertical scrollbar
         theme:"minimal-dark"
     });

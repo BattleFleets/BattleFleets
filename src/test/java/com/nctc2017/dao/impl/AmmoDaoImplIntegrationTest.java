@@ -1,4 +1,4 @@
-package com.nctc2017.dao.Impl;
+package com.nctc2017.dao.impl;
 
 
 import java.math.BigInteger;

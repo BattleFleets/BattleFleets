@@ -103,7 +103,7 @@ public class AuthRegController {
 
     @RequestMapping(value = "/error", method = RequestMethod.GET)
     public ModelAndView appError() {
-        ModelAndView view = new ModelAndView("ErrorView");
+        ModelAndView view = new ModelAndView("error");
         return view;
     }
 

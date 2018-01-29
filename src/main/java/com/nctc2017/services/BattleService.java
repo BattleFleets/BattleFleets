@@ -164,10 +164,12 @@ public class BattleService {
                 BigInteger shipId = battle.getShipId(playerId);
                 
                 int speed = shipDao.getSpeed(shipId);
-                dist = dist - Math.round(speed / 10);
-                if (dist < 0) dist = 0;
+                dist = dist - speed;
+                if (dist < 0) {
+                    dist = 0;
+                }
                 
-                battle.setDistance(dist); // (speed *10) / 100; => 10%
+                battle.setDistance(dist);
                 battle.setConvergence(playerId, false);
                 LOG.debug("Finish decreasing of distance. Now: " + dist);
             } else {

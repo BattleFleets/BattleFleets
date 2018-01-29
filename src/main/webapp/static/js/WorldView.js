@@ -63,7 +63,7 @@ function tripAvailable(cityId) {
                 id: "Cancel",
                 text: "Back",
                 click: function () {
-                    window.location.href = "/stock?page=world&city=" + curCity;
+                    window.location.href = "/stock?page=world&city=" + curCityName;
                     $(this).dialog('close');
                 }
             }];

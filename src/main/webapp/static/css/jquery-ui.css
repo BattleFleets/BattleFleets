@@ -8,13 +8,14 @@
 ----------------------------------*/
 .ui-button.ui-checkboxradio-label.ui-state-active {
 	background-image: none;    
-	background: linear-gradient(to right, #ff7e0e , #f8c9a0);   
+	background: linear-gradient(to bottom, #f8c9a0 0%,#ff7f00 77%,#e25a00 100%);   
 }
 .ui-button.ui-checkboxradio-label {
 	background-image: none;
-	background: linear-gradient(to left, #0228ff , #8389f9);
+	background: linear-gradient(to bottom, #2de6ff 0%,#011166 100%);
     width: 90%;
     overflow: hidden;
+    font-size: 1.7vw;
 }
 
 .ui-helper-hidden {

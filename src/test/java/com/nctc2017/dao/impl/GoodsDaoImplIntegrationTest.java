@@ -1,4 +1,4 @@
-package com.nctc2017.dao.Impl;
+package com.nctc2017.dao.impl;
 
 import com.nctc2017.bean.Goods;
 import com.nctc2017.configuration.ApplicationConfig;
