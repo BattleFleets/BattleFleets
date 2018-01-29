@@ -42,11 +42,17 @@ public class ShipyardController {
     @Autowired
     private ShipRepairService shipRepairService;
 
-
     @Secured("ROLE_USER")
     @RequestMapping(value = "/shipyard", method = RequestMethod.GET)
     public ModelAndView shipyardWelcome(
-            @RequestParam(value = "city", required = false) String city) {
+            @RequestParam(value = "city", required = false) String city,
+            @AuthenticationPrincipal PlayerUserDetails userDetails) {
+        BigInteger playerId = userDetails.getPlayerId();
+
+        if (travelService.isPlayerInTravel(playerId)) {
+            return new ModelAndView("redirect:/trip");
+        }
+
         ModelAndView model = new ModelAndView();
         model.addObject("msg", "This is protected page - Only for Users!");
         model.addObject("city", city);
@@ -66,7 +72,7 @@ public class ShipyardController {
         String result = shipTradeService.buyShip(debugPlayerId, shipTemplateId);
         if (ShipyardController.isNumeric(result)) {
             BigInteger createdShipId = new BigInteger(result);
-            if (shipName.length() > maxShipNameLength || shipName.equals("") || ShipyardController.isExistRussianSymbol(shipName))
+            if (shipName.length() > maxShipNameLength || shipName.equals("") || ShipyardController.isNotEnglSymbol(shipName))
                 shipName = defaultName;
             shipService.setShipName(createdShipId, shipName);
             result = "Congratulation! One more ship is already armed.";
@@ -313,8 +319,8 @@ public class ShipyardController {
         return str.matches("-?\\d+(\\.\\d+)?");
     }
 
-    private static boolean isExistRussianSymbol(String str) {
-        return str.matches(".*[А-я]+.*");
+    private static boolean isNotEnglSymbol(String str) {
+        return str.matches("[^A-z,0-9,\\s,_]");
     }
 
 }

@@ -5,12 +5,9 @@
     <link href="static/css/shipyard.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
     <script src="static/js/jquery.min.js"></script>
-    <script src="static/js/jquery-ui.min.js"></script> 
-
+    <script src="static/js/jquery-ui.min.js"></script>
 </head>
 <body>
-
-
 
 <div>
     <table class="externalBorder">
@@ -54,7 +51,7 @@
                     <td>Cannon:  <b class="values">${shipEquipments.get(status.index).getStartNumCannon()}/${shipTemplates.getMaxCannonQuantity()}</b></td>
                 </tr>
                 <tr>
-                    <td>Masts type:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeMastName()}</b></td>
+                    <td>Masts type:  <br><b class="values">${startTypeOfShipEquips.get(status.index).getTypeMastName()}</b></td>
                     <td>Cannons type:  <b class="values">${startTypeOfShipEquips.get(status.index).getTypeCannonName()}</b></td>
                 </tr>
                 <tr>
@@ -66,38 +63,21 @@
         </c:forEach>
     </tr>
     </table>
-
 </div>
 
-<div id="answerModal" class="modal">
-    <div class="modal-content">
-    <span class="close">&times;</span>
-    <p id="text"></p>
-    </div>
-</div>
-
-<div id="setNameModal" >
+<div id="setNameModal">
 	<p class="big_text">Max length 20. You can use English letters, numbers, space and underscore.</p>
     <input class = "capacity_for_background values" id="setNameText" autofocus="autofocus" name="inputShipName">
+</div>
+
+<div id="message">
 </div>
 
 
 
 <script>
 
-var answerModal = document.getElementById('answerModal');
-var text = document.getElementById('text');
 var btn = document.getElementById("shipTemplateId");
-
-var setNameModal = $("#setNameModal");
-setNameModal.dialog({
-    autoOpen: false,
-    resizable: false,
-    height: 300,
-    width: 550,
-    modal: true,
-    title: "How we can call our ship, captain?"
-});
 
 var setShipButton = document.getElementById("setShipButton");
 var setNewNameButton = document.getElementById("setShipButton");
@@ -107,9 +87,54 @@ var small_text = $("p.big_text");
 var currentElem = 0;
 var currentDefaultName = "";
 
-$( ".close" ).click(function() {
-  answerModal.style.display = "none";
+var opt = {
+    autoOpen: false,
+    resizable: false,
+    height: 300,
+    width: 550,
+    modal: true,
+    title: "How we can call our ship, captain?"
+};
+
+$(document).ready(function () {
+    document.getElementById('setNameModal').style.display="none";
+
+    $( "#dialogInfo" ).dialog({
+        autoOpen: false,
+        resizable: false,
+        height: "auto",
+        width: "auto",
+        modal: true,
+        buttons: [{
+              text: "OK",
+              click: function() {
+                $( this ).dialog( "close" );
+              }
+        }]
+    });
 });
+
+function inizializeDialog() {
+    $("#setNameModal").dialog(opt).dialog( "option", "buttons",
+        [{
+           text: "Ok",
+           click: function() {
+               var shipName = $('#setNameText').val();
+               if (confirmNewName(shipName)) {
+                   buyShip(currentElem, shipName, currentDefaultName);
+                   $("#setNameText").val("");
+                   $(this).dialog('destroy');
+               }
+           }
+        }, {
+            text: "Cancel",
+            click: function() {
+                $("#setNameText").val("");
+                $(this).dialog('destroy');
+            }
+        }]
+    );
+}
 
 function confirmNewName(shipName) {
     if (shipName.search(/[^A-z,0-9,\s,_]/g) > -1 || shipName.length > 20 || shipName.length == 0) {
@@ -118,38 +143,16 @@ function confirmNewName(shipName) {
     }
     return true;
 }
-var shipName = '';
+
 function setShipName(elem, defaultName) {
-    setNameModal.dialog( "option", "buttons",
-        [{
-           text: "Ok",
-           click: function() {
-               shipName = $('input[name="inputShipName"]').val();
-               if (confirmNewName(shipName)) {
-                   buyShip(elem, shipName, defaultName);
-                   $("#setNameText").val("");
-                   $(this).dialog('close');
-               }
-           }
-        }, {
-            text: "Cancel",
-            click: function() {
-                $("#setNameText").val("");
-                $(this).dialog('close');
-            }
-        }]
-    );
-    setNameModal.dialog( "open" );
     currentElem = elem.value;
     currentDefaultName = defaultName;
+    inizializeDialog();
+    $("#setNameModal").dialog(opt).dialog( "open" );
 }
 
-
-
-
-
 function buyShip(elem, shipName, defaultName) {
-    var shipTemplateId = elem.value;
+    var shipTemplateId = elem;
     $(function(){
         $.ajax({
             url:'/buy',
@@ -157,8 +160,8 @@ function buyShip(elem, shipName, defaultName) {
             data: { 'shipTemplateId' : shipTemplateId, 'shipName' : shipName , 'defaultName' : defaultName },
             success: function(data) {
                          console.log("SUCCESS: ",data);
-                         text.innerHTML=data;
-                         answerModal.style.display = "block";
+                         $("#dialogInfoContent").text(data);
+                         $("#dialogInfo").dialog("open");
                          },
                          error : function(e) {
                              console.log("ERROR: ", e);
@@ -168,26 +171,6 @@ function buyShip(elem, shipName, defaultName) {
                 headerUpdate();
             } );
     });
-}
-
-function headerUpdate() {
-    $.ajax({
-        url:'/addHeader',
-        method:"GET",
-        success: function(data) {
-                     console.log("SUCCESS: ");
-                     $('.header').html(data);
-                     }
-        });
-}
-
-window.onclick = function(event) {
-    if (event.target == answerModal) {
-        answerModal.style.display = "none";
-    }
-    if (event.target == setNameModal) {
-        setNameModal.dialog("close");
-    }
 }
 </script>
 </body>

@@ -28,7 +28,8 @@
             			url:'/buyShip',
             			success : function(response) {
             				console.log("SUCCESS: ");
-            				$('.shipContainer').html(response);
+            				$('#shipContainer').empty();
+            				$('#shipContainer').html(response);
                             body.mCustomScrollbar("scrollTo","bottom",{
                                 scrollEasing:"easeOut"
                             });
@@ -45,7 +46,7 @@
                         url:'/sellShip',
                         success : function(response) {
                             console.log("SUCCESS: ");
-                            $('.shipContainer').html(response);
+                            $('#shipContainer').html(response);
                             body.mCustomScrollbar("scrollTo","bottom",{
                                 scrollEasing:"easeOut"
                             });
@@ -62,8 +63,7 @@
                         url:'/repairShip',
                         success : function(response) {
                             console.log("SUCCESS: ");
-                            $('.shipContainer').html(response);
-
+                            $('#shipContainer').html(response);
                             body.mCustomScrollbar("scrollTo","bottom",{
                                 scrollEasing:"easeOut"
                             });
@@ -73,6 +73,18 @@
                         }
                     });
             }
+
+            function headerUpdate() {
+                $.ajax({
+                    url:'/addHeader',
+                    method:"GET",
+                    success: function(data) {
+                                 console.log("SUCCESS: ");
+                                 $('.header').html(data);
+                                 }
+                    });
+            }
+
             var body;
             var shipContainer;
             function scrollBars() {
@@ -83,9 +95,6 @@
             }
             
             $(document).ready(function () {
-                $("#repair").click(function(){
-                    repairShips();
-                });
                 scrollBars();
             });
     </script>
@@ -126,7 +135,7 @@
 		</tr>
 		<tr align="center">
 			<td>
-			<button id="repair" class="button" >
+			<button class="button" onclick="repairShips()">
 			<span>Repair ship</span>
 			</button>
 			</td>
@@ -143,8 +152,13 @@
 		</tr>
 	</table>
 </div>
-<div class="shipContainer" align="center" >
+<div id="shipContainer" align="center" >
 
+</div>
+
+<div id = "dialogInfo">
+    <div id = "dialogInfoContent">
+    </div>
 </div>
 </body>
 </html>

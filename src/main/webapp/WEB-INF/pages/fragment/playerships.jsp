@@ -26,7 +26,7 @@
         <td>
             <table class ="tableClass">
             <tr>
-                <td class="center">
+                <td align="center">
                 <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getShipId()}" onclick="chooseOfAction(this,'${action}',${shipTemplates.getCost()-shipCosts.get(status.index)*2}, ${shipTemplates.curCarryingLimit})">
                 <span>${action} ${shipTemplates.getTName()}</span>
                 </button>
@@ -85,13 +85,6 @@
         </table>
 </div>
 
-<div id="myModal" class="modal">
-    <div class="modal-content">
-    <span class="close">&times;</span>
-    <p id="text"></p>
-    </div>
-</div>
-
 <div id="setConfirmModal" >
     <p class="big_text">That ship have something in hold, captain. We will give it away.</p>
 </div>
@@ -113,10 +106,21 @@ setConfirmModal.dialog({
     modal: true,
 });
 
-
-$( ".close" ).click(function() {
-  modal.style.display = "none";
-  refresh(currentAction);
+$(document).ready(function () {
+    $( "#dialogInfo" ).dialog({
+        autoOpen: false,
+        resizable: false,
+        height: "auto",
+        width: "auto",
+        modal: true,
+        buttons: [{
+              text: "OK",
+              click: function() {
+                $( this ).dialog( "close" );
+                refresh(currentAction);
+              }
+        }]
+    });
 });
 
 function refresh(action) {
@@ -181,8 +185,8 @@ var shipId = elem;
                             needUpdate = true;
                          else
                             needUpdate = false;
-                         text.innerHTML = data;
-                         modal.style.display = "block";
+                         $("#dialogInfoContent").text(data);
+                         $("#dialogInfo").dialog("open");
                          },
                          error : function(e) {
                              console.log("ERROR: ", e);
@@ -200,36 +204,28 @@ var shipId = elem.value;
             data: { 'shipId' : shipId },
             success: function(data) {
                          console.log("SUCCESS: ",data);
+                         var message = "";
                          if (data)
                             if (diffcost == 0) {
-                                text.innerHTML="Ship is already repaired";
+                                message="Ship is already repaired";
                                 needUpdate = false;
                             }
                             else {
-                                text.innerHTML="Ship repaired";
+                                message="Ship repaired";
                                 needUpdate = true;
                             }
                          else {
-                            text.innerHTML="We need more money, captain!";
+                            message="We need more money, captain!";
                             needUpdate = false;
                          }
-                         modal.style.display = "block";
+                         $("#dialogInfoContent").text(message);
+                         $("#dialogInfo").dialog("open");
                          },
                          error : function(e) {
                              console.log("ERROR: ", e);
                          }
             } );
     });
-}
-
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-        refresh(currentAction);
-    }
-    if (event.target == setConfirmModal) {
-        setConfirmModal.dialog("close");
-    }
 }
 </script>
 </body>

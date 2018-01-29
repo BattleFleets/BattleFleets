@@ -95,7 +95,7 @@ public class TradeController {
     }
 
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/market/getBuyGoods", method = RequestMethod.GET)
+    @RequestMapping(value = "/market/buy", method = RequestMethod.GET)
     @ResponseBody
     public String getAllGoodsForBuying(@AuthenticationPrincipal PlayerUserDetails userDetails)
             throws JsonProcessingException {
@@ -105,7 +105,7 @@ public class TradeController {
     }
 
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/market/getSellGoods", method = RequestMethod.GET)
+    @RequestMapping(value = "/market/sell", method = RequestMethod.GET)
     @ResponseBody
     public String getAllGoodsForSelling(@AuthenticationPrincipal PlayerUserDetails userDetails)
     throws JsonProcessingException{
