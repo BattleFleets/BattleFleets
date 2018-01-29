@@ -50,7 +50,7 @@ public class QueryBuilderTest {
     @Rollback(true)
     public void testInsertOnlyObject() {
         BigInteger objectId = jdbcTemplate.queryForObject(Query.GET_NEXTVAL, BigDecimal.class).toBigInteger();
-        Cannon expectedCannon = new Cannon(objectId, "Bombard", 2, 15, 1000);
+        Cannon expectedCannon = new Cannon(objectId, "Bombard", 4, 150, 1000);
 
         PreparedStatementCreator actualPreparedStmt = QueryBuilder.insert(DatabaseObject.CANNON_OBJTYPE_ID, objectId)
                 .setSourceObjId(DatabaseObject.BOMBARD_TEMPLATE_ID)
