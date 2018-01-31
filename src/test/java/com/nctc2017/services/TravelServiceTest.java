@@ -69,7 +69,7 @@ public class TravelServiceTest {
         int lvlNik = 5;
 
         netcracken = new City("NetCracken", null, cityId);
-        nik = new Player(playerIdNik, loginNik, emailNik, moneyNik, pointsNik, lvlNik,5);
+        nik = new Player(playerIdNik, loginNik, emailNik, moneyNik, pointsNik, lvlNik,5,5,5);
     }
 
     private static void createPlayerSteve() {
@@ -83,7 +83,7 @@ public class TravelServiceTest {
         int lvlSteve = 10;
 
         vataArt = new City("VataArt", null, cityId);
-        steve = new Player(playerIdSteve, loginSteve, emailSteve, moneySteve, pointsSteve, lvlSteve,5);
+        steve = new Player(playerIdSteve, loginSteve, emailSteve, moneySteve, pointsSteve, lvlSteve,5,5,5);
     }
 
     @Before

@@ -46,7 +46,7 @@ public class MoneyServiceTest {
         int money = 150;
         int points = 13;
         int lvl = 10;
-        steve = new Player(playerId, login, email, money, points, lvl, 5);
+        steve = new Player(playerId, login, email, money, points, lvl, 5,5,5);
     }
 
     @Before

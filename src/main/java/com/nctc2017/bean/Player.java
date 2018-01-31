@@ -9,7 +9,8 @@ public class Player {
     public static final String POINTS = "Points";
     public static final String LEVEL = "Level";
     public static final String NEXT_LEVEL = "NextLevel";
-
+    public static final String INCOME = "Passive income";
+    public static final String MAX_SHIPS = "Max ships";
 
     protected BigInteger playerId;
 
@@ -25,14 +26,20 @@ public class Player {
 
     protected int nextLevel;
 
-    public Player(BigInteger playerId, String login, String email, int money, int points, int level, int nextLevel) {
+    protected int income;
+
+    protected int maxShips;
+
+    public Player(BigInteger playerId, String login, String email, int money, int points, int level, int nextLevel, int income, int maxShips) {
         this.playerId = playerId;
         this.login = login;
         this.email = email;
         this.money = money;
         this.points = points;
         this.level = level;
-        this.nextLevel=nextLevel;
+        this.nextLevel = nextLevel;
+        this.income = income;
+        this.maxShips = maxShips;
     }
 
     public BigInteger getPlayerId() {
@@ -89,5 +96,21 @@ public class Player {
 
     public void setNextLevel(int nextLevel) {
         this.nextLevel = nextLevel;
+    }
+
+    public int getIncome() {
+        return income;
+    }
+
+    public void setIncome(int income) {
+        this.income = income;
+    }
+
+    public int getMaxShips() {
+        return maxShips;
+    }
+
+    public void setMaxShips(int maxShips) {
+        this.maxShips = maxShips;
     }
 }

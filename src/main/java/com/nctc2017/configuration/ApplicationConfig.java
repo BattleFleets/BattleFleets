@@ -151,6 +151,10 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     public ShipTradeService shipTradeServiceTest() {
         return new ShipTradeService();
     }
+
+    @Bean(name = "playerService")
+    @Scope("singleton")
+    public PlayerService playerService(){return new PlayerService();}
     
     @Bean(name = "scheduledExecutorService")
     @Scope("singleton")

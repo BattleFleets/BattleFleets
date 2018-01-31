@@ -81,7 +81,7 @@ public class PlayerDaoImplTest {
     public void findPlayerByLogin() throws Exception{
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer1 = playerDao.findPlayerByLogin("Steve");
-        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",9000,0,1,5);
+        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",9000,0,1,5,5,5);
         assertEquals(topPlayer1.getLogin(), topPlayer2.getLogin());
         assertEquals(topPlayer1.getEmail(), topPlayer2.getEmail());
         assertEquals(topPlayer1.getLevel(), topPlayer2.getLevel());
@@ -221,7 +221,7 @@ public class PlayerDaoImplTest {
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer = playerDao.findPlayerByLogin("Steve");
         Player topPlayer1 = playerDao.findPlayerById(topPlayer.getPlayerId());
-        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",9000,0,1, 5);
+        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",9000,0,1, 5,5,5);
         assertEquals(topPlayer1.getLogin(), topPlayer2.getLogin());
         assertEquals(topPlayer1.getEmail(), topPlayer2.getEmail());
         assertEquals(topPlayer1.getLevel(), topPlayer2.getLevel());
@@ -270,7 +270,7 @@ public class PlayerDaoImplTest {
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer = playerDao.findPlayerByLogin("Steve");
         String login = playerDao.getPlayerLogin(topPlayer.getPlayerId());
-        Player topPlayer1 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1, 5);
+        Player topPlayer1 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1, 5,5,5);
         assertEquals(login, topPlayer1.getLogin());
     }
 
@@ -301,7 +301,7 @@ public class PlayerDaoImplTest {
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer = playerDao.findPlayerByLogin("Steve");
         String email = playerDao.getPlayerEmail(topPlayer.getPlayerId());
-        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1, 5);
+        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,1,1, 5,5,5);
         assertEquals(email, topPlayer2.getEmail());
     }
 
@@ -317,7 +317,7 @@ public class PlayerDaoImplTest {
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer = playerDao.findPlayerByLogin("Steve");
         int money = playerDao.getPlayerMoney(topPlayer.getPlayerId());
-        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",9000,1,1, 5);
+        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",9000,1,1, 5,5,5);
         assertEquals(money, topPlayer2.getMoney());
     }
     @Test(expected = IllegalArgumentException.class)
@@ -332,7 +332,7 @@ public class PlayerDaoImplTest {
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer = playerDao.findPlayerByLogin("Steve");
         int lvl = playerDao.getPlayerLevel(topPlayer.getPlayerId());
-        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,0,1, 5);
+        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,0,1, 5,5,5);
         assertEquals(lvl, topPlayer2.getLevel());
     }
     @Test(expected = IllegalArgumentException.class)
@@ -347,7 +347,7 @@ public class PlayerDaoImplTest {
         playerDao.addNewPlayer("Steve","1111","Rogers@gmail.com");
         Player topPlayer = playerDao.findPlayerByLogin("Steve");
         int points = playerDao.getPlayerPoints(topPlayer.getPlayerId());
-        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,0,0, 5);
+        Player topPlayer2 = new Player(new BigInteger("1"),"Steve","Rogers@gmail.com",100,0,0, 5,5,5);
         assertEquals(points, topPlayer2.getPoints());
     }
     @Test(expected = IllegalArgumentException.class)

@@ -393,7 +393,9 @@ public class PlayerDaoImpl implements PlayerDao{
                     Integer.valueOf(papamMap.get(Player.MONEY)),
                     Integer.valueOf(papamMap.get(Player.POINTS)),
                     Integer.valueOf(papamMap.get(Player.LEVEL)),
-                    Integer.valueOf(papamMap.get(Player.NEXT_LEVEL)));
+                    Integer.valueOf(papamMap.get(Player.NEXT_LEVEL)),
+                    Integer.valueOf(papamMap.get(Player.INCOME)),
+                    Integer.valueOf(papamMap.get(Player.MAX_SHIPS)));
         }
     }
 }
