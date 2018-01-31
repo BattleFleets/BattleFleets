@@ -13,7 +13,7 @@
 
 @keyframes city {
     from { left: -700px; }
-    to { left: 1100px; }
+    to { left: 100%; }
 }
 html, body{
 	background-image: url("../images/travel/fog_sea.jpg");

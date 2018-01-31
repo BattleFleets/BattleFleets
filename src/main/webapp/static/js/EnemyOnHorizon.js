@@ -67,6 +67,7 @@ function lookout() {
                         }).fail(function(xhr, status, error) {
                             if (xhr.status == 405) {
                                 $( "#error_info" ).html(error + " " + xhr.responseText);
+                                clearInterval(lookoutId);
                                 window.location.href = "/city";
                             } else {
                                 window.location.href = "/error";
@@ -92,8 +93,9 @@ function lookout() {
         if (xhr.status == 405) {
             clearInterval(lookoutId);
             window.location.href = "/city";
+        } else {
+            lookoutTask();/*already arrived*/
         }
-        lookoutTask();/*already arrived*/
     });
 }
         

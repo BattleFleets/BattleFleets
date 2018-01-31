@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.CacheControlConfig;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -43,14 +44,19 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry
-                .addResourceHandler("/static/**")
+        registry.addResourceHandler("/static/bootstrap-3.3.7/**").addResourceLocations("/static/bootstrap-3.3.7/")
+        .setCacheControl(CacheControl.noCache());
+        registry.addResourceHandler("/static/css/**").addResourceLocations("/static/css/")
+        .setCacheControl(CacheControl.noCache());
+        registry.addResourceHandler("/static/js/**").addResourceLocations("/static/js/")
+        .setCacheControl(CacheControl.noCache());
+        registry.addResourceHandler("/static/audio/**").addResourceLocations("/static/audio/")
+        .setCacheControl(CacheControl.maxAge(12, TimeUnit.HOURS));
+        registry.addResourceHandler("/static/images/**").addResourceLocations("/static/images/")
+        .setCacheControl(CacheControl.maxAge(12, TimeUnit.HOURS));
+        /*registry.addResourceHandler("/static/**")
                 .addResourceLocations("/static/")
-                .setCacheControl(CacheControl.maxAge(12, TimeUnit.HOURS));
-                /*.setCachePeriod(3600)
-                .resourceChain(true)
-                .addResolver(new GzipResourceResolver())
-                .addResolver(new PathResourceResolver());*/
+                .setCacheControl(CacheControl.maxAge(12, TimeUnit.HOURS));*/
     }
 
     @Bean
