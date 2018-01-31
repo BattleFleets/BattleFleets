@@ -121,11 +121,6 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         return new BattleManager();
     }
 
-    @Bean(name = "moneyServiceSingleton")
-    @Scope("singleton")
-    public MoneyService moneyServiceProt() {
-        return new MoneyService();
-    }
 
     @Bean(name = "shipServicePrototype")
     @Scope("prototype")
@@ -151,10 +146,6 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     public ShipTradeService shipTradeServiceTest() {
         return new ShipTradeService();
     }
-
-    @Bean(name = "playerService")
-    @Scope("singleton")
-    public PlayerService playerService(){return new PlayerService();}
     
     @Bean(name = "scheduledExecutorService")
     @Scope("singleton")

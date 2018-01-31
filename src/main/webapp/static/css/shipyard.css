@@ -50,9 +50,9 @@ img {
 #shipContainer {
     position: relative;
     margin-top: 3%;
-    margin-left: 20%;
+    /*margin-left: 20%;*/
     overflow: auto;
-    width: 60%;
+    /*width: 60%;*/
 }
 
 .close {

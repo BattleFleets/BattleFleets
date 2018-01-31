@@ -120,12 +120,15 @@
             <span>All ships</span>
         </button>
     </div>
+    <div>
+        <%@include file="fragment/footer.jsp"%>
+    </div>
 </div> 
 
     <button id="audio" class="icon_sound" type="submit" title="Mute" style="vertical-align:middle"></button>
     <div id="myModal"></div>
     <a href="/city" class="logOutBottom">Return to city</a>
-    <%@include file="fragment/footer.jsp"%>
+
 </body>
 
 

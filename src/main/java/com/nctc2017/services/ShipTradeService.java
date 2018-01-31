@@ -7,12 +7,14 @@ import com.nctc2017.dao.ShipDao;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service("shipTradeService")
+@Transactional
 public class ShipTradeService {
 
     private static Logger log = Logger.getLogger(ShipTradeService.class);
