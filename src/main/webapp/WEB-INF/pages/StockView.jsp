@@ -165,7 +165,7 @@ function showShipResources(event){
 
 
     function getShipHtml(shipId, name, curCarryingLimit, maxCarryingLimit, image){
-        var returnValue = "<td id = \"" + shipId +"\" align=\"center\"><div class=\"element\"><p><b class=\"values\">"+
+        var returnValue = "<td align=\"center\"><div id = \"" + shipId +"\" class=\"element\"><p><b class=\"values\">"+
                                   name + "</b> </p><img src = \"" + image + "\"><p>Carrying: <b id=\"shipDescription\">" +
                                   curCarryingLimit + "/" + maxCarryingLimit + "</b> </p></div></td>";
         return returnValue;
@@ -173,7 +173,7 @@ function showShipResources(event){
 
 
     function getGoodsHtml(goodsId, name, description, quantity, type, image){
-        var returnValue = "<td id=\"" + goodsId +"\" align=\"center\"> <div class=\"element\"> <p><b class=\"values\">" + name + "</b> </p> <img src = \"" +
+        var returnValue = "<td align=\"center\"> <div id=\"" + goodsId +"\" class=\"element\"> <p><b class=\"values\">" + name + "</b> </p> <img src = \"" +
                                 image + "\"><p><b>" + description + "</b> </p><p>Quantity: <b>" +
                                 quantity + " </b></p></div></td>";
         return returnValue;
