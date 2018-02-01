@@ -11,6 +11,10 @@
 	position: absolute;
 }
 
+.timer {
+	z-index: 10;
+}
+
 @keyframes city {
     from { left: -700px; }
     to { left: 100%; }

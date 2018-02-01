@@ -109,7 +109,7 @@
 	cursor: pointer;
 	position: relative;
 	margin: 2px 0 0 0;
-	padding: .5em .5em .5em .7em;
+	padding: 3% 3% 3% 3%;
 	min-height: 0; /* support: IE7 */
 	font-size: 100%;
 }

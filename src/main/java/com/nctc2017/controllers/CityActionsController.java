@@ -46,7 +46,8 @@ public class CityActionsController {
         boolean fleetSpeedOk = travelService.isFleetSpeedOk(playerId);
         if (!fleetSpeedOk) {
             model.addObject("errorMes", 
-                    "Thousand devils!!! The masts are damaged, the ship can not leave the port.");
+                    "The masts are damaged, the ship can not leave the port.");
+            model.addObject("errTitle", "Thousand devils!!!");
             return model;
         }
         

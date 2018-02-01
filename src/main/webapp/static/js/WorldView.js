@@ -3,7 +3,7 @@ function myDialog(title_, mes, buttons_) {
     var $wDialog =$( "#dialog_info" ).html(mes);
     $wDialog.dialog({
         modal: true,
-        width: 470,
+        width: 500,
         height: 210,
         title: title_,
         buttons: buttons_

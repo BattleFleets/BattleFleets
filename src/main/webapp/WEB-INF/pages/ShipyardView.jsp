@@ -11,7 +11,6 @@
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
     <script src="static/js/jquery.mCustomScrollbar.min.js"></script>
-    <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
     <script src="static/js/volume.js"></script>
 
 
@@ -33,7 +32,7 @@
             				console.log("SUCCESS: ");
             				$('#shipContainer').empty();
             				$('#shipContainer').html(response);
-                            body.mCustomScrollbar("scrollTo","bottom",{
+                            body.mCustomScrollbar("scrollTo", $("#shipContainer").delay( 500 ), {
                                 scrollInertia: animDuration,
                                 scrollEasing:"easeOut"
                             });
@@ -51,7 +50,7 @@
                         success : function(response) {
                             console.log("SUCCESS: ");
                             $('#shipContainer').html(response);
-                            body.mCustomScrollbar("scrollTo","bottom",{
+                            body.mCustomScrollbar("scrollTo",$("#shipContainer").delay( 500 ),{
                                 scrollInertia: animDuration,
                                 scrollEasing:"easeOut"
                             });
@@ -69,7 +68,7 @@
                         success : function(response) {
                             console.log("SUCCESS: ");
                             $('#shipContainer').html(response);
-                            body.mCustomScrollbar("scrollTo","bottom",{
+                            body.mCustomScrollbar("scrollTo",$("#shipContainer").delay( 500 ),{
                                 scrollInertia: animDuration,
                                 scrollEasing:"easeOut"
                             });
