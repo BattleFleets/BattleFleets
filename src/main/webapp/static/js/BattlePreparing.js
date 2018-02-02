@@ -212,4 +212,13 @@ $(document).ready(function(){
     });
     console.log("request for exit available");
     isExitAvailable();
+    
+    $( "td[title]" ).tooltip({
+        content: function () {return $( this ).attr("title")},
+        position: {
+            my: "center bottom",
+            at: "center top-10",
+            collision: "flip"
+        }
+    });
 });

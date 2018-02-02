@@ -7,6 +7,7 @@
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
     <link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
+
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
     <script src="static/js/volume.js" type="text/javascript"></script>
@@ -15,7 +16,7 @@
 
 <body>
 
-    <audio autoplay id="piratesSong" onloadeddata="setVolume('piratesSong', 0.1);">
+    <audio autoplay id="piratesSong" onloadeddata="setVolume('piratesSong', 0.05);">
         <source src="static/audio/pirates_song.mp3" type="audio/mp3">
     </audio>
 <div id="myScroll" style="height: 100%">   
@@ -128,6 +129,8 @@
     <div id="myModal"></div>
     <a href="/city" class="logOutBottom">Return to city</a>
 
+    <button class = "helpButton" type = "button" onclick = "openHelp('#tavernInfo')"></button>
+    <jsp:include page="fragment/help.jsp" />
 </body>
 
 

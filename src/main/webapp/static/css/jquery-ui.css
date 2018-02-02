@@ -860,11 +860,11 @@ button.ui-button::-moz-focus-inner {
 	position: absolute;
 	z-index: 9999;
 	max-width: 300px;
-	-webkit-box-shadow: 0 0 5px #aaa;
-	box-shadow: 0 0 5px #aaa;
+	/*-webkit-box-shadow: 0 0 5px #aaa;
+	box-shadow: 0 0 5px #aaa;*/
 }
 body .ui-tooltip {
-	border-width: 2px;
+	/*border-width: 2px;*/
 }
 
 /* Component containers
@@ -912,7 +912,7 @@ body .ui-tooltip {
 .ui-state-default,
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
-	border: 1px solid #d3d3d3;
+	/*border: 1px solid #d3d3d3;*/
 	/*background: #e6e6e6 url("images/ui-bg_glass_75_e6e6e6_1x400.png") 50% 50% repeat-x;*/
 	font-weight: normal;
 	color: #555555;
@@ -932,6 +932,7 @@ body .ui-tooltip {
 	/*border: 2px solid #ff9831;*/
 	/*background: #dadada url("images/ui-bg_glass_75_dadada_1x400.png") 50% 50% repeat-x;*/
 	/*font-weight: normal;*/
+	font-weight: bolder;
 	/*color: #ff8000 !Important;*/
 }
 .ui-state-hover a,
@@ -1259,15 +1260,19 @@ body .ui-tooltip {
 
 /* Overlays */
 .ui-widget-overlay {
-	background: #aaaaaa url("images/ui-bg_flat_0_aaaaaa_40x100.png") 50% 50% repeat-x;
+	background: #aaaaaa 50% 50% repeat-x;
 	opacity: .3;
 	filter: Alpha(Opacity=30); /* support: IE8 */
 }
 .ui-widget-shadow {
 	margin: -8px 0 0 -8px;
-	padding: 8px;
-	background: #aaaaaa url("images/ui-bg_flat_0_aaaaaa_40x100.png") 50% 50% repeat-x;
-	opacity: .3;
-	filter: Alpha(Opacity=30); /* support: IE8 */
-	border-radius: 8px;
+	padding: 8px 8px 8px 15px;
+	background: url("../images/general/dialog_background.png");
+	background-position: center;
+	background-repeat:no-repeat;
+	background-attachment: scroll;
+	background-size: 100% 100%;
+	opacity: 1;
+	filter: Alpha(Opacity=100); /* support: IE8 */
+	/*border-radius: 8px;*/
 }

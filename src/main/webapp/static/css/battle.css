@@ -336,3 +336,16 @@ tr th, tr td {
 	width: 10%;
 	height: 10%;
 }
+
+.with_tooltip {
+	text-decoration: underline;
+}
+
+.helpButton {
+    width: auto;
+    height: auto;
+    padding: 2%;
+    top: auto;
+    bottom: 1%;
+    right: 5%;
+}

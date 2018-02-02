@@ -1,10 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
-<head>
-    <link href="static/css/general.css" rel="stylesheet" media="screen">
-</head>
-<body>
+
 <header>
         <p>${login}</p>
         <p>Level ${level}/${maxLvl}</p>
@@ -18,6 +14,4 @@
         <p id="improveWrapper">Improve <span  id="improve">${nextImprove}</span> lvl</p>
         </c:if>
 </header>
-</body>
-</html>
 

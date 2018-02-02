@@ -577,6 +577,17 @@ $(document).ready(function() {
     battleEndTask();
     soundButton("#audio");
     scrollBars();
+    
+    $( "td:has(.button_pick), .icon" ).tooltip({
+        hide: { effect: "fadeOut", duration: 500 },
+        show: { effect: "fadeIn", duration: 1000, delay: 500 },
+        content: function () {return $( this ).attr("title")},
+        position: {
+            my: "left bottom",
+            at: "center top",
+            collision: "flip"
+        }
+    });
 });
 
 function scrollBars() {

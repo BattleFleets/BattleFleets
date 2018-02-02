@@ -13,7 +13,6 @@
     <script src="static/js/jquery.mCustomScrollbar.min.js"></script>
     <script src="static/js/volume.js"></script>
 
-
     <script type="text/javascript">
     
     var animDuration = 1500;
@@ -180,6 +179,8 @@
         <div id = "dialogInfoContent">
         </div>
     </div>
+    <button class = "helpButton" type = "button" onclick = "openHelp('#shipyardInfo')"></button>
 </div>
+    <jsp:include page="fragment/help.jsp" />
 </body>
 </html>

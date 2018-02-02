@@ -111,35 +111,30 @@
         <div>
             <table id="button_tab" class="panel messageText" width="100%" style="table-layout: fixed;">
                 <tr>
-                    <td>
-                        <button id="fire" disabled="disabled" class="button_pick" style="vertical-align:middle" name="fire" type="submit"
-                        title="A volley of all cannons!">
+                    <td title="A volley of all cannons!">
+                        <button id="fire" disabled="disabled" class="button_pick" style="vertical-align:middle" name="fire" type="submit">
                             <span class="icon_fire_disable"></span><span style="float: none">Fire</span>
                         </button>
                     </td>
-                    <td>
-                        <button id="boarding" disabled="disabled" class="button_pick" style="vertical-align:middle" name="boarding" type="submit"
-                        title="Distance between ships should be 0">
+                    <td title="Distance between ships should be 0">
+                        <button id="boarding" disabled="disabled" class="button_pick" style="vertical-align:middle" name="boarding" type="submit">
                             <span class="icon_boarding_disable"></span><span style="float: none">Boarding</span>
                         </button>
                     </td> 
-                    <td>
-                        <button id="escape" class="button_pick" disabled="disabled" style="vertical-align:middle" name="escape" type="submit"  
-                        title="Your speed should be greater than the enemy's by 5 knots">
+                    <td title="Your speed should be greater than the enemy's by 5 knots">
+                        <button id="escape" class="button_pick" disabled="disabled" style="vertical-align:middle" name="escape" type="submit">
                             <span class="icon_escape_disable"></span><span style="float: none">Escape</span>
                         </button>
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        <button id="payoff" class="button_pick" disabled="disabled" style="vertical-align:middle" name="payoff" type="submit" 
-                        title="You will lose ${payoff} doublons">
+                    <td title="You will lose ${payoff} doublons and enemy ship will go away.">
+                        <button id="payoff" class="button_pick" disabled="disabled" style="vertical-align:middle" name="payoff" type="submit">
                             <span class="icon_payoff_disable"></span><span style="float: none">Payoff</span>
                         </button>
                     </td>
-                    <td>
-                        <button id="surrender" class="button_pick" style="vertical-align:middle" name="surrender" type="submit"
-                        title="You will lose your cargo">
+                    <td title="You will lose your cargo or crew if no cargo.">
+                        <button id="surrender" class="button_pick" style="vertical-align:middle" name="surrender" type="submit">
                             <span class="icon_surrender"></span><span style="float: none">Surrender</span>
                         </button>
                     </td>
@@ -166,6 +161,10 @@
     
     <div id="dialog"></div>
 </div>
+
 <button id="audio" class="icon_sound" type="submit" title="Mute" style="vertical-align:middle; position: absolute;"></button>
+<button class = "helpButton" type = "button" onclick = "openHelp('#battleInfo')"></button>
+<jsp:include page="fragment/help.jsp" />
+
 </body>
 </html>

@@ -1,21 +1,19 @@
-<html>
-<head>
-    <link href="static/css/general.css" rel="stylesheet" media="screen">
-    <script src="static/js/jquery.min.js"></script>
-    <script src="static/js/jquery-ui.min.js"></script>
-    <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
-    <script type="text/javascript">
-    $( function() {
 
+<script src="static/js/help.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#dialogHelp").mCustomScrollbar({
+            axis:"y", // vertical scrollbar
+            theme:"minimal-dark",
+            advanced:{ autoScrollOnFocus: false }
+        });
     });
+</script>
 
-    </script>
-</head>
 
-  <body>
-    <div id = "dialogHelp" class="helpContent">
+ <div id = "dialogHelp" class="helpContent" style="z-index: -5" hidden="hidden">
     <div>
-      <div > <a name="cityInfo"></a>
+      <div > <a id ="cityInfo" name="cityInfo"></a>
         <h1>
         City
         </h1>
@@ -29,7 +27,7 @@
         </div>
       </div>
 
-      <div> <a name="marketInfo"></a>
+      <div> <a id ="marketInfo" name="marketInfo"></a>
         <h1>
         Market
         </h1>
@@ -43,7 +41,7 @@
         </div>
       </div>
 
-      <div> <a name="shipyardInfo"></a>
+      <div> <a id ="shipyardInfo" name="shipyardInfo"></a>
         <h1>
         Shipyard
         </h1>
@@ -53,7 +51,7 @@
         </div>
       </div>
 
-      <div> <a name="tavernInfo"></a>
+      <div> <a id ="tavernInfo" name="tavernInfo"></a>
         <h1>
         Tavern
         </h1>
@@ -74,7 +72,7 @@
         </div>
       </div>
 
-      <div> <a name="tripInfo"></a>
+      <div> <a id ="tripInfo" name="tripInfo"></a>
         <h1>
         Trip
         </h1>
@@ -83,15 +81,15 @@
             When traveling from one city to another, everything that was in the stock disappears and is not transferred to the stock of another city. If the captain has something left in the stock, and he will try to go to another city, he will receive a warning and the opportunity either to stay in the city with the preservation of goods, or still sail to another city and lose forever what is left in the stock.<p/>
             After selecting the city, the captain enters the travel page, which has a travel end timer. During a trip an enemy fleet may appear on the horizon and a battle may ensue between them.<p/>
             At the end of the countdown, the captain enters the city that was sailing.<p/>
+            While traveling from one city to another two captains can notice each other on the horizon and a fight between them can begin. The battle will begin if at least one of the captains has expressed a desire to fight, and if both decide to swim further their journey will continue.<p/>
         </div>
       </div>
 
-      <div> <a name="battleInfo"></a>
+      <div> <a id ="battleInfo" name="battleInfo"></a>
       <h1>
        Battle
        </h1>
-       <div class = "helpText">
-            While traveling from one city to another two captains can notice each other on the horizon and a fight between them can begin. The battle will begin if at least one of the captains has expressed a desire to fight, and if both decide to swim further their journey will continue.<p/>
+       <div class = "helpText"> 
             After confirming the entry into battle, the captains will be shown the battle preparation page, which displays the ships of their fleet with a full description of combat power and other characteristics, as well as ships of the enemy fleet with a partial description. The captain must choose one of his ships, which will now fight. After a lapse of a minute, if no choice has been made, the vehicle will automatically be selected.<p/>
             Then the captain is redirected to the battle page. There are 3 areas here.<p/>
             The upper one shows our characteristics and characteristics of the enemy. And also the distance between our ships. The distance affects whether the gun can fire, as it can shoot at a certain distance. Similarly, boarding is possible only if the distance between the ships is zero. There is also a proximity button, clicking on which you turn the approach of your ship to the enemy ship. The speed of approach is influenced by the speed of your ship.<p/>
@@ -103,5 +101,3 @@
 
     </div>
 </div>
-  </body>
-</html>
