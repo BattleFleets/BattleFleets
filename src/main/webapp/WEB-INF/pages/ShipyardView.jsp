@@ -27,6 +27,9 @@
             $.ajax({
             			method:"GET",
             			url:'/buyShip',
+            			beforeSend: function() {
+                            $('.modal').show();
+                        },
             			success : function(response) {
             				console.log("SUCCESS: ");
             				$('#shipContainer').empty();
@@ -36,8 +39,12 @@
                                 scrollEasing:"easeOut"
                             });
             			},
+            			complete: function() {
+                            $('.modal').hide();
+                        },
                         error : function(e) {
                             console.log("ERROR: ", e);
+                            window.location.href = "/error";
                         }
             		});
             }
@@ -46,6 +53,9 @@
             $.ajax({
                         method:"GET",
                         url:'/sellShip',
+                        beforeSend: function() {
+                            $('.modal').show();
+                        },
                         success : function(response) {
                             console.log("SUCCESS: ");
                             $('#shipContainer').html(response);
@@ -54,8 +64,12 @@
                                 scrollEasing:"easeOut"
                             });
                         },
+            			complete: function() {
+                            $('.modal').hide();
+                        },
                         error : function(e) {
                             console.log("ERROR: ", e);
+                            window.location.href = "/error";
                         }
                     });
             }
@@ -64,6 +78,9 @@
             $.ajax({
                         method:"GET",
                         url:'/repairShip',
+                        beforeSend: function() {
+                            $('.modal').show();
+                        },
                         success : function(response) {
                             console.log("SUCCESS: ");
                             $('#shipContainer').html(response);
@@ -72,8 +89,12 @@
                                 scrollEasing:"easeOut"
                             });
                         },
+            			complete: function() {
+                            $('.modal').hide();
+                        },
                         error : function(e) {
                             console.log("ERROR: ", e);
+                            window.location.href = "/error";
                         }
                     });
             }
@@ -108,6 +129,7 @@
             
             $(document).ready(function () {
                 scrollBars();
+                $('.modal').hide();
             });
     </script>
 </head>
@@ -181,6 +203,7 @@
     </div>
     <button class = "helpButton" type = "button" onclick = "openHelp('#shipyardInfo')"></button>
 </div>
+<div class="modal"></div>
     <jsp:include page="fragment/help.jsp" />
 </body>
 </html>
