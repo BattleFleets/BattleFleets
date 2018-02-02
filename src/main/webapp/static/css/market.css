@@ -111,3 +111,17 @@ footer{
 #toStock:focus{
     color: #d18a4d;
 }
+footer {
+	position: relative;
+	transform: translate(-50%);
+    left: 50%;
+    bottom: 50%;
+}
+#footer {
+	position: absolute;
+    background-color: rgba(0,0,0,0.7);
+    left: 50%;
+    transform: translate(-50%, -50%);   
+    bottom: 0;
+}
+

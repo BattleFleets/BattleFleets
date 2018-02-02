@@ -3,8 +3,8 @@
 <html>
 <head>
     <link href="<c:url value="/static/css/text.css" />" rel="stylesheet" />
-    <link href="<c:url value="/static/css/market.css" />" rel="stylesheet" />
     <link href="<c:url value="/static/css/general.css" />" rel="stylesheet" />
+    <link href="<c:url value="/static/css/market.css" />" rel="stylesheet" />
     <link href="<c:url value="/static/css/goods-images.css" />" rel="stylesheet" />
     <link href="<c:url value="/static/bootstrap-3.3.7/css/bootstrap.css" />" rel="stylesheet" />
     <link href="<c:url value="/static/bootstrap-3.3.7/css/bootstrap-theme.css" />" rel="stylesheet" />
@@ -138,6 +138,10 @@
         <tbody id="buyTable"></tbody>
     </table>
 </div>
-<%@include file="fragment/footer.jsp" %>
+<div id="footer" align="center">
+    <div align="center" style="position: relative;">
+        <%@include file="fragment/footer.jsp" %>
+    </div>
+</div>
 </body>
 </html>
