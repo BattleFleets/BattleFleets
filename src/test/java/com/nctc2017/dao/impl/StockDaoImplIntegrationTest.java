@@ -6,6 +6,7 @@ import com.nctc2017.configuration.ApplicationConfig;
 import com.nctc2017.constants.DatabaseObject;
 import com.nctc2017.dao.GoodsDao;
 import com.nctc2017.dao.StockDao;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ public class StockDaoImplIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void findStockTest(){
         BigInteger playerId = new BigInteger("44");
         BigInteger expectedStockId = new BigInteger("56");
