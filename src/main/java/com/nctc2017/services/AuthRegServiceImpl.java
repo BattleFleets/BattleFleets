@@ -80,27 +80,6 @@ public class AuthRegServiceImpl implements AuthRegService {
     }
 
     @Override
-    public Player authorization(String login, String password) throws PlayerValidationException {
-        if (!isLoginValid(login)) {
-            throw new PlayerValidationException(NOT_VALID_LOGIN);
-        }
-        if (isPasswordValid(password)) {
-            throw new PlayerValidationException(NOT_VALID_PASS);
-        }
-        try {
-            Player player = playerDao.findPlayerByLogin(login);
-            String realPlayerPassword = playerDao.getPlayerPassword(player.getPlayerId());
-            if (String.valueOf(password.trim().hashCode()).equals(realPlayerPassword)) {
-                return player;
-            } else {
-                throw new PlayerValidationException(INCORRECT_AUTH_DATA);
-            }
-        } catch (IllegalArgumentException e) {
-            throw new PlayerValidationException(INCORRECT_AUTH_DATA);
-        }
-    }
-
-    @Override
     public String createVerificationToken(Player player) {
         TokenUtils utils = new TokenUtils();
         String token = utils.generateToken();

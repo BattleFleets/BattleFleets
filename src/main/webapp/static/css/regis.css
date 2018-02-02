@@ -62,8 +62,8 @@ button{
 
 .logo{
     background-image: url("/static/images/general/battle_fleet.png");
-    height: 300px;
-    width: 318px;
+    height: 305px;
+    width: 472px;
     background-size: 100% 100%;
     background-repeat: no-repeat;
 }

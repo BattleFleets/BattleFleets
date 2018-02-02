@@ -51,9 +51,9 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/static/js/**").addResourceLocations("/static/js/")
         .setCacheControl(CacheControl.noCache());
         registry.addResourceHandler("/static/audio/**").addResourceLocations("/static/audio/")
-        .setCacheControl(CacheControl.maxAge(12, TimeUnit.HOURS));
+        .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
         registry.addResourceHandler("/static/images/**").addResourceLocations("/static/images/")
-        .setCacheControl(CacheControl.maxAge(12, TimeUnit.HOURS));
+        .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
         /*registry.addResourceHandler("/static/**")
                 .addResourceLocations("/static/")
                 .setCacheControl(CacheControl.maxAge(12, TimeUnit.HOURS));*/

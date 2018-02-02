@@ -531,6 +531,10 @@ function scrollBars() {
     });
 }
 
+    function openHelp(){
+            console.log("open help click")
+          $( "#dialogHelp" ).dialog("open");
+    }
 
 var playerStock = '${playerStock}';
 var playerShips = '${playerShips}';
@@ -540,6 +544,31 @@ $(document).ready(function () {
     scrollBars();
     fillWithGoods(JSON.parse(playerStock), "stock");
     fillShips(playerShips);
+
+    $( "#dialogHelp" ).dialog({
+        autoOpen: false,
+        resizable: false,
+        title: null,
+        height: 800,
+        width: 600,
+        buttons: [{
+            id: "btnDialog",
+            text: "OK",
+            click: function() {
+                $( this ).dialog( "close" );
+            }
+        }],
+        modal: true,
+        create: function(){
+            $("#btnDialog").hide();
+        },
+        open: function(){
+            $(this).animate({ scrollTop: $("#stockInfo").offset().top - $(this).offset().top + $(this).scrollTop() }, 1000);
+            $('.ui-widget-overlay').bind('click',function(){
+            $('#dialogHelp').dialog('close');
+            });
+        }
+    });
 
 });
 </script>
@@ -618,6 +647,9 @@ $(document).ready(function () {
 <div id="dialogInfo">
   <div id = "dialogInfoContent"><b>Choose a ship first!</b></div>
 </div>
+
+<button class = "helpButton" type = "button" onclick = "openHelp()"></button>
 <%@include file="fragment/footer.jsp" %>
+<jsp:include page="fragment/help.jsp" />
 </body>
 </html>

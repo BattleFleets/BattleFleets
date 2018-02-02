@@ -17,8 +17,6 @@ public interface AuthRegService extends UserDetailsService {
 
     void confirmRegistration(BigInteger playerId);
 
-    Player authorization(String login, String password) throws PlayerValidationException;
-
     String createVerificationToken(Player player);
 
     String exit(String login);
