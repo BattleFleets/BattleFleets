@@ -18,6 +18,9 @@ function updateMoney() {
         dataType: "text",
         success: function(data){
             $("#money").html(data);
+        },
+        error: function (msg) {
+            console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
         }
     });
     return;
@@ -31,6 +34,9 @@ function updateMarket(){
         success: function(data){
             buyJson=data;
             buildBuyTable(buyType);
+        },
+        error: function (msg) {
+            console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
         }
     });
 }
@@ -43,6 +49,9 @@ function updatePlayerStock(){
         success: function(data){
             saleJson=data;
             buildSaleTable(saleType);
+        },
+        error: function (msg) {
+            console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
         }
     });
 }
@@ -73,9 +82,14 @@ function buy(queryString){
         error: function (msg) {
             if(msg.getResponseHeader("Location")){
                 window.location.href = "/trip";
-            }else{
+            }else if(msg.status==0){
+                console.error("Status: %s  Response text: %s", msg.status, "Cannot connect to server");
+                $("#messageBuy").css("background-color","#e54b4b");
+                $("#messageBuy").html("Cannot connect to server");
+            }
+            else{
                 console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
-                $("#messageBuy").css("color","#e54b4b");
+                $("#messageBuy").css("background-color","#e54b4b");
                 $("#messageBuy").html(msg.responseText);
             }
         }
@@ -105,9 +119,16 @@ function sell(queryString){
             updatePlayerStock();
         },
         error: function (msg) {
-            console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
-            $("#messageSale").css("color","#e54b4b");
-            $("#messageSale").html(msg.responseText);
+            if(msg.status==0){
+                console.error("Status: %s  Response text: %s", msg.status, "Cannot connect to server");
+                $("#messageSale").css("background-color","#e54b4b");
+                $("#messageSale").html("Cannot connect to server");
+            }
+            else {
+                console.error("Status: %s  Response text: %s", msg.status, msg.responseText);
+                $("#messageSale").css("background-color", "#e54b4b");
+                $("#messageSale").html(msg.responseText);
+            }
         }
     });
 }
@@ -116,8 +137,11 @@ $(document).ready(function() {
     buyType="GOODS";
     saleType="GOODS";
     updateMoney();
-    updateMarket();
     updatePlayerStock();
+    var timerId = setTimeout(function tick() {
+        updateMarket();
+        timerId = setTimeout(tick, 20000);
+    }, 4);
 });
 
 function buildBuyTable(type){
@@ -244,25 +268,26 @@ $(document).ready(function () {
 
 $(document).ready(function() {
     $(".buyButton").click(function() {
+        updateMarket();
         $("#messageBuy").empty();
         var goodsTemplateId = buyObject.templateId;
         var price = buyObject.buyingPrice;
         buyQuantity = $("#modalQuantity").val();
         if((buyQuantity+price+goodsTemplateId) % 1 !== 0){
-            $("#messageBuy").css("color","#97b2e5");
+            $("#messageBuy").css("background-color","#97b2e5");
             $("#messageBuy").html("Quantity must be a natural number");
         }
         else if(buyQuantity<=0){
-            $("#messageBuy").css("color","#e54b4b");
+            $("#messageBuy").css("background-color","#e54b4b");
             $("#messageBuy").html("You cannot buy a negative or zero quantity of goods");
         }
         else if($("#modalQuantity").val()*$("#oneCount").html()>$("#money").html())
         {
-            $("#messageBuy").css("color","#e54b4b");
+            $("#messageBuy").css("background-color","#e54b4b");
             $("#messageBuy").html("Not enough money to pay");
         }
         else if(buyQuantity>buyObject.quantity){
-            $("#messageBuy").css("color","#e54b4b");
+            $("#messageBuy").css("background-color","#e54b4b");
             $("#messageBuy").html("Try to buy more goods than there is in the market");
         }
         else{
@@ -343,15 +368,15 @@ $(document).ready(function() {
         var price = saleObject.salePrice;
         saleQuantity = $("#modalSaleQuantity").val();
         if((saleQuantity+price+goodsTemplateId) % 1 !== 0){
-            $("#messageSale").css("color","#97b2e5");
+            $("#messageSale").css("background-color","#97b2e5");
             $("#messageSale").html("Quantity must be a natural number");
         }
         else if(saleQuantity<=0) {
-            $("#messageSale").css("color","#e54b4b");
+            $("#messageSale").css("background-color","#e54b4b");
             $("#messageSale").html("You cannot sale a negative or zero quantity of goods");
         }
         else if(saleQuantity>saleObject.quantity){
-            $("#messageSale").css("color","#e54b4b");
+            $("#messageSale").css("background-color","#e54b4b");
             $("#messageSale").html("Trying to sell more goods than have");
         }
         else{

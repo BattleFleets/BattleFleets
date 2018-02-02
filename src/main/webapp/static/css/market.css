@@ -18,7 +18,7 @@ h1 > a {
 
 .panels{
     background:url("../images/general/panel_background.jpg");
-    height: 75%;
+    height: 80%;
     overflow: auto;
 }
 
@@ -95,6 +95,7 @@ footer{
 #messageBuy{
     font-family: sans-serif, Helvetica;
     font-size: 18px;
+    color: white;
 }
 
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
