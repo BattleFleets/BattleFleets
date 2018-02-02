@@ -2,6 +2,7 @@ package com.nctc2017.controllers.utils;
 
 import com.nctc2017.bean.Player;
 import com.nctc2017.services.AuthRegService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;

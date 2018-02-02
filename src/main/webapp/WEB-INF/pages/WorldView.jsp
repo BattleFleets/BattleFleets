@@ -29,6 +29,9 @@
 		</c:forEach>
 			
 	</div>
+    <div>
+	    <%@include file="fragment/footer.jsp"%>
+    </div>
 	<div id="dialog_info" hidden="hidden">
 
 	</div>

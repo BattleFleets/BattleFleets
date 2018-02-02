@@ -3,10 +3,12 @@ package com.nctc2017.services;
 import com.nctc2017.dao.ScoreDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 
 @Service
+@Transactional
 public class ScoreService {
     @Autowired
     private ScoreDao scoreDao;

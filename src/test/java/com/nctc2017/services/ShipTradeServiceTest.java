@@ -14,7 +14,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -35,14 +37,10 @@ import static org.mockito.Mockito.when;
 ;
 ;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {ApplicationConfig.class})
-@Transactional
 public class ShipTradeServiceTest {
-
-    @Autowired
-    private ApplicationContext context;
 
     @Mock
     private ShipDao shipDao;
@@ -107,9 +105,7 @@ public class ShipTradeServiceTest {
 
     @Before
     public void initMocks() {
-        shipTradeService = (ShipTradeService) this.context.getBean("shipTradeService");
-        moneyService = (MoneyService) this.context.getBean("moneyServiceSingleton");
-        MockitoAnnotations.initMocks(this);
+        shipTradeService.moneyService = moneyService;
         ArrayList<BigInteger> allships = new ArrayList<BigInteger>();
         allships.add(blackPerl.getShipId());
         doAnswer(new Answer<Void>() {
@@ -121,10 +117,8 @@ public class ShipTradeServiceTest {
         }).when(playerDao).updateMoney(any(), anyInt());
 
         when(levelUpService.getMaxShips(steve.getPlayerId())).thenReturn(10);
-        when(shipRepairService.countRepairCost(any())).thenReturn(0);
         when(shipService.createNewShip(any(), any())).thenReturn(new BigInteger("1"));
         when(shipDao.findShipTemplate(t_BlackPerl.getTemplateId())).thenReturn(t_BlackPerl);
-        when(shipDao.findShip(blackPerl.getShipId())).thenReturn(blackPerl);
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(steve.getMoney());
         when(playerDao.findAllShip(steve.getPlayerId())).thenReturn(allships);
     }

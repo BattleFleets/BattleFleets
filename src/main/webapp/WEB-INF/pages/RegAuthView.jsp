@@ -36,7 +36,7 @@
         data: { 'username_reg' : username , 'email' : email, 'password_reg' : password, 'password_confirm': passwordConfirm },
         success: function(data) {
                      $('#results').html(data);
-                     if($('#results').children(".success").length != 0){
+                     if($('#results').children(".successText").length != 0){
                         $("#registration_form")[0].reset();
                      }
                      $("#regisBtn").val('Register')
@@ -75,11 +75,11 @@ class = "panel">
         <div id="login">
 
         <c:if test="${not empty error}">
-        <div class="error">${error}</div>
+        <div class="errorText">${error}</div>
         </c:if>
 
         <c:if test="${not empty msg}">
-        <div class="success">${msg}</div>
+        <div class="successText">${msg}</div>
         </c:if>
 
         <form name='login_form'
@@ -93,12 +93,6 @@ class = "panel">
 
         <div id="registration">
                 <form id = 'registration_form' action="/registration" method = "GET">
-                        <c:if test="${not empty reg_error}">
-                            <div class="error">${reg_error}</div>
-                        </c:if>
-                        <c:if test="${not empty success_reg}">
-                            <div class="msg">${success_reg}</div>
-                        </c:if>
 
                         <div id = "results"></div>
 

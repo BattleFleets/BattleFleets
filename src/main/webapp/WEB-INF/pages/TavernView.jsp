@@ -11,7 +11,6 @@
     <script src="static/js/jquery-ui.min.js"></script>
     <script src="static/js/volume.js" type="text/javascript"></script>
     <script src="static/js/jquery.mCustomScrollbar.min.js"></script>
-    <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
 </head>
 
 <body>
@@ -120,16 +119,21 @@
             <span>All ships</span>
         </button>
     </div>
+    <div>
+        <%@include file="fragment/footer.jsp"%>
+    </div>
 </div> 
 
     <button id="audio" class="icon_sound" type="submit" title="Mute" style="vertical-align:middle"></button>
     <div id="myModal"></div>
     <a href="/city" class="logOutBottom">Return to city</a>
-    <%@include file="fragment/footer.jsp"%>
+
 </body>
 
 
 <script>
+    var animDuration = 1500;
+
     function toggle(el1,el2,el3,el4,cost,money) {
         el1.style.display = (el1.style.display == 'none') ? '' : 'none';
         el2.style.display = (el2.style.display == 'none') ? '' : 'none';
@@ -139,6 +143,11 @@
         el4.style.display = (el4.style.display == 'none') ? '' : 'none';
     }
     function show(id) {
+        bodyScroll.mCustomScrollbar("scrollTo", "input.sailorsNumber", {
+            scrollInertia: animDuration,
+            scrollEasing:"easeOut"
+        });
+        
         $('#shipId').attr('disabled',false);
         $('#shipId').show();
         $("input.sailorsNumber").show();
@@ -244,10 +253,12 @@
         $('.modal').css('display', 'none');
     });
     
+    var bodyScroll;
     function scrollBars() {
-        $("#myScroll").mCustomScrollbar({
+        bodyScroll = $("#myScroll").mCustomScrollbar({
             axis:"y", // vertical scrollbar
-            theme:"minimal-dark"
+            theme:"minimal-dark",
+            advanced:{ autoScrollOnFocus: false }
         });
         $(".shipContainer").mCustomScrollbar({
             axis:"x", // horizontal scrollbar

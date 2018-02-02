@@ -99,7 +99,7 @@
     		            </table>
     	                </div>
     	                <div style="clear: left"></div>
-    	                <div align="center">
+    	                <div align="center" style="margin-top: 3%;">
                             <button  class="button_pick" style="vertical-align:middle" <c:if test="${ship.shipId == null}">disabled="disabled"</c:if> name="ship_id" type="submit" value="${ship.shipId}">
                                 <span class="icon_pick"></span><span class="player_style ship_info" style="float: none">Pick</span>
                             </button>

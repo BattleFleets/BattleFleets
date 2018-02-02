@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,14 +22,11 @@ import java.math.BigInteger;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = { ApplicationConfig.class })
 public class MoneyServiceTest {
     private static Player steve;
-    
-    @Autowired
-    private ApplicationContext context;
     
     @Mock
     private PlayerDao playerDao;
@@ -51,8 +49,6 @@ public class MoneyServiceTest {
 
     @Before
     public void initMocks() {
-        moneyService = (MoneyService)this.context.getBean("moneyServiceSingleton");
-        MockitoAnnotations.initMocks(this);
 
         when(playerDao.getPlayerMoney(steve.getPlayerId())).thenReturn(150);
     }

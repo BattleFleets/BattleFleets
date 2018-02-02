@@ -5,6 +5,7 @@ import com.nctc2017.bean.VerificationToken;
 import com.nctc2017.controllers.utils.RegistrationListener;
 import com.nctc2017.exception.PlayerValidationException;
 import com.nctc2017.services.AuthRegService;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -47,11 +48,12 @@ public class AuthRegController {
 
         } catch (PlayerValidationException e) {
             log.error(e.getMessage());
-            return "<div class = \"error\" >" + e.getMessage() + "</div>";
+            return "<div class = \"errorText\" >" + e.getMessage() + "</div>";
         } catch (MailException e) {
-            return "<div class = \"error\" >" + e.getMessage() + "</div>";
+            log.error("MailException while sending confirmation email" + e.getMessage());
+            return "<div class = \"errorText\" >Oops, sorry! Something go wrong while sending your confirmation email! Please, try again later!</div>";
         }
-        return "<div class = \"success\" >" + "Congratulations! " +
+        return "<div class = \"successText\" >" + "Congratulations! " +
                 "Your registration is almost complete! \n " +
                 "Please, check your email for confirmation link!" + "</div>";
     }
@@ -63,7 +65,7 @@ public class AuthRegController {
 
         ModelAndView model = new ModelAndView();
         if (error != null) {
-            model.addObject("error", "Invalid username and password!");
+            model.addObject("error", "Invalid username or password!");
         }
 
         if (logout != null) {

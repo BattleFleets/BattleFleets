@@ -171,9 +171,9 @@ function animateLostParam() {
     divs.removeAttr("hidden");
     
     $(".dec_val").fadeIn(0);
-    divs.css("top", "100px");
-    divs.animate({top: "-100px"},3000);
-    $(".dec_val").fadeOut(4000);
+    divs.css("top", "200px");
+    divs.animate({top: "-100px"},5000);
+    $(".dec_val").fadeOut(6000);
 }
 
 function animateWait() {

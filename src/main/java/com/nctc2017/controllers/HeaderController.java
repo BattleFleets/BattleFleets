@@ -2,8 +2,13 @@ package com.nctc2017.controllers;
 
 import com.nctc2017.bean.Player;
 import com.nctc2017.bean.PlayerUserDetails;
-import com.nctc2017.bean.Ship;
-import com.nctc2017.services.*;
+import com.nctc2017.services.LevelUpService;
+import com.nctc2017.services.PlayerService;
+import com.nctc2017.services.ScoreService;
+
+import java.math.BigInteger;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,16 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.math.BigInteger;
-import java.util.List;
-
 @Controller
 public class HeaderController {
     @Autowired
     private LevelUpService lvlUpService;
-
-    @Autowired
-    private ShipService shipService;
 
     @Autowired
     private ScoreService scoreService;
@@ -29,10 +28,10 @@ public class HeaderController {
     @Autowired
     private PlayerService playerService;
 
-
     @Secured("ROLE_USER")
-    @RequestMapping(value="/addHeader",method = RequestMethod.GET)
-    public ModelAndView header(@AuthenticationPrincipal PlayerUserDetails userDetails, ModelAndView model){
+    @RequestMapping(value = "/addHeader",method = RequestMethod.GET)
+    public ModelAndView header(@AuthenticationPrincipal PlayerUserDetails userDetails, 
+            ModelAndView model) {
         BigInteger playerId = userDetails.getPlayerId();
         Player player = playerService.findPlayer(playerId);
         String login = player.getLogin();
@@ -42,10 +41,10 @@ public class HeaderController {
         int nextLevel = player.getNextLevel();
         int maxShips = player.getMaxShips();
         int income = player.getIncome();
-        int pointsToNxtLvl =lvlUpService.getPointsToNxtLevel(playerId);
+        int pointsToNxtLvl = lvlUpService.getPointsToNxtLevel(playerId);
         int nextImprove = player.getNextLevel();
         int maxLvl = scoreService.getMaxLvl();
-        List<Ship> currShips = shipService.getAllPlayerShips(playerId);
+        List<BigInteger> currShips = playerService.findAllShipsId(playerId);
         model.addObject("login", login);
         model.addObject("money", money);
         model.addObject("points", points);

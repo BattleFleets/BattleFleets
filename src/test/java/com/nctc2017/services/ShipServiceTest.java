@@ -45,9 +45,6 @@ public class ShipServiceTest {
 
     private static Player steve;
 
-    @Autowired
-    private ApplicationContext context;
-
     @Mock
     private ShipDao shipDao;
 
@@ -147,7 +144,6 @@ public class ShipServiceTest {
 
     @Before
     public void initMocks() {
-        shipService = (ShipService)this.context.getBean("shipServicePrototype");
         MockitoAnnotations.initMocks(this);
 
         when(shipDao.findAllShipTemplates()).thenReturn(shipTemplates);

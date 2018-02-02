@@ -19,7 +19,8 @@
 
         $("body").mCustomScrollbar({
             axis:"y", // vertical scrollbar
-            theme:"minimal-dark"
+            theme:"minimal-dark",
+            advanced:{ autoScrollOnFocus: false }
         });
     });
 </script>

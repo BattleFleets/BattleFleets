@@ -165,7 +165,7 @@ function showShipResources(event){
 
 
     function getShipHtml(shipId, name, curCarryingLimit, maxCarryingLimit, image){
-        var returnValue = "<td id = \"" + shipId +"\" align=\"center\"><div class=\"element\"><p><b class=\"values\">"+
+        var returnValue = "<td align=\"center\"><div id = \"" + shipId +"\" class=\"element\"><p><b class=\"values\">"+
                                   name + "</b> </p><img src = \"" + image + "\"><p>Carrying: <b id=\"shipDescription\">" +
                                   curCarryingLimit + "/" + maxCarryingLimit + "</b> </p></div></td>";
         return returnValue;
@@ -173,7 +173,7 @@ function showShipResources(event){
 
 
     function getGoodsHtml(goodsId, name, description, quantity, type, image){
-        var returnValue = "<td id=\"" + goodsId +"\" align=\"center\"> <div class=\"element\"> <p><b class=\"values\">" + name + "</b> </p> <img src = \"" +
+        var returnValue = "<td align=\"center\"> <div id=\"" + goodsId +"\" class=\"element\"> <p><b class=\"values\">" + name + "</b> </p> <img src = \"" +
                                 image + "\"><p><b>" + description + "</b> </p><p>Quantity: <b>" +
                                 quantity + " </b></p></div></td>";
         return returnValue;
@@ -531,6 +531,10 @@ function scrollBars() {
     });
 }
 
+    function openHelp(){
+            console.log("open help click")
+          $( "#dialogHelp" ).dialog("open");
+    }
 
 var playerStock = '${playerStock}';
 var playerShips = '${playerShips}';
@@ -540,6 +544,31 @@ $(document).ready(function () {
     scrollBars();
     fillWithGoods(JSON.parse(playerStock), "stock");
     fillShips(playerShips);
+
+    $( "#dialogHelp" ).dialog({
+        autoOpen: false,
+        resizable: false,
+        title: null,
+        height: 800,
+        width: 600,
+        buttons: [{
+            id: "btnDialog",
+            text: "OK",
+            click: function() {
+                $( this ).dialog( "close" );
+            }
+        }],
+        modal: true,
+        create: function(){
+            $("#btnDialog").hide();
+        },
+        open: function(){
+            $(this).animate({ scrollTop: $("#stockInfo").offset().top - $(this).offset().top + $(this).scrollTop() }, 1000);
+            $('.ui-widget-overlay').bind('click',function(){
+            $('#dialogHelp').dialog('close');
+            });
+        }
+    });
 
 });
 </script>
@@ -618,6 +647,9 @@ $(document).ready(function () {
 <div id="dialogInfo">
   <div id = "dialogInfoContent"><b>Choose a ship first!</b></div>
 </div>
+
+<button class = "helpButton" type = "button" onclick = "openHelp()"></button>
 <%@include file="fragment/footer.jsp" %>
+<jsp:include page="fragment/help.jsp" />
 </body>
 </html>
