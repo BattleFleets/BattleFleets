@@ -76,25 +76,25 @@
                             <c:set var = "cannonsPopup" scope = "page" value = "Cannons amount:"/>
     		                <c:forEach var="cannon" items="${shipInfo.cannons}">
                                 <c:set var = "cannonsPopup" scope = "page">
-                                    ${cannonsPopup}&#13${cannon.key}: ${cannon.value}
+                                    ${cannonsPopup}<br>${cannon.key}: ${cannon.value}
                                 </c:set>
                             </c:forEach>
-    		                <tr><td title="${cannonsPopup}">Damage:</td><td>${ship.curDamage}</td></tr>
+    		                <tr><td class="with_tooltip" title="${cannonsPopup}">Damage:</td><td>${ship.curDamage}</td></tr>
                             <c:set var = "mastPopup" scope = "page" value = "Mast speed:"/>
     		                <c:forEach var="mast" items="${shipInfo.masts}">
                                 <c:set var = "mastPopup" scope = "page">
-                                    ${mastPopup}&#13${mast.templateName}: ${mast.curSpeed}/${mast.maxSpeed}
+                                    ${mastPopup}<br>${mast.templateName}: ${mast.curSpeed}/${mast.maxSpeed}
                                 </c:set>
                             </c:forEach>
-    		                <tr><td title="${mastPopup}">Speed:</td><td>${ship.curSpeed}</td></tr>
+    		                <tr><td class="with_tooltip" title="${mastPopup}">Speed:</td><td>${ship.curSpeed}</td></tr>
     		                <tr><td>Max dist:</td><td>${shipInfo.maxShotDistance}</td></tr>
                             <c:set var = "ammoPopup" scope = "page" value = "Ammo amount:"/>
                             <c:forEach var="ammo" items="${shipInfo.ammo}">
                                 <c:set var = "ammoPopup" scope = "page">
-                                    ${ammoPopup}&#13${ammo.name}: ${ammo.quantity}
+                                    ${ammoPopup}<br>${ammo.name}: ${ammo.quantity}
                                 </c:set>
                             </c:forEach>
-    		                <tr><td title="${ammoPopup}">Carrying:</td><td>${ship.curCarryingLimit}/${ship.maxCarryingLimit}</td></tr>
+    		                <tr><td class="with_tooltip" title="${ammoPopup}">Carrying:</td><td>${ship.curCarryingLimit}/${ship.maxCarryingLimit}</td></tr>
     		                <tr><td>Cost:</td><td>${ship.cost}</td></tr>
     		            </table>
     	                </div>
