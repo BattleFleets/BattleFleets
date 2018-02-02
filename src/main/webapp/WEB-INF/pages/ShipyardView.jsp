@@ -25,29 +25,30 @@
 
             function showTemplates() {
             $.ajax({
-            			method:"GET",
-            			url:'/buyShip',
-            			beforeSend: function() {
+                        method:"GET",
+                        url:'/buyShip',
+                        beforeSend: function() {
                             $('.modal').show();
                         },
-            			success : function(response) {
-            				console.log("SUCCESS: ");
-            				$('footer').css({position: "relative"});
-            				$('#shipContainer').empty();
-            				$('#shipContainer').html(response);
+                        success : function(response) {
+                            console.log("SUCCESS: ");
+                            $('footer').css({position: "relative"});
+                            $('#shipContainer').empty();
+                            $('#shipContainer').html(response);
+                            shipContainerScroll();
                             body.mCustomScrollbar("scrollTo", $("#shipContainer").delay( 500 ), {
                                 scrollInertia: animDuration,
                                 scrollEasing:"easeOut"
                             });
-            			},
-            			complete: function() {
+                        },
+                        complete: function() {
                             $('.modal').hide();
                         },
                         error : function(e) {
                             console.log("ERROR: ", e);
                             window.location.href = "/error";
                         }
-            		});
+                    });
             }
 
             function showPlayerShips() {
@@ -59,14 +60,15 @@
                         },
                         success : function(response) {
                             console.log("SUCCESS: ");
-				            $('footer').css({position: "relative"});
+                            $('footer').css({position: "relative"});
                             $('#shipContainer').html(response);
+                            shipContainerScroll();
                             body.mCustomScrollbar("scrollTo",$("#shipContainer").delay( 500 ),{
                                 scrollInertia: animDuration,
                                 scrollEasing:"easeOut"
                             });
                         },
-            			complete: function() {
+                        complete: function() {
                             $('.modal').hide();
                         },
                         error : function(e) {
@@ -85,14 +87,15 @@
                         },
                         success : function(response) {
                             console.log("SUCCESS: ");
-				            $('footer').css({position: "relative"});
+                            $('footer').css({position: "relative"});
                             $('#shipContainer').html(response);
+                            shipContainerScroll();
                             body.mCustomScrollbar("scrollTo",$("#shipContainer").delay( 500 ),{
                                 scrollInertia: animDuration,
                                 scrollEasing:"easeOut"
                             });
                         },
-            			complete: function() {
+                        complete: function() {
                             $('.modal').hide();
                         },
                         error : function(e) {
@@ -114,18 +117,19 @@
             }
 
             var body;
-            var shipContainer;
+            
+            function shipContainerScroll() {
+                $("#shipTableId").mCustomScrollbar({
+                    axis:"x", // hor scrollbar
+                    theme:"minimal-dark",
+                    advanced:{ autoScrollOnFocus: false }
+                });
+            }
+            
             function scrollBars() {
                 body = $("#myScroll").mCustomScrollbar({
                     axis:"y", // vertical scrollbar
                     theme:"minimal-dark",
-                    advanced:{ autoScrollOnFocus: false }
-                });
-                shipContainer = $("#myScroll").mCustomScrollbar({
-                    axis:"x", // hor scrollbar
-                    theme:"minimal-dark",
-                    live: true,
-                    liveSelector: "#shipTableId",
                     advanced:{ autoScrollOnFocus: false }
                 });
             }
@@ -158,39 +162,39 @@
     </div>
 
     <div align="center">
-    	<table class="panel">
-    	<tr align="center">
-    			<td>
-    			<button class="button" onclick="showTemplates()">
-    			<span>Buy ship</span>
-    			</button>
-    			</td>
-    		</tr>
-    		<tr align="center">
-    			<td>
-    			<button class="button" onclick="showPlayerShips()">
-    			<span>Sell ship</span>
-    			</button>
-    			</td>
-    		</tr>
-    		<tr align="center">
-    			<td>
-    			<button class="button" onclick="repairShips()">
-    			<span>Repair ship</span>
-    			</button>
-    			</td>
-    		</tr>
-    		<tr align="center">
-    			<td> 
+        <table class="panel">
+        <tr align="center">
+                <td>
+                <button class="button" onclick="showTemplates()">
+                <span>Buy ship</span>
+                </button>
+                </td>
+            </tr>
+            <tr align="center">
+                <td>
+                <button class="button" onclick="showPlayerShips()">
+                <span>Sell ship</span>
+                </button>
+                </td>
+            </tr>
+            <tr align="center">
+                <td>
+                <button class="button" onclick="repairShips()">
+                <span>Repair ship</span>
+                </button>
+                </td>
+            </tr>
+            <tr align="center">
+                <td> 
                     <form action="<c:url value="/stock" />" method="GET">
                         <input hidden="true" name="page" value="shipyard">
-    			        <button class="button" name = "city" value = "${city}" formaction="/stock" style="vertical-align:middle" type="submit" action="<c:url value="/stock" />" method="GET">
-    			            <span>Stock</span>
-    			        </button>
-    			    </form>
-    			</td>
-    		</tr>
-    	</table>
+                        <button class="button" name = "city" value = "${city}" formaction="/stock" style="vertical-align:middle" type="submit" action="<c:url value="/stock" />" method="GET">
+                            <span>Stock</span>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        </table>
     </div>
     
     <div id="shipContainer" align="center" >
