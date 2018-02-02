@@ -4,9 +4,9 @@
 <head>
     <link href="static/css/text.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
-    <link href="static/css/battle.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
+    <link href="static/css/battle.css" rel="stylesheet" media="screen">
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <script src="static/js/HoverButton.js"></script>
     <script src="static/js/jquery.min.js"></script>
@@ -160,6 +160,10 @@
     	</div>
     	</div>
     	<div style="clear: both;"></div>
+
     </div>
+<button class = "helpButton" type = "button" onclick = "openHelp('#battleInfo')"></button>
+<jsp:include page="fragment/help.jsp" />
+    
 </body>
 </html>

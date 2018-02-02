@@ -161,6 +161,10 @@
     
     <div id="dialog"></div>
 </div>
+
 <button id="audio" class="icon_sound" type="submit" title="Mute" style="vertical-align:middle; position: absolute;"></button>
+<button class = "helpButton" type = "button" onclick = "openHelp('#battleInfo')"></button>
+<jsp:include page="fragment/help.jsp" />
+
 </body>
 </html>

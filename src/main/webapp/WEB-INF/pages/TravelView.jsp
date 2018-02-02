@@ -7,9 +7,11 @@
     <link href="static/css/travel.css" rel="stylesheet" media="screen">
     <link href="static/css/general.css" rel="stylesheet" media="screen">
     <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
+    <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
     <script src="static/js/IsBattleStartTask.js" type="text/javascript"></script>
     <script src="static/js/volume.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -58,5 +60,7 @@
 <div id="error_info">
 
 </div>
+<button class = "helpButton" type = "button" onclick = "openHelp('#tripInfo')"></button>
+<jsp:include page="fragment/help.jsp" />
 </body>
 </html>

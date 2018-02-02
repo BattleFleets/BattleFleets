@@ -8,8 +8,15 @@
     <link href="<c:url value="/static/css/goods-images.css" />" rel="stylesheet" />
     <link href="<c:url value="/static/bootstrap-3.3.7/css/bootstrap.css" />" rel="stylesheet" />
     <link href="<c:url value="/static/bootstrap-3.3.7/css/bootstrap-theme.css" />" rel="stylesheet" />
+   
+    <link rel="stylesheet" href="static/css/jquery.mCustomScrollbar.min.css" />
+    <link href="static/css/jquery-ui.css" rel="stylesheet" media="screen">
+
     <script type="text/javascript"  src="<c:url value="/static/js/jquery.min.js" />"></script>
+    <script src="static/js/jquery-ui.min.js"></script>
     <script type="text/javascript"  src="<c:url value="/static/js/market.js" />"></script>
+    <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+    
     <script type="text/javascript"  src="<c:url value="/static/bootstrap-3.3.7/js/bootstrap.js" />"></script>
     <audio autoplay id="myaudio" onloadeddata="setHalfVolume()">
         <source src="<c:url value="/static/audio/market.mp3" />" type="audio/mp3">
@@ -143,5 +150,8 @@
         <%@include file="fragment/footer.jsp" %>
     </div>
 </div>
+
+<button class = "helpButton" type = "button" onclick = "openHelp('#marketInfo')"></button>
+<jsp:include page="fragment/help.jsp" />
 </body>
 </html>

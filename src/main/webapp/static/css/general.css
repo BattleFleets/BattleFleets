@@ -47,6 +47,9 @@ html, body{
     position: absolute;
     top: 50px;
     right: 16px;
+    outline: none;
+    cursor: pointer;
+    z-index: 20;
 }
 .helpButton:hover{
     background-image:url("../images/general/help_hover.png");
@@ -66,7 +69,7 @@ html, body{
     top: 8px;
     right: 16px;
     color: white;
-    font-size: 18px;
+    font-size: 1.8vw;
     font-family: "Lucida Bright", Georgia, serif;
     padding: 5px 20px;
     text-decoration: none;
@@ -124,10 +127,12 @@ input[type=submit] {
 	background-image: url("../images/general/sound.png");
 }
 
-.icon_mute {
+.icon_mute, .icon_sound:hover {
 	background-image: url("../images/general/mute.png");
 }
-
+.icon_mute:hover{
+	background-image: url("../images/general/sound.png");
+}
 #audio {
 	width: 2.32vw;
 	height: 2.32vw;
@@ -136,6 +141,7 @@ input[type=submit] {
 	cursor: pointer;
 	right: 10px;
 	bottom: 10px;
+    outline: none;
 }
 
 .button span {
@@ -184,16 +190,16 @@ header{
     position: absolute;
     border: 2px solid black;
     top: 8px;
-    left: 16px;
+    left: 1%;
     color: white;
-    font-size: 18px;
+    font-size: 1.4vw;
     font-family: "Lucida Bright", Georgia, serif;
-    padding: 5px 20px;
+    padding: 5px 15px;
     text-decoration: none;
 
 }
 @media screen and (device-width: 800px) {
   header {
-      font-size: 1.5vw;
+      
   }
 }
