@@ -80,8 +80,8 @@
     </div>
     </form>
     <button class = "helpButton" type = "button" onclick = "openHelp('#cityInfo')"></button>
+    <%@include file="fragment/footer.jsp" %>
 </div>
-<%@include file="fragment/footer.jsp" %>
 <jsp:include page="fragment/help.jsp" />
 </body>
 
