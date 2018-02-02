@@ -29,6 +29,7 @@
             			url:'/buyShip',
             			success : function(response) {
             				console.log("SUCCESS: ");
+            				$('footer').css({position: "relative"});
             				$('#shipContainer').empty();
             				$('#shipContainer').html(response);
                             body.mCustomScrollbar("scrollTo", $("#shipContainer").delay( 500 ), {
@@ -48,6 +49,7 @@
                         url:'/sellShip',
                         success : function(response) {
                             console.log("SUCCESS: ");
+				            $('footer').css({position: "relative"});
                             $('#shipContainer').html(response);
                             body.mCustomScrollbar("scrollTo",$("#shipContainer").delay( 500 ),{
                                 scrollInertia: animDuration,
@@ -66,6 +68,7 @@
                         url:'/repairShip',
                         success : function(response) {
                             console.log("SUCCESS: ");
+				            $('footer').css({position: "relative"});
                             $('#shipContainer').html(response);
                             body.mCustomScrollbar("scrollTo",$("#shipContainer").delay( 500 ),{
                                 scrollInertia: animDuration,
