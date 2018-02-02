@@ -134,8 +134,10 @@ function chooseOfAction(elem, action, diffcost, carringLimit) {
         repairShip(elem, diffcost);
         currentAction = 'Repair';
     }
-    else
+    else {
         console.log('Unnkown action');
+        window.location.href = "/error";
+    }
 }
 
 function sellConfirm(elem, carringLimit) {
@@ -169,18 +171,25 @@ var shipId = elem;
             url:'/sell',
             method:"GET",
             data: { 'shipId' : shipId },
+            beforeSend: function() {
+                $('.modal').show();
+            },
             success: function(data) {
-                         console.log("SUCCESS: ");
-                         if (data == 'You sold your ship!')
-                            needUpdate = true;
-                         else
-                            needUpdate = false;
-                         $("#dialogInfoContent").text(data);
-                         $("#dialogInfo").dialog("open");
-                         },
-                         error : function(e) {
-                             console.log("ERROR: ", e);
-                         }
+                console.log("SUCCESS: ");
+                if (data == 'You sold your ship!')
+                    needUpdate = true;
+                else
+                    needUpdate = false;
+                $("#dialogInfoContent").text(data);
+                $("#dialogInfo").dialog("open");
+            },
+            complete: function() {
+                $('.modal').hide();
+            },
+            error : function(e) {
+                console.log("ERROR: ", e);
+                window.location.href = "/error";
+            }
             } );
     });
 }
@@ -192,28 +201,35 @@ var shipId = elem.value;
             url:'/repair',
             method:"GET",
             data: { 'shipId' : shipId },
+            beforeSend: function() {
+                $('.modal').show();
+            },
             success: function(data) {
-                         console.log("SUCCESS: ",data);
-                         var message = "";
-                         if (data)
-                            if (diffcost == 0) {
-                                message="Ship is already repaired";
-                                needUpdate = false;
-                            }
-                            else {
-                                message="Ship repaired";
-                                needUpdate = true;
-                            }
-                         else {
-                            message="We need more money, captain!";
-                            needUpdate = false;
-                         }
-                         $("#dialogInfoContent").text(message);
-                         $("#dialogInfo").dialog("open");
-                         },
-                         error : function(e) {
-                             console.log("ERROR: ", e);
-                         }
+                console.log("SUCCESS: ",data);
+                var message = "";
+                if (data)
+                    if (diffcost == 0) {
+                        message="Ship is already repaired";
+                        needUpdate = false;
+                    }
+                else {
+                    message="Ship repaired";
+                    needUpdate = true;
+                }
+                else {
+                    message="We need more money, captain!";
+                    needUpdate = false;
+                }
+                $("#dialogInfoContent").text(message);
+                $("#dialogInfo").dialog("open");
+            },
+            complete: function() {
+                $('.modal').hide();
+            },
+            error : function(e) {
+                console.log("ERROR: ", e);
+                window.location.href = "/error";
+            }
             } );
     });
 }

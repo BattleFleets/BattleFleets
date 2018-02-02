@@ -149,14 +149,21 @@ function buyShip(elem, shipName, defaultName) {
             url:'/buy',
             method:"GET",
             data: { 'shipTemplateId' : shipTemplateId, 'shipName' : shipName , 'defaultName' : defaultName },
+            beforeSend: function() {
+                $('.modal').show();
+            },
             success: function(data) {
-                         console.log("SUCCESS: ",data);
-                         $("#dialogInfoContent").text(data);
-                         $("#dialogInfo").dialog("open");
-                         },
-                         error : function(e) {
-                             console.log("ERROR: ", e);
-                         }
+                console.log("SUCCESS: ",data);
+                $("#dialogInfoContent").text(data);
+                $("#dialogInfo").dialog("open");
+            },
+            complete: function() {
+                $('.modal').hide();
+            },
+             error : function(e) {
+                 console.log("ERROR: ", e);
+                 window.location.href = "/error";
+             }
                          })
              .done(function() {
                 headerUpdate();
