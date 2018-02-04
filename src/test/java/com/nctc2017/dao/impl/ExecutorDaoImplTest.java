@@ -117,9 +117,9 @@ public class ExecutorDaoImplTest {
         assertEquals(myAmmos.size(), 3);
         assertEquals(myGoods.size(),3);
         assertEquals(enemyGoods.size(), 0);
-        assertEquals(enemyAmmos.size(), 1);
+        assertEquals(enemyAmmos.size(), 0);
         assertEquals(holdDao.getOccupiedVolume(myShipId),100);
-        assertEquals(holdDao.getOccupiedVolume(enemyShipId),10);
+        assertEquals(holdDao.getOccupiedVolume(enemyShipId),0);
         assertEquals(res, "You received part of goods from enemy ship as a result of boarding");
     }
 
