@@ -102,6 +102,15 @@ public class ShipService {
         }
     }
 
+    public boolean isShipComplete(BigInteger shipId){
+        if(findShip(shipId).getCurSailorsQuantity()==findShip(shipId).getMaxSailorsQuantity()){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     public int numShipsCompleted(BigInteger playerId) {
         int complete = 0;
         List<Ship> ships = getAllPlayerShips(playerId);

@@ -55,7 +55,7 @@
                                  <td class="listOfShips" valign="top">
                              </c:if>
                              <c:if test="${nextShip.curSailorsQuantity!=nextShip.maxSailorsQuantity && money>=sailorCost}">
-                                  <td class="listOfShips" valign="top" id="Id${nextShip.shipId}" value="${nextShip.shipId}" style="cursor: pointer; background: linear-gradient(to top, #520000 , #030009)" onclick="toggle(sailors,cont,buy,oneShip,${sailorCost},${money}),show(Id${nextShip.shipId}), maxValue(${nextShip.shipId}),btnSetValue(${nextShip.shipId})">
+                                  <td class="listOfShips" valign="top" id="Id${nextShip.shipId}" value="${nextShip.shipId}" style="cursor: pointer; background: linear-gradient(to top, #520000 , #030009)" onclick="toggle(sailors,cont,buy,oneShip),show(Id${nextShip.shipId}), maxValue(${nextShip.shipId}),btnSetValue(${nextShip.shipId})">
                              </c:if>
                              <p align="center">${nextShip.curName}</p>
                              <c:choose>
@@ -83,41 +83,41 @@
                          </tr>
                   </table>
                 </div>
+                <table class="panelTavern">
+                    <tr align="center">
+                        <td>
+                            <c:if test="${completedShip!=ships.size() && money>=sailorCost}">
+                                <span id="info">You can hire sailors on your ships</span>
+                            </c:if>
+                            <c:if test="${completedShip==ships.size()}">
+                                <span id="info">All your ships are staffed with sailors</span>
+                            </c:if>
+                            <c:if test="${money<sailorCost && completedShip!=ships.size()}">
+                                <span id="info">You need ${sailorCost-money} more money</span>
+                            </c:if>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="center" id="buy" style="display: none;">
+                                <button  class="button" style="vertical-align:middle; padding-right: 10%;" id="shipId" type="submit" onclick="hireSailors()">
+                                    <span>Hire</span>
+                                </button>
+                                <input style="width:35px;" type="text" maxlength="3" class="sailorsNumber" min="1" max="" autocomplete="off"  onkeyup="cost(${sailorCost})">
+                                <span id="spend" style="font-family: tempus sans itc; color:white;"></span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </c:if>
-            
-             <table class="panelTavern">
-                <tr align="center">
-                    <td>
-                        <c:if test="${completedShip!=ships.size() && money>=sailorCost}">
-                        <span id="info">You can hire sailors on your ships</span>
-                        </c:if>
-                        <c:if test="${completedShip==ships.size()}">
-                        <span id="info">All your ships are staffed with sailors</span>
-                        </c:if>
-                        <c:if test="${money<sailorCost && completedShip!=ships.size()}">
-                        <span id="info">You need ${sailorCost-money} more money</span>
-                        </c:if>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div align="center" id="buy" style="display: none;">
-                            <button  class="button" style="vertical-align:middle; padding-right: 10%;" id="shipId" type="submit" onclick="buySailors()">
-                                <span>Hire</span>
-                            </button>
-                            <input style="width:35px;" type="number" class="sailorsNumber" min="1" max="" autocomplete="off"  onkeyup="cost(${sailorCost})">
-                            <span id="spend" style="font-family: tempus sans itc; color:white;"></span>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+
         
         </div>
     
     </form>
     <div align="center" id="sailors"  style="display: none;">
-        <button class="button" id="btnShow" style="vertical-align:middle;  padding-right: 10%;" name="showShips" value="showShips" type="submit" onclick="toggle(sailors,cont,buy,oneShip,0,0)">
-            <span>All ships</span>
+        <button class="buttonBack" id="btnShow" name="showShips" value="showShips" type="submit" onclick="toggle(sailors,cont,buy,oneShip),back()">
+            <span>Back</span>
         </button>
     </div>
     <div>
@@ -126,7 +126,6 @@
 </div> 
 
     <button id="audio" class="icon_sound" type="submit" title="Mute" style="vertical-align:middle"></button>
-    <div id="myModal"></div>
     <a href="/city" class="logOutBottom">Return to city</a>
 
     <button class = "helpButton" type = "button" onclick = "openHelp('#tavernInfo')"></button>
@@ -137,12 +136,10 @@
 <script>
     var animDuration = 1500;
 
-    function toggle(el1,el2,el3,el4,cost,money) {
+    function toggle(el1,el2,el3,el4) {
         el1.style.display = (el1.style.display == 'none') ? '' : 'none';
         el2.style.display = (el2.style.display == 'none') ? '' : 'none';
-        if(money>=cost) {
-            el3.style.display = (el3.style.display == 'none') ? '' : 'none';
-        }
+        el3.style.display = (el3.style.display == 'none') ? '' : 'none';
         el4.style.display = (el4.style.display == 'none') ? '' : 'none';
     }
     function show(id) {
@@ -150,7 +147,7 @@
             scrollInertia: animDuration,
             scrollEasing:"easeOut"
         });
-        
+        $('#info').html("You can hire sailors on this ship");
         $('#shipId').attr('disabled',false);
         $('#shipId').show();
         $("input.sailorsNumber").show();
@@ -171,7 +168,6 @@
         });
     }
     function maxValue(id) {
-        event.preventDefault();
         $.ajax({
             url:'/maxValue',
             method:"GET",
@@ -184,19 +180,24 @@
 
     }
     function cost(cost) {
-        if($("input.sailorsNumber").val()>$("input.sailorsNumber").attr('max') || $("input.sailorsNumber").val()<0)
-        {
-            $("input.sailorsNumber").val($("input.sailorsNumber").attr('max')) ;
-        }
-        $("#spend").html($("input.sailorsNumber").val()*cost);
+       var val = $("input.sailorsNumber").val();
+       var max = $("input.sailorsNumber").attr('max');
+           $.ajax({
+               url: '/cost',
+               method: "GET",
+               data: {'val': val, 'max': max},
+               success: function (data) {
+                   $("input.sailorsNumber").val(data);
+                   $("#spend").html(parseInt(data) * cost);
+               }
+           })
     }
-    function buySailors() {
+    function hireSailors() {
         event.preventDefault();
         var sailors = $("input.sailorsNumber").val();
         var id = $('#shipId').val();
-        if (sailors>0) {
             $.ajax({
-                url:'/buySailors',
+                url:'/hireSailors',
                 method:"GET",
                 data:{'shipId':id, 'num':sailors},
                 success: function(data) {
@@ -204,7 +205,7 @@
                     $('span#choiceCrew').html(data[1]);
                     maxValue(id);
                     if (data[2]=='true') {
-                        $('#info').html("All your ships are staffed with sailors");
+                        $('#info').html("This ship is stuffed with sailors");
                         $('#choiceShipCopy').css('background','transparent');
                         $('#choiceShipOrig').css('background','transparent');
                         $('#choiceShipOrig').css('cursor','default');
@@ -215,8 +216,8 @@
                         $("#spend").hide();
                     } else if(data[3]=='false') {
                          $('#info').html("You need "+parseInt("${sailorCost}"-data[0])+ " more money");
-                         $('#choiceShipCopy').css('background-color','transparent');
-                         $('.listOfShips').css('background-color','transparent');
+                         $('#choiceShipCopy').css('background','transparent');
+                         $('.listOfShips').css('background','transparent');
                          $('.listOfShips').css('cursor','default');
                          $('.listOfShips').removeAttr('onclick');
                          $('#shipId').attr('disabled',true);
@@ -224,38 +225,26 @@
                          $("input.sailorsNumber").hide();
                          $("#spend").hide();
                      }
-                },
-                error : function(e) {
-                    console.log("ERROR: ", e);
-                    window.location.href="/tavern";
                 }
             } );
-        } else {
-            $('#myModal').html("Value should be grater then 0");
-            $('#myModal').dialog({
-                resizable: false,
-                height: "auto",
-                width: "auto",
-                modal: true,
-                buttons: [{
-                      text: "OK",
-                      click: function() {
-                        $( this ).dialog( "close" );
-                      }
-                }]
-            });
-            maxValue(id);
-        }
+    }
+    function back() {
+        event.preventDefault();
+        $.ajax({
+            url: '/allStuffed',
+            method: "GET",
+            data:{'msg':$('#info').html()},
+            success: function (data) {
+               $('#info').html(data);
+            }
+        })
     }
     function btnSetValue(val) {
         $('#shipId').attr('value',val);
         $('td#choiceShipOrig.listOfShips p span').attr('id','choiceCrew');
         $('td#choiceShipCopy.listOfShips p span').attr('id','choiceCrew');
     }
-    $('.close').click(function() {
-        $('.modal').css('display', 'none');
-    });
-    
+
     var bodyScroll;
     function scrollBars() {
         bodyScroll = $("#myScroll").mCustomScrollbar({
