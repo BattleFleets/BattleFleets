@@ -230,6 +230,26 @@ public class Query {
                     + " GROUP BY ship.OBJECT_ID";
     
     /**
+     * This query allows to get faster ship speed of player by his id.
+     * PreparedStatement args:<br>
+     * OBJECT_ID id player <br>
+     * OBJECT_TYPE_ID id of type mast<br>
+     * ATTR_ID mast current speed attr id<br>
+     */
+    public static final String GET_HIGHEST_SPEED =
+            "SELECT max(sum(speed_val.VALUE)) fleet_speed"
+                    + " FROM ATTRIBUTES_VALUE speed_val, OBJECTS mast,"
+                    + " OBJECTS ship, OBJECTS player" 
+                    + " WHERE"
+                    + " player.OBJECT_ID = ?" // id player
+                    + " AND ship.PARENT_ID = player.OBJECT_ID"
+                    + " AND mast.PARENT_ID = ship.OBJECT_ID" 
+                    + " AND mast.OBJECT_TYPE_ID = ?"//mast obj type
+                    + " AND speed_val.ATTR_ID = ?" // mast current speed
+                    + " AND speed_val.OBJECT_ID = mast.OBJECT_ID"
+                    + " GROUP BY ship.OBJECT_ID";
+    
+    /**
      * This query allows to get max shot dist of ship by his id.
      * PreparedStatement args:<br>
      * OBJECT_ID id ship <br>

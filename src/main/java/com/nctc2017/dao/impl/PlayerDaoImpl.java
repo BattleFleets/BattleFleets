@@ -340,6 +340,17 @@ public class PlayerDaoImpl implements PlayerDao{
         if (speed == null) return 0;
         return speed;
     }
+    
+    @Override
+    public int getFasterShipSpeed(BigInteger playerId) {
+        Integer speed = jdbcTemplate.queryForObject(Query.GET_HIGHEST_SPEED,
+                new Object[]{JdbcConverter.toNumber(playerId),
+                        JdbcConverter.toNumber(DatabaseObject.MAST_OBJTYPE_ID),
+                        JdbcConverter.toNumber(DatabaseAttribute.ATTR_CURR_MAST_SPEED_ID)},
+                Integer.class);
+        if (speed == null) return 0;
+        return speed;
+    }
 
     @Override
     public int getCurrentPassiveIncome(@NotNull BigInteger playerId){

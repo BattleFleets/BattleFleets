@@ -30,7 +30,7 @@ public class BattleEndingService {
     private static final String LEAVE_MSG_FOR_ENEMY = "The enemy was able to slip away, our ship is too slow.";
     private static final String PAYOFF_WINNER_MSG = "The enemy exchanged gold for life. You became richer for ? doubloons.";
     private static final String PAYOFF_LOSER_MSG = "You paid off the enemy ? doubloons.";
-    private static final int SPEED_DIFFERENCE_FOR_ESCAPE = 5;
+    private static final int SPEED_DIFFERENCE_FOR_ESCAPE = 20;
     
     @Autowired
     private ShipDao shipDao;
@@ -101,6 +101,10 @@ public class BattleEndingService {
         return playerDao.getFleetSpeed(playerId);
     }
     
+    private int fasterShipSpeed(BigInteger playerId) {
+        return playerDao.getFasterShipSpeed(playerId);
+    }
+    
     public boolean isLeaveBattleFieldAvailable(BigInteger playerId) throws BattleEndException {
         Battle battle = battles.getBattle(playerId);
         List<BigInteger> playerShipsLeft = battle.getShipsLeftBattle(playerId);
@@ -109,8 +113,13 @@ public class BattleEndingService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Ships was in battle: " + playerShipsLeft.size() + " Ship all: " + playerFactShips.size());
         }
+        int fasterEnemyShipSpeed = fasterShipSpeed(enemyId);
+        int slowerPlayerShipSpeed = fleetSpeed(playerId);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Faster enemy ship speed " + fasterEnemyShipSpeed + ". Slower player ship speed " + slowerPlayerShipSpeed);
+        }
         return playerShipsLeft.size() >= playerFactShips.size() 
-                || fleetSpeed(playerId) > fleetSpeed(enemyId);
+                || slowerPlayerShipSpeed - fasterEnemyShipSpeed >= SPEED_DIFFERENCE_FOR_ESCAPE;
     }
     
     public boolean leaveBattleField (BigInteger playerId) throws BattleEndException {

@@ -74,5 +74,7 @@ public interface PlayerDao {
 
     void updateNxtLvl(BigInteger playerId, int lvl);
 
+    int getFasterShipSpeed(BigInteger playerId);
+
 
 }

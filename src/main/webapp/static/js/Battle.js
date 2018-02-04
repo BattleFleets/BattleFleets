@@ -126,9 +126,9 @@ function ammoCannonQuantity(shipWrapper) {
     ammo_cannon.slideUp("slow");
 
     if (shipWrapper.cannons != null) {
-	mortars = shipWrapper.cannons.Mortar;
-	bombards = shipWrapper.cannons.Bombard;
-	kulevrins = shipWrapper.cannons.Kulevrin;
+	    mortars = shipWrapper.cannons.Mortar;
+	    bombards = shipWrapper.cannons.Bombard;
+	    kulevrins = shipWrapper.cannons.Kulevrin;
     }
 
     mortars = isNaN(mortars) ? 0 : mortars;
@@ -444,7 +444,9 @@ function fire() {
     var ammoCannon = new Array(spinner.length);
     for (i = 0; i < spinner.length; i++) {
         ammoCannon[i] = parseInt(spinner[i].value);
-        if (isNaN(ammoCannon[i]) || ammoCannon[i] < 0) {
+        if (spinner[i].value.match(/\D/g) != null 
+                || isNaN(ammoCannon[i]) 
+                || ammoCannon[i] < 0) {
             var warn = spinner[i].value + " is not allowed value";
             $(spinner[i]).effect( "bounce", "slow" );
             warningMsg(warn);
