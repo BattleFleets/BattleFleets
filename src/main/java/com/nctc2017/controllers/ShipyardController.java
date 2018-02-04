@@ -72,8 +72,9 @@ public class ShipyardController {
         String result = shipTradeService.buyShip(debugPlayerId, shipTemplateId);
         if (ShipyardController.isNumeric(result)) {
             BigInteger createdShipId = new BigInteger(result);
-            if (shipName.length() > maxShipNameLength || shipName.equals("") || ShipyardController.isNotEnglSymbol(shipName))
-                shipName = defaultName;
+            if (shipName.length() > maxShipNameLength || shipName.equals("") || ShipyardController.isNotEnglSymbol(shipName)) {
+                shipName = shipService.getDefaultShipName(shipTemplateId);
+            }
             shipService.setShipName(createdShipId, shipName);
             result = "Congratulation! One more ship is already armed.";
         }

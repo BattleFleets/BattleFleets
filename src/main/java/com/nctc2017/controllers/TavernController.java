@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Controller
@@ -80,7 +82,42 @@ public class TavernController {
     }
 
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/buySailors", method = RequestMethod.GET)
+    @RequestMapping(value = "/cost", method = RequestMethod.GET)
+    @ResponseBody
+    public String cost(@RequestParam(value="val",required = false) String val,
+                       @RequestParam(value="max",required = false) String max){
+        Pattern p = Pattern.compile("^[0-9]+$");
+        Matcher m = p.matcher(val);
+            if (!val.isEmpty() &&(!m.find() || (Integer.valueOf(val) <= 0 || Integer.valueOf(val) > Integer.valueOf(max)))) {
+                return max;
+            } else {
+                return val;
+            }
+
+    }
+
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/allStuffed", method = RequestMethod.GET)
+    @ResponseBody
+    public String isAllShipStuffed(@AuthenticationPrincipal PlayerUserDetails userDetails,
+                                   @RequestParam(value="msg",required = false) String msg){
+        BigInteger playerId = userDetails.getPlayerId();
+        Pattern p = Pattern.compile("[0-9]");
+        Matcher m = p.matcher(msg);
+        if(shipService.isAllShipsCompleted(playerId)){
+             return "All your ships are stuffed with sailors";
+        }
+        else if(m.find()){
+            return msg;
+        }
+        else{
+            return "You can hire sailors on your ships";
+        }
+
+    }
+
+    @Secured("ROLE_USER")
+    @RequestMapping(value = "/hireSailors", method = RequestMethod.GET)
     @ResponseBody
     public String[] buySailors(@RequestParam(value="shipId",required = false) BigInteger shipId,
                                @RequestParam(value="num",required = false) String newSailors,
@@ -92,12 +129,12 @@ public class TavernController {
         int money = moneyService.deductMoney(userDetails.getPlayerId(), cost);
         shipService.updateShipSailorsNumber(shipId, sailors);
         int curSailors = shipService.getSailorsNumber(shipId);
-        boolean complete = shipService.isAllShipsCompleted(userDetails.getPlayerId());
+        boolean shipComplete = shipService.isShipComplete(shipId);
         boolean enoughMoney = moneyService.isEnoughMoney(userDetails.getPlayerId(), sailorCost);
         String[] results = new String[4];
         results[0] = String.valueOf(money);
         results[1] = String .valueOf(curSailors);
-        results[2] = String.valueOf(complete);
+        results[2] = String.valueOf(shipComplete);
         results[3] = String.valueOf(enoughMoney);
         return results;
     }

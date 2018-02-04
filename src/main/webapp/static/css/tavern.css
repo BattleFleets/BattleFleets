@@ -112,7 +112,24 @@ img{
     font-weight: 900;
     text-align: left;
     border: 6px double black;
-    /*width: 550px;*/
+}
+
+.buttonBack{
+    background-image:url("../images/general/panel_background.jpg");
+    padding: 10px;
+    margin: 5px;
+    color: white;
+    font-size: 100%;
+    font-family: "Lucida Bright", Georgia, serif;
+    border: 2px solid black;
+
+}
+
+.buttonBack:hover,
+.buttonBack:focus{
+    color:black;
+    text-decoration: none;
+    cursor:pointer;
 }
 
 #info {

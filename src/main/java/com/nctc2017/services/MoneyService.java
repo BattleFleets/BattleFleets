@@ -1,5 +1,6 @@
 package com.nctc2017.services;
 
+import com.nctc2017.dao.ExecutorDao;
 import com.nctc2017.dao.PlayerDao;
 import com.nctc2017.exception.MoneyLackException;
 import org.apache.log4j.Logger;
@@ -14,13 +15,23 @@ import java.math.BigInteger;
 public class MoneyService {
     private static Logger log = Logger.getLogger(MoneyService.class);
 
+    private static final BigInteger maxVal = BigInteger.valueOf(2147483647);
+
      @Autowired
      PlayerDao playerDao;
 
+
      public int addMoney(BigInteger playerId, int moneyAdd) {
-        int newMoney = getPlayersMoney(playerId)+moneyAdd;
-        playerDao.updateMoney(playerId, newMoney);
-        return newMoney;
+        BigInteger newMoney = BigInteger.valueOf(getPlayersMoney(playerId)).add(BigInteger.valueOf(moneyAdd));
+        if(newMoney.compareTo(maxVal)>0){
+            playerDao.updateMoney(playerId, maxVal.intValue());
+            return maxVal.intValue();
+        }
+        else{
+            playerDao.updateMoney(playerId, newMoney.intValue());
+            return newMoney.intValue();
+        }
+
      }
 
      public Integer deductMoney(BigInteger playerId, int moneyDeduct) {
