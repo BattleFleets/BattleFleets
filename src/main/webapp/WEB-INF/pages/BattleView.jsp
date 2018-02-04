@@ -121,7 +121,7 @@
                             <span class="icon_boarding_disable"></span><span style="float: none">Boarding</span>
                         </button>
                     </td> 
-                    <td title="Your speed should be greater than the enemy's by 5 knots">
+                    <td title="Your speed should be greater than the enemy's by 20 knots">
                         <button id="escape" class="button_pick" disabled="disabled" style="vertical-align:middle" name="escape" type="submit">
                             <span class="icon_escape_disable"></span><span style="float: none">Escape</span>
                         </button>
