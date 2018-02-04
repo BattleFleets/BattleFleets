@@ -34,6 +34,11 @@ public class ShipService {
         return result;
     }
 
+    public String getDefaultShipName(BigInteger shipTemplateId) {
+        ShipTemplate result = shipDao.findShipTemplate(shipTemplateId);
+        return  result.getTName();
+    }
+
 
     public List<Ship> getAllPlayerShips(BigInteger playerId) {
         List<BigInteger> shipsId = playerDao.findAllShip(playerId);
