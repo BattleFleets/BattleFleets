@@ -185,7 +185,7 @@
                 </td>
             </tr>
             <tr align="center">
-                <td> 
+                <td>
                     <form action="<c:url value="/stock" />" method="GET">
                         <input hidden="true" name="page" value="shipyard">
                         <button class="button" name = "city" value = "${city}" formaction="/stock" style="vertical-align:middle" type="submit" action="<c:url value="/stock" />" method="GET">
