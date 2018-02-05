@@ -5,15 +5,14 @@ import java.math.BigInteger;
 
 import com.nctc2017.bean.PlayerUserDetails;
 import com.nctc2017.bean.Ship;
+import com.nctc2017.exception.UpdateException;
 import com.nctc2017.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -29,8 +28,6 @@ public class TavernController {
     private MoneyService moneyService;
     @Autowired
     private TravelService travelService;
-    @Autowired
-    private BattleService battleService;
 
     @Secured("ROLE_USER")
     @RequestMapping(value = "/tavern", method = RequestMethod.GET)
@@ -85,14 +82,29 @@ public class TavernController {
     @RequestMapping(value = "/cost", method = RequestMethod.GET)
     @ResponseBody
     public String cost(@RequestParam(value="val",required = false) String val,
-                       @RequestParam(value="max",required = false) String max){
+                       @RequestParam(value="shipId",required = false) BigInteger shipId,
+                       @AuthenticationPrincipal PlayerUserDetails userDetails){
+        Ship ship = shipService.findShip(shipId);
+        int curr = ship.getCurSailorsQuantity();
+        int limit = ship.getMaxSailorsQuantity();
+        int money = moneyService.getPlayersMoney(userDetails.getPlayerId());
+        int cost = shipService.getSailorCost();
+        int canToBuy = (int)Math.floor(money / cost);
         Pattern p = Pattern.compile("^[0-9]+$");
         Matcher m = p.matcher(val);
-            if (!val.isEmpty() &&(!m.find() || (Integer.valueOf(val) <= 0 || Integer.valueOf(val) > Integer.valueOf(max)))) {
-                return max;
-            } else {
+        int sailors;
+        if (canToBuy < (limit - curr)){
+                sailors=canToBuy;
+        }
+        else{
+                sailors=limit-curr;
+        }
+        if (!val.isEmpty() && (!m.find() || val.length()>3 ||
+                    (Integer.valueOf(val) <= 0 || Integer.valueOf(val) > (sailors)))) {
+                return String.valueOf((sailors));
+        } else {
                 return val;
-            }
+        }
 
     }
 
@@ -121,22 +133,28 @@ public class TavernController {
     @ResponseBody
     public String[] buySailors(@RequestParam(value="shipId",required = false) BigInteger shipId,
                                @RequestParam(value="num",required = false) String newSailors,
-                               @AuthenticationPrincipal PlayerUserDetails userDetails){
-        int oldNumSailors = shipService.getSailorsNumber(shipId);
-        int sailorCost = shipService.getSailorCost();
-        int cost = sailorCost*Integer.valueOf(newSailors);
-        int sailors = oldNumSailors + Integer.valueOf(newSailors);
-        int money = moneyService.deductMoney(userDetails.getPlayerId(), cost);
-        shipService.updateShipSailorsNumber(shipId, sailors);
-        int curSailors = shipService.getSailorsNumber(shipId);
-        boolean shipComplete = shipService.isShipComplete(shipId);
-        boolean enoughMoney = moneyService.isEnoughMoney(userDetails.getPlayerId(), sailorCost);
-        String[] results = new String[4];
-        results[0] = String.valueOf(money);
-        results[1] = String .valueOf(curSailors);
-        results[2] = String.valueOf(shipComplete);
-        results[3] = String.valueOf(enoughMoney);
-        return results;
+                               @AuthenticationPrincipal PlayerUserDetails userDetails) throws UpdateException{
+        try {
+            int oldNumSailors = shipService.getSailorsNumber(shipId);
+            int sailorCost = shipService.getSailorCost();
+            int cost = sailorCost * Integer.valueOf(newSailors);
+            int sailors = oldNumSailors + Integer.valueOf(newSailors);
+            int money = moneyService.deductMoney(userDetails.getPlayerId(), cost);
+            shipService.updateShipSailorsNumber(shipId, sailors);
+            int curSailors =  shipService.getSailorsNumber(shipId);
+            boolean shipComplete = shipService.isShipComplete(shipId);
+            boolean enoughMoney = moneyService.isEnoughMoney(userDetails.getPlayerId(), sailorCost);
+            String[] results = new String[4];
+            results[0] = String.valueOf(money);
+            results[1] = String.valueOf(curSailors);
+            results[2] = String.valueOf(shipComplete);
+            results[3] = String.valueOf(enoughMoney);
+            return results;
+        }
+        catch (RuntimeException ex){
+            return null;
+        }
+
     }
 
 }

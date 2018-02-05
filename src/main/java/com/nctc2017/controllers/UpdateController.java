@@ -49,7 +49,7 @@ public class UpdateController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/incomeUp", method = RequestMethod.GET)
     @ResponseBody
-    public String[] incomeUp(@AuthenticationPrincipal PlayerUserDetails userDetails) {
+    public String[] incomeUp(@AuthenticationPrincipal PlayerUserDetails userDetails) throws UpdateException {
         lvlUpService.incomeUp(userDetails.getPlayerId());
         lvlUpService.updateNxtLvl(userDetails.getPlayerId());
         int curIncome = lvlUpService.getPassiveIncome(userDetails.getPlayerId());
@@ -64,7 +64,7 @@ public class UpdateController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/shipUp", method = RequestMethod.GET)
     @ResponseBody
-    public String[] shipUp(@AuthenticationPrincipal PlayerUserDetails userDetails) {
+    public String[] shipUp(@AuthenticationPrincipal PlayerUserDetails userDetails) throws UpdateException {
         lvlUpService.shipUp(userDetails.getPlayerId());
         lvlUpService.updateNxtLvl(userDetails.getPlayerId());
         int curMaxShips = lvlUpService.getMaxShips(userDetails.getPlayerId());

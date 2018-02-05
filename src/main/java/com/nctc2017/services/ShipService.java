@@ -2,6 +2,7 @@ package com.nctc2017.services;
 
 import com.nctc2017.bean.*;
 import com.nctc2017.dao.*;
+import com.nctc2017.exception.UpdateException;
 import com.nctc2017.services.utils.CompBeans;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,10 +81,19 @@ public class ShipService {
         return shipDao.findShip(shipId);
     }
 
-    public boolean updateShipSailorsNumber(BigInteger shipId, int newSailorsNumber) {
+    public boolean updateShipSailorsNumber(BigInteger shipId, int newSailorsNumber) throws UpdateException {
         // Ship ship = findShip(shipId);
         // if(ship.getCurSailorsQuantity()!=ship.getMaxSailorsQuantity()) {
-        return shipDao.updateShipSailorsNumber(shipId, newSailorsNumber);
+        Ship ship = findShip(shipId);
+        if(newSailorsNumber>ship.getMaxSailorsQuantity() || newSailorsNumber<=0)
+        {
+            UpdateException ex = new UpdateException("Incorrect number of sailors");
+            log.error("Incorrect number of sailors",ex);
+            throw ex;
+        }
+        else {
+            return shipDao.updateShipSailorsNumber(shipId, newSailorsNumber);
+        }
         //}
         //else{
         //  UpdateException ex = new UpdateException("Level greater then next level update");
