@@ -136,6 +136,7 @@ function sell(queryString){
 $(document).ready(function() {
     buyType="GOODS";
     saleType="GOODS";
+    scrollBars();
     updateMoney();
     updatePlayerStock();
     var timerId = setTimeout(function tick() {
@@ -395,6 +396,12 @@ $(document).ready(function() {
     });
 });
 
+function scrollBars() {
+    $(".panels").mCustomScrollbar({
+        axis: "y",
+        theme: "minimal-dark"
+    });
+}
 //On modal close reload page
 /*$(document).ready(function() {
     $("#buyModal,#saleModal").on("hidden.bs.modal", function () {
