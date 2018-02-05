@@ -11,7 +11,7 @@
     <script src="static/js/jquery.min.js"></script>
     <script src="static/js/jquery-ui.min.js"></script>
     <script src="static/js/volume.js" type="text/javascript"></script>
-    <script src="static/js/jquery.mCustomScrollbar.min.js"></script>
+    <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
 </head>
 
 <body>
