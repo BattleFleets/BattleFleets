@@ -95,7 +95,7 @@ public class TradeController {
     }
 
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/market/buy", method = RequestMethod.GET)
+    @RequestMapping(value = "/market/market-goods", method = RequestMethod.GET)
     @ResponseBody
     public String getAllGoodsForBuying(@AuthenticationPrincipal PlayerUserDetails userDetails)
             throws JsonProcessingException {
@@ -105,7 +105,7 @@ public class TradeController {
     }
 
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/market/sell", method = RequestMethod.GET)
+    @RequestMapping(value = "/market/stock-goods", method = RequestMethod.GET)
     @ResponseBody
     public String getAllGoodsForSelling(@AuthenticationPrincipal PlayerUserDetails userDetails)
     throws JsonProcessingException{
@@ -114,7 +114,7 @@ public class TradeController {
     }
 
     @Secured("ROLE_USER")
-    @RequestMapping(value = "/market/myMoney", method = RequestMethod.GET)
+    @RequestMapping(value = "/market/my-money", method = RequestMethod.GET)
     @ResponseBody
     public String getMoney(@AuthenticationPrincipal PlayerUserDetails userDetails){
         int money = moneyService.getPlayersMoney(userDetails.getPlayerId());

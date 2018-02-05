@@ -14,7 +14,7 @@ function setHalfVolume() {
 function updateMoney() {
     $.ajax({
         type: "GET",
-        url: "/market/myMoney",
+        url: "/market/my-money",
         dataType: "text",
         success: function(data){
             $("#money").html(data);
@@ -29,7 +29,7 @@ function updateMoney() {
 function updateMarket(){
     $.ajax({
         type: "GET",
-        url: "/market/buy",
+        url: "/market/market-goods",
         dataType: "json",
         success: function(data){
             buyJson=data;
@@ -44,7 +44,7 @@ function updateMarket(){
 function updatePlayerStock(){
     $.ajax({
         type: "GET",
-        url: "/market/sell",
+        url: "/market/stock-goods",
         dataType: "json",
         success: function(data){
             saleJson=data;
@@ -140,7 +140,7 @@ $(document).ready(function() {
     updatePlayerStock();
     var timerId = setTimeout(function tick() {
         updateMarket();
-        timerId = setTimeout(tick, 20000);
+        timerId = setTimeout(tick, 5000);
     }, 4);
 });
 
@@ -224,6 +224,9 @@ $(document).ready(function () {
         });
         var mHead="Buy: "+buyObject.name;
         $("#buyModal").modal();
+        $("#buyModal").draggable({
+            handle: ".modal-header"
+        });
         $(".modal-title").html(mHead);
         $("#oneCount").html(buyObject.buyingPrice);
         if(buyObject.type=="AMMO"){
@@ -338,6 +341,9 @@ $(document).ready(function () {
         });
         var mHead="Sell: "+saleObject.name;
         $("#saleModal").modal();
+        $("#saleModal").draggable({
+            handle: ".modal-header"
+        });
         $(".modal-title").html(mHead);
         $("#oneSaleCount").html(saleObject.salePrice);
         $(".quantityLimit").html("Quantity(max: "+saleObject.quantity+"):");
