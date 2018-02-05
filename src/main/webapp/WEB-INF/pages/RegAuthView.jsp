@@ -28,6 +28,34 @@
     var email = $("#email").val();
     var password = $("#password_reg").val();
     var passwordConfirm = $("#password_confirm").val();
+    if(username.match(/(^\w|\d|_){3,20}$/) == null){
+        $('#results').html("<div class = \"errorText\" >Username is invalid!"+
+        "\nPlease, choose username in 3-20 length range and use only letters, numbers and underscore.</div>");
+        $("#regisBtn").val('Register')
+        .prop("disabled",false);
+        return;
+    }
+    if(email.match(/^.+@.+\..+$/) == null){
+        $('#results').html("<div class = \"errorText\" >" +
+        "Email is invalid! Must look like example@example.com</div>");
+        $("#regisBtn").val('Register')
+        .prop("disabled",false);
+        return;
+    }
+    if(password.length < 8 || password.length > 20) {
+        $('#results').html("<div class = \"errorText\" >" +
+        "Password is invalid! Please, choose password in 8-20 length range.</div>");
+        $("#regisBtn").val('Register')
+        .prop("disabled",false);
+        return;
+    }
+    if(password != passwordConfirm){
+        $('#results').html("<div class = \"errorText\" >" +
+        "Passwords are not matching!</div>");
+        $("#regisBtn").val('Register')
+            .prop("disabled",false);
+        return;
+    }
 
 
     $.ajax({

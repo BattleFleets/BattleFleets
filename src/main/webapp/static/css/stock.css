@@ -35,7 +35,7 @@ color: white;
 width: 100%
 }
 
-td p {
+body p {
 margin: 0;
 padding: 0;
 }
@@ -60,9 +60,9 @@ width: 100px;
     right: 5%;
     top: 17%;
 
-    width: 180px;
-    min-width: 170px;
-    max-width: 190px;
+    width: 190px;
+    min-width: 180px;
+    max-width: 200px;
 }
 .element:hover{
     background: #150f0f91;
@@ -73,7 +73,7 @@ width: 100px;
     background: #150f0fd9;
     right: 5%;
     top: 17%;
-    width: 180px;
-    min-width: 170px;
-    max-width: 190px;
+    width: 190px;
+    min-width: 180px;
+    max-width: 200px;
 }

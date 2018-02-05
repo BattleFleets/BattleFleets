@@ -202,6 +202,10 @@ function showShipResources(event){
 function checkQuantity(goodsQuantity){
     var returnValue = "true";
     var movingQuantity = $("#moveQuantity").val();
+    if (movingQuantity.match(/\D/g) != null) {
+        $("#msgGoods").html("Please, enter natural number!");
+        returnValue = "false";
+    }
     if(movingQuantity < 1) {
         $("#msgGoods").html("You can move not less than 1 unit of goods!");
         returnValue = "false";
@@ -233,6 +237,7 @@ console.log("move dialog initiated type:" + event.data.type + " name:" + event.d
 console.log("move dialog for goods and ammos");
         var dialogGoods = $( "#dialogGoods");
         $("#moveQuantity").prop('max',event.data.quantity);
+        $("#moveQuantity").prop('value',event.data.quantity);
 
         dialogGoods.dialog( "option", "title", "Move "+ event.data.name +"!" );
         $("#totalQuantity").html("" + event.data.quantity);

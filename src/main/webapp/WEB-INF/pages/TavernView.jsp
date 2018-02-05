@@ -103,7 +103,7 @@
                                 <button  class="button" style="vertical-align:middle; padding-right: 10%;" id="shipId" type="submit" onclick="hireSailors()">
                                     <span>Hire</span>
                                 </button>
-                                <input style="width:35px;" type="text" maxlength="3" class="sailorsNumber" min="1" max="" autocomplete="off"  onkeyup="cost(${sailorCost})">
+                                <input style="width:35px;" type="text" maxlength="3" class="sailorsNumber" min="1" max="" autocomplete="off" onkeyup="cost(${sailorCost})">
                                 <span id="spend" style="font-family: tempus sans itc; color:white;"></span>
                             </div>
                         </td>
@@ -181,11 +181,12 @@
     }
     function cost(cost) {
        var val = $("input.sailorsNumber").val();
-       var max = $("input.sailorsNumber").attr('max');
-           $.ajax({
+       //var max = $("input.sailorsNumber").attr('max');
+       var id = $('#shipId').val();
+        $.ajax({
                url: '/cost',
                method: "GET",
-               data: {'val': val, 'max': max},
+               data: {'val': val, 'shipId': id},
                success: function (data) {
                    $("input.sailorsNumber").val(data);
                    $("#spend").html(parseInt(data) * cost);
@@ -225,6 +226,10 @@
                          $("input.sailorsNumber").hide();
                          $("#spend").hide();
                      }
+                },
+                error: function (e) {
+                    console.log("ERROR",e);
+                    window.location.href="/city";
                 }
             } );
     }
