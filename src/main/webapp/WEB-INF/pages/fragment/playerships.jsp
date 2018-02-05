@@ -18,7 +18,7 @@
             <tr>
                 <td align="center">
                 <button class="capacity_for_background button shipTemplateId" name="shipTemplateId" value="${shipTemplates.getShipId()}" onclick="chooseOfAction(this,'${action}',${shipTemplates.getCost()-shipCosts.get(status.index)*2}, ${shipTemplates.curCarryingLimit})">
-                <span>${action} ${shipTemplates.getTName()}</span>
+                <span>${action} ${shipTemplates.getCurName()}</span>
                 </button>
                 </td>
                 <c:if test = "${action == 'Sell'}">
@@ -51,7 +51,7 @@
                     </c:otherwise>
                 </c:choose>
                 </td>
-                <td>Name:  <b class="values">${shipTemplates.getCurName()}</b></td>
+                <td>Type:  <b class="values">${shipTemplates.getTName()}</b></td>
             </tr>
             <tr>
                 <td>Health:  <b class="values">${shipTemplates.getCurHealth()}/${shipTemplates.getMaxHealth()}</b></td>

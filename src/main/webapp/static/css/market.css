@@ -58,6 +58,7 @@ footer{
 .modal {
     text-align: center;
     padding: 0!important;
+    position: fixed;
 }
 
 .modal:before {
@@ -89,6 +90,10 @@ footer{
     font-family:Arial;
     color:white;
     opacity: 0.7;
+}
+
+.modal-header {
+    cursor: move;
 }
 
 #messageSale,
