@@ -131,10 +131,9 @@ public class TavernController {
     @Secured("ROLE_USER")
     @RequestMapping(value = "/hireSailors", method = RequestMethod.GET)
     @ResponseBody
-    public String[] buySailors(@RequestParam(value="shipId",required = false) BigInteger shipId,
+    public String[] hireSailors(@RequestParam(value="shipId",required = false) BigInteger shipId,
                                @RequestParam(value="num",required = false) String newSailors,
                                @AuthenticationPrincipal PlayerUserDetails userDetails) throws UpdateException{
-        try {
             int oldNumSailors = shipService.getSailorsNumber(shipId);
             int sailorCost = shipService.getSailorCost();
             int cost = sailorCost * Integer.valueOf(newSailors);
@@ -150,10 +149,6 @@ public class TavernController {
             results[2] = String.valueOf(shipComplete);
             results[3] = String.valueOf(enoughMoney);
             return results;
-        }
-        catch (RuntimeException ex){
-            return null;
-        }
 
     }
 
