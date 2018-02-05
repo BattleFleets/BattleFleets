@@ -177,7 +177,6 @@ function isExitAvailable() {
     .done(function(response, status, xhr){
         console.log("response for exit available: " + response);
         if (response == "true") {
-            enemyLeaveCheckTask();
             var exit = $("#exit");
             exit.removeAttr("disabled");
             var exit_icon = exit.find(".icon_exit_disable");
@@ -221,4 +220,6 @@ $(document).ready(function(){
             collision: "flip"
         }
     });
+    
+    enemyLeaveCheckTask();
 });
