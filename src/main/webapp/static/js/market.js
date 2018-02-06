@@ -8,7 +8,7 @@ var buyQuantity;
 var saleQuantity;
 
 function setHalfVolume() {
-    document.getElementById("myaudio").volume = 0.1;
+    document.getElementById("audio-market").volume = 0.1;
 }
 
 function updateMoney() {
@@ -141,6 +141,14 @@ $(document).ready(function() {
     updatePlayerStock();
     var timerId = setTimeout(function tick() {
         updateMarket();
+        if(buyType!="AMMO" && typeof buyObject!=="undefined") {
+            $.each(buyJson, function (i, item) {
+                if (item.templateId == buyObject.templateId) {
+                    $(".quantityLimit").html("Quantity(max: " + item.quantity + "):");
+                    $("#modalQuantity").prop('max',item.quantity);
+                }
+            });
+        }
         timerId = setTimeout(tick, 5000);
     }, 4);
 });

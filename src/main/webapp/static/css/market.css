@@ -58,7 +58,6 @@ footer{
 .modal {
     text-align: center;
     padding: 0!important;
-    position: fixed;
 }
 
 .modal:before {
@@ -130,5 +129,10 @@ footer {
     transform: translate(-50%, -50%);   
     bottom: 0;
     z-index: -1;
+}
+
+.icon_sound{
+    top: 8px;
+    right: 30px;
 }
 

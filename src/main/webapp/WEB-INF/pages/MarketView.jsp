@@ -16,9 +16,9 @@
     <script src="static/js/jquery-ui.min.js"></script>
     <script type="text/javascript"  src="<c:url value="/static/js/market.js" />"></script>
     <script src="static/js/jquery.mCustomScrollbar.concat.min.js"></script>
-    
+    <!--<script src="static/js/volume.js"></script>-->
     <script type="text/javascript"  src="<c:url value="/static/bootstrap-3.3.7/js/bootstrap.js" />"></script>
-    <audio autoplay id="myaudio" onloadeddata="setHalfVolume()">
+    <audio autoplay id="audio-market" onloadeddata="setHalfVolume()">
         <source src="<c:url value="/static/audio/market.mp3" />" type="audio/mp3">
     </audio>
 </head>
@@ -101,6 +101,7 @@
 
 <div class="col-sm-5 panels">
     <h1 class="messageText"><a href="/stock?page=market&city=${city}"  id="toStock">Stock</a></h1>
+    <!--<button id="audio" class="icon_sound" type="submit" title="Mute" style="vertical-align:middle"></button>-->
     <div class="table">
         <ul class="nav nav-tabs center-block">
             <li><a href="#" class="saleJson" id="goodSaleJson">Goods</a></li>
@@ -150,7 +151,6 @@
         <%@include file="fragment/footer.jsp" %>
     </div>
 </div>
-
 <button class = "helpButton" type = "button" onclick = "openHelp('#marketInfo')"></button>
 <jsp:include page="fragment/help.jsp" />
 </body>
