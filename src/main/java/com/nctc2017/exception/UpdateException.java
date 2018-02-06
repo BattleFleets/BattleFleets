@@ -1,8 +1,11 @@
 package com.nctc2017.exception;
 
-public class UpdateException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+public class UpdateException extends Exception {
     public UpdateException(String message) {
         super(message);
     }
-
 }

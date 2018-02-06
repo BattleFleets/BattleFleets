@@ -76,6 +76,8 @@
             setHoldLimit();
             setInventoryLimit();
             $("#ships #"+pressedShipId+" b#shipDescription").html(curCarryingLimit + "/" + maxCarryingLimit);
+            
+            scrollBarsForContainers();
         },
         error: function(data){
             $("#dialogInfoContent").html("<b>"+ data.msg +"</b>");
@@ -103,6 +105,8 @@
             setHoldLimit();
             setInventoryLimit();
             $("#ships #"+pressedShipId+" b#shipDescription").html(curCarryingLimit + "/" + maxCarryingLimit);
+            
+            scrollBarsForContainers();
         },
         error: function(data){
             $("#dialogInfoContent").html("<b>"+ data.msg +"</b>");
@@ -130,6 +134,8 @@
             setHoldLimit();
             setInventoryLimit();
             $("#ships #"+pressedShipId+" b#shipDescription").html(curCarryingLimit + "/" + maxCarryingLimit);
+            
+            scrollBarsForContainers();
         },
         error: function(data){
             $("#dialogInfoContent").html("<b>"+ data.msg +"</b>");
@@ -151,15 +157,17 @@ function showShipResources(event){
      method:"POST",
      data: { 'shipId' : event.data.shipId },
             success: function(data) {
-            fillWithGoods(data.hold, "hold");
-            fillWithGoods(data.inventory, "inventory");
-            curCarryingLimit = data.curCarryingLimit;
-            setHoldLimit();
-            curCannons = data.curCannons;
-            curMasts = data.curMasts;
-            setInventoryLimit();
-            $("#ships td > div.selectedShipElement").removeClass("selectedShipElement").addClass("element");
-            $("#ships td#"+pressedShipId+" > div").removeClass("element").addClass("selectedShipElement");
+                fillWithGoods(data.hold, "hold");
+                fillWithGoods(data.inventory, "inventory");
+                curCarryingLimit = data.curCarryingLimit;
+                setHoldLimit();
+                curCannons = data.curCannons;
+                curMasts = data.curMasts;
+                setInventoryLimit();
+                $("#ships td > div.selectedShipElement").removeClass("selectedShipElement").addClass("element");
+                $("#ships td#"+pressedShipId+" > div").removeClass("element").addClass("selectedShipElement");
+                
+                scrollBarsForContainers();
             }
     });
 }
@@ -194,6 +202,10 @@ function showShipResources(event){
 function checkQuantity(goodsQuantity){
     var returnValue = "true";
     var movingQuantity = $("#moveQuantity").val();
+    if (movingQuantity.match(/\D/g) != null) {
+        $("#msgGoods").html("Please, enter natural number!");
+        returnValue = "false";
+    }
     if(movingQuantity < 1) {
         $("#msgGoods").html("You can move not less than 1 unit of goods!");
         returnValue = "false";
@@ -225,6 +237,7 @@ console.log("move dialog initiated type:" + event.data.type + " name:" + event.d
 console.log("move dialog for goods and ammos");
         var dialogGoods = $( "#dialogGoods");
         $("#moveQuantity").prop('max',event.data.quantity);
+        $("#moveQuantity").prop('value',event.data.quantity);
 
         dialogGoods.dialog( "option", "title", "Move "+ event.data.name +"!" );
         $("#totalQuantity").html("" + event.data.quantity);
@@ -520,13 +533,18 @@ function fillWithGoods(playerGoods, whatToFillId){
     });
 
 }
-
 function scrollBars() {
     $("body").mCustomScrollbar({
         axis:"y", // vertical scrollbar
         theme:"minimal-dark"
     });
-    $(".container").mCustomScrollbar({
+    scrollBarsForContainers();
+}
+
+function scrollBarsForContainers() {
+    var scrollContainer = $(".container");
+    scrollContainer.mCustomScrollbar("destroy");
+    scrollContainer.mCustomScrollbar({
         axis:"x", // horizontal scrollbar
         theme:"minimal-dark"
     });

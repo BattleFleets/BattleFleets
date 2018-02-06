@@ -78,7 +78,6 @@
                             $('#improveWrapper').css('display', 'none');
                         }
                     }
-
             },
             error : function(e) {
                 console.log("ERROR",e);

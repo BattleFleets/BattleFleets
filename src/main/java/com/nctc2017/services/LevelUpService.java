@@ -70,7 +70,7 @@ public class LevelUpService {
         return playerDao.getCurrentPassiveIncome(playerId);
     }
 
-    public void incomeUp(BigInteger playerId) {
+    public void incomeUp(BigInteger playerId) throws UpdateException {
        int curPass = playerDao.getCurrentPassiveIncome(playerId);
        int lvl = getCurrentLevel(playerId);
        int next = getNextLevel(playerId);
@@ -88,7 +88,7 @@ public class LevelUpService {
         return playerDao.getCurrentMaxShips(playerId);
     }
 
-    public void shipUp(BigInteger playerId) {
+    public void shipUp(BigInteger playerId) throws UpdateException {
         int curMaxShips = playerDao.getCurrentMaxShips(playerId);
         int lvl = getCurrentLevel(playerId);
         int next = getNextLevel(playerId);
