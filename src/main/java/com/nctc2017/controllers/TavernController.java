@@ -145,17 +145,23 @@ public class TavernController {
                 int sailorCost = shipService.getSailorCost();
                 int cost = sailorCost * Integer.valueOf(newSailors);
                 int sailors = oldNumSailors + Integer.valueOf(newSailors);
-                int money = moneyService.deductMoney(userDetails.getPlayerId(), cost);
-                shipService.updateShipSailorsNumber(shipId, sailors);
-                int curSailors = shipService.getSailorsNumber(shipId);
-                boolean shipComplete = shipService.isShipComplete(shipId);
-                boolean enoughMoney = moneyService.isEnoughMoney(userDetails.getPlayerId(), sailorCost);
-                String[] results = new String[4];
-                results[0] = String.valueOf(money);
-                results[1] = String.valueOf(curSailors);
-                results[2] = String.valueOf(shipComplete);
-                results[3] = String.valueOf(enoughMoney);
-                return results;
+                boolean isMoney = moneyService.isEnoughMoney(userDetails.getPlayerId(), cost);
+                if(!isMoney){
+                    throw new UpdateException("Not enough money");
+                }
+                else {
+                    int money = moneyService.deductMoney(userDetails.getPlayerId(), cost);
+                    shipService.updateShipSailorsNumber(shipId, sailors);
+                    int curSailors = shipService.getSailorsNumber(shipId);
+                    boolean shipComplete = shipService.isShipComplete(shipId);
+                    boolean enoughMoney = moneyService.isEnoughMoney(userDetails.getPlayerId(), sailorCost);
+                    String[] results = new String[4];
+                    results[0] = String.valueOf(money);
+                    results[1] = String.valueOf(curSailors);
+                    results[2] = String.valueOf(shipComplete);
+                    results[3] = String.valueOf(enoughMoney);
+                    return results;
+                }
             }
 
     }

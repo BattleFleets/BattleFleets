@@ -181,7 +181,6 @@
     }
     function cost(cost) {
        var val = $("input.sailorsNumber").val();
-       //var max = $("input.sailorsNumber").attr('max');
        var id = $('#shipId').val();
         $.ajax({
                url: '/cost',
@@ -197,6 +196,7 @@
         event.preventDefault();
         var sailors = $("input.sailorsNumber").val();
         var id = $('#shipId').val();
+        if(sailors.match("[0-9]+")){
             $.ajax({
                 url:'/hireSailors',
                 method:"GET",
@@ -229,9 +229,13 @@
                 },
                 error: function (e) {
                     console.log("ERROR",e);
-                    window.location.href="/city";
+                    maxValue(id);
                 }
             } );
+        }
+        else{
+          maxValue(id);
+        }
     }
     function back() {
         event.preventDefault();
