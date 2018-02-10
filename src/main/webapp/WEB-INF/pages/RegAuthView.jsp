@@ -28,14 +28,14 @@
     var email = $("#email").val();
     var password = $("#password_reg").val();
     var passwordConfirm = $("#password_confirm").val();
-    if(username.match(/(^\w|\d|_){3,20}$/) == null){
+    if(!username.match(/\w{3,20}$/)){
         $('#results').html("<div class = \"errorText\" >Username is invalid!"+
         "\nPlease, choose username in 3-20 length range and use only letters, numbers and underscore.</div>");
         $("#regisBtn").val('Register')
         .prop("disabled",false);
         return;
     }
-    if(email.match(/^.+@.+\..+$/) == null){
+    if(!email.match(/^.+@.+\..+$/)){
         $('#results').html("<div class = \"errorText\" >" +
         "Email is invalid! Must look like example@example.com</div>");
         $("#regisBtn").val('Register')
