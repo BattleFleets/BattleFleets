@@ -99,8 +99,8 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
 
         javaMailSender.setProtocol("smtp");
         javaMailSender.setHost("smtp.gmail.com");
-        javaMailSender.setUsername("boottle.of.rum@gmail.com");
-        javaMailSender.setPassword("ux73ffhw");
+        javaMailSender.setUsername(env.getRequiredProperty("email.login"));
+        javaMailSender.setPassword(env.getRequiredProperty("email.password"));
         Properties prop = new Properties();
         prop.put("mail.smtp.ssl.enable", "true");
         Session session = Session.getInstance(prop);
